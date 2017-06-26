@@ -1,0 +1,12 @@
+              |-----handy-ruler-----------------------------------------------|
+@PACKAGE_NAME@: @PACKAGE_NAME@ @PACKAGE_VERSION@
+@PACKAGE_NAME@:
+@PACKAGE_NAME@: A standard C11 language library implementing adapters for
+@PACKAGE_NAME@: POSIX system functions to convert the error reporting
+@PACKAGE_NAME@: mechanism to the use of the library CCExceptions.
+@PACKAGE_NAME@:
+@PACKAGE_NAME@:
+@PACKAGE_NAME@:
+@PACKAGE_NAME@:
+@PACKAGE_NAME@:
+@PACKAGE_NAME@:
