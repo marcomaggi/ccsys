@@ -147,10 +147,10 @@ ccsys_decl void * ccsys_calloc (cce_location_t * L, size_t count, size_t eltsize
  ** Predefined POSIX exception handler: malloc pointer.
  ** ----------------------------------------------------------------- */
 
-ccsys_decl void ccsys_cleanup_handler_malloc_init (cce_location_t * L, ccsys_handler_t * H, void * pointer)
+ccsys_decl void ccsys_cleanup_handler_malloc_init (cce_location_t * L, cce_handler_t * H, void * pointer)
   __attribute__((nonnull(1,2,3)));
 
-ccsys_decl void ccsys_error_handler_malloc_init (cce_location_t * L, ccsys_handler_t * H, void * pointer)
+ccsys_decl void ccsys_error_handler_malloc_init (cce_location_t * L, cce_handler_t * H, void * pointer)
   __attribute__((nonnull(1,2,3)));
 
 
