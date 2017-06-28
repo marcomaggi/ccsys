@@ -31,9 +31,9 @@
  ** Headers.
  ** ----------------------------------------------------------------- */
 
-#include "ccexceptions.h"
-#include "ccexceptions-system.h"
-#include "ccexceptions-networking.h"
+#include "ccsys.h"
+#include "ccsys-system.h"
+#include "ccsys-networking.h"
 #include <assert.h>
 
 
@@ -49,12 +49,11 @@ test_handler_malloc (void)
     volatile bool	error_flag = false;
 
     if (cce_location(L)) {
-      cce_run_error_handlers(L);
-      cce_condition_delete(cce_condition(L));
+      cce_run_error_handlers_final(L);
       error_flag = true;
     } else {
-      P = cce_sys_malloc(L, 4096);
-      cce_cleanup_handler_malloc_init(L, H, P);
+      P = ccsys_malloc(L, 4096);
+      ccsys_cleanup_handler_malloc_init(L, H, P);
       cce_run_cleanup_handlers(L);
       done_flag = true;
     }
@@ -70,12 +69,11 @@ test_handler_malloc (void)
     volatile bool	error_flag = false;
 
     if (cce_location(L)) {
-      cce_run_error_handlers(L);
-      cce_condition_delete(cce_condition(L));
+      cce_run_error_handlers_final(L);
       error_flag = true;
     } else {
-      P = cce_sys_malloc(L, 4096);
-      cce_cleanup_handler_malloc_init(L, H, P);
+      P = ccsys_malloc(L, 4096);
+      ccsys_cleanup_handler_malloc_init(L, H, P);
       cce_raise(L, cce_condition_new_unknown());
       cce_run_cleanup_handlers(L);
       done_flag = true;
@@ -97,12 +95,11 @@ test_handler_filedes (void)
     volatile bool	error_flag = false;
 
     if (cce_location(L)) {
-      cce_run_error_handlers(L);
-      cce_condition_delete(cce_condition(L));
+      cce_run_error_handlers_final(L);
       error_flag = true;
     } else {
-      int   fd = cce_sys_open(L, "name.ext", O_CREAT, S_IRWXU);
-      cce_cleanup_handler_filedes_init(L, H, fd);
+      int   fd = ccsys_open(L, "name.ext", O_CREAT, S_IRWXU);
+      ccsys_cleanup_handler_filedes_init(L, H, fd);
       cce_run_cleanup_handlers(L);
       done_flag = true;
     }
@@ -118,12 +115,11 @@ test_handler_filedes (void)
     volatile bool	error_flag = false;
 
     if (cce_location(L)) {
-      cce_run_error_handlers(L);
-      cce_condition_delete(cce_condition(L));
+      cce_run_error_handlers_final(L);
       error_flag = true;
     } else {
-      int   fd = cce_sys_open(L, "name.ext", O_CREAT, S_IRWXU);
-      cce_cleanup_handler_filedes_init(L, H, fd);
+      int   fd = ccsys_open(L, "name.ext", O_CREAT, S_IRWXU);
+      ccsys_cleanup_handler_filedes_init(L, H, fd);
       cce_raise(L, cce_condition_new_unknown());
       cce_run_cleanup_handlers(L);
       done_flag = true;
@@ -146,13 +142,12 @@ test_handler_pipedes (void)
     volatile bool	error_flag = false;
 
     if (cce_location(L)) {
-      cce_run_error_handlers(L);
-      cce_condition_delete(cce_condition(L));
+      cce_run_error_handlers_final(L);
       error_flag = true;
     } else {
       int	pipedes[2];
-      cce_sys_pipe(L, pipedes);
-      cce_cleanup_handler_pipedes_init(L, H, pipedes);
+      ccsys_pipe(L, pipedes);
+      ccsys_cleanup_handler_pipedes_init(L, H, pipedes);
       cce_run_cleanup_handlers(L);
       done_flag = true;
     }
@@ -167,13 +162,12 @@ test_handler_pipedes (void)
     volatile bool	error_flag = false;
 
     if (cce_location(L)) {
-      cce_run_error_handlers(L);
-      cce_condition_delete(cce_condition(L));
+      cce_run_error_handlers_final(L);
       error_flag = true;
     } else {
       int	pipedes[2];
-      cce_sys_pipe(L, pipedes);
-      cce_cleanup_handler_pipedes_init(L, H, pipedes);
+      ccsys_pipe(L, pipedes);
+      ccsys_cleanup_handler_pipedes_init(L, H, pipedes);
       cce_raise(L, cce_condition_new_unknown());
       cce_run_cleanup_handlers(L);
       done_flag = true;
@@ -196,13 +190,12 @@ test_handler_tmpfile (void)
     volatile bool	error_flag = false;
 
     if (cce_location(L)) {
-      cce_run_error_handlers(L);
-      cce_condition_delete(cce_condition(L));
+      cce_run_error_handlers_final(L);
       error_flag = true;
     } else {
-      int   fd = cce_sys_open(L, "name.ext", O_CREAT, S_IRUSR|S_IWUSR);
-      cce_cleanup_handler_filedes_init(L, filedes_H, fd);
-      cce_cleanup_handler_tmpfile_init(L, tmpfile_H, "name.ext");
+      int   fd = ccsys_open(L, "name.ext", O_CREAT, S_IRUSR|S_IWUSR);
+      ccsys_cleanup_handler_filedes_init(L, filedes_H, fd);
+      ccsys_cleanup_handler_tmpfile_init(L, tmpfile_H, "name.ext");
       cce_run_cleanup_handlers(L);
       done_flag = true;
     }
@@ -218,13 +211,12 @@ test_handler_tmpfile (void)
     volatile bool	error_flag = false;
 
     if (cce_location(L)) {
-      cce_run_error_handlers(L);
-      cce_condition_delete(cce_condition(L));
+      cce_run_error_handlers_final(L);
       error_flag = true;
     } else {
-      int   fd = cce_sys_open(L, "name.ext", O_CREAT, S_IRUSR|S_IWUSR);
-      cce_cleanup_handler_filedes_init(L, filedes_H, fd);
-      cce_cleanup_handler_tmpfile_init(L, tmpfile_H, "name.ext");
+      int   fd = ccsys_open(L, "name.ext", O_CREAT, S_IRUSR|S_IWUSR);
+      ccsys_cleanup_handler_filedes_init(L, filedes_H, fd);
+      ccsys_cleanup_handler_tmpfile_init(L, tmpfile_H, "name.ext");
       cce_raise(L, cce_condition_new_unknown());
       cce_run_cleanup_handlers(L);
       done_flag = true;
@@ -246,12 +238,11 @@ test_handler_tmpdir (void)
     volatile bool	error_flag = false;
 
     if (cce_location(L)) {
-      cce_run_error_handlers(L);
-      cce_condition_delete(cce_condition(L));
+      cce_run_error_handlers_final(L);
       error_flag = true;
     } else {
-      cce_sys_mkdir(L, "name.d", 0);
-      cce_cleanup_handler_tmpdir_init(L, tmpdir_H, "name.d");
+      ccsys_mkdir(L, "name.d", 0);
+      ccsys_cleanup_handler_tmpdir_init(L, tmpdir_H, "name.d");
       cce_run_cleanup_handlers(L);
       done_flag = true;
     }
@@ -266,12 +257,11 @@ test_handler_tmpdir (void)
     volatile bool	error_flag = false;
 
     if (cce_location(L)) {
-      cce_run_error_handlers(L);
-      cce_condition_delete(cce_condition(L));
+      cce_run_error_handlers_final(L);
       error_flag = true;
     } else {
-      cce_sys_mkdir(L, "name.d", 0);
-      cce_cleanup_handler_tmpdir_init(L, tmpdir_H, "name.d");
+      ccsys_mkdir(L, "name.d", 0);
+      ccsys_cleanup_handler_tmpdir_init(L, tmpdir_H, "name.d");
       cce_raise(L, cce_condition_new_unknown());
       cce_run_cleanup_handlers(L);
       done_flag = true;
