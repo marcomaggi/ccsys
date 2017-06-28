@@ -2,7 +2,9 @@
 
 ACLOCAL_AMFLAGS		= -I meta/autotools
 AUTOMAKE_OPTIONS	= foreign
-EXTRA_DIST		= INSTALL configure.sh
+EXTRA_DIST		= INSTALL configure.sh		\
+			  meta/slackstuff/config.in	\
+			  meta/slackware/slack-desc.in
 dist_doc_DATA		= README COPYING
 AM_CFLAGS		= -I$(srcdir)/src -Wall $(AX_CFLAGS)
 
@@ -35,7 +37,9 @@ include_HEADERS		= \
 	src/ccsys-networking.h
 
 lib_LTLIBRARIES		= libccsys.la
-libccsys_la_LDFLAGS	= -version-info $(ccsys_CURRENT):$(ccsys_REVISION):$(ccsys_AGE)
+libccsys_la_CPPFLAGS	= $(CCEXCEPTIONS_CFLAGS)
+libccsys_la_LDFLAGS	= -version-info $(ccsys_CURRENT):$(ccsys_REVISION):$(ccsys_AGE) \
+			  $(CCEXCEPTIONS_LIBS)
 libccsys_la_SOURCES	= \
 	src/ccsys-internals.h		\
 	src/ccsys-system-calls.c	\

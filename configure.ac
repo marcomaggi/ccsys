@@ -2,7 +2,7 @@ dnl @configure_input@
 dnl
 
 AC_PREREQ([2.69])
-AC_INIT([Ccsys],[0.1.0-devel.0],
+AC_INIT([CCSys],[0.1.0-devel.0],
   [marco.maggi-ipsu@poste.it],
   [ccsys],[http://github.com/marcomaggi/ccsys/])
 dnl This is the revision number of this configure.ac
@@ -81,6 +81,9 @@ AM_COND_IF([ON_DARWIN],[AC_DEFINE([CCSYS_ON_DARWIN],[1],[defined to 1 when compi
 dnl page
 #### libraries interface version
 
+AS_VAR_SET([SLACKSTUFF_PACKAGE_VERSION],[0.1d0.0])
+AC_SUBST([SLACKSTUFF_PACKAGE_VERSION])
+
 dnl This is the version stored in the pkg-config data file.
 AC_SUBST([CCSYS_PKG_CONFIG_VERSION],[0.1])
 
@@ -154,6 +157,7 @@ dnl page
 AC_CONFIG_HEADERS([config.h])
 AC_CONFIG_FILES([Makefile]
    [meta/scripts/ccsys.pc]
+   [meta/slackstuff/config]
    [meta/slackware/slack-desc])
 AC_OUTPUT
 
