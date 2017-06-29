@@ -1,8 +1,8 @@
 # CCSys
 
-[![CII Best Practices](https://bestpractices.coreinfrastructure.org/projects/XXX/badge)](https://bestpractices.coreinfrastructure.org/projects/XXX)
+[![CII Best Practices](https://bestpractices.coreinfrastructure.org/projects/1076/badge)](https://bestpractices.coreinfrastructure.org/projects/1076)
 [![Build Status](https://travis-ci.org/marcomaggi/ccsys.svg?branch=master)](https://travis-ci.org/marcomaggi/ccsys)
-[![Coverity passed](https://scan.coverity.com/projects/XXX/badge.svg)](https://scan.coverity.com/projects/marcomaggi-ccsys)
+[![Coverity passed](https://scan.coverity.com/projects/13048/badge.svg)](https://scan.coverity.com/projects/marcomaggi-ccsys)
 [![codecov](https://codecov.io/gh/marcomaggi/ccsys/branch/master/graph/badge.svg)](https://codecov.io/gh/marcomaggi/ccsys)
 
 
@@ -179,7 +179,7 @@ Practices badge is a way for Free/Libre and Open Source Software (FLOSS)
 projects to show that they follow  best practices.  We can find the self
 certification at:
 
-[https://bestpractices.coreinfrastructure.org/projects/XXX/](https://bestpractices.coreinfrastructure.org/projects/XXX/)
+[https://bestpractices.coreinfrastructure.org/projects/1076/](https://bestpractices.coreinfrastructure.org/projects/1076/)
 
 
 ### Travis CI
