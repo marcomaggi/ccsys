@@ -55,8 +55,8 @@ check_PROGRAMS	= \
 
 TESTS			= $(check_PROGRAMS)
 
-ccsys_tests_cppflags	= -I$(srcdir)/src
-ccsys_tests_ldadd	= libccsys.la
+ccsys_tests_cppflags		= -I$(srcdir)/src $(CCEXCEPTIONS_FLAGS)
+ccsys_tests_ldadd		= libccsys.la
 
 tests_version_CPPFLAGS		= $(ccsys_tests_cppflags)
 tests_version_LDADD		= $(ccsys_tests_ldadd)
@@ -78,7 +78,7 @@ EXTRA_DIST	+= \
 noinst_PROGRAMS	= \
 	demos/listdir
 
-ccsys_demos_cppflags		= -I$(srcdir)/src $(CCSYS_FLAGS)
+ccsys_demos_cppflags		= -I$(srcdir)/src $(CCSYS_FLAGS) $(CCEXCEPTIONS_FLAGS)
 ccsys_demos_ldadd		= libccsys.la
 
 demos_listdir_CPPFLAGS		= $(ccsys_demos_cppflags)
