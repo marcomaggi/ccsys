@@ -1,4 +1,4 @@
-# Ccsys
+# CCSys
 
 [![CII Best Practices](https://bestpractices.coreinfrastructure.org/projects/XXX/badge)](https://bestpractices.coreinfrastructure.org/projects/XXX)
 [![Build Status](https://travis-ci.org/marcomaggi/ccsys.svg?branch=master)](https://travis-ci.org/marcomaggi/ccsys)
