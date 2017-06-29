@@ -66,16 +66,6 @@ AM_CONDITIONAL([ON_BSD],   [test "x$ccsys_OS_BSD"    = xyes])
 AM_CONDITIONAL([ON_CYGWIN],[test "x$ccsys_OS_CYGWIN" = xyes])
 AM_CONDITIONAL([ON_DARWIN],[test "x$ccsys_OS_DARWIN" = xyes])
 
-CCE_ENABLE_OPTION([GLIBC],[glibc],[no],
-  [whether GNU C Library features are enabled],
-  [enable GNU C Library features])
-AM_CONDITIONAL([WANT_GLIBC],[test "x$cce_enable_GLIBC" = xyes])
-
-CCE_ENABLE_OPTION([LINUX],[linux],[no],
-  [whether Linux features are enabled],
-  [enable Linux features])
-AM_CONDITIONAL([WANT_LINUX],[test "x$cce_enable_LINUX" = xyes])
-
 AM_COND_IF([ON_DARWIN],[AC_DEFINE([CCSYS_ON_DARWIN],[1],[defined to 1 when compiling on Darwin])])
 
 dnl page
@@ -127,6 +117,8 @@ dnl This constant is redefined in the main header file.  We define it here so
 dnl that it is there in the tests below.
 AC_DEFINE([_POSIX_C_SOURCE],[200809L],[Request enabling latest POSIX features.])
 
+AC_DEFINE([_GNU_SOURCE],[1],[enable everything GNU])
+
 AC_FUNC_MALLOC
 
 AC_CHECK_FUNCS([mlock munlock mlockall munlockall])
@@ -138,16 +130,14 @@ AC_CHECK_FUNCS([mkstemp])
 AC_CHECK_FUNCS([bind getsockname inet_network socket shutdown socketpair connect listen accept getpeername send recv sendto recvfrom getsockopt setsockopt])
 AC_CHECK_FUNCS([system fork execv execve execvp waitpid])
 
+dnl GNU C library stuff
 
-AM_COND_IF([WANT_GLIBC],[
-  AC_DEFINE([_GNU_SOURCE],[1],[enable everything GNU])
-  dnl AC_CHECK_HEADERS([search.h])
-  AC_CHECK_FUNCS([mkdtemp mremap madvise inet_aton])
-  dnl AC_CHECK_FUNCS([gethostbyname_r gethostbyname2_r gethostbyaddr_r])
-])
+dnl AC_CHECK_HEADERS([search.h])
+AC_CHECK_FUNCS([mkdtemp mremap madvise inet_aton])
+dnl AC_CHECK_FUNCS([gethostbyname_r gethostbyname2_r gethostbyaddr_r])
 
-AM_COND_IF([WANT_LINUX],
-  [AC_CHECK_FUNCS([lutimes futimes])])
+dnl Linux stuff
+AC_CHECK_FUNCS([lutimes futimes])
 
 AC_CACHE_SAVE
 
