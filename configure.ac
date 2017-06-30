@@ -113,10 +113,7 @@ AC_CACHE_SAVE
 dnl page
 #### checks for library functions
 
-dnl This constant is redefined in the main header file.  We define it here so
-dnl that it is there in the tests below.
 AC_DEFINE([_POSIX_C_SOURCE],[200809L],[Request enabling latest POSIX features.])
-
 AC_DEFINE([_GNU_SOURCE],[1],[enable everything GNU])
 
 AC_FUNC_MALLOC

@@ -37,10 +37,23 @@ extern "C" {
  ** Headers.
  ** ----------------------------------------------------------------- */
 
+/* Remember that "config.h" defines:
+ *
+ *   #define _POSIX_C_SOURCE		200809L
+ */
 #ifdef HAVE_CONFIG_H
 #  include <config.h>
 #endif
 #include "ccsys.h"
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdbool.h>
+#include <stdint.h>
+#include <stddef.h> /* for offsetof() */
+#include <setjmp.h>
+#include <errno.h>
+#include <unistd.h>
 
 
 /** --------------------------------------------------------------------
