@@ -157,17 +157,6 @@ cce_decl void ccsys_fchdir (cce_location_t * L, int dirfd)
 
 /* ------------------------------------------------------------------ */
 
-cce_decl DIR * ccsys_opendir (cce_location_t * L, const char * pathname)
-  __attribute__((nonnull(1,2)));
-
-cce_decl DIR * ccsys_fdopendir (cce_location_t * L, int dirfd)
-  __attribute__((nonnull(1)));
-
-cce_decl struct dirent * ccsys_readdir (cce_location_t * L, DIR * dirstream)
-  __attribute__((nonnull(1,2)));
-
-cce_decl void ccsys_closedir (cce_location_t * L, DIR * dirstream)
-  __attribute__((nonnull(1,2)));
 
 /* ------------------------------------------------------------------ */
 
@@ -369,10 +358,10 @@ cce_decl void ccsys_error_handler_tmpdir_init (cce_location_t * L, cce_handler_t
  ** Predefined POSIX exception handler: directory streams.
  ** ----------------------------------------------------------------- */
 
-cce_decl void ccsys_cleanup_handler_dirstream_init (cce_location_t * L, cce_handler_t * H, DIR * dirstream)
+cce_decl void ccsys_cleanup_handler_dirstream_init (cce_location_t * L, cce_handler_t * H, ccsys_dir_t * dirstream)
   __attribute__((nonnull(1,2,3)));
 
-cce_decl void ccsys_error_handler_dirstream_init (cce_location_t * L, cce_handler_t * H, DIR * dirstream)
+cce_decl void ccsys_error_handler_dirstream_init (cce_location_t * L, cce_handler_t * H, ccsys_dir_t * dirstream)
   __attribute__((nonnull(1,2,3)));
 
 

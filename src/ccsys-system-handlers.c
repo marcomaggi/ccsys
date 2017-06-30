@@ -229,7 +229,7 @@ cce_handler_dirstream_function (const cce_condition_t * C CCE_UNUSED, cce_handle
 }
 
 void
-ccsys_cleanup_handler_dirstream_init (cce_location_t * L, cce_handler_t * H, DIR * dirstream)
+ccsys_cleanup_handler_dirstream_init (cce_location_t * L, cce_handler_t * H, ccsys_dir_t * dirstream)
 {
   H->function	= cce_handler_dirstream_function;
   H->pointer	= dirstream;
@@ -237,7 +237,7 @@ ccsys_cleanup_handler_dirstream_init (cce_location_t * L, cce_handler_t * H, DIR
 }
 
 void
-ccsys_error_handler_dirstream_init (cce_location_t * L, cce_handler_t * H, DIR * dirstream)
+ccsys_error_handler_dirstream_init (cce_location_t * L, cce_handler_t * H, ccsys_dir_t * dirstream)
 {
   H->function	= cce_handler_dirstream_function;
   H->pointer	= dirstream;

@@ -63,13 +63,13 @@ list_dirs (const char * pathname)
     cce_condition_final(cce_condition(L));
     return EXIT_FAILURE;
   } else {
-    DIR *		dirstream;
-    struct dirent *	direntry;
+    ccsys_dir_t *	dirstream;
+    ccsys_dirent_t *	direntry;
 
     dirstream = ccsys_opendir(L, pathname);
     ccsys_cleanup_handler_dirstream_init(L, dirstream_H, dirstream);
     while ((direntry = ccsys_readdir(L, dirstream))) {
-      printf("%s\n", direntry->d_name);
+      printf("%s\n", ccsys_dirent_d_name(direntry));
       fflush(stdout);
     }
     cce_run_cleanup_handlers(L);

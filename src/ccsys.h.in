@@ -94,6 +94,20 @@ extern "C" {
 /* Pointer cast macro helper. */
 #define CCSYS_PC(TYPE,X,Y)		TYPE * X = (TYPE *) (Y)
 
+/* CCSYS_STRUCT_ACCESSOR
+ *
+ * Define  an inline  function as  accessor for  a struct's  field.  For
+ * example, to  define the  accessor for the  field "d_name"  of "struct
+ * dirent" we do:
+ *
+ *   CCSYS_STRUCT_ACCESSOR(ccsys_dirent_d_name, ccsys_dirent_t,
+ *      const char *, @OFFSETOF_DIRENT_D_NAME@)
+ *
+ */
+#define CCSYS_STRUCT_ACCESSOR(FUNCNAME,STRUCT_TYPE,FIELD_TYPE,FIELD_OFFSET) \
+  __attribute__((always_inline,nonnull(1),returns_nonnull,pure))	\
+  static inline FIELD_TYPE FUNCNAME (const STRUCT_TYPE * S) { return (FIELD_TYPE) &(S->data[FIELD_OFFSET]); }
+
 
 /** --------------------------------------------------------------------
  ** Headers.
@@ -152,6 +166,34 @@ ccsys_decl void ccsys_cleanup_handler_malloc_init (cce_location_t * L, cce_handl
 
 ccsys_decl void ccsys_error_handler_malloc_init (cce_location_t * L, cce_handler_t * H, void * pointer)
   __attribute__((nonnull(1,2,3)));
+
+
+/** --------------------------------------------------------------------
+ ** File system: reading directory entries.
+ ** ----------------------------------------------------------------- */
+
+typedef struct ccsys_dir_t	ccsys_dir_t;
+typedef struct ccsys_dirent_t	ccsys_dirent_t;
+
+struct ccsys_dirent_t {
+  uint8_t	data[@SIZEOF_DIRENT@];
+};
+
+cce_decl ccsys_dir_t * ccsys_opendir (cce_location_t * L, const char * pathname)
+  __attribute__((nonnull(1,2)));
+
+cce_decl ccsys_dir_t * ccsys_fdopendir (cce_location_t * L, int dirfd)
+  __attribute__((nonnull(1)));
+
+cce_decl ccsys_dirent_t * ccsys_readdir (cce_location_t * L, ccsys_dir_t * dirstream)
+  __attribute__((nonnull(1,2)));
+
+cce_decl void ccsys_closedir (cce_location_t * L, ccsys_dir_t * dirstream)
+  __attribute__((nonnull(1,2)));
+
+/* ------------------------------------------------------------------ */
+
+CCSYS_STRUCT_ACCESSOR(ccsys_dirent_d_name, ccsys_dirent_t, const char *, @OFFSETOF_DIRENT_D_NAME@)
 
 
 /** --------------------------------------------------------------------

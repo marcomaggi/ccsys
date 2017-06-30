@@ -1,7 +1,7 @@
 # acinclude.m4 --
 #
 
-m4_include(meta/autoconf/cce.m4)
+m4_include(meta/autoconf/ccsys.m4)
 m4_include(meta/autoconf/mm-libtool-library-versions.m4)
 m4_include(meta/autoconf/ax-check-compile-flag.m4)
 dnl m4_include(meta/autoconf/mm-check-page-size.m4)

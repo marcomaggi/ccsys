@@ -142,10 +142,23 @@ AC_CHECK_FUNCS([lutimes futimes])
 AC_CACHE_SAVE
 
 dnl page
+#### inspections of data structures
+
+AC_DEFUN([CCSYS_DIRENT_HEADER],[
+#ifdef HAVE_DIRENT_H
+#  include <dirent.h>
+#endif
+])
+
+CCSYS_SIZEOF([DIRENT],[struct dirent],[CCSYS_DIRENT_HEADER])
+CCSYS_OFFSETOF([DIRENT_D_NAME],[struct dirent],[d_name],[CCSYS_DIRENT_HEADER])
+
+dnl page
 #### finish
 
 AC_CONFIG_HEADERS([config.h])
 AC_CONFIG_FILES([Makefile]
+   [src/ccsys.h]
    [meta/scripts/ccsys.pc]
    [meta/slackstuff/config]
    [meta/slackware/slack-desc])

@@ -569,7 +569,7 @@ ccsys_fchdir (cce_location_t * L, int dirfd)
 
 /* ------------------------------------------------------------------ */
 
-DIR *
+ccsys_dir_t *
 ccsys_opendir (cce_location_t * L, const char * pathname)
 {
 #ifdef HAVE_OPENDIR
@@ -577,7 +577,7 @@ ccsys_opendir (cce_location_t * L, const char * pathname)
   errno = 0;
   rv = opendir(pathname);
   if (NULL != rv) {
-    return rv;
+    return (ccsys_dir_t *)rv;
   } else {
     cce_raise(L, cce_condition_new_errno_clear());
   }
@@ -586,7 +586,7 @@ ccsys_opendir (cce_location_t * L, const char * pathname)
 #endif
 }
 
-DIR *
+ccsys_dir_t *
 ccsys_fdopendir (cce_location_t * L, int dirfd)
 {
 #ifdef HAVE_FDOPENDIR
@@ -594,7 +594,7 @@ ccsys_fdopendir (cce_location_t * L, int dirfd)
   errno = 0;
   rv = fdopendir(dirfd);
   if (NULL != rv) {
-    return rv;
+    return (ccsys_dir_t *)rv;
   } else {
     cce_raise(L, cce_condition_new_errno_clear());
   }
@@ -603,15 +603,16 @@ ccsys_fdopendir (cce_location_t * L, int dirfd)
 #endif
 }
 
-struct dirent *
-ccsys_readdir (cce_location_t * L, DIR * dirstream)
+ccsys_dirent_t *
+ccsys_readdir (cce_location_t * L, ccsys_dir_t * _dirstream)
 {
 #ifdef HAVE_READDIR
+  DIR *			dirstream = (DIR *) _dirstream;
   struct dirent *	rv;
   errno = 0;
   rv = readdir(dirstream);
   if (NULL != rv) {
-    return rv;
+    return (ccsys_dirent_t *)rv;
   } else if (0 == errno) {
     return NULL;
   } else {
@@ -623,9 +624,10 @@ ccsys_readdir (cce_location_t * L, DIR * dirstream)
 }
 
 void
-ccsys_closedir (cce_location_t * L, DIR * dirstream)
+ccsys_closedir (cce_location_t * L, ccsys_dir_t * _dirstream)
 {
 #ifdef HAVE_CLOSEDIR
+  DIR *	dirstream = (DIR *) _dirstream;
   int	rv;
   errno = 0;
   rv = closedir(dirstream);
