@@ -150,8 +150,8 @@ AC_DEFUN([CCSYS_DIRENT_HEADER],[
 #endif
 ])
 
-CCSYS_SIZEOF([DIRENT],[struct dirent],[CCSYS_DIRENT_HEADER])
-CCSYS_OFFSETOF([DIRENT_D_NAME],[struct dirent],[d_name],[CCSYS_DIRENT_HEADER])
+CCSYS_SIZEOF([STRUCT_DIRENT],[struct dirent],[CCSYS_DIRENT_HEADER])
+CCSYS_OFFSETOF([STRUCT_DIRENT_D_NAME],[struct dirent],[d_name],[CCSYS_DIRENT_HEADER])
 
 dnl page
 #### finish

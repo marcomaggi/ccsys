@@ -101,7 +101,7 @@ extern "C" {
  * dirent" we do:
  *
  *   CCSYS_STRUCT_ACCESSOR(ccsys_dirent_d_name, ccsys_dirent_t,
- *      const char *, @OFFSETOF_DIRENT_D_NAME@)
+ *      const char *, @OFFSETOF_STRUCT_DIRENT_D_NAME@)
  *
  */
 #define CCSYS_STRUCT_ACCESSOR(FUNCNAME,STRUCT_TYPE,FIELD_TYPE,FIELD_OFFSET) \
@@ -176,8 +176,11 @@ typedef struct ccsys_dir_t	ccsys_dir_t;
 typedef struct ccsys_dirent_t	ccsys_dirent_t;
 
 struct ccsys_dirent_t {
-  uint8_t	data[@SIZEOF_DIRENT@];
+  uint8_t	data[@SIZEOF_STRUCT_DIRENT@];
 };
+
+/* Struct accessors. */
+CCSYS_STRUCT_ACCESSOR(ccsys_dirent_d_name, ccsys_dirent_t, const char *, @OFFSETOF_STRUCT_DIRENT_D_NAME@)
 
 cce_decl ccsys_dir_t * ccsys_opendir (cce_location_t * L, const char * pathname)
   __attribute__((nonnull(1,2)));
@@ -190,10 +193,6 @@ cce_decl ccsys_dirent_t * ccsys_readdir (cce_location_t * L, ccsys_dir_t * dirst
 
 cce_decl void ccsys_closedir (cce_location_t * L, ccsys_dir_t * dirstream)
   __attribute__((nonnull(1,2)));
-
-/* ------------------------------------------------------------------ */
-
-CCSYS_STRUCT_ACCESSOR(ccsys_dirent_d_name, ccsys_dirent_t, const char *, @OFFSETOF_DIRENT_D_NAME@)
 
 
 /** --------------------------------------------------------------------
