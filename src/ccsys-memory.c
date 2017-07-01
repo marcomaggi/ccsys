@@ -32,6 +32,9 @@
  ** ----------------------------------------------------------------- */
 
 #include "ccsys-internals.h"
+#ifdef HAVE_SYS_MMAN_H
+#  include <sys/mman.h>
+#endif
 
 
 /** --------------------------------------------------------------------
@@ -76,6 +79,158 @@ ccsys_calloc (cce_location_t * L, size_t count, size_t eltsize)
     cce_raise(L, cce_condition_new_errno_clear());
   }
 }
+
+
+/** --------------------------------------------------------------------
+ ** System wrappers: locking memory pages.
+ ** ----------------------------------------------------------------- */
+
+#ifdef HAVE_MLOCK
+void
+ccsys_mlock (cce_location_t * L, const void * addr, size_t len)
+{
+  int	rv;
+  errno = 0;
+  rv = mlock(addr, len);
+  if (-1 == rv) {
+    cce_raise(L, cce_condition_new_errno_clear());
+  }
+}
+#endif
+
+#ifdef HAVE_MUNLOCK
+void
+ccsys_munlock (cce_location_t * L, const void * addr, size_t len)
+{
+  int	rv;
+  errno = 0;
+  rv = munlock(addr, len);
+  if (-1 == rv) {
+    cce_raise(L, cce_condition_new_errno_clear());
+  }
+}
+#endif
+
+#ifdef HAVE_MLOCKALL
+void
+ccsys_mlockall (cce_location_t * L, int flags)
+{
+  int	rv;
+  errno = 0;
+  rv = mlockall(flags);
+  if (-1 == rv) {
+    cce_raise(L, cce_condition_new_errno_clear());
+  }
+}
+#endif
+
+#ifdef HAVE_MUNLOCKALL
+void
+ccsys_munlockall (cce_location_t * L)
+{
+  int	rv;
+  errno = 0;
+  rv = munlockall();
+  if (-1 == rv) {
+    cce_raise(L, cce_condition_new_errno_clear());
+  }
+}
+#endif
+
+
+/** --------------------------------------------------------------------
+ ** System wrappers: memory mapping.
+ ** ----------------------------------------------------------------- */
+
+#ifdef HAVE_MMAP
+void *
+ccsys_mmap (cce_location_t * L, void * address, size_t length, int protect, int flags, int filedes, off_t offset)
+{
+  void *	rv;
+  errno = 0;
+  rv = mmap(address, length, protect, flags, filedes, offset);
+  if (MAP_FAILED != rv) {
+    return rv;
+  } else {
+    cce_raise(L, cce_condition_new_errno_clear());
+  }
+}
+#endif
+
+#ifdef HAVE_MUNMAP
+int
+ccsys_munmap (cce_location_t * L, void * addr, size_t length)
+{
+  int	rv;
+  errno = 0;
+  rv = munmap(addr, length);
+  if (-1 != rv) {
+    return rv;
+  } else {
+    cce_raise(L, cce_condition_new_errno_clear());
+  }
+}
+#endif
+
+#ifdef HAVE_MSYNC
+int
+ccsys_msync (cce_location_t * L, void *address, size_t length, int flags)
+{
+  int	rv;
+  errno = 0;
+  rv = msync(address, length, flags);
+  if (-1 != rv) {
+    return rv;
+  } else {
+    cce_raise(L, cce_condition_new_errno_clear());
+  }
+}
+#endif
+
+#ifdef HAVE_MPROTECT
+int
+ccsys_mprotect (cce_location_t * L, void * addr, size_t len, int prot)
+{
+  int	rv;
+  errno = 0;
+  rv = mprotect(addr, len, prot);
+  if (-1 != 0) {
+    return rv;
+  } else {
+    cce_raise(L, cce_condition_new_errno_clear());
+  }
+}
+#endif
+
+/* ------------------------------------------------------------------ */
+
+#ifdef HAVE_MREMAP
+void *
+ccsys_mremap (cce_location_t * L, void * address, size_t length, size_t new_length, int flag)
+{
+  void *	rv;
+  errno = 0;
+  rv = mremap(address, length, new_length, flag);
+  if (rv) {
+    return rv;
+  } else {
+    cce_raise(L, cce_condition_new_errno_clear());
+  }
+}
+#endif
+
+#ifdef HAVE_MADVISE
+void
+ccsys_madvise (cce_location_t * L, void * address, size_t length, int advice)
+{
+  int	rv;
+  errno = 0;
+  rv = madvise(address, length, advice);
+  if (-1 == rv) {
+    cce_raise(L, cce_condition_new_errno_clear());
+  }
+}
+#endif
 
 
 /** --------------------------------------------------------------------

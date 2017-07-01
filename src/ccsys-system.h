@@ -47,26 +47,7 @@ extern "C" {
 #include <sys/stat.h>
 #include <sys/time.h>
 #include <sys/types.h>
-#include <sys/uio.h>
-#include <sys/mman.h>
 #include <sys/wait.h>
-
-
-/** --------------------------------------------------------------------
- ** System call wrappers: locking memory pages.
- ** ----------------------------------------------------------------- */
-
-cce_decl void ccsys_mlock (cce_location_t * L, const void * addr, size_t len)
-  __attribute__((nonnull(1,2)));
-
-cce_decl void ccsys_munlock (cce_location_t * L, const void * addr, size_t len)
-  __attribute__((nonnull(1,2)));
-
-cce_decl void ccsys_mlockall (cce_location_t * L, int flags)
-  __attribute__((nonnull(1)));
-
-cce_decl void ccsys_munlockall (cce_location_t * L)
-  __attribute__((nonnull(1)));
 
 
 /** --------------------------------------------------------------------
