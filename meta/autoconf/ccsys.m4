@@ -49,7 +49,7 @@ AC_DEFUN([CCSYS_SIZEOF],
      [AC_COMPUTE_INT([ccsys_cv_sizeof_$1],
         [sizeof($2)],
         [$3],
-        [AS_VAR_SET([ccsys_cv_sizeof_$1],[0])])])
+        [AC_MSG_ERROR(cannot determine size of '$2')])])
     AS_VAR_SET([SIZEOF_$1],["$ccsys_cv_sizeof_$1"])
     AC_SUBST([SIZEOF_$1])])
 
@@ -78,7 +78,7 @@ AC_DEFUN([CCSYS_VALUEOF],
      [AC_COMPUTE_INT([ccsys_cv_valueof_$1],
         [valueof($2)],
         [$3],
-        [AS_VAR_SET([ccsys_cv_valueof_$1],[0])])])
+        [AC_MSG_ERROR(cannot determine value of '$2')])])
     AS_VAR_SET([VALUEOF_$1],["$ccsys_cv_valueof_$1"])
     AC_SUBST([VALUEOF_$1])])
 
@@ -113,6 +113,54 @@ $4],
         [AC_MSG_ERROR(cannot determine offset of '$3' in '$2')])])
     AS_VAR_SET([OFFSETOF_$1],["$ccsys_cv_offsetof_$1"])
     AC_SUBST([OFFSETOF_$1])])
+
+dnl page
+dnl CCSYS_INT_TYPE_ALIAS
+dnl
+dnl Inspect  a signed integer  type definition to determine  which among
+dnl "int32_t" and "int64_t" is a suitable alias.  For example, to determine
+dnl the alias of "mode_t" we do:
+dnl
+dnl   CCSYS_INT_TYPE_ALIAS([MODE_T],[mode_t],[CCSYS_SYS_TYPES_HEADER])
+dnl
+dnl this macro defines the substitution symbol "CCSYS_TYPE_MODE_T" to either
+dnl "int32_t" or "int64_t".
+dnl
+dnl $1 - the stem used to generate variable names
+dnl $2 - the type name
+dnl $3 - the required header files
+dnl
+AC_DEFUN([CCSYS_INT_TYPE_ALIAS],
+  [CCSYS_SIZEOF([$1],[$2],[$3])
+   AS_CASE($SIZEOF_$1,
+      [4],[AS_VAR_SET([CCSYS_TYPE_$1],[int32_t])],
+      [8],[AS_VAR_SET([CCSYS_TYPE_$1],[int64_t])],
+      [AC_MSG_ERROR([cannot determine size of '$2'])])
+   AC_SUBST([CCSYS_TYPE_$1],[$CCSYS_TYPE_$1])])
+
+dnl page
+dnl CCSYS_UINT_TYPE_ALIAS
+dnl
+dnl Inspect an unsigned integer  type definition to determine  which among
+dnl "uint32_t" and "uint64_t" is a suitable alias.  For example, to determine
+dnl the alias of "size_t" we do:
+dnl
+dnl   CCSYS_INT_TYPE_ALIAS([SIZE_T],[size_t],[#include <stddef.h>])
+dnl
+dnl this macro defines the substitution symbol "CCSYS_TYPE_SIZE_T" to either
+dnl "uint32_t" or "uint64_t".
+dnl
+dnl $1 - the stem used to generate variable names
+dnl $2 - the type name
+dnl $3 - the required header files
+dnl
+AC_DEFUN([CCSYS_UINT_TYPE_ALIAS],
+  [CCSYS_SIZEOF([$1],[$2],[$3])
+   AS_CASE($SIZEOF_$1,
+      [4],[AS_VAR_SET([CCSYS_TYPE_$1],[uint32_t])],
+      [8],[AS_VAR_SET([CCSYS_TYPE_$1],[uint64_t])],
+      [AC_MSG_ERROR([cannot determine size of '$2'])])
+   AC_SUBST([CCSYS_TYPE_$1],[$CCSYS_TYPE_$1])])
 
 dnl end of file
 dnl Local Variables:

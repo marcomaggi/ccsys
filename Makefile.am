@@ -42,8 +42,9 @@ libccsys_la_LDFLAGS	= -version-info $(ccsys_CURRENT):$(ccsys_REVISION):$(ccsys_A
 			  $(CCEXCEPTIONS_LIBS)
 libccsys_la_SOURCES	= \
 	src/ccsys-internals.h		\
+	src/ccsys-memory.c		\
+	src/ccsys-file-system.c		\
 	src/ccsys-system-calls.c	\
-	src/ccsys-system-handlers.c	\
 	src/ccsys-version.c
 
 #page

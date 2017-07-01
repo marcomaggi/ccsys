@@ -329,7 +329,7 @@ Wrapper for @cfunc{openat}.
 @end deftypefun
 
 
-@deftypefun int ccsys_close (ccsys_location_t * @var{L}, int @var{filedes})
+@deftypefun void ccsys_close (ccsys_location_t * @var{L}, int @var{filedes})
 Wrapper for @cfunc{close}.
 @end deftypefun
 

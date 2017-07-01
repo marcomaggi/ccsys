@@ -98,34 +98,6 @@ cce_decl void ccsys_madvise (cce_location_t * L, void * address, size_t length, 
  ** System call wrappers: input/output and file descriptors.
  ** ----------------------------------------------------------------- */
 
-cce_decl int ccsys_open (cce_location_t * L, const char *filename, int flags, mode_t mode)
-  __attribute__((nonnull(1,2)));
-
-cce_decl int ccsys_openat (cce_location_t * L, int dirfd, const char *filename, int flags, mode_t mode)
-  __attribute__((nonnull(1, 3)));
-
-cce_decl int ccsys_close (cce_location_t * L, int filedes)
-  __attribute__((nonnull(1)));
-
-/* ------------------------------------------------------------------ */
-
-cce_decl size_t ccsys_read (cce_location_t * L, int filedes, void * buffer, size_t size)
-  __attribute__((nonnull(1,3)));
-cce_decl size_t ccsys_pread (cce_location_t * L, int filedes, void * buffer, size_t size, off_t offset)
-  __attribute__((nonnull(1,3)));
-cce_decl size_t ccsys_write (cce_location_t * L, int filedes, const void *buffer, size_t size)
-  __attribute__((nonnull(1,3)));
-cce_decl size_t ccsys_pwrite (cce_location_t * L, int filedes, const void *buffer, size_t size, off_t offset)
-  __attribute__((nonnull(1,3)));
-
-cce_decl off_t ccsys_lseek (cce_location_t * L, int filedes, off_t offset, int whence)
-  __attribute__((nonnull(1)));
-
-cce_decl size_t ccsys_readv (cce_location_t * L, int filedes, const struct iovec * vector, int count)
-  __attribute__((nonnull(1,3)));
-cce_decl size_t ccsys_writev (cce_location_t * L, int filedes, const struct iovec * vector, int count)
-  __attribute__((nonnull(1,3)));
-
 cce_decl int ccsys_select (cce_location_t * L, int nfds, fd_set * read_fds, fd_set * write_fds, fd_set * except_fds,
 			     struct timeval * timeout)
   __attribute__((nonnull(1)));
@@ -311,17 +283,6 @@ cce_decl void ccsys_waitpid (cce_location_t * L, pid_t pid, int * wstatus, int o
 
 
 /** --------------------------------------------------------------------
- ** Predefined POSIX exception handler: file descriptor.
- ** ----------------------------------------------------------------- */
-
-cce_decl void ccsys_cleanup_handler_filedes_init (cce_location_t * L, cce_handler_t * H, int filedes)
-  __attribute__((nonnull(1,2)));
-
-cce_decl void ccsys_error_handler_filedes_init (cce_location_t * L, cce_handler_t * H, int filedes)
-  __attribute__((nonnull(1,2)));
-
-
-/** --------------------------------------------------------------------
  ** Predefined POSIX exception handler: pipe descriptors.
  ** ----------------------------------------------------------------- */
 
@@ -351,17 +312,6 @@ cce_decl void ccsys_cleanup_handler_tmpdir_init (cce_location_t * L, cce_handler
   __attribute__((nonnull(1,2,3)));
 
 cce_decl void ccsys_error_handler_tmpdir_init (cce_location_t * L, cce_handler_t * H, const char * pathname)
-  __attribute__((nonnull(1,2,3)));
-
-
-/** --------------------------------------------------------------------
- ** Predefined POSIX exception handler: directory streams.
- ** ----------------------------------------------------------------- */
-
-cce_decl void ccsys_cleanup_handler_dirstream_init (cce_location_t * L, cce_handler_t * H, ccsys_dir_t * dirstream)
-  __attribute__((nonnull(1,2,3)));
-
-cce_decl void ccsys_error_handler_dirstream_init (cce_location_t * L, cce_handler_t * H, ccsys_dir_t * dirstream)
   __attribute__((nonnull(1,2,3)));
 
 

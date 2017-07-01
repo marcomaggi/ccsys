@@ -100,7 +100,7 @@ AM_PROG_AS
 AC_PROG_CC
 AM_PROG_CC_C_O
 AC_HEADER_STDC
-AC_CHECK_HEADERS([assert.h stdint.h stdbool.h setjmp.h memory.h limits.h])
+AC_CHECK_HEADERS([assert.h stdint.h stddef.h stdbool.h setjmp.h memory.h limits.h])
 AC_CHECK_HEADERS([dirent.h utime.h fcntl.h sys/select.h sys/stat.h sys/time.h sys/types.h sys/uio.h netdb.h sys/wait.h])
 AC_HEADER_STDBOOL
 
@@ -139,7 +139,7 @@ AC_CHECK_FUNCS([lutimes futimes])
 AC_CACHE_SAVE
 
 dnl page
-#### inspections of data structures
+### headers macros
 
 AC_DEFUN([CCSYS_DIRENT_HEADER],[
 #ifdef HAVE_DIRENT_H
@@ -147,8 +147,57 @@ AC_DEFUN([CCSYS_DIRENT_HEADER],[
 #endif
 ])
 
+AC_DEFUN([CCSYS_STDDEF_HEADER],[
+#ifdef HAVE_STDDEF_H
+#  include <stddef.h>
+#endif
+])
+
+AC_DEFUN([CCSYS_SYS_TYPES_HEADER],[
+#ifdef HAVE_SYS_TYPES_H
+#  include <sys/types.h>
+#endif
+])
+
+AC_DEFUN([CCSYS_SYS_UIO_HEADER],[
+#ifdef HAVE_SYS_UIO_H
+#  include <sys/uio.h>
+#endif
+])
+
+AC_DEFUN([CCSYS_UNISTD_HEADER],[
+#ifdef HAVE_UNISTD_H
+#  include <unistd.h>
+#endif
+])
+
+dnl page
+### inspection of data types_t
+
+CCSYS_UINT_TYPE_ALIAS([SIZE_T],[size_t],[CCSYS_STDDEF_HEADER])
+CCSYS_INT_TYPE_ALIAS([SSIZE_T],[ssize_t],[CCSYS_UNISTD_HEADER])
+CCSYS_INT_TYPE_ALIAS([PTRDIFF_T],[ptrdiff_t],[CCSYS_STDDEF_HEADER])
+
+CCSYS_INT_TYPE_ALIAS([MODE_T],[mode_t],[CCSYS_SYS_TYPES_HEADER])
+CCSYS_INT_TYPE_ALIAS([OFF_T],[off_t],[CCSYS_SYS_TYPES_HEADER])
+CCSYS_INT_TYPE_ALIAS([INO_T],[ino_t],[CCSYS_SYS_TYPES_HEADER])
+
+CCSYS_INT_TYPE_ALIAS([PID_T],[pid_t],[CCSYS_SYS_TYPES_HEADER])
+CCSYS_INT_TYPE_ALIAS([GID_T],[gid_t],[CCSYS_SYS_TYPES_HEADER])
+
+AC_CACHE_SAVE
+
+dnl page
+#### inspection of data structures
+
 CCSYS_SIZEOF([STRUCT_DIRENT],[struct dirent],[CCSYS_DIRENT_HEADER])
 CCSYS_OFFSETOF([STRUCT_DIRENT_D_NAME],[struct dirent],[d_name],[CCSYS_DIRENT_HEADER])
+
+CCSYS_SIZEOF([STRUCT_IOVEC],[struct iovec],[CCSYS_SYS_UIO_HEADER])
+CCSYS_OFFSETOF([STRUCT_IOVEC_IOV_BASE],[struct iovec],[iov_base],[CCSYS_SYS_UIO_HEADER])
+CCSYS_OFFSETOF([STRUCT_IOVEC_IOV_LEN], [struct iovec],[iov_len],[CCSYS_SYS_UIO_HEADER])
+
+AC_CACHE_SAVE
 
 dnl page
 #### finish
