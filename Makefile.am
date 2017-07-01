@@ -31,10 +31,7 @@ ccsys_CURRENT		= @ccsys_VERSION_INTERFACE_CURRENT@
 ccsys_REVISION		= @ccsys_VERSION_INTERFACE_REVISION@
 ccsys_AGE		= @ccsys_VERSION_INTERFACE_AGE@
 
-include_HEADERS		= \
-	src/ccsys.h		\
-	src/ccsys-system.h	\
-	src/ccsys-networking.h
+include_HEADERS		= src/ccsys.h
 
 lib_LTLIBRARIES		= libccsys.la
 libccsys_la_CPPFLAGS	= $(CCEXCEPTIONS_CFLAGS)
@@ -44,7 +41,8 @@ libccsys_la_SOURCES	= \
 	src/ccsys-internals.h		\
 	src/ccsys-memory.c		\
 	src/ccsys-file-system.c		\
-	src/ccsys-system-calls.c	\
+	src/ccsys-processes.c		\
+	src/ccsys-networking.c		\
 	src/ccsys-version.c
 
 #page

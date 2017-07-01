@@ -31,26 +31,35 @@
  ** ----------------------------------------------------------------- */
 
 #include "ccsys-internals.h"
-#ifdef HAVE_STRING_H
-#  include <string.h>
-#endif
-#ifdef HAVE_SYS_TYPES_H
-#  include <sys/types.h>
-#endif
-#ifdef HAVE_SYS_STAT_H
-#  include <sys/stat.h>
-#endif
-#ifdef HAVE_SYS_UIO_H
-#  include <sys/uio.h>
+#ifdef HAVE_DIRENT_H
+#  include <dirent.h>
 #endif
 #ifdef HAVE_FCNTL_H
 #  include <fcntl.h>
 #endif
+#ifdef HAVE_STRING_H
+#  include <string.h>
+#endif
+#ifdef HAVE_SYS_SELECT_H
+#  include <sys/select.h>
+#endif
+#ifdef HAVE_SYS_STAT_H
+#  include <sys/stat.h>
+#endif
+#ifdef HAVE_SYS_TIME_H
+#  include <sys/time.h>
+#endif
+#ifdef HAVE_SYS_TYPES_H
+#  include <sys/types.h>
+#endif
+#ifdef HAVE_SYS_UIO_H
+#  include <sys/uio.h>
+#endif
 #ifdef HAVE_UNISTD_H
 #  include <unistd.h>
 #endif
-#ifdef HAVE_DIRENT_H
-#  include <dirent.h>
+#ifdef HAVE_UTIME_H
+#  include <utime.h>
 #endif
 
 
@@ -286,6 +295,610 @@ ccsys_closedir (cce_location_t * L, ccsys_dir_t * _dirstream)
   errno = 0;
   rv = closedir(dirstream);
   if (-1 == rv) {
+    cce_raise(L, cce_condition_new_errno_clear());
+  }
+}
+#endif
+
+
+/** --------------------------------------------------------------------
+ ** File descriptor operations.
+ ** ----------------------------------------------------------------- */
+
+#ifdef HAVE_DUP
+int
+ccsys_dup (cce_location_t * L, int old)
+{
+  int	rv;
+  errno = 0;
+  rv = dup(old);
+  if (-1 != rv) {
+    return rv;
+  } else {
+    cce_raise(L, cce_condition_new_errno_clear());
+  }
+}
+#endif
+
+#ifdef HAVE_DUP2
+int
+ccsys_dup2 (cce_location_t * L, int old, int new)
+{
+  int	rv;
+  errno = 0;
+  rv = dup2(old, new);
+  if (-1 != rv) {
+    return rv;
+  } else {
+    cce_raise(L, cce_condition_new_errno_clear());
+  }
+}
+#endif
+
+#ifdef HAVE_PIPE
+void
+ccsys_pipe (cce_location_t * L, int pipefd[2])
+{
+  int	rv;
+  errno = 0;
+  rv = pipe(pipefd);
+  if (-1 == rv) {
+    cce_raise(L, cce_condition_new_errno_clear());
+  }
+}
+#endif
+
+#ifdef HAVE_MKFIFO
+void
+ccsys_mkfifo (cce_location_t * L, const char * pathname, mode_t mode)
+{
+  int	rv;
+  errno = 0;
+  rv = mkfifo(pathname, mode);
+  if (-1 == rv) {
+    cce_raise(L, cce_condition_new_errno_clear());
+  }
+}
+#endif
+
+
+/** --------------------------------------------------------------------
+ ** File system operations.
+ ** ----------------------------------------------------------------- */
+
+#ifdef HAVE_GETCWD
+void
+ccsys_getcwd (cce_location_t * L, char * buffer, size_t size)
+{
+  char *	rv;
+  errno = 0;
+  rv = getcwd(buffer, size);
+  if (NULL == rv) {
+    cce_raise(L, cce_condition_new_errno_clear());
+  }
+}
+#endif
+
+#ifdef HAVE_CHDIR
+void
+ccsys_chdir (cce_location_t * L, const char * pathname)
+{
+  int	rv;
+  errno = 0;
+  rv = chdir(pathname);
+  if (-1 == rv) {
+    cce_raise(L, cce_condition_new_errno_clear());
+  }
+}
+#endif
+
+#ifdef HAVE_FCHDIR
+void
+ccsys_fchdir (cce_location_t * L, int dirfd)
+{
+  int	rv;
+  errno = 0;
+  rv = fchdir(dirfd);
+  if (-1 == rv) {
+    cce_raise(L, cce_condition_new_errno_clear());
+  }
+}
+#endif
+
+/* ------------------------------------------------------------------ */
+
+#ifdef HAVE_STAT
+void
+ccsys_stat (cce_location_t * L, const char * pathname, struct stat * buf)
+{
+  int	rv;
+  errno = 0;
+  rv = stat(pathname, buf);
+  if (-1 == rv) {
+    cce_raise(L, cce_condition_new_errno_clear());
+  }
+}
+#endif
+
+#ifdef HAVE_FSTAT
+void
+ccsys_fstat (cce_location_t * L, int fd, struct stat * buf)
+{
+  int	rv;
+  errno = 0;
+  rv = fstat(fd, buf);
+  if (-1 == rv) {
+    cce_raise(L, cce_condition_new_errno_clear());
+  }
+}
+#endif
+
+#ifdef HAVE_LSTAT
+void
+ccsys_lstat (cce_location_t * L, const char * pathname, struct stat * buf)
+{
+  int	rv;
+  errno = 0;
+  rv = lstat(pathname, buf);
+  if (-1 == rv) {
+    cce_raise(L, cce_condition_new_errno_clear());
+  }
+}
+#endif
+
+/* ------------------------------------------------------------------ */
+
+#ifdef HAVE_MKDIR
+void
+ccsys_mkdir (cce_location_t * L, const char * pathname, mode_t mode)
+{
+  int	rv;
+  errno = 0;
+  rv = mkdir(pathname, mode);
+  if (-1 == rv) {
+    cce_raise(L, cce_condition_new_errno_clear());
+  }
+}
+#endif
+
+#ifdef HAVE_RMDIR
+void
+ccsys_rmdir (cce_location_t * L, const char * pathname)
+{
+  int	rv;
+  errno = 0;
+  rv = rmdir(pathname);
+  if (-1 == rv) {
+    cce_raise(L, cce_condition_new_errno_clear());
+  }
+}
+#endif
+
+/* ------------------------------------------------------------------ */
+
+#ifdef HAVE_LINK
+void
+ccsys_link (cce_location_t * L, const char * oldname, const char * newname)
+{
+  int	rv;
+  errno = 0;
+  rv = link(oldname, newname);
+  if (-1 == rv) {
+    cce_raise(L, cce_condition_new_errno_clear());
+  }
+}
+#endif
+
+#ifdef HAVE_LINKAT
+void
+ccsys_linkat (cce_location_t * L,
+	      int oldfd, const char * oldname,
+	      int newfd, const char * newname,
+	      int flags)
+{
+  int	rv;
+  errno = 0;
+  rv = linkat(oldfd, oldname, newfd, newname, flags);
+  if (-1 == rv) {
+    cce_raise(L, cce_condition_new_errno_clear());
+  }
+}
+#endif
+
+/* ------------------------------------------------------------------ */
+
+#ifdef HAVE_SYMLINK
+void
+ccsys_symlink (cce_location_t * L, const char * oldname, const char * newname)
+{
+  int	rv;
+  errno = 0;
+  rv = symlink(oldname, newname);
+  if (-1 == rv) {
+    cce_raise(L, cce_condition_new_errno_clear());
+  }
+}
+#endif
+
+#ifdef HAVE_SYMLINKAT
+void
+ccsys_symlinkat (cce_location_t * L, const char * oldname, int newdirfd, const char * newname)
+{
+  int	rv;
+  errno = 0;
+  rv = symlinkat(oldname, newdirfd, newname);
+  if (-1 == rv) {
+    cce_raise(L, cce_condition_new_errno_clear());
+  }
+}
+#endif
+
+#ifdef HAVE_READLINK
+size_t
+ccsys_readlink (cce_location_t * L, const char * filename, char * buffer, size_t size)
+{
+  ssize_t	rv;
+  errno = 0;
+  rv = readlink(filename, buffer, size);
+  if (-1 == rv) {
+    cce_raise(L, cce_condition_new_errno_clear());
+  } else {
+    return (size_t)rv;
+  }
+}
+#endif
+
+#ifdef HAVE_READLINKAT
+size_t
+ccsys_readlinkat (cce_location_t * L, int dirfd, const char * filename, char * buffer, size_t size)
+{
+  ssize_t	rv;
+  errno = 0;
+  rv = readlinkat(dirfd, filename, buffer, size);
+  if (-1 == rv) {
+    cce_raise(L, cce_condition_new_errno_clear());
+  } else {
+    return (size_t)rv;
+  }
+}
+#endif
+
+#ifdef HAVE_REALPATH
+char *
+ccsys_realpath (cce_location_t * L, const char * pathname, char * resolved_path)
+{
+  char *	rv;
+  errno = 0;
+  rv = realpath(pathname, resolved_path);
+  if (rv) {
+    return rv;
+  } else {
+    cce_raise(L, cce_condition_new_errno_clear());
+  }
+}
+#endif
+
+/* ------------------------------------------------------------------ */
+
+#ifdef HAVE_UNLINK
+void
+ccsys_unlink (cce_location_t * L, const char * pathname)
+{
+  int	rv;
+  errno = 0;
+  rv = unlink(pathname);
+  if (-1 == rv) {
+    cce_raise(L, cce_condition_new_errno_clear());
+  }
+}
+#endif
+
+#ifdef HAVE_UNLINKAT
+void
+ccsys_unlinkat (cce_location_t * L, int dirfd, const char * pathname, int flags)
+{
+  int	rv;
+  errno = 0;
+  rv = unlinkat(dirfd, pathname, flags);
+  if (-1 == rv) {
+    cce_raise(L, cce_condition_new_errno_clear());
+  }
+}
+#endif
+
+#ifdef HAVE_REMOVE
+void
+ccsys_remove (cce_location_t * L, const char * pathname)
+{
+  int	rv;
+  errno = 0;
+  rv = remove(pathname);
+  if (-1 == rv) {
+    cce_raise(L, cce_condition_new_errno_clear());
+  }
+}
+#endif
+
+/* ------------------------------------------------------------------ */
+
+#ifdef HAVE_RENAME
+void
+ccsys_rename (cce_location_t * L, const char * oldname, const char * newname)
+{
+  int	rv;
+  errno = 0;
+  rv = rename(oldname, newname);
+  if (-1 == rv) {
+    cce_raise(L, cce_condition_new_errno_clear());
+  }
+}
+#endif
+
+/* ------------------------------------------------------------------ */
+
+#ifdef HAVE_CHOWN
+void
+ccsys_chown (cce_location_t * L, const char * pathname, uid_t owner, gid_t group)
+{
+  int	rv;
+  errno = 0;
+  rv = chown(pathname, owner, group);
+  if (-1 == rv) {
+    cce_raise(L, cce_condition_new_errno_clear());
+  }
+}
+#endif
+
+#ifdef HAVE_FCHOWN
+void
+ccsys_fchown (cce_location_t * L, int filedes, uid_t owner, gid_t group)
+{
+  int	rv;
+  errno = 0;
+  rv = fchown(filedes, owner, group);
+  if (-1 == rv) {
+    cce_raise(L, cce_condition_new_errno_clear());
+  }
+}
+#endif
+
+#ifdef HAVE_LCHOWN
+void
+ccsys_lchown (cce_location_t * L, const char * pathname, uid_t owner, gid_t group)
+{
+  int	rv;
+  errno = 0;
+  rv = lchown(pathname, owner, group);
+  if (-1 == rv) {
+    cce_raise(L, cce_condition_new_errno_clear());
+  }
+}
+#endif
+
+#ifdef HAVE_FCHOWNAT
+void
+ccsys_fchownat (cce_location_t * L, int dirfd, const char * pathname, uid_t owner, gid_t group, int flags)
+{
+  int	rv;
+  errno = 0;
+  rv = fchownat(dirfd, pathname, owner, group, flags);
+  if (-1 == rv) {
+    cce_raise(L, cce_condition_new_errno_clear());
+  }
+}
+#endif
+
+/* ------------------------------------------------------------------ */
+
+#ifdef HAVE_CHMOD
+void
+ccsys_chmod (cce_location_t * L, const char * pathname, mode_t mode)
+{
+  int	rv;
+  errno = 0;
+  rv = chmod(pathname, mode);
+  if (-1 == rv) {
+    cce_raise(L, cce_condition_new_errno_clear());
+  }
+}
+#endif
+
+#ifdef HAVE_FCHMOD
+void
+ccsys_fchmod (cce_location_t * L, int filedes, mode_t mode)
+{
+  int	rv;
+  errno = 0;
+  rv = fchmod(filedes, mode);
+  if (-1 == rv) {
+    cce_raise(L, cce_condition_new_errno_clear());
+  }
+}
+#endif
+
+#ifdef HAVE_FCHMODAT
+void
+ccsys_fchmodat (cce_location_t * L, int dirfd, const char * pathname, mode_t mode, int flags)
+{
+  int	rv;
+  errno = 0;
+  rv = fchmodat(dirfd, pathname, mode, flags);
+  if (-1 == rv) {
+    cce_raise(L, cce_condition_new_errno_clear());
+  }
+}
+#endif
+
+/* ------------------------------------------------------------------ */
+
+#ifdef HAVE_ACCESS
+int
+ccsys_access (cce_location_t * L, const char * pathname, int how)
+{
+  int	rv;
+  errno = 0;
+  rv = access(pathname, how);
+  if (0 == rv) {
+    return rv;
+  } else if (errno) {
+    cce_raise(L, cce_condition_new_errno_clear());
+  } else {
+    return rv;
+  }
+}
+#endif
+
+#ifdef HAVE_FACCESSAT
+int
+ccsys_faccessat (cce_location_t * L, int dirfd, const char * pathname, int how, int flags)
+{
+  int	rv;
+  errno = 0;
+  rv = faccessat(dirfd, pathname, how, flags);
+  if (0 == rv) {
+    return rv;
+  } else if (errno) {
+    cce_raise(L, cce_condition_new_errno_clear());
+  } else {
+    return rv;
+  }
+}
+#endif
+
+/* ------------------------------------------------------------------ */
+
+#ifdef HAVE_UTIME
+void
+ccsys_utime (cce_location_t * L, const char * pathname, const struct utimbuf * times)
+{
+  int	rv;
+  errno = 0;
+  rv = utime(pathname, times);
+  if (-1 == rv) {
+    cce_raise(L, cce_condition_new_errno_clear());
+  }
+}
+#endif
+
+#ifdef HAVE_UTIMES
+void
+ccsys_utimes (cce_location_t * L, const char * pathname, const struct timeval TVP[2])
+{
+  int	rv;
+  errno = 0;
+  rv = utimes(pathname, TVP);
+  if (-1 == rv) {
+    cce_raise(L, cce_condition_new_errno_clear());
+  }
+}
+#endif
+
+#if ((defined HAVE_LUTIMES) && (! (defined CCSYS_ON_DARWIN)))
+void
+ccsys_lutimes (cce_location_t * L, const char * pathname, const struct timeval TVP[2])
+{
+  int	rv;
+  errno = 0;
+  rv = lutimes(pathname, TVP);
+  if (-1 == rv) {
+    cce_raise(L, cce_condition_new_errno_clear());
+  }
+}
+#endif
+
+#if ((defined HAVE_FUTIMES) && (! (defined CCSYS_ON_DARWIN)))
+void
+ccsys_futimes (cce_location_t * L, int filedes, const struct timeval TVP[2])
+{
+  int	rv;
+  errno = 0;
+  rv = futimes(filedes, TVP);
+  if (-1 == rv) {
+    cce_raise(L, cce_condition_new_errno_clear());
+  }
+}
+#endif
+
+/* ------------------------------------------------------------------ */
+
+#ifdef HAVE_TRUNCATE
+void
+ccsys_truncate (cce_location_t * L, const char * pathname, off_t length)
+{
+  int	rv;
+  errno = 0;
+  rv = truncate(pathname, length);
+  if (-1 == rv) {
+    cce_raise(L, cce_condition_new_errno_clear());
+  }
+}
+#endif
+
+#ifdef HAVE_FTRUNCATE
+void
+ccsys_ftruncate (cce_location_t * L, int filedes, off_t length)
+{
+  int	rv;
+  errno = 0;
+  rv = ftruncate(filedes, length);
+  if (-1 == rv) {
+    cce_raise(L, cce_condition_new_errno_clear());
+  }
+}
+#endif
+
+
+/** --------------------------------------------------------------------
+ ** Temporary files and directories.
+ ** ----------------------------------------------------------------- */
+
+#ifdef HAVE_MKSTEMP
+int
+ccsys_mkstemp (cce_location_t * L, char * template)
+{
+  int	rv;
+  errno = 0;
+  /* Remember that this call will mutate TEMPLATE. */
+  rv = mkstemp(template);
+  if (-1 == rv) {
+    cce_raise(L, cce_condition_new_errno_clear());
+  } else {
+    return rv;
+  }
+}
+#endif
+
+#ifdef HAVE_MKDTEMP
+char *
+ccsys_mkdtemp (cce_location_t * L, char * template)
+{
+  char *	rv;
+  errno = 0;
+  /* Remember that this call will mutate TEMPLATE. */
+  rv = mkdtemp(template);
+  if (NULL != rv) {
+    return rv;
+  } else {
+    cce_raise(L, cce_condition_new_errno_clear());
+  }
+}
+#endif
+
+
+/** --------------------------------------------------------------------
+ ** Waiting for input/output.
+ ** ----------------------------------------------------------------- */
+
+#ifdef HAVE_SELECT
+int
+ccsys_select (cce_location_t * L, int nfds, fd_set * read_fds, fd_set * write_fds, fd_set * except_fds, struct timeval * timeout)
+{
+  int	rv;
+  errno = 0;
+  rv = select(nfds, read_fds, write_fds, except_fds, timeout);
+  if (-1 != rv) {
+    return rv;
+  } else {
     cce_raise(L, cce_condition_new_errno_clear());
   }
 }
