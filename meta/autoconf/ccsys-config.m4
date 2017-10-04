@@ -25,6 +25,99 @@ dnl <http://www.gnu.org/licenses/>.
 dnl
 
 dnl page
+dnl headers macros
+
+AC_DEFUN([CCSYS_ARPA_INET_HEADER],[
+#ifdef HAVE_ARPA_INET_H
+#  include <arpa/inet.h>
+#endif
+])
+
+AC_DEFUN([CCSYS_DIRENT_HEADER],[
+#ifdef HAVE_DIRENT_H
+#  include <dirent.h>
+#endif
+])
+
+AC_DEFUN([CCSYS_FCNTL_HEADER],[
+#ifdef HAVE_FCNTL_H
+#  include <fcntl.h>
+#endif
+])
+
+AC_DEFUN([CCSYS_NETINET_IN_HEADER],[
+#ifdef HAVE_NETINET_IN_H
+#  include <netinet/in.h>
+#endif
+])
+
+AC_DEFUN([CCSYS_NETDB_HEADER],[
+#ifdef HAVE_NETDB_H
+#  include <netdb.h>
+#endif
+])
+
+AC_DEFUN([CCSYS_SYS_SOCKET_HEADER],[
+#ifdef HAVE_SYS_SOCKET_H
+#  include <sys/socket.h>
+#endif
+])
+
+AC_DEFUN([CCSYS_SYS_UN_HEADER],[
+#ifdef HAVE_SYS_UN_H
+#  include <sys/un.h>
+#endif
+])
+
+AC_DEFUN([CCSYS_STDDEF_HEADER],[
+#ifdef HAVE_STDDEF_H
+#  include <stddef.h>
+#endif
+])
+
+AC_DEFUN([CCSYS_SYS_TYPES_HEADER],[
+#ifdef HAVE_SYS_TYPES_H
+#  include <sys/types.h>
+#endif
+])
+
+AC_DEFUN([CCSYS_SYS_UIO_HEADER],[
+#ifdef HAVE_SYS_UIO_H
+#  include <sys/uio.h>
+#endif
+])
+
+AC_DEFUN([CCSYS_SYS_STAT_HEADER],[
+#ifdef HAVE_SYS_STAT_H
+#  include <sys/stat.h>
+#endif
+])
+
+AC_DEFUN([CCSYS_SYS_TIME_HEADER],[
+#ifdef HAVE_SYS_TIME_H
+#  include <sys/time.h>
+#endif
+])
+
+AC_DEFUN([CCSYS_TIME_HEADER],[
+#ifdef HAVE_TIME_H
+#  include <time.h>
+#endif
+])
+
+AC_DEFUN([CCSYS_UNISTD_HEADER],[
+#ifdef HAVE_UNISTD_H
+#  include <unistd.h>
+#endif
+])
+
+AC_DEFUN([CCSYS_UTIME_HEADER],[
+#ifdef HAVE_UTIME_H
+#  include <utime.h>
+#endif
+])
+
+dnl page
 dnl CCSYS_SIZEOF --
 dnl
 dnl Wrapper for  AC_COMPUTE_INT which computes and caches the  size of a
@@ -54,6 +147,33 @@ AC_DEFUN([CCSYS_SIZEOF],
     AC_SUBST([SIZEOF_$1])])
 
 dnl page
+dnl CCSYS_VALUEOF_NO_SUBST --
+dnl
+dnl Wrapper for AC_COMPUTE_INT which computes  and caches the value of a
+dnl constant.  For  example, to compute the value of  "ERRNO" defined in
+dnl the header "errno.h" we do:
+dnl
+dnl    CCSYS_VALUEOF_NO_SUBST([EPERM],[EPERM],[#include <errno.h>])
+dnl
+dnl this macro expansion defines the shell variable "ccsys_cv_valueof_ERRNO"
+dnl to  cache the value;  if the value  cannot be determined:  the shell
+dnl variable is set to "-1".
+dnl
+dnl $1 - the stem  to use  to define  shell variables  representing the
+dnl      result of this test
+dnl $2 - the expression representing the value to compute
+dnl $3 - the required header files
+dnl
+AC_DEFUN([CCSYS_VALUEOF_NO_SUBST],
+  [AC_CACHE_CHECK([the size of '$2'],
+     [ccsys_cv_valueof_$1],
+     [AC_COMPUTE_INT([ccsys_cv_valueof_$1],
+        [$2],
+        [$3],
+        [AC_MSG_WARN(cannot determine value of '$2')
+         AS_VAR_SET(ccsys_cv_valueof_$1,[-1])])])])
+
+dnl page
 dnl CCSYS_VALUEOF --
 dnl
 dnl Wrapper for AC_COMPUTE_INT which computes  and caches the value of a
@@ -72,15 +192,42 @@ dnl $2 - the expression representing the value to compute
 dnl $3 - the required header files
 dnl
 AC_DEFUN([CCSYS_VALUEOF],
-  [AS_VAR_SET([VALUEOF_$1],[0])
-   AC_CACHE_CHECK([the size of '$2'],
-     [ccsys_cv_valueof_$1],
-     [AC_COMPUTE_INT([ccsys_cv_valueof_$1],
-        [valueof($2)],
-        [$3],
-        [AC_MSG_ERROR(cannot determine value of '$2')])])
-    AS_VAR_SET([VALUEOF_$1],["$ccsys_cv_valueof_$1"])
-    AC_SUBST([VALUEOF_$1])])
+  [CCSYS_VALUEOF_NO_SUBST([$1],[$2],[$3])
+   AS_VAR_SET([VALUEOF_$1],[-1])
+   AS_VAR_IF(ccsys_cv_valueof_$1,[-1],[]
+     [AS_VAR_SET([VALUEOF_$1],["$ccsys_cv_valueof_$1"])])
+   AC_SUBST([VALUEOF_$1])])
+
+dnl page
+dnl CCSYS_MAYBE_ENUM_DEF --
+dnl
+dnl Define an enumerated constant.  Example:
+dnl
+dnl   CCSYS_MAYBE_ENUM_DEF([CCSYS_SOCK_STREAM],[SOCK_STREAM],[#include <sys/socket.h>])
+dnl
+dnl is meant to be used in the template as:
+dnl
+dnl   enum ccsys_socket_namespace_t {
+dnl      @CCSYS_ENUM_DEF_CCSYS_SOCK_STREAM@
+dnl   }
+dnl
+dnl if the constant is defined: the expansion must be:
+dnl
+dnl   enum ccsys_socket_namespace_t {
+dnl      CCSYS_SOCK_STREAM=123,
+dnl   }
+dnl
+dnl if the constant is not defined: the expansion must be:
+dnl
+dnl   enum ccsys_socket_namespace_t {
+dnl   }
+dnl
+AC_DEFUN([CCSYS_MAYBE_ENUM_DEF],
+  [CCSYS_VALUEOF_NO_SUBST([$1],[$2],[$3])
+   AS_VAR_SET(CCSYS_ENUM_DEF_$1)
+   AS_VAR_IF(ccsys_cv_valueof_$1,[-1],[],
+     [AS_VAR_SET(CCSYS_ENUM_DEF_$1,["$1=$ccsys_cv_valueof_$1"])])
+   AC_SUBST([CCSYS_ENUM_DEF_$1],[$CCSYS_ENUM_DEF_$1[],])])
 
 dnl page
 dnl CCSYS_OFFSETOF --
