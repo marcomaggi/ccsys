@@ -7,7 +7,7 @@
 
 
 
-  Copyright (C) 2017 Marco Maggi <marco.maggi-ipsu@poste.it>
+  Copyright (C) 2017, 2018 Marco Maggi <marco.maggi-ipsu@poste.it>
 
   This is free software; you  can redistribute it and/or modify it under
   the terms of the GNU Lesser General Public License as published by the
@@ -32,8 +32,6 @@
  ** ----------------------------------------------------------------- */
 
 #include "ccsys.h"
-#include "ccsys-system.h"
-#include "ccsys-networking.h"
 #include <assert.h>
 
 
@@ -98,7 +96,9 @@ test_handler_filedes (void)
       cce_run_error_handlers_final(L);
       error_flag = true;
     } else {
-      int   fd = ccsys_open(L, "name.ext", O_CREAT, S_IRWXU);
+      ccsys_open_flags_t	flags = { .data = CCSYS_O_CREAT };
+      ccsys_open_mode_t		mode  = { .data = CCSYS_S_IRWXU };
+      ccsys_fd_t		fd   = ccsys_open(L, "name.ext", flags, mode);
       ccsys_cleanup_handler_filedes_init(L, H, fd);
       cce_run_cleanup_handlers(L);
       done_flag = true;
@@ -118,7 +118,9 @@ test_handler_filedes (void)
       cce_run_error_handlers_final(L);
       error_flag = true;
     } else {
-      int   fd = ccsys_open(L, "name.ext", O_CREAT, S_IRWXU);
+      ccsys_open_flags_t	flags = { .data = CCSYS_O_CREAT };
+      ccsys_open_mode_t		mode = { .data = CCSYS_S_IRWXU };
+      ccsys_fd_t		fd   = ccsys_open(L, "name.ext", flags, mode);
       ccsys_cleanup_handler_filedes_init(L, H, fd);
       cce_raise(L, cce_condition_new_unknown());
       cce_run_cleanup_handlers(L);
@@ -145,7 +147,7 @@ test_handler_pipedes (void)
       cce_run_error_handlers_final(L);
       error_flag = true;
     } else {
-      int	pipedes[2];
+      ccsys_fd_t	pipedes[2];
       ccsys_pipe(L, pipedes);
       ccsys_cleanup_handler_pipedes_init(L, H, pipedes);
       cce_run_cleanup_handlers(L);
@@ -165,7 +167,7 @@ test_handler_pipedes (void)
       cce_run_error_handlers_final(L);
       error_flag = true;
     } else {
-      int	pipedes[2];
+      ccsys_fd_t	pipedes[2];
       ccsys_pipe(L, pipedes);
       ccsys_cleanup_handler_pipedes_init(L, H, pipedes);
       cce_raise(L, cce_condition_new_unknown());
@@ -193,7 +195,9 @@ test_handler_tmpfile (void)
       cce_run_error_handlers_final(L);
       error_flag = true;
     } else {
-      int   fd = ccsys_open(L, "name.ext", O_CREAT, S_IRUSR|S_IWUSR);
+      ccsys_open_flags_t	flags = { .data = CCSYS_O_CREAT };
+      ccsys_open_mode_t	mode = { .data = CCSYS_S_IRUSR|CCSYS_S_IWUSR };
+      ccsys_fd_t	fd = ccsys_open(L, "name.ext", flags, mode);
       ccsys_cleanup_handler_filedes_init(L, filedes_H, fd);
       ccsys_cleanup_handler_tmpfile_init(L, tmpfile_H, "name.ext");
       cce_run_cleanup_handlers(L);
@@ -214,7 +218,9 @@ test_handler_tmpfile (void)
       cce_run_error_handlers_final(L);
       error_flag = true;
     } else {
-      int   fd = ccsys_open(L, "name.ext", O_CREAT, S_IRUSR|S_IWUSR);
+      ccsys_open_flags_t	flags = { .data = CCSYS_O_CREAT };
+      ccsys_open_mode_t	mode = { .data = CCSYS_S_IRUSR|CCSYS_S_IWUSR };
+      ccsys_fd_t	fd   = ccsys_open(L, "name.ext", flags, mode);
       ccsys_cleanup_handler_filedes_init(L, filedes_H, fd);
       ccsys_cleanup_handler_tmpfile_init(L, tmpfile_H, "name.ext");
       cce_raise(L, cce_condition_new_unknown());
@@ -241,7 +247,8 @@ test_handler_tmpdir (void)
       cce_run_error_handlers_final(L);
       error_flag = true;
     } else {
-      ccsys_mkdir(L, "name.d", 0);
+      ccsys_open_mode_t	mode = { .data = 0 };
+      ccsys_mkdir(L, "name.d", mode);
       ccsys_cleanup_handler_tmpdir_init(L, tmpdir_H, "name.d");
       cce_run_cleanup_handlers(L);
       done_flag = true;
@@ -260,7 +267,8 @@ test_handler_tmpdir (void)
       cce_run_error_handlers_final(L);
       error_flag = true;
     } else {
-      ccsys_mkdir(L, "name.d", 0);
+      ccsys_open_mode_t	mode = { .data = 0 };
+      ccsys_mkdir(L, "name.d", mode);
       ccsys_cleanup_handler_tmpdir_init(L, tmpdir_H, "name.d");
       cce_raise(L, cce_condition_new_unknown());
       cce_run_cleanup_handlers(L);

@@ -34,7 +34,6 @@
 */
 
 #include "ccsys.h"
-#include "ccsys-system.h"
 
 static int list_dirs (const char * pathname);
 

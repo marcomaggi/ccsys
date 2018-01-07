@@ -31,7 +31,7 @@
  ** Headers.
  ** ----------------------------------------------------------------- */
 
-#include "ccpackage-internals.h"
+#include "ccsys-internals.h"
 #ifdef HAVE_SYS_WAIT_H
 #  include <sys/wait.h>
 #endif
@@ -62,13 +62,13 @@ ccsys_system (cce_location_t * L, const char * command)
  ** ----------------------------------------------------------------- */
 
 #ifdef HAVE_FORK
-pid_t
+ccsys_pid_t
 ccsys_fork (cce_location_t * L)
 {
-  pid_t	rv;
+  ccsys_pid_t	rv;
   errno = 0;
-  rv = fork();
-  if (-1 == rv) {
+  rv.data = fork();
+  if (-1 == rv.data) {
     cce_raise(L, cce_condition_new_errno_clear());
   } else {
     return rv;
@@ -127,12 +127,12 @@ ccsys_execvp (cce_location_t * L, const char * filename, char * const argv [])
 
 #ifdef HAVE_WAITPID
 void
-ccsys_waitpid (cce_location_t * L, pid_t pid, int * wstatus, int options)
+ccsys_waitpid (cce_location_t * L, ccsys_pid_t pid, int * wstatus, int options)
 {
-  pid_t	rv;
+  ccsys_pid_t	rv;
   errno = 0;
-  rv = waitpid(pid, wstatus, options);
-  if (-1 == rv) {
+  rv.data = waitpid(pid.data, wstatus, options);
+  if (-1 == rv.data) {
     cce_raise(L, cce_condition_new_errno_clear());
   }
 }

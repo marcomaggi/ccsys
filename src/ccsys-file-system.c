@@ -7,7 +7,7 @@
 
 
 
-  Copyright (C) 2017 Marco Maggi <marco.maggi-ipsu@poste.it>
+  Copyright (C) 2017, 2018 Marco Maggi <marco.maggi-ipsu@poste.it>
 
   This is free software; you  can redistribute it and/or modify it under
   the terms of the GNU Lesser General Public License as published by the
@@ -69,15 +69,15 @@
 
 #ifdef HAVE_OPEN
 ccsys_fd_t
-ccsys_open (cce_location_t * L, const char *filename, int flags, ccsys_mode_t mode)
+ccsys_open (cce_location_t * L, const char *filename, ccsys_open_flags_t flags, ccsys_open_mode_t mode)
 {
   int	rv;
   errno = 0;
-  rv = open(filename, flags, mode);
+  rv = open(filename, flags.data, mode.data);
   if (-1 == rv) {
     cce_raise(L, cce_condition_new_errno_clear());
   } else {
-    ccsys_fd_t	fd = { .fd = rv };
+    ccsys_fd_t	fd = { .data = rv };
     return fd;
   }
 }
@@ -85,15 +85,15 @@ ccsys_open (cce_location_t * L, const char *filename, int flags, ccsys_mode_t mo
 
 #ifdef HAVE_OPENAT
 ccsys_fd_t
-ccsys_openat (cce_location_t * L, ccsys_fd_t dirfd, const char *filename, int flags, ccsys_mode_t mode)
+ccsys_openat (cce_location_t * L, ccsys_fd_t dirfd, const char *filename, ccsys_open_flags_t flags, ccsys_open_mode_t mode)
 {
   int	rv;
   errno = 0;
-  rv = openat(dirfd.fd, filename, flags, mode);
+  rv = openat(dirfd.data, filename, flags.data, mode.data);
   if (-1 == rv) {
     cce_raise(L, cce_condition_new_errno_clear());
   } else {
-    ccsys_fd_t	fd = { .fd = rv };
+    ccsys_fd_t	fd = { .data = rv };
     return fd;
   }
 }
@@ -105,7 +105,7 @@ ccsys_close (cce_location_t * L, ccsys_fd_t filedes)
 {
   int	rv;
   errno = 0;
-  rv = close(filedes.fd);
+  rv = close(filedes.data);
   if (-1 == rv) {
     cce_raise(L, cce_condition_new_errno_clear());
   }
@@ -120,7 +120,7 @@ ccsys_read (cce_location_t * L, ccsys_fd_t filedes, void * buffer, size_t size)
 {
   ssize_t	rv;
   errno = 0;
-  rv = read(filedes.fd, buffer, size);
+  rv = read(filedes.data, buffer, size);
   if (rv >= 0) {
     return (size_t)rv;
   } else {
@@ -135,7 +135,7 @@ ccsys_pread (cce_location_t * L, ccsys_fd_t filedes, void * buffer, size_t size,
 {
   ssize_t	rv;
   errno = 0;
-  rv = pread(filedes.fd, buffer, size, offset.data);
+  rv = pread(filedes.data, buffer, size, offset.data);
   if (rv >= 0) {
     return (size_t)rv;
   } else {
@@ -150,7 +150,7 @@ ccsys_write (cce_location_t * L, ccsys_fd_t filedes, const void *buffer, size_t 
 {
   ssize_t	rv;
   errno = 0;
-  rv = write(filedes.fd, buffer, size);
+  rv = write(filedes.data, buffer, size);
   if (rv >= 0) {
     return (size_t)rv;
   } else {
@@ -165,7 +165,7 @@ ccsys_pwrite (cce_location_t * L, ccsys_fd_t filedes, const void *buffer, size_t
 {
   ssize_t	rv;
   errno = 0;
-  rv = pwrite(filedes.fd, buffer, size, offset.data);
+  rv = pwrite(filedes.data, buffer, size, offset.data);
   if (rv >= 0) {
     return (size_t)rv;
   } else {
@@ -182,7 +182,7 @@ ccsys_lseek (cce_location_t * L, ccsys_fd_t filedes, ccsys_off_t offset, int whe
 {
   off_t		rv;
   errno = 0;
-  rv = lseek (filedes.fd, offset.data, whence);
+  rv = lseek (filedes.data, offset.data, whence);
   if (rv >= 0) {
     ccsys_off_t	off = { .data = rv };
     return off;
@@ -204,7 +204,7 @@ ccsys_readv (cce_location_t * L, ccsys_fd_t filedes, const ccsys_iovec_t * _vect
   const struct iovec *	vector = (const struct iovec *)_vector;
   ssize_t		rv;
   errno = 0;
-  rv = readv(filedes.fd, vector, count);
+  rv = readv(filedes.data, vector, count);
   if (rv >= 0) {
     /* We  return  a  "size_t"  because   we  have  excluded  the  error
        values. */
@@ -222,7 +222,7 @@ ccsys_writev (cce_location_t * L, ccsys_fd_t filedes, const ccsys_iovec_t * _vec
   const struct iovec *	vector = (const struct iovec *)_vector;
   ssize_t		rv;
   errno = 0;
-  rv = writev(filedes.fd, vector, count);
+  rv = writev(filedes.data, vector, count);
   if (rv >= 0) {
     /* We  return  a  "size_t"  because   we  have  excluded  the  error
        values. */
@@ -259,7 +259,7 @@ ccsys_fdopendir (cce_location_t * L, ccsys_fd_t dirfd)
 {
   DIR *	rv;
   errno = 0;
-  rv = fdopendir(dirfd.fd);
+  rv = fdopendir(dirfd.data);
   if (NULL != rv) {
     return (ccsys_dir_t *)rv;
   } else {
@@ -306,13 +306,13 @@ ccsys_closedir (cce_location_t * L, ccsys_dir_t * _dirstream)
  ** ----------------------------------------------------------------- */
 
 #ifdef HAVE_DUP
-int
-ccsys_dup (cce_location_t * L, int old)
+ccsys_fd_t
+ccsys_dup (cce_location_t * L, ccsys_fd_t old)
 {
-  int	rv;
+  ccsys_fd_t	rv;
   errno = 0;
-  rv = dup(old);
-  if (-1 != rv) {
+  rv.data = dup(old.data);
+  if (-1 != rv.data) {
     return rv;
   } else {
     cce_raise(L, cce_condition_new_errno_clear());
@@ -321,13 +321,13 @@ ccsys_dup (cce_location_t * L, int old)
 #endif
 
 #ifdef HAVE_DUP2
-int
-ccsys_dup2 (cce_location_t * L, int old, int new)
+ccsys_fd_t
+ccsys_dup2 (cce_location_t * L, ccsys_fd_t old, ccsys_fd_t new)
 {
-  int	rv;
+  ccsys_fd_t	rv;
   errno = 0;
-  rv = dup2(old, new);
-  if (-1 != rv) {
+  rv.data = dup2(old.data, new.data);
+  if (-1 != rv.data) {
     return rv;
   } else {
     cce_raise(L, cce_condition_new_errno_clear());
@@ -337,11 +337,11 @@ ccsys_dup2 (cce_location_t * L, int old, int new)
 
 #ifdef HAVE_PIPE
 void
-ccsys_pipe (cce_location_t * L, int pipefd[2])
+ccsys_pipe (cce_location_t * L, ccsys_fd_t pipefd[2])
 {
   int	rv;
   errno = 0;
-  rv = pipe(pipefd);
+  rv = pipe((int *)pipefd);
   if (-1 == rv) {
     cce_raise(L, cce_condition_new_errno_clear());
   }
@@ -350,11 +350,11 @@ ccsys_pipe (cce_location_t * L, int pipefd[2])
 
 #ifdef HAVE_MKFIFO
 void
-ccsys_mkfifo (cce_location_t * L, const char * pathname, mode_t mode)
+ccsys_mkfifo (cce_location_t * L, const char * pathname, ccsys_open_mode_t mode)
 {
   int	rv;
   errno = 0;
-  rv = mkfifo(pathname, mode);
+  rv = mkfifo(pathname, mode.data);
   if (-1 == rv) {
     cce_raise(L, cce_condition_new_errno_clear());
   }
@@ -394,11 +394,11 @@ ccsys_chdir (cce_location_t * L, const char * pathname)
 
 #ifdef HAVE_FCHDIR
 void
-ccsys_fchdir (cce_location_t * L, int dirfd)
+ccsys_fchdir (cce_location_t * L, ccsys_fd_t dirfd)
 {
   int	rv;
   errno = 0;
-  rv = fchdir(dirfd);
+  rv = fchdir(dirfd.data);
   if (-1 == rv) {
     cce_raise(L, cce_condition_new_errno_clear());
   }
@@ -409,9 +409,10 @@ ccsys_fchdir (cce_location_t * L, int dirfd)
 
 #ifdef HAVE_STAT
 void
-ccsys_stat (cce_location_t * L, const char * pathname, struct stat * buf)
+ccsys_stat (cce_location_t * L, const char * pathname, ccsys_stat_t * _buf)
 {
-  int	rv;
+  struct stat *	buf = (struct stat *)_buf;
+  int		rv;
   errno = 0;
   rv = stat(pathname, buf);
   if (-1 == rv) {
@@ -422,11 +423,12 @@ ccsys_stat (cce_location_t * L, const char * pathname, struct stat * buf)
 
 #ifdef HAVE_FSTAT
 void
-ccsys_fstat (cce_location_t * L, int fd, struct stat * buf)
+ccsys_fstat (cce_location_t * L, ccsys_fd_t fd, ccsys_stat_t * _buf)
 {
-  int	rv;
+  struct stat *	buf = (struct stat *)_buf;
+  int		rv;
   errno = 0;
-  rv = fstat(fd, buf);
+  rv = fstat(fd.data, buf);
   if (-1 == rv) {
     cce_raise(L, cce_condition_new_errno_clear());
   }
@@ -435,9 +437,10 @@ ccsys_fstat (cce_location_t * L, int fd, struct stat * buf)
 
 #ifdef HAVE_LSTAT
 void
-ccsys_lstat (cce_location_t * L, const char * pathname, struct stat * buf)
+ccsys_lstat (cce_location_t * L, const char * pathname, ccsys_stat_t * _buf)
 {
-  int	rv;
+  struct stat *	buf = (struct stat *)_buf;
+  int		rv;
   errno = 0;
   rv = lstat(pathname, buf);
   if (-1 == rv) {
@@ -450,11 +453,11 @@ ccsys_lstat (cce_location_t * L, const char * pathname, struct stat * buf)
 
 #ifdef HAVE_MKDIR
 void
-ccsys_mkdir (cce_location_t * L, const char * pathname, mode_t mode)
+ccsys_mkdir (cce_location_t * L, const char * pathname, ccsys_open_mode_t mode)
 {
   int	rv;
   errno = 0;
-  rv = mkdir(pathname, mode);
+  rv = mkdir(pathname, mode.data);
   if (-1 == rv) {
     cce_raise(L, cce_condition_new_errno_clear());
   }
@@ -522,11 +525,11 @@ ccsys_symlink (cce_location_t * L, const char * oldname, const char * newname)
 
 #ifdef HAVE_SYMLINKAT
 void
-ccsys_symlinkat (cce_location_t * L, const char * oldname, int newdirfd, const char * newname)
+ccsys_symlinkat (cce_location_t * L, const char * oldname, ccsys_fd_t newdirfd, const char * newname)
 {
   int	rv;
   errno = 0;
-  rv = symlinkat(oldname, newdirfd, newname);
+  rv = symlinkat(oldname, newdirfd.data, newname);
   if (-1 == rv) {
     cce_raise(L, cce_condition_new_errno_clear());
   }
@@ -550,11 +553,11 @@ ccsys_readlink (cce_location_t * L, const char * filename, char * buffer, size_t
 
 #ifdef HAVE_READLINKAT
 size_t
-ccsys_readlinkat (cce_location_t * L, int dirfd, const char * filename, char * buffer, size_t size)
+ccsys_readlinkat (cce_location_t * L, ccsys_fd_t dirfd, const char * filename, char * buffer, size_t size)
 {
   ssize_t	rv;
   errno = 0;
-  rv = readlinkat(dirfd, filename, buffer, size);
+  rv = readlinkat(dirfd.data, filename, buffer, size);
   if (-1 == rv) {
     cce_raise(L, cce_condition_new_errno_clear());
   } else {
@@ -595,11 +598,11 @@ ccsys_unlink (cce_location_t * L, const char * pathname)
 
 #ifdef HAVE_UNLINKAT
 void
-ccsys_unlinkat (cce_location_t * L, int dirfd, const char * pathname, int flags)
+ccsys_unlinkat (cce_location_t * L, ccsys_fd_t dirfd, const char * pathname, int flags)
 {
   int	rv;
   errno = 0;
-  rv = unlinkat(dirfd, pathname, flags);
+  rv = unlinkat(dirfd.data, pathname, flags);
   if (-1 == rv) {
     cce_raise(L, cce_condition_new_errno_clear());
   }
@@ -638,11 +641,11 @@ ccsys_rename (cce_location_t * L, const char * oldname, const char * newname)
 
 #ifdef HAVE_CHOWN
 void
-ccsys_chown (cce_location_t * L, const char * pathname, uid_t owner, gid_t group)
+ccsys_chown (cce_location_t * L, const char * pathname, ccsys_uid_t owner, ccsys_gid_t group)
 {
   int	rv;
   errno = 0;
-  rv = chown(pathname, owner, group);
+  rv = chown(pathname, owner.data, group.data);
   if (-1 == rv) {
     cce_raise(L, cce_condition_new_errno_clear());
   }
@@ -651,11 +654,11 @@ ccsys_chown (cce_location_t * L, const char * pathname, uid_t owner, gid_t group
 
 #ifdef HAVE_FCHOWN
 void
-ccsys_fchown (cce_location_t * L, int filedes, uid_t owner, gid_t group)
+ccsys_fchown (cce_location_t * L, ccsys_fd_t filedes, ccsys_uid_t owner, ccsys_gid_t group)
 {
   int	rv;
   errno = 0;
-  rv = fchown(filedes, owner, group);
+  rv = fchown(filedes.data, owner.data, group.data);
   if (-1 == rv) {
     cce_raise(L, cce_condition_new_errno_clear());
   }
@@ -664,11 +667,11 @@ ccsys_fchown (cce_location_t * L, int filedes, uid_t owner, gid_t group)
 
 #ifdef HAVE_LCHOWN
 void
-ccsys_lchown (cce_location_t * L, const char * pathname, uid_t owner, gid_t group)
+ccsys_lchown (cce_location_t * L, const char * pathname, ccsys_uid_t owner, ccsys_gid_t group)
 {
   int	rv;
   errno = 0;
-  rv = lchown(pathname, owner, group);
+  rv = lchown(pathname, owner.data, group.data);
   if (-1 == rv) {
     cce_raise(L, cce_condition_new_errno_clear());
   }
@@ -677,11 +680,11 @@ ccsys_lchown (cce_location_t * L, const char * pathname, uid_t owner, gid_t grou
 
 #ifdef HAVE_FCHOWNAT
 void
-ccsys_fchownat (cce_location_t * L, int dirfd, const char * pathname, uid_t owner, gid_t group, int flags)
+ccsys_fchownat (cce_location_t * L, ccsys_fd_t dirfd, const char * pathname, ccsys_uid_t owner, ccsys_gid_t group, int flags)
 {
   int	rv;
   errno = 0;
-  rv = fchownat(dirfd, pathname, owner, group, flags);
+  rv = fchownat(dirfd.data, pathname, owner.data, group.data, flags);
   if (-1 == rv) {
     cce_raise(L, cce_condition_new_errno_clear());
   }
@@ -692,11 +695,11 @@ ccsys_fchownat (cce_location_t * L, int dirfd, const char * pathname, uid_t owne
 
 #ifdef HAVE_CHMOD
 void
-ccsys_chmod (cce_location_t * L, const char * pathname, mode_t mode)
+ccsys_chmod (cce_location_t * L, const char * pathname, ccsys_open_mode_t mode)
 {
   int	rv;
   errno = 0;
-  rv = chmod(pathname, mode);
+  rv = chmod(pathname, mode.data);
   if (-1 == rv) {
     cce_raise(L, cce_condition_new_errno_clear());
   }
@@ -705,11 +708,11 @@ ccsys_chmod (cce_location_t * L, const char * pathname, mode_t mode)
 
 #ifdef HAVE_FCHMOD
 void
-ccsys_fchmod (cce_location_t * L, int filedes, mode_t mode)
+ccsys_fchmod (cce_location_t * L, ccsys_fd_t filedes, ccsys_open_mode_t mode)
 {
   int	rv;
   errno = 0;
-  rv = fchmod(filedes, mode);
+  rv = fchmod(filedes.data, mode.data);
   if (-1 == rv) {
     cce_raise(L, cce_condition_new_errno_clear());
   }
@@ -718,11 +721,11 @@ ccsys_fchmod (cce_location_t * L, int filedes, mode_t mode)
 
 #ifdef HAVE_FCHMODAT
 void
-ccsys_fchmodat (cce_location_t * L, int dirfd, const char * pathname, mode_t mode, int flags)
+ccsys_fchmodat (cce_location_t * L, ccsys_fd_t dirfd, const char * pathname, ccsys_open_mode_t mode, int flags)
 {
   int	rv;
   errno = 0;
-  rv = fchmodat(dirfd, pathname, mode, flags);
+  rv = fchmodat(dirfd.data, pathname, mode.data, flags);
   if (-1 == rv) {
     cce_raise(L, cce_condition_new_errno_clear());
   }
@@ -750,11 +753,11 @@ ccsys_access (cce_location_t * L, const char * pathname, int how)
 
 #ifdef HAVE_FACCESSAT
 int
-ccsys_faccessat (cce_location_t * L, int dirfd, const char * pathname, int how, int flags)
+ccsys_faccessat (cce_location_t * L, ccsys_fd_t dirfd, const char * pathname, int how, int flags)
 {
   int	rv;
   errno = 0;
-  rv = faccessat(dirfd, pathname, how, flags);
+  rv = faccessat(dirfd.data, pathname, how, flags);
   if (0 == rv) {
     return rv;
   } else if (errno) {
@@ -769,9 +772,10 @@ ccsys_faccessat (cce_location_t * L, int dirfd, const char * pathname, int how, 
 
 #ifdef HAVE_UTIME
 void
-ccsys_utime (cce_location_t * L, const char * pathname, const struct utimbuf * times)
+ccsys_utime (cce_location_t * L, const char * pathname, const ccsys_utimbuf_t * _times)
 {
-  int	rv;
+  struct utimbuf *	times = (struct utimbuf *)_times;
+  int			rv;
   errno = 0;
   rv = utime(pathname, times);
   if (-1 == rv) {
@@ -782,11 +786,11 @@ ccsys_utime (cce_location_t * L, const char * pathname, const struct utimbuf * t
 
 #ifdef HAVE_UTIMES
 void
-ccsys_utimes (cce_location_t * L, const char * pathname, const struct timeval TVP[2])
+ccsys_utimes (cce_location_t * L, const char * pathname, const ccsys_timeval_t TVP[2])
 {
   int	rv;
   errno = 0;
-  rv = utimes(pathname, TVP);
+  rv = utimes(pathname, (const struct timeval *)TVP);
   if (-1 == rv) {
     cce_raise(L, cce_condition_new_errno_clear());
   }
@@ -795,11 +799,11 @@ ccsys_utimes (cce_location_t * L, const char * pathname, const struct timeval TV
 
 #if ((defined HAVE_LUTIMES) && (! (defined CCSYS_ON_DARWIN)))
 void
-ccsys_lutimes (cce_location_t * L, const char * pathname, const struct timeval TVP[2])
+ccsys_lutimes (cce_location_t * L, const char * pathname, const ccsys_timeval_t TVP[2])
 {
   int	rv;
   errno = 0;
-  rv = lutimes(pathname, TVP);
+  rv = lutimes(pathname, (const struct timeval *)TVP);
   if (-1 == rv) {
     cce_raise(L, cce_condition_new_errno_clear());
   }
@@ -808,11 +812,11 @@ ccsys_lutimes (cce_location_t * L, const char * pathname, const struct timeval T
 
 #if ((defined HAVE_FUTIMES) && (! (defined CCSYS_ON_DARWIN)))
 void
-ccsys_futimes (cce_location_t * L, int filedes, const struct timeval TVP[2])
+ccsys_futimes (cce_location_t * L, ccsys_fd_t filedes, const ccsys_timeval_t TVP[2])
 {
   int	rv;
   errno = 0;
-  rv = futimes(filedes, TVP);
+  rv = futimes(filedes.data, (const struct timeval *)TVP);
   if (-1 == rv) {
     cce_raise(L, cce_condition_new_errno_clear());
   }
@@ -823,11 +827,11 @@ ccsys_futimes (cce_location_t * L, int filedes, const struct timeval TVP[2])
 
 #ifdef HAVE_TRUNCATE
 void
-ccsys_truncate (cce_location_t * L, const char * pathname, off_t length)
+ccsys_truncate (cce_location_t * L, const char * pathname, ccsys_off_t length)
 {
   int	rv;
   errno = 0;
-  rv = truncate(pathname, length);
+  rv = truncate(pathname, (off_t)(length.data));
   if (-1 == rv) {
     cce_raise(L, cce_condition_new_errno_clear());
   }
@@ -836,11 +840,11 @@ ccsys_truncate (cce_location_t * L, const char * pathname, off_t length)
 
 #ifdef HAVE_FTRUNCATE
 void
-ccsys_ftruncate (cce_location_t * L, int filedes, off_t length)
+ccsys_ftruncate (cce_location_t * L, ccsys_fd_t filedes, ccsys_off_t length)
 {
   int	rv;
   errno = 0;
-  rv = ftruncate(filedes, length);
+  rv = ftruncate(filedes.data, (off_t)(length.data));
   if (-1 == rv) {
     cce_raise(L, cce_condition_new_errno_clear());
   }
@@ -891,11 +895,13 @@ ccsys_mkdtemp (cce_location_t * L, char * template)
 
 #ifdef HAVE_SELECT
 int
-ccsys_select (cce_location_t * L, int nfds, fd_set * read_fds, fd_set * write_fds, fd_set * except_fds, struct timeval * timeout)
+ccsys_select (cce_location_t * L, int nfds,
+	      ccsys_fd_set_t * read_fds, ccsys_fd_set_t * write_fds, ccsys_fd_set_t * except_fds,
+	      ccsys_timeval_t * timeout)
 {
   int	rv;
   errno = 0;
-  rv = select(nfds, read_fds, write_fds, except_fds, timeout);
+  rv = select(nfds, (fd_set *)read_fds, (fd_set *)write_fds, (fd_set *)except_fds, (struct timeval *)timeout);
   if (-1 != rv) {
     return rv;
   } else {
@@ -921,7 +927,7 @@ void
 ccsys_cleanup_handler_filedes_init (cce_location_t * L, cce_handler_t * H, ccsys_fd_t filedes)
 {
   H->function	= cce_handler_filedes_function;
-  H->filedes	= filedes.fd;
+  H->filedes	= filedes.data;
   cce_register_cleanup_handler(L, H);
 }
 
@@ -929,7 +935,7 @@ void
 ccsys_error_handler_filedes_init (cce_location_t * L, cce_handler_t * H, ccsys_fd_t filedes)
 {
   H->function	= cce_handler_filedes_function;
-  H->filedes	= filedes.fd;
+  H->filedes	= filedes.data;
   cce_register_error_handler(L, H);
 }
 
@@ -950,20 +956,20 @@ cce_handler_pipedes_function (const cce_condition_t * C CCE_UNUSED, cce_handler_
 }
 
 void
-ccsys_cleanup_handler_pipedes_init (cce_location_t * L, cce_handler_t * H, int pipedes[2])
+ccsys_cleanup_handler_pipedes_init (cce_location_t * L, cce_handler_t * H, ccsys_fd_t pipedes[2])
 {
   H->function	= cce_handler_pipedes_function;
-  H->pipedes[0]	= pipedes[0];
-  H->pipedes[1]	= pipedes[1];
+  H->pipedes[0]	= pipedes[0].data;
+  H->pipedes[1]	= pipedes[1].data;
   cce_register_cleanup_handler(L, H);
 }
 
 void
-ccsys_error_handler_pipedes_init (cce_location_t * L, cce_handler_t * H, int pipedes[2])
+ccsys_error_handler_pipedes_init (cce_location_t * L, cce_handler_t * H, ccsys_fd_t pipedes[2])
 {
   H->function	= cce_handler_pipedes_function;
-  H->pipedes[0]	= pipedes[0];
-  H->pipedes[1]	= pipedes[1];
+  H->pipedes[0]	= pipedes[0].data;
+  H->pipedes[1]	= pipedes[1].data;
   cce_register_error_handler(L, H);
 }
 

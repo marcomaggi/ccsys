@@ -33,7 +33,7 @@
 
 @c To be used as @value{COPYRIGHT_YEARS} whenever we need to include the
 @c list of copyright years.
-@set COPYRIGHT_YEARS            2017
+@set COPYRIGHT_YEARS            2017, 2018
 
 @c ------------------------------------------------------------
 
@@ -52,7 +52,7 @@ This document describes version @value{VERSION} of @value{PACKAGE}, a standard C
 it implements adapters for @posix{} system functions to convert the error reporting mechanism to the
 use of the library CCExceptions.
 
-The package is distributed under the terms of the @gnu{} Lesser General Public License (@gpl{}).
+The package is distributed under the terms of the @gnu{} Lesser General Public License (@lgpl{}).
 
 The latest release can be downloaded from:
 
@@ -99,7 +99,7 @@ included in the section entitled ``@gnu{} Free Documentation License''.
 @ifinfo
 @dircategory Development
 @direntry
-* ccsys: (ccsys).       System functions wrappers for CCExceptions.
+* ccsys: (ccsys).               System functions wrappers for CCExceptions.
 @end direntry
 @end ifinfo
 
@@ -149,13 +149,16 @@ implements adapters for @posix{} functions to convert the error reporting mechan
 the library CCExceptions.  The library supports some @gnu{} C Library functions and some Linux
 functions.
 
-@value{PACKAGE} installs the main header file @file{ccsys.h} along with other headers with names in
-the pattern @file{ccsys-*.h}.  All the function names in the @api{} are prefixed with @code{ccsys_};
-all the preprocessor symbol names are prefixed with @code{CCSYS_}; all the type names are prefixed
-with @code{ccsys_} and suffixed with @code{_t}.
+@value{PACKAGE} installs a single header file @file{ccsys.h}.  All the function names in the @api{}
+are prefixed with @code{ccsys_}; all the preprocessor symbol names are prefixed with @code{CCSYS_};
+all the type names are prefixed with @code{ccsys_} and suffixed with @code{_t}.
 
 @menu
 * overview linking::            Linking code with the library.
+* overview constants::          How system constants are handled.
+* overview arguments::          How system call arguments and return
+                                values are handled.
+* overview structures::         How system structures are handled.
 @end menu
 
 @c page
@@ -201,6 +204,120 @@ gcc -std=c11 -Wall \
 @end example
 
 @c page
+@node overview constants
+@section How system constants are handled
+
+
+On a @posix{} platform, the system header files define a number of preprocessor symbols that expand
+into constants; such constants are used to configure the behaviour of specific system function
+calls.  @value{PACKAGE} is written in such a way that no system header file is included in the
+package's header @file{ccsys.h}, so every constant definition is duplicated in the package's header.
+
+All the constants are redefined as enumerated values, with the same system name prefixed with
+@code{CCSYS_}.  For example, the file mode constants @code{O_RDONLY}, @code{O_WRONLY}, @code{O_RDWR}
+are redefined with the following enumeration:
+
+@example
+enum ccsys_file_mode_t @{
+  CCSYS_O_RDONLY=0,
+  CCSYS_O_WRONLY=1,
+  CCSYS_O_RDWR=2,
+  ...
+@};
+
+typedef enum ccsys_file_mode_t  ccsys_file_mode_t;
+@end example
+
+@noindent
+in which the constant values @samp{0}, @samp{1}, @samp{2} are the result of system inspection at
+package configuration time.
+
+If a symbol is not defined by the underlying platform, @value{PACKAGE} omits its redefinition.  For
+example, in the unlikely case that the underlying platform does not define @code{O_WRONLY}, the
+above redefinition would be:
+
+@example
+enum ccsys_file_mode_t @{
+  CCSYS_O_RDONLY=0,
+  CCSYS_O_RDWR=2,
+  ...
+@};
+@end example
+
+@noindent
+with @code{CCSYS_O_WRONLY} missing.
+
+@c page
+@node overview arguments
+@section How system call arguments and return values are handled
+
+
+@value{PACKAGE} attempts to implement strong typing for system call arguments with a specific
+meaning.  For example, arguments like @var{flags} and @var{mode} in @cfunc{open} are both defined as
+@code{int} by @posix{} but @value{PACKAGE} considers them as having semantic value, so they have
+their type definition; the original system call has the prototype:
+
+@example
+int open(const char *pathname, int flags, mode_t mode);
+@end example
+
+@noindent
+while the @value{PACKAGE} wrapper has the prototype:
+
+@example
+ccsys_fd_t ccsys_open (cce_location_t * L, char const * filename,
+   ccsys_open_flags_t flags, ccsys_open_mode_t mode);
+@end example
+
+@noindent
+both arguments and return values have a @dfn{semantic type}.
+
+The argument and return value semantic types defined by @value{PACKAGE}, are @code{struct} type
+definitions with a single field named @samp{data}; for example, here are possible definitions for
+@cfunc{ccsys_open}:
+
+@example
+typedef struct ccsys_fd_t               ccsys_fd_t;
+typedef struct ccsys_open_flags_t       ccsys_open_flags_t;
+typedef struct ccsys_open_mode_t        ccsys_open_mode_t;
+
+struct ccsys_fd_t               @{ int data; @};
+struct ccsys_open_flags_t       @{ int data; @};
+struct ccsys_open_mode_t        @{ int32_t data; @};
+@end example
+
+@noindent
+when appropriate, the type of the field @samp{data} is determined at package configuration time.
+
+@c page
+@node overview structures
+@section How system structures are handled
+
+
+On a @posix{} platform, the system header files define a number of data structures used to exchange
+values with the system itself.  @value{PACKAGE} is written in such a way that no system header file
+is included in the package's header @file{ccsys.h}, so every data structure definition is duplicated
+in the package's header.
+
+Every duplicated data structure is defined as an opaque type in @file{ccsys.h}.  For example, here
+is a possible redefinition for @code{struct stat}:
+
+@example
+typedef struct ccsys_stat_t     ccsys_stat_t;
+
+struct ccsys_stat_t @{ uint8_t data[144]; @};
+@end example
+
+@noindent
+for each public field in the structure, there is an accessor in the form of an @code{inline}
+function, for example for the @code{st_dev} field:
+
+@example
+ccsys_dev_t ccsys_stat_st_dev (ccsys_stat_t const * S)
+@end example
+
+
+@c page
 @node version
 @chapter Version functions
 
@@ -210,7 +327,7 @@ explanation of interface numbers as managed by @gnu{} Libtool @xref{Libtool vers
 Libtool's versioning system, libtool, Shared library support for @gnu{}}.
 
 
-@deftypefun {const char *} ccsys_version_string (void)
+@deftypefun {char const *} ccsys_version_string (void)
 Return a pointer to a statically allocated @asciiz{} string representing the interface version
 number.
 @end deftypefun
@@ -289,42 +406,62 @@ Wrapper for @cfunc{calloc}.  This function never returns @cnull{}.
 @section Locking memory pages
 
 
-The following symbols are defined in the header file @file{ccsys-system.h}.
+The following symbols are defined in the header file @file{ccsys.h}.
 
 
-@deftypefun void ccsys_mlock (cce_location_t * L, const void * addr, size_t len)
+@deftypefun void ccsys_mlock (cce_location_t * @var{L}, void const * @var{addr}, size_t @var{len})
 Wrapper for @cfunc{mlock}.
 @end deftypefun
 
 
-@deftypefun void ccsys_munlock (cce_location_t * L, const void * addr, size_t len)
+@deftypefun void ccsys_munlock (cce_location_t * @var{L}, void const * @var{addr}, size_t @var{len})
 Wrapper for @cfunc{munlock}.
 @end deftypefun
 
 
-@deftypefun void ccsys_mlockall (cce_location_t * L, int flags)
+@deftypefun void ccsys_mlockall (cce_location_t * @var{L}, ccsys_mlockall_flags_t @var{flags})
 Wrapper for @cfunc{mlockall}.
 @end deftypefun
 
 
-@deftypefun void ccsys_munlockall (cce_location_t * L)
+@deftypefun void ccsys_munlockall (cce_location_t * @var{L})
 Wrapper for @cfunc{munlockall}.
 @end deftypefun
+
+
+@deftp {Semantic Type} ccsys_mlockall_flags_t
+Type of the argument @var{flags} in @cfunc{ccsys_mlockall}.
+@end deftp
+
+
+@deftp {Enum Typedef} ccsys_mlock_flags_t
+@cindex @code{CCSYS_MCL_CURRENT}
+@cindex @code{CCSYS_MCL_FUTURE}
+@cindex @code{CCSYS_MCL_ONFAULT}
+Enumeration of constants for the @var{flags} in @cfunc{ccsys_mlockall}.  It defines the following
+constants:
+
+@example
+CCSYS_MCL_CURRENT
+CCSYS_MCL_FUTURE
+CCSYS_MCL_ONFAULT
+@end example
+@end deftp
 
 @c page
 @node syscalls io
 @section Input/output system calls
 
 
-The following symbols are defined in the header file @file{ccsys-system.h}.
+The following symbols are defined in the header file @file{ccsys.h}.
 
 
-@deftypefun int ccsys_open (cce_location_t * @var{L}, const char * @var{filename}, int @var{flags}, mode_t @var{mode})
+@deftypefun int ccsys_open (cce_location_t * @var{L}, char const * @var{filename}, int @var{flags}, mode_t @var{mode})
 Wrapper for @cfunc{open}.
 @end deftypefun
 
 
-@deftypefun int ccsys_openat (cce_location_t * @var{L}, int @var{dirfd}, const char * @var{filename}, int @var{flags}, mode_t @var{mode})
+@deftypefun int ccsys_openat (cce_location_t * @var{L}, int @var{dirfd}, char const * @var{filename}, int @var{flags}, mode_t @var{mode})
 Wrapper for @cfunc{openat}.
 @end deftypefun
 
@@ -346,13 +483,13 @@ returned by @cfunc{pread} are consumed by this function, so the return value is 
 @end deftypefun
 
 
-@deftypefun size_t ccsys_write (cce_location_t * @var{L}, int @var{filedes}, const void * @var{buffer}, size_t @var{size})
+@deftypefun size_t ccsys_write (cce_location_t * @var{L}, int @var{filedes}, void const * @var{buffer}, size_t @var{size})
 Wrapper for @cfunc{write}.  Notice the return value of type @objtype{size_t}: the negative values
 returned by @cfunc{write} are consumed by this function, so the return value is an unsigned integer.
 @end deftypefun
 
 
-@deftypefun size_t ccsys_pwrite (cce_location_t * @var{L}, int @var{filedes}, const void * @var{buffer}, size_t @var{size}, off_t @var{offset})
+@deftypefun size_t ccsys_pwrite (cce_location_t * @var{L}, int @var{filedes}, void const * @var{buffer}, size_t @var{size}, off_t @var{offset})
 Wrapper for @cfunc{pwrite}.  Notice the return value of type @objtype{size_t}: the negative values
 returned by @cfunc{pwrite} are consumed by this function, so the return value is an unsigned
 integer.
@@ -397,7 +534,7 @@ Wrapper for @cfunc{pipe}.
 @end deftypefun
 
 
-@deftypefun void ccsys_mkfifo (cce_location_t * @var{L}, const char * @var{pathname}, mode_t @var{mode})
+@deftypefun void ccsys_mkfifo (cce_location_t * @var{L}, char const * @var{pathname}, mode_t @var{mode})
 Wrapper for @cfunc{mkfifo}.
 @end deftypefun
 
@@ -406,7 +543,7 @@ Wrapper for @cfunc{mkfifo}.
 @section Memory mapping system calls
 
 
-The following symbols are defined in the header file @file{ccsys-system.h}.
+The following symbols are defined in the header file @file{ccsys.h}.
 
 
 @deftypefun {void *} ccsys_mmap (cce_location_t * @var{L}, void * @var{address}, size_t @var{length}, int @var{protect}, int @var{flags}, int @var{filedes}, off_t @var{offset})
@@ -451,7 +588,7 @@ Wrapper for @cfunc{madvise}.
 @section File system system calls
 
 
-The following symbols are defined in the header file @file{ccsys-system.h}.
+The following symbols are defined in the header file @file{ccsys.h}.
 
 
 @subsubheading Current working directory
@@ -462,7 +599,7 @@ Wrapper for @cfunc{getcwd}.
 @end deftypefun
 
 
-@deftypefun void ccsys_chdir (cce_location_t * @var{L}, const char * @var{pathname})
+@deftypefun void ccsys_chdir (cce_location_t * @var{L}, char const * @var{pathname})
 Wrapper for @cfunc{chdir}.
 @end deftypefun
 
@@ -476,7 +613,7 @@ Wrapper for @cfunc{fchdir}.
 @subsubheading Reading directory entries
 
 
-@deftypefun {DIR *} ccsys_opendir (cce_location_t * @var{L}, const char * @var{pathname})
+@deftypefun {DIR *} ccsys_opendir (cce_location_t * @var{L}, char const * @var{pathname})
 Wrapper for @cfunc{opendir}.
 @end deftypefun
 
@@ -500,12 +637,12 @@ Wrapper for @cfunc{closedir}.
 @subsubheading Making and removing directories
 
 
-@deftypefun void ccsys_mkdir (cce_location_t * @var{L}, const char * @var{pathname}, mode_t @var{mode})
+@deftypefun void ccsys_mkdir (cce_location_t * @var{L}, char const * @var{pathname}, mode_t @var{mode})
 Wrapper for @cfunc{mkdir}.
 @end deftypefun
 
 
-@deftypefun void ccsys_rmdir (cce_location_t * @var{L}, const char * @var{pathname})
+@deftypefun void ccsys_rmdir (cce_location_t * @var{L}, char const * @var{pathname})
 Wrapper for @cfunc{rmdir}.
 @end deftypefun
 
@@ -514,41 +651,41 @@ Wrapper for @cfunc{rmdir}.
 @subsubheading Hard and symbolic links
 
 
-@deftypefun void ccsys_link (cce_location_t * @var{L}, const char * @var{oldname}, const char * @var{newname})
+@deftypefun void ccsys_link (cce_location_t * @var{L}, char const * @var{oldname}, char const * @var{newname})
 Wrapper for @cfunc{link}.
 @end deftypefun
 
 
-@deftypefun void ccsys_linkat (cce_location_t * @var{L}, int @var{olddirfd}, const char * @var{oldname}, int @var{newdirfd}, const char * @var{newname}, int @var{flags})
+@deftypefun void ccsys_linkat (cce_location_t * @var{L}, int @var{olddirfd}, char const * @var{oldname}, int @var{newdirfd}, char const * @var{newname}, int @var{flags})
 Wrapper for @cfunc{linkat}.
 @end deftypefun
 
 
-@deftypefun void ccsys_symlink (cce_location_t * @var{L}, const char * @var{oldname}, const char * @var{newname})
+@deftypefun void ccsys_symlink (cce_location_t * @var{L}, char const * @var{oldname}, char const * @var{newname})
 Wrapper for @cfunc{symlink}.
 @end deftypefun
 
 
-@deftypefun void ccsys_symlinkat (cce_location_t * @var{L}, const char * @var{oldname}, int @var{newdirfd}, const char * @var{newname})
+@deftypefun void ccsys_symlinkat (cce_location_t * @var{L}, char const * @var{oldname}, int @var{newdirfd}, char const * @var{newname})
 Wrapper for @cfunc{symlinkat}.
 @end deftypefun
 
 
-@deftypefun size_t ccsys_readlink (cce_location_t * @var{L}, const char * @var{filename}, char * @var{buffer}, size_t @var{size})
+@deftypefun size_t ccsys_readlink (cce_location_t * @var{L}, char const * @var{filename}, char * @var{buffer}, size_t @var{size})
 Wrapper for @cfunc{readlink}.  Notice the return value of type @objtype{size_t}, rather than the
 original @objtype{ssize_t}: the wrapper function returns a non--negative integer because the error
 conditions cause a non--local exit.
 @end deftypefun
 
 
-@deftypefun size_t ccsys_readlinkat (cce_location_t * @var{L}, int @var{dirfd}, const char * @var{filename}, char * @var{buffer}, size_t @var{size})
+@deftypefun size_t ccsys_readlinkat (cce_location_t * @var{L}, int @var{dirfd}, char const * @var{filename}, char * @var{buffer}, size_t @var{size})
 Wrapper for @cfunc{readlinkat}.  Notice the return value of type @objtype{size_t}, rather than the
 original @objtype{ssize_t}: the wrapper function returns a non--negative integer because the error
 conditions cause a non--local exit.
 @end deftypefun
 
 
-@deftypefun {char *} ccsys_realpath (cce_location_t * @var{L}, const char * @var{pathname}, char * @var{resolved_path})
+@deftypefun {char *} ccsys_realpath (cce_location_t * @var{L}, char const * @var{pathname}, char * @var{resolved_path})
 Wrapper for @cfunc{realpath}.  Notice that this function never returns @cnull{}.
 @end deftypefun
 
@@ -578,17 +715,17 @@ exception with condition object of type @objtype{ccsys_unimplemented_C_t}.
 @subsubheading Removing files
 
 
-@deftypefun void ccsys_unlink (cce_location_t * @var{L}, const char * @var{filename})
+@deftypefun void ccsys_unlink (cce_location_t * @var{L}, char const * @var{filename})
 Wrapper for @cfunc{unlink}.
 @end deftypefun
 
 
-@deftypefun void ccsys_unlinkat (cce_location_t * @var{L}, int @var{dirfd}, const char * @var{filename}, int @var{flags})
+@deftypefun void ccsys_unlinkat (cce_location_t * @var{L}, int @var{dirfd}, char const * @var{filename}, int @var{flags})
 Wrapper for @cfunc{unlinkat}.
 @end deftypefun
 
 
-@deftypefun void ccsys_remove (cce_location_t * @var{L}, const char * @var{pathname})
+@deftypefun void ccsys_remove (cce_location_t * @var{L}, char const * @var{pathname})
 Wrapper for @cfunc{remove}.  This function removes both files and empty directories.
 @end deftypefun
 
@@ -597,7 +734,7 @@ Wrapper for @cfunc{remove}.  This function removes both files and empty director
 @subsubheading Renaming files
 
 
-@deftypefun void ccsys_rename (cce_location_t * @var{L}, const char * @var{oldname}, const char * @var{newname})
+@deftypefun void ccsys_rename (cce_location_t * @var{L}, char const * @var{oldname}, char const * @var{newname})
 Wrapper for @cfunc{rename}.
 @end deftypefun
 
@@ -606,7 +743,7 @@ Wrapper for @cfunc{rename}.
 @subsubheading Inspecting the file system
 
 
-@deftypefun void ccsys_stat (cce_location_t * @var{L}, const char * @var{pathname}, struct stat * @var{buf})
+@deftypefun void ccsys_stat (cce_location_t * @var{L}, char const * @var{pathname}, struct stat * @var{buf})
 Wrapper for @cfunc{stat}.
 @end deftypefun
 
@@ -616,7 +753,7 @@ Wrapper for @cfunc{fstat}.
 @end deftypefun
 
 
-@deftypefun void ccsys_lstat (cce_location_t * @var{L}, const char * @var{pathname}, struct stat * @var{buf})
+@deftypefun void ccsys_lstat (cce_location_t * @var{L}, char const * @var{pathname}, struct stat * @var{buf})
 Wrapper for @cfunc{lstat}.
 @end deftypefun
 
@@ -625,7 +762,7 @@ Wrapper for @cfunc{lstat}.
 @subsubheading File system attributes
 
 
-@deftypefun void ccsys_chown (cce_location_t * @var{L}, const char * @var{pathname}, uid_t @var{owner}, gid_t @var{group})
+@deftypefun void ccsys_chown (cce_location_t * @var{L}, char const * @var{pathname}, uid_t @var{owner}, gid_t @var{group})
 Wrapper for @cfunc{chown}.
 @end deftypefun
 
@@ -635,17 +772,17 @@ Wrapper for @cfunc{fchown}.
 @end deftypefun
 
 
-@deftypefun void ccsys_lchown (cce_location_t * @var{L}, const char * @var{pathname}, uid_t @var{owner}, gid_t @var{group})
+@deftypefun void ccsys_lchown (cce_location_t * @var{L}, char const * @var{pathname}, uid_t @var{owner}, gid_t @var{group})
 Wrapper for @cfunc{lchown}.
 @end deftypefun
 
 
-@deftypefun void ccsys_fchownat (cce_location_t * @var{L}, int @var{dirfd}, const char * @var{pathname}, uid_t @var{owner}, gid_t @var{group}, int @var{flags})
+@deftypefun void ccsys_fchownat (cce_location_t * @var{L}, int @var{dirfd}, char const * @var{pathname}, uid_t @var{owner}, gid_t @var{group}, int @var{flags})
 Wrapper for @cfunc{fchownat}.
 @end deftypefun
 
 
-@deftypefun void ccsys_chmod (cce_location_t * @var{L}, const char * @var{pathname}, mode_t @var{mode})
+@deftypefun void ccsys_chmod (cce_location_t * @var{L}, char const * @var{pathname}, mode_t @var{mode})
 Wrapper for @cfunc{chmod}.
 @end deftypefun
 
@@ -655,18 +792,18 @@ Wrapper for @cfunc{fchmod}.
 @end deftypefun
 
 
-@deftypefun void ccsys_fchmodat (cce_location_t * @var{L}, int @var{dirfd}, const char * @var{pathname}, mode_t @var{mode}, int @var{flags})
+@deftypefun void ccsys_fchmodat (cce_location_t * @var{L}, int @var{dirfd}, char const * @var{pathname}, mode_t @var{mode}, int @var{flags})
 Wrapper for @cfunc{fchmodat}.
 @end deftypefun
 
 
-@deftypefun int ccsys_access (cce_location_t * @var{L}, const char * @var{pathname}, int @var{how})
+@deftypefun int ccsys_access (cce_location_t * @var{L}, char const * @var{pathname}, int @var{how})
 Wrapper for @cfunc{access}.  The return value is @samp{0} if access is denied; the return value is
 @samp{-1} if access is granted.
 @end deftypefun
 
 
-@deftypefun int ccsys_faccessat (cce_location_t * @var{L}, int @var{dirfd}, const char * @var{pathname}, int @var{how}, int @var{flags})
+@deftypefun int ccsys_faccessat (cce_location_t * @var{L}, int @var{dirfd}, char const * @var{pathname}, int @var{how}, int @var{flags})
 Wrapper for @cfunc{faccessat}.
 @end deftypefun
 
@@ -675,17 +812,17 @@ Wrapper for @cfunc{faccessat}.
 @subsubheading File times
 
 
-@deftypefun void ccsys_utime (cce_location_t * @var{L}, const char * @var{pathname}, const struct utimbuf * @var{times})
+@deftypefun void ccsys_utime (cce_location_t * @var{L}, char const * @var{pathname}, const struct utimbuf * @var{times})
 Wrapper for @cfunc{utime}.
 @end deftypefun
 
 
-@deftypefun void ccsys_utimes (cce_location_t * @var{L}, const char * @var{pathname}, const struct timeval @var{TVP} [2])
+@deftypefun void ccsys_utimes (cce_location_t * @var{L}, char const * @var{pathname}, const struct timeval @var{TVP} [2])
 Wrapper for @cfunc{utimes}.
 @end deftypefun
 
 
-@deftypefun void ccsys_lutimes (cce_location_t * @var{L}, const char * @var{pathname}, const struct timeval @var{TVP} [2])
+@deftypefun void ccsys_lutimes (cce_location_t * @var{L}, char const * @var{pathname}, const struct timeval @var{TVP} [2])
 Wrapper for @cfunc{lutimes}.
 @end deftypefun
 
@@ -699,7 +836,7 @@ Wrapper for @cfunc{futimes}.
 @subsubheading Truncating files
 
 
-@deftypefun void ccsys_truncate (cce_location_t * @var{L}, const char * @var{pathname}, off_t @var{length})
+@deftypefun void ccsys_truncate (cce_location_t * @var{L}, char const * @var{pathname}, off_t @var{length})
 Wrapper for @cfunc{truncate}.
 @end deftypefun
 
@@ -714,7 +851,7 @@ Wrapper for @cfunc{ftruncate}.
 @section Socket system calls
 
 
-The following symbols are defined in the header file @file{ccsys-networking.h}.
+The following symbols are defined in the header file @file{ccsys.h}.
 
 
 @deftypefun void ccsys_bind (cce_location_t * @var{L}, int @var{socket}, struct sockaddr * @var{addr}, socklen_t @var{length})
@@ -727,12 +864,12 @@ Wrapper for @cfunc{getsockname}.
 @end deftypefun
 
 
-@deftypefun void ccsys_inet_aton (cce_location_t * @var{L}, const char * @var{name}, struct in_addr * @var{addr})
+@deftypefun void ccsys_inet_aton (cce_location_t * @var{L}, char const * @var{name}, struct in_addr * @var{addr})
 Wrapper for @cfunc{inet_aton}.
 @end deftypefun
 
 
-@deftypefun in_addr_t ccsys_inet_network (cce_location_t * @var{L}, const char * @var{name})
+@deftypefun in_addr_t ccsys_inet_network (cce_location_t * @var{L}, char const * @var{name})
 Wrapper for @cfunc{inet_network}.
 @end deftypefun
 
@@ -772,7 +909,7 @@ Wrapper for @cfunc{getpeername}.
 @end deftypefun
 
 
-@deftypefun size_t ccsys_send (cce_location_t * @var{L}, int @var{socket}, const void * @var{buffer}, size_t @var{size}, int @var{flags})
+@deftypefun size_t ccsys_send (cce_location_t * @var{L}, int @var{socket}, void const * @var{buffer}, size_t @var{size}, int @var{flags})
 Wrapper for @cfunc{send}.
 @end deftypefun
 
@@ -782,7 +919,7 @@ Wrapper for @cfunc{recv}.
 @end deftypefun
 
 
-@deftypefun size_t ccsys_sendto (cce_location_t * @var{L}, int @var{socket}, const void * @var{buffer}, size_t @var{size}, int @var{flags}, struct sockaddr * @var{addr}, socklen_t @var{length})
+@deftypefun size_t ccsys_sendto (cce_location_t * @var{L}, int @var{socket}, void const * @var{buffer}, size_t @var{size}, int @var{flags}, struct sockaddr * @var{addr}, socklen_t @var{length})
 Wrapper for @cfunc{sendto}.
 @end deftypefun
 
@@ -797,7 +934,7 @@ Wrapper for @cfunc{getsockopt}.
 @end deftypefun
 
 
-@deftypefun void ccsys_setsockopt (cce_location_t * @var{L}, int @var{socket}, int @var{level}, int @var{optname}, const void * @var{optval}, socklen_t @var{optlen})
+@deftypefun void ccsys_setsockopt (cce_location_t * @var{L}, int @var{socket}, int @var{level}, int @var{optname}, void const * @var{optval}, socklen_t @var{optlen})
 Wrapper for @cfunc{setsockopt}.
 @end deftypefun
 
@@ -806,10 +943,10 @@ Wrapper for @cfunc{setsockopt}.
 @section Process system calls
 
 
-The following symbols are defined in the header file @file{ccsys-system.h}.
+The following symbols are defined in the header file @file{ccsys.h}.
 
 
-@deftypefun int ccsys_system (cce_location_t * @var{L}, const char * @var{command})
+@deftypefun int ccsys_system (cce_location_t * @var{L}, char const * @var{command})
 Wrapper for @cfunc{system}.
 @end deftypefun
 
@@ -819,17 +956,17 @@ Wrapper for @cfunc{fork}.
 @end deftypefun
 
 
-@deftypefun void ccsys_execv (cce_location_t * @var{L}, const char * @var{filename}, char * const @var{argv} [])
+@deftypefun void ccsys_execv (cce_location_t * @var{L}, char const * @var{filename}, char * const @var{argv} [])
 Wrapper for @cfunc{execv}.
 @end deftypefun
 
 
-@deftypefun void ccsys_execve (cce_location_t * @var{L}, const char * @var{filename}, char * const @var{argv} [], char * const @var{env} [])
+@deftypefun void ccsys_execve (cce_location_t * @var{L}, char const * @var{filename}, char * const @var{argv} [], char * const @var{env} [])
 Wrapper for @cfunc{execve}.
 @end deftypefun
 
 
-@deftypefun void ccsys_execvp (cce_location_t * @var{L}, const char * @var{filename}, char * const @var{argv} [])
+@deftypefun void ccsys_execvp (cce_location_t * @var{L}, char const * @var{filename}, char * const @var{argv} [])
 Wrapper for @cfunc{execvp}.
 @end deftypefun
 
@@ -904,7 +1041,7 @@ if (cce_location(L)) @{
 @}
 @end example
 
-The following symbols are defined in the header file @file{ccsys-system.h}.
+The following symbols are defined in the header file @file{ccsys.h}.
 
 
 @deftypefun void ccsys_cleanup_handler_filedes_init (cce_location_t * @var{L}, cce_handler_t * @var{H}, int @var{fd})
@@ -937,7 +1074,7 @@ if (cce_location(L)) @{
 @}
 @end example
 
-The following symbols are defined in the header file @file{ccsys-system.h}.
+The following symbols are defined in the header file @file{ccsys.h}.
 
 
 @deftypefun void ccsys_cleanup_handler_pipedes_init (cce_location_t * @var{L}, cce_handler_t * @var{H}, int @var{pipedes}[2])
@@ -975,11 +1112,11 @@ we can use the source code of this handler as template to implement a more compl
 Remember that a good way to create temporary files is to use the @posix{} standard function
 @cfunc{mkstemp}.
 
-The following symbols are defined in the header file @file{ccsys-system.h}.
+The following symbols are defined in the header file @file{ccsys.h}.
 
 
-@deftypefun void ccsys_cleanup_handler_tmpfile_init (cce_location_t * @var{L}, cce_handler_t * @var{H}, const char * @var{pathname})
-@deftypefunx void ccsys_error_handler_tmpfile_init (cce_location_t * @var{L}, cce_handler_t * @var{H}, const char * @var{pathname})
+@deftypefun void ccsys_cleanup_handler_tmpfile_init (cce_location_t * @var{L}, cce_handler_t * @var{H}, char const * @var{pathname})
+@deftypefunx void ccsys_error_handler_tmpfile_init (cce_location_t * @var{L}, cce_handler_t * @var{H}, char const * @var{pathname})
 Register @var{H} as cleanup or error handler in the context of @var{L}.  The handler function will
 remove the file whose pathname is @var{pathname} using the standard function @cfunc{remove}; errors
 in @cfunc{remove} are @strong{ignored}.
@@ -1018,11 +1155,11 @@ can use the source code of this handler as template to implement a more complete
 Remember that a good way to create temporary files is to use the function @cfunc{mkdtemp}
 implemented by the @gnu{} C Library.
 
-The following symbols are defined in the header file @file{ccsys-system.h}.
+The following symbols are defined in the header file @file{ccsys.h}.
 
 
-@deftypefun void ccsys_cleanup_handler_tmpdir_init (cce_location_t * @var{L}, cce_handler_t * @var{H}, const char * @var{pathname})
-@deftypefunx void ccsys_error_handler_tmpdir_init (cce_location_t * @var{L}, cce_handler_t * @var{H}, const char * @var{pathname})
+@deftypefun void ccsys_cleanup_handler_tmpdir_init (cce_location_t * @var{L}, cce_handler_t * @var{H}, char const * @var{pathname})
+@deftypefunx void ccsys_error_handler_tmpdir_init (cce_location_t * @var{L}, cce_handler_t * @var{H}, char const * @var{pathname})
 Register @var{H} as cleanup or error handler in the context of @var{L}.  The handler function will
 remove the directory whose pathname is @var{pathname} using the standard function @cfunc{rmdir};
 errors in @cfunc{rmdir} are @strong{ignored}.  The directory is removed only if it is empty.
@@ -1045,7 +1182,7 @@ closing it with @cfunc{closedir}:
 @example
 cce_location_t  L[1];
 cce_handler_t   dirstream_H[1];
-const char *    pathname = "./";
+char const *    pathname = "./";
 
 if (cce_location(L)) @{
   ccsys_run_error_handlers(L);
@@ -1069,7 +1206,7 @@ if (cce_location(L)) @{
 The handler documented here will ignore errors returned by @cfunc{closedir}, which is generally bad;
 we can use the source code of this handler as template to implement a more complete procedure.
 
-The following symbols are defined in the header file @file{ccsys-system.h}.
+The following symbols are defined in the header file @file{ccsys.h}.
 
 
 @deftypefun void ccsys_cleanup_handler_dirstream_init (cce_location_t * @var{L}, cce_handler_t * @var{H}, DIR * @var{dirstream})

@@ -7,7 +7,7 @@
 
 
 
-  Copyright (C) 2017 Marco Maggi <marco.maggi-ipsu@poste.it>
+  Copyright (C) 2017, 2018 Marco Maggi <marco.maggi-ipsu@poste.it>
 
   This is free software; you can  redistribute it and/or modify it under
   the terms of the GNU Lesser General Public License as published by the
@@ -113,11 +113,11 @@ ccsys_munlock (cce_location_t * L, const void * addr, size_t len)
 
 #ifdef HAVE_MLOCKALL
 void
-ccsys_mlockall (cce_location_t * L, int flags)
+ccsys_mlockall (cce_location_t * L, ccsys_mlockall_flags_t flags)
 {
   int	rv;
   errno = 0;
-  rv = mlockall(flags);
+  rv = mlockall(flags.data);
   if (-1 == rv) {
     cce_raise(L, cce_condition_new_errno_clear());
   }
@@ -144,11 +144,11 @@ ccsys_munlockall (cce_location_t * L)
 
 #ifdef HAVE_MMAP
 void *
-ccsys_mmap (cce_location_t * L, void * address, size_t length, int protect, int flags, int filedes, off_t offset)
+ccsys_mmap (cce_location_t * L, void * address, size_t length, int protect, int flags, ccsys_fd_t filedes, ccsys_off_t offset)
 {
   void *	rv;
   errno = 0;
-  rv = mmap(address, length, protect, flags, filedes, offset);
+  rv = mmap(address, length, protect, flags, filedes.data, (off_t)(offset.data));
   if (MAP_FAILED != rv) {
     return rv;
   } else {

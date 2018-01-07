@@ -51,6 +51,7 @@ extern "C" {
 #include <stdint.h>
 #include <stddef.h> /* for offsetof() */
 #include <setjmp.h>
+#include <string.h>
 #include <errno.h>
 #include <unistd.h>
 

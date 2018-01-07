@@ -7,7 +7,7 @@ dnl Abstract
 dnl
 dnl	Macros used in "configure.ac".
 dnl
-dnl Copyright (C) 2017 Marco Maggi <marco.maggi-ipsu@poste.it>
+dnl Copyright (C) 2017, 2018 Marco Maggi <marco.maggi-ipsu@poste.it>
 dnl
 dnl This program is free software: you can redistribute it and/or modify
 dnl it  under the  terms of  the GNU  Lesser General  Public License  as
@@ -78,6 +78,12 @@ AC_DEFUN([CCSYS_STDDEF_HEADER],[
 AC_DEFUN([CCSYS_SYS_TYPES_HEADER],[
 #ifdef HAVE_SYS_TYPES_H
 #  include <sys/types.h>
+#endif
+])
+
+AC_DEFUN([CCSYS_SYS_MMAN_HEADER],[
+#ifdef HAVE_SYS_MMAN_H
+#  include <sys/mman.h>
 #endif
 ])
 
