@@ -121,8 +121,14 @@ included in the section entitled ``@gnu{} Free Documentation License''.
 @menu
 * overview::                    Overview of the package.
 * version::                     Version functions.
-* syscalls::                    System call adapters.
-* syshandlers::                 Predefined exception handlers.
+* alloc::                       Memory allocation.
+* mlock::                       Locking memory pages.
+* io::                          Input/output system calls.
+* mmap::                        Memory mapping system calls.
+* fs::                          File system system calls.
+* sockets::                     Socket system calls.
+* process::                     Process system calls.
+* handlers::                 Predefined exception handlers.
 
 Appendices
 
@@ -155,6 +161,7 @@ all the type names are prefixed with @code{ccsys_} and suffixed with @code{_t}.
 
 @menu
 * overview linking::            Linking code with the library.
+* overview api::                Programming interface.
 * overview constants::          How system constants are handled.
 * overview arguments::          How system call arguments and return
                                 values are handled.
@@ -202,6 +209,28 @@ gcc -std=c11 -Wall \
    `pkg-config ccsys --libs` \
    -o demo demo.c
 @end example
+
+@c page
+@node overview api
+@section Programming interface
+
+
+@value{PACKAGE} defines function wrappers for the most common @posix{}, @gnu{} C Library and Linux
+system calls.  Each wrapper accepts a pointer to @objtype{cce_location_t} as argument and, in case
+of error, it will perform a non--local exit by jumping to the selected location.
+
+Each wrapper function accepts the same arguments of the system call and returns the same return
+value of the system call (if it completes successfully).
+
+All the wrappers reset @code{errno} to zero before performing the system call and reset it to zero
+before returning.  In case of error: the raised exceptional condition objects are of type
+@objtype{cce_condition_errno_t}.
+
+The library assumes to run on a @posix{} system, so the @posix{} system calls are available by
+default.  The @gnu{} C Library and Linux calls are available only if the package was configured
+with, respectively, @option{--enable-glibc} and @option{--enable-linux}.  If a system call is not
+available: the associated wrapper will raise an exception of type
+@objtype{cce_condition_unimplemented_t}.
 
 @c page
 @node overview constants
@@ -348,40 +377,8 @@ Return an integer representing the library interface current age.
 @end deftypefun
 
 @c page
-@node syscalls
-@chapter System call adapters
-
-
-@value{PACKAGE} defines function wrappers for the most common @posix{}, @gnu{} C Library and Linux
-system calls.  Each wrapper accepts a pointer to @objtype{cce_location_t} as argument and, in case
-of error, it will perform a non--local exit by jumping to the selected location.
-
-The wrapper functions accept the same arguments of the system call and return the same return value
-of the system call (if it completes successfully).
-
-All the wrappers reset @code{errno} to zero before performing the system call and reset it to zero
-before returning.  In case of error: the raised exceptional condition objects are of type
-@objtype{ccsys_condition_errno_t}.
-
-The library assumes to run on a @posix{} system, so the @posix{} system calls are available by
-default.  The @gnu{} C Library and Linux calls are available only if the package was configured
-with, respectively, @option{--enable-glibc} and @option{--enable-linux}.  If a system call is not
-available: the associated wrapper will raise an exception of type
-@objtype{ccsys_condition_unimplemented_t}.
-
-@menu
-* syscalls alloc::              Memory allocation.
-* syscalls mlock::              Locking memory pages.
-* syscalls io::                 Input/output system calls.
-* syscalls mmap::               Memory mapping system calls.
-* syscalls fs::                 File system system calls.
-* syscalls sockets::            Socket system calls.
-* syscalls process::            Process system calls.
-@end menu
-
-@c page
-@node syscalls alloc
-@section Memory allocation
+@node alloc
+@chapter Memory allocation
 
 
 The following symbols are defined in the header file @file{ccsys.h}.
@@ -402,8 +399,8 @@ Wrapper for @cfunc{calloc}.  This function never returns @cnull{}.
 @end deftypefun
 
 @c page
-@node syscalls mlock
-@section Locking memory pages
+@node mlock
+@chapter Locking memory pages
 
 
 The following symbols are defined in the header file @file{ccsys.h}.
@@ -449,8 +446,8 @@ CCSYS_MCL_ONFAULT
 @end deftp
 
 @c page
-@node syscalls io
-@section Input/output system calls
+@node io
+@chapter Input/output system calls
 
 
 The following symbols are defined in the header file @file{ccsys.h}.
@@ -539,8 +536,8 @@ Wrapper for @cfunc{mkfifo}.
 @end deftypefun
 
 @c page
-@node syscalls mmap
-@section Memory mapping system calls
+@node mmap
+@chapter Memory mapping system calls
 
 
 The following symbols are defined in the header file @file{ccsys.h}.
@@ -584,8 +581,8 @@ Wrapper for @cfunc{madvise}.
 @end deftypefun
 
 @c page
-@node syscalls fs
-@section File system system calls
+@node fs
+@chapter File system system calls
 
 
 The following symbols are defined in the header file @file{ccsys.h}.
@@ -847,8 +844,8 @@ Wrapper for @cfunc{ftruncate}.
 
 
 @c page
-@node syscalls sockets
-@section Socket system calls
+@node sockets
+@chapter Socket system calls
 
 
 The following symbols are defined in the header file @file{ccsys.h}.
@@ -939,8 +936,8 @@ Wrapper for @cfunc{setsockopt}.
 @end deftypefun
 
 @c page
-@node syscalls process
-@section Process system calls
+@node process
+@chapter Process system calls
 
 
 The following symbols are defined in the header file @file{ccsys.h}.
@@ -976,21 +973,21 @@ Wrapper for @cfunc{waitpid}.
 @end deftypefun
 
 @c page
-@node syshandlers
+@node handlers
 @chapter Predefined exception handlers
 
 
 @menu
-* syshandlers malloc::          Handler for allocated memory.
-* syshandlers filedes::         Handler for file descriptors.
-* syshandlers pipedes::         Handler for pipe descriptors.
-* syshandlers tmpfile::         Handler for temporary files.
-* syshandlers tmpdir::          Handler for temporary directories.
-* syshandlers dirstream::       Handler for directory streams.
+* handlers malloc::             Handler for allocated memory.
+* handlers filedes::            Handler for file descriptors.
+* handlers pipedes::            Handler for pipe descriptors.
+* handlers tmpfile::            Handler for temporary files.
+* handlers tmpdir::             Handler for temporary directories.
+* handlers dirstream::          Handler for directory streams.
 @end menu
 
 @c page
-@node syshandlers malloc
+@node handlers malloc
 @section Handler for allocated memory
 
 
@@ -1020,7 +1017,7 @@ release the memory block referenced by @var{P} using the standard function @cfun
 @end deftypefun
 
 @c page
-@node syshandlers filedes
+@node handlers filedes
 @section Handler for file descriptors
 
 
@@ -1052,7 +1049,7 @@ release the file descriptor @var{fd} using the standard function @cfunc{close}; 
 @end deftypefun
 
 @c page
-@node syshandlers pipedes
+@node handlers pipedes
 @section Handler for file descriptors
 
 
@@ -1085,7 +1082,7 @@ release the file descriptors in @var{pipedes} using the standard function @cfunc
 @end deftypefun
 
 @c page
-@node syshandlers tmpfile
+@node handlers tmpfile
 @section Handler for temporary files
 
 
@@ -1129,7 +1126,7 @@ exit to @var{L}.
 @end deftypefun
 
 @c page
-@node syshandlers tmpdir
+@node handlers tmpdir
 @section Handler for temporary files
 
 
@@ -1172,7 +1169,7 @@ exit to @var{L}.
 @end deftypefun
 
 @c page
-@node syshandlers dirstream
+@node handlers dirstream
 @section Handler for directory streams
 
 
