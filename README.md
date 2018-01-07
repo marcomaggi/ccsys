@@ -18,7 +18,7 @@ GNU+Linux system.
 
 ## License
 
-Copyright (c) 2017 Marco Maggi <marco.maggi-ipsu@poste.it>
+Copyright (c) 2017, 2018 Marco Maggi <marco.maggi-ipsu@poste.it>
 
 This program is free software: you  can redistribute it and/or modify it
 under the terms of the GNU Lesser General Public License as published by
