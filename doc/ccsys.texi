@@ -128,7 +128,7 @@ included in the section entitled ``@gnu{} Free Documentation License''.
 * fs::                          File system system calls.
 * sockets::                     Socket system calls.
 * process::                     Process system calls.
-* handlers::                 Predefined exception handlers.
+* handlers::                    Predefined exception handlers.
 
 Appendices
 
