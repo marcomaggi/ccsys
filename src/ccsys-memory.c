@@ -237,7 +237,7 @@ ccsys_madvise (cce_location_t * L, void * address, size_t length, int advice)
  ** Predefined POSIX exception handler: malloc pointer.
  ** ----------------------------------------------------------------- */
 
-__attribute__((nonnull(1,2)))
+__attribute__((__nonnull__(1,2)))
 static void
 cce_handler_malloc_function (const cce_condition_t * C CCE_UNUSED, cce_handler_t * H)
 {
@@ -259,6 +259,71 @@ ccsys_error_handler_malloc_init (cce_location_t * L, cce_handler_t * H, void * p
   H->function	= cce_handler_malloc_function;
   H->pointer	= pointer;
   cce_register_error_handler(L, H);
+}
+
+
+/** --------------------------------------------------------------------
+ ** System wrappers: guarded memory allocation.
+ ** ----------------------------------------------------------------- */
+
+void *
+ccsys_malloc_guarded_cleanup (cce_location_t * L, cce_cleanup_handler_t * P_H, size_t size)
+{
+  void *	P = ccsys_malloc(L, size);
+  cce_cleanup_handler_malloc_init(L, &(P_H->handler), P);
+  return P;
+}
+
+void *
+ccsys_malloc_guarded_error (cce_location_t * L, cce_error_handler_t * P_H, size_t size)
+{
+  void *	P = ccsys_malloc(L, size);
+  cce_error_handler_malloc_init(L, &(P_H->handler), P);
+  return P;
+}
+
+/* ------------------------------------------------------------------ */
+
+void *
+ccsys_realloc_guarded_cleanup (cce_location_t * L, cce_cleanup_handler_t * P_H, void * old_P, size_t newsize)
+{
+  if (P_H->handler.pointer == old_P) {
+    void *	P = ccsys_realloc(L, old_P, newsize);
+    P_H->handler.pointer = P;
+    return P;
+  } else {
+    cce_raise(L, cce_condition_new_invalid_argument(L, __func__, 2));
+  }
+}
+
+void *
+ccsys_realloc_guarded_error (cce_location_t * L, cce_error_handler_t * P_H, void * old_P, size_t newsize)
+{
+  if (P_H->handler.pointer == old_P) {
+    void *	P = ccsys_realloc(L, old_P, newsize);
+    P_H->handler.pointer = P;
+    return P;
+  } else {
+    cce_raise(L, cce_condition_new_invalid_argument(L, __func__, 2));
+  }
+}
+
+/* ------------------------------------------------------------------ */
+
+void *
+ccsys_calloc_guarded_cleanup (cce_location_t * L, cce_cleanup_handler_t * P_H, size_t count, size_t eltsize)
+{
+  void *	P = ccsys_calloc(L, count, eltsize);
+  cce_cleanup_handler_malloc_init(L, &(P_H->handler), P);
+  return P;
+}
+
+void *
+ccsys_calloc_guarded_error (cce_location_t * L, cce_error_handler_t * P_H, size_t count, size_t eltsize)
+{
+  void *	P = ccsys_calloc(L, count, eltsize);
+  cce_error_handler_malloc_init(L, &(P_H->handler), P);
+  return P;
 }
 
 /* end of file */

@@ -978,7 +978,7 @@ Wrapper for @cfunc{waitpid}.
 
 
 @menu
-* handlers malloc::             Handler for allocated memory.
+* handlers memory::             Handler for allocated memory.
 * handlers filedes::            Handler for file descriptors.
 * handlers pipedes::            Handler for pipe descriptors.
 * handlers tmpfile::            Handler for temporary files.
@@ -987,27 +987,36 @@ Wrapper for @cfunc{waitpid}.
 @end menu
 
 @c page
-@node handlers malloc
+@node handlers memory
 @section Handler for allocated memory
+
+
+@menu
+* handler memory malloc::       Handlers for allocated memory.
+* handler memory gmalloc::      Guarded allocation: @cfunc{malloc}.
+* handler memory gcalloc::      Guarded allocation: @cfunc{calloc}.
+* handler memory grealloc::     Guarded allocation: @cfunc{realloc}.
+@end menu
+
+@c page
+@node handler memory malloc
+@subsection Handlers for allocated memory
 
 
 We can handle memory that must be released with the standard function @cfunc{free} as follows:
 
 @example
 cce_location_t  L[1];
-cce_handler_t   H[1];
+cce_handler_t   P_H[1];
 
 if (cce_location(L)) @{
-  ccsys_run_error_handlers(L);
-  ccsys_condition_delete(ccsys_condition(L));
+  cce_run_error_handlers_final(L);
 @} else @{
   void *        P = ccsys_malloc(L, 4096);
-  ccsys_cleanup_handler_malloc_init(L, H, P);
-  ccsys_run_cleanup_handlers(L);
+  ccsys_cleanup_handler_malloc_init(L, P_H, P);
+  cce_run_cleanup_handlers(L);
 @}
 @end example
-
-The following symbols are defined in the header file @file{ccsys.h}.
 
 
 @deftypefun void ccsys_cleanup_handler_malloc_init (cce_location_t * @var{L}, cce_handler_t * @var{H}, void * @var{P})
@@ -1015,6 +1024,139 @@ The following symbols are defined in the header file @file{ccsys.h}.
 Register @var{H} as cleanup or error handler in the context of @var{L}.  The handler function will
 release the memory block referenced by @var{P} using the standard function @cfunc{free}.
 @end deftypefun
+
+@c page
+@node handler memory gmalloc
+@subsection Guarded allocation: @cfunc{malloc}
+
+
+To allocate memory using a cleanup handler with a guarded function, we can do:
+
+@example
+cce_location_t          L[1];
+cce_cleanup_handler_t   P_H[1];
+
+if (cce_location(L)) @{
+  cce_run_error_handlers_final(L);
+@} else @{
+  void *  P = ccsys_malloc_guarded(L, P_H, 1024);
+
+  /* Do something with P. */
+  cce_run_cleanup_handlers(L);
+@}
+@end example
+
+@noindent
+while to use an error handler we can do:
+
+@example
+cce_location_t          L[1];
+cce_error_handler_t     P_H[1];
+
+if (cce_location(L)) @{
+  cce_run_error_handlers_final(L);
+@} else @{
+  void *  P = ccsys_malloc_guarded(L, P_H, 1024);
+
+  /* Do something with P. */
+  cce_run_cleanup_handlers(L);
+@}
+@end example
+
+
+@deftypefun {void *} ccsys_malloc_guarded_cleanup (cce_location_t * @var{L}, cce_cleanup_handler_t * @var{P_H}, size_t @var{size})
+Like @cfunc{ccsys_malloc}, but register the resulting pointer in the handler referenced by
+@var{P_H}.
+@end deftypefun
+
+
+@deftypefun {void *} ccsys_malloc_guarded_error (cce_location_t * @var{L}, cce_error_handler_t * @var{P_H}, size_t @var{size})
+Like @cfunc{ccsys_malloc}, but register the resulting pointer in the handler referenced by
+@var{P_H}.
+@end deftypefun
+
+
+@deftypefn {Preprocessor Macro} {void *} ccsys_malloc_guarded (cce_location_t * @var{L}, cce_cleanup_handler_t * @var{P_H}, size_t @var{size})
+@deftypefnx {Preprocessor Macro} {void *} ccsys_malloc_guarded (cce_location_t * @var{L}, cce_error_handler_t * @var{P_H}, size_t @var{size})
+This preprocessor macro uses @code{_Generic} to dispatch the call according to the type of the
+pointer @var{P_H}; if the type is:
+
+@table @code
+@item cce_cleanup_handler_t
+The macro expands into a call to @cfunc{ccsys_malloc_guarded_cleanup}.
+
+@item cce_error_handler_t
+The macro expands into a call to @cfunc{ccsys_malloc_guarded_error}.
+@end table
+@end deftypefn
+
+@c page
+@node handler memory gcalloc
+@subsection Guarded allocation: @cfunc{calloc}
+
+
+@deftypefun {void *} ccsys_calloc_guarded_cleanup (cce_location_t * @var{L}, cce_cleanup_handler_t * @var{P_H}, size_t @var{count}, size_t @var{eltsize})
+Like @cfunc{ccsys_calloc}, but register the resulting pointer in the handler referenced by
+@var{P_H}.
+@end deftypefun
+
+
+@deftypefun {void *} ccsys_calloc_guarded_error (cce_location_t * @var{L}, cce_error_handler_t * @var{P_H}, size_t @var{count}, size_t @var{eltsize})
+Like @cfunc{ccsys_calloc}, but register the resulting pointer in the handler referenced by
+@var{P_H}.
+@end deftypefun
+
+
+@deftypefn {Preprocessor Macro} {void *} ccsys_calloc_guarded (cce_location_t * @var{L}, cce_cleanup_handler_t * @var{P_H}, size_t @var{count}, size_t @var{eltsize})
+@deftypefnx {Preprocessor Macro} {void *} ccsys_calloc_guarded (cce_location_t * @var{L}, cce_error_handler_t * @var{P_H}, size_t @var{count}, size_t @var{eltsize})
+This preprocessor macro uses @code{_Generic} to dispatch the call according to the type of the
+pointer @var{P_H}; if the type is:
+
+@table @code
+@item cce_cleanup_handler_t
+The macro expands into a call to @cfunc{ccsys_calloc_guarded_cleanup}.
+
+@item cce_error_handler_t
+The macro expands into a call to @cfunc{ccsys_calloc_guarded_error}.
+@end table
+@end deftypefn
+
+@c page
+@node handler memory grealloc
+@subsection Guarded allocation: @cfunc{realloc}
+
+
+@deftypefun {void *} ccsys_realloc_guarded_cleanup (cce_location_t * @var{L}, cce_cleanup_handler_t * @var{P_H}, void * @var{old_P}, size_t @var{newsize})
+Like @cfunc{ccsys_realloc}, but register the resulting pointer in the handler referenced by
+@var{P_H}.  The handler is updated to reference the new memory pointer.  If, upon entering this
+function, the handler @var{P_H} does not reference the pointer @var{old_P}: raise an exception by
+performing a non--local exit to @var{L}, with condition object of type
+@objtype{cce_condition_invalid_argument_t}.
+@end deftypefun
+
+
+@deftypefun {void *} ccsys_realloc_guarded_error (cce_location_t * @var{L}, cce_error_handler_t * @var{P_H}, void * @var{old_P}, size_t @var{newsize})
+Like @cfunc{ccsys_realloc}, but register the resulting pointer in the handler referenced by
+@var{P_H}.  The handler is updated to reference the new memory pointer.  If, upon entering this
+function, the handler @var{P_H} does not reference the pointer @var{old_P}: raise an exception by
+performing a non--local exit to @var{L}, with condition object of type
+@objtype{cce_condition_invalid_argument_t}.
+@end deftypefun
+
+
+@deftypefn {Preprocessor Macro} {void *} ccsys_realloc_guarded (cce_location_t * @var{L}, cce_cleanup_handler_t * @var{P_H}, void * @var{old_P}, size_t @var{newsize})
+@deftypefnx {Preprocessor Macro} {void *} ccsys_realloc_guarded (cce_location_t * @var{L}, cce_error_handler_t * @var{P_H}, void * @var{old_P}, size_t @var{newsize})
+This preprocessor macro uses @code{_Generic} to dispatch the call according to the type of the
+pointer @var{P_H}; if the type is:
+
+@table @code
+@item cce_cleanup_handler_t
+The macro expands into a call to @cfunc{ccsys_realloc_guarded_cleanup}.
+
+@item cce_error_handler_t
+The macro expands into a call to @cfunc{ccsys_realloc_guarded_error}.
+@end table
+@end deftypefn
 
 @c page
 @node handlers filedes

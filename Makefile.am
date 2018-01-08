@@ -50,6 +50,7 @@ libccsys_la_SOURCES	= \
 
 check_PROGRAMS	= \
 	tests/version				\
+	tests/system-memory			\
 	tests/system-handlers
 
 TESTS			= $(check_PROGRAMS)
@@ -59,6 +60,9 @@ ccsys_tests_ldadd		= libccsys.la $(CCEXCEPTIONS_LIBS)
 
 tests_version_CPPFLAGS		= $(ccsys_tests_cppflags)
 tests_version_LDADD		= $(ccsys_tests_ldadd)
+
+tests_system_memory_CPPFLAGS	= $(ccsys_tests_cppflags)
+tests_system_memory_LDADD	= $(ccsys_tests_ldadd)
 
 tests_system_handlers_CPPFLAGS	= $(ccsys_tests_cppflags)
 tests_system_handlers_LDADD	= $(ccsys_tests_ldadd)

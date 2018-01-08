@@ -312,6 +312,45 @@ ccsys_decl void ccsys_cleanup_handler_malloc_init (cce_location_t * L, cce_handl
 ccsys_decl void ccsys_error_handler_malloc_init (cce_location_t * L, cce_handler_t * H, void * pointer)
   __attribute__((__nonnull__(1,2,3)));
 
+/* ------------------------------------------------------------------ */
+
+cce_decl void * ccsys_malloc_guarded_cleanup (cce_location_t * L, cce_cleanup_handler_t * P_H, size_t size)
+  __attribute__((__nonnull__(1,2),__returns_nonnull__));
+
+cce_decl void * ccsys_malloc_guarded_error   (cce_location_t * L, cce_error_handler_t *   P_H, size_t size)
+  __attribute__((__nonnull__(1,2),__returns_nonnull__));
+
+#define ccsys_malloc_guarded(L,P_H,size) \
+  _Generic((P_H),								\
+	   cce_cleanup_handler_t	*: ccsys_malloc_guarded_cleanup,	\
+	   cce_error_handler_t		*: ccsys_malloc_guarded_error)(L,P_H,size)
+
+/* ------------------------------------------------------------------ */
+
+cce_decl void * ccsys_realloc_guarded_cleanup (cce_location_t * L, cce_cleanup_handler_t * P_H, void * P, size_t newsize)
+  __attribute__((__nonnull__(1,2),__returns_nonnull__));
+
+cce_decl void * ccsys_realloc_guarded_error   (cce_location_t * L, cce_error_handler_t *   P_H, void * P, size_t newsize)
+  __attribute__((__nonnull__(1,2),__returns_nonnull__));
+
+#define ccsys_realloc_guarded(L,P_H,old_P,newsize) \
+  _Generic((P_H),								\
+	   cce_cleanup_handler_t	*: ccsys_realloc_guarded_cleanup,	\
+	   cce_error_handler_t		*: ccsys_realloc_guarded_error)(L,P_H,old_P,newsize)
+
+/* ------------------------------------------------------------------ */
+
+cce_decl void * ccsys_calloc_guarded_cleanup (cce_location_t * L, cce_cleanup_handler_t * P_H, size_t count, size_t eltsize)
+  __attribute__((__nonnull__(1,2),__returns_nonnull__));
+
+cce_decl void * ccsys_calloc_guarded_error   (cce_location_t * L, cce_error_handler_t *   P_H, size_t count, size_t eltsize)
+  __attribute__((__nonnull__(1,2),__returns_nonnull__));
+
+#define ccsys_calloc_guarded(L,P_H,count,eltsize) \
+  _Generic((P_H),								\
+	   cce_cleanup_handler_t	*: ccsys_calloc_guarded_cleanup,	\
+	   cce_error_handler_t		*: ccsys_calloc_guarded_error)(L,P_H,count,eltsize)
+
 
 /** --------------------------------------------------------------------
  ** Locking memory pages.
