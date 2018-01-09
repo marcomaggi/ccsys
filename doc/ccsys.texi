@@ -620,10 +620,10 @@ Type of the argument @var{flags} in @cfunc{ccsys_mlockall}.
 @end deftp
 
 
-@deftp {Enum Typedef} ccsys_mlock_flags_t
-@cindex @code{CCSYS_MCL_CURRENT}, enumerated constant
-@cindex @code{CCSYS_MCL_FUTURE}, enumerated constant
-@cindex @code{CCSYS_MCL_ONFAULT}, enumerated constant
+@deftp {Enum Typedef} ccsys_memory_locking_flags_t
+@EnumeratedConstant{CCSYS_MCL_CURRENT}
+@EnumeratedConstant{CCSYS_MCL_FUTURE}
+@EnumeratedConstant{CCSYS_MCL_ONFAULT}
 Enumeration of constants for the argument @var{flags} in @cfunc{ccsys_mlockall}.  It defines the
 following constants:
 
@@ -652,7 +652,7 @@ Wrapper for @cfunc{munmap}.
 @end deftypefun
 
 
-@deftypefun int ccsys_msync (cce_location_t * @var{L}, void * @var{address}, size_t @var{length}, int @var{flags})
+@deftypefun int ccsys_msync (cce_location_t * @var{L}, void * @var{address}, size_t @var{length}, ccsys_msync_flags_t @var{flags})
 Wrapper for @cfunc{msync}.
 @end deftypefun
 
@@ -690,11 +690,16 @@ Type of the argument @var{flags} in @cfunc{ccsys_mmap}.
 @end deftp
 
 
+@deftp {Semantic Type} ccsys_msync_flags_t
+Type of the argument @var{flags} in @cfunc{ccsys_msync}.
+@end deftp
+
+
 @deftp {Enum Typedef} ccsys_memory_mapping_protection_t
-@cindex @code{CCSYS_PROT_EXEC}, enumerated constant
-@cindex @code{CCSYS_PROT_READ}, enumerated constant
-@cindex @code{CCSYS_PROT_WRITE}, enumerated constant
-@cindex @code{CCSYS_PROT_NONE}, enumerated constant
+@EnumeratedConstant{CCSYS_PROT_EXEC}
+@EnumeratedConstant{CCSYS_PROT_READ}
+@EnumeratedConstant{CCSYS_PROT_WRITE}
+@EnumeratedConstant{CCSYS_PROT_NONE}
 Enumeration of constants for the argument @var{prot} in @cfunc{ccsys_mmap}.  It defines the
 following constants:
 
@@ -708,29 +713,29 @@ CCSYS_PROT_NONE
 
 
 @deftp {Enum Typedef} ccsys_memory_mapping_flags_t
-@cindex @code{CCSYS_MAP_SHARED}, enumerated constant
-@cindex @code{CCSYS_MAP_PRIVATE}, enumerated constant
-@cindex @code{CCSYS_MAP_32BIT}, enumerated constant
-@cindex @code{CCSYS_MAP_ANON}, enumerated constant
-@cindex @code{CCSYS_MAP_ANONYMOUS}, enumerated constant
-@cindex @code{CCSYS_MAP_DENYWRITE}, enumerated constant
-@cindex @code{CCSYS_MAP_EXECUTABLE}, enumerated constant
-@cindex @code{CCSYS_MAP_FILE}, enumerated constant
-@cindex @code{CCSYS_MAP_FIXED}, enumerated constant
-@cindex @code{CCSYS_MAP_GROWSDOWN}, enumerated constant
-@cindex @code{CCSYS_MAP_HUGETLB}, enumerated constant
-@cindex @code{CCSYS_MAP_HUGE_2MB}, enumerated constant
-@cindex @code{CCSYS_MAP_HUGE_1GB}, enumerated constant
-@cindex @code{CCSYS_MAP_LOCKED}, enumerated constant
-@cindex @code{CCSYS_MAP_NONBLOCK}, enumerated constant
-@cindex @code{CCSYS_MAP_NORESERVE}, enumerated constant
-@cindex @code{CCSYS_MAP_POPULATE}, enumerated constant
-@cindex @code{CCSYS_MAP_STACK}, enumerated constant
-@cindex @code{CCSYS_MAP_UNINITIALIZED}, enumerated constant
-@cindex @code{CCSYS_MAP_AUTOGROW}, enumerated constant
-@cindex @code{CCSYS_MAP_AUTORESRV}, enumerated constant
-@cindex @code{CCSYS_MAP_COPY}, enumerated constant
-@cindex @code{CCSYS_MAP_LOCAL}, enumerated constant
+@EnumeratedConstant{CCSYS_MAP_SHARED}
+@EnumeratedConstant{CCSYS_MAP_PRIVATE}
+@EnumeratedConstant{CCSYS_MAP_32BIT}
+@EnumeratedConstant{CCSYS_MAP_ANON}
+@EnumeratedConstant{CCSYS_MAP_ANONYMOUS}
+@EnumeratedConstant{CCSYS_MAP_DENYWRITE}
+@EnumeratedConstant{CCSYS_MAP_EXECUTABLE}
+@EnumeratedConstant{CCSYS_MAP_FILE}
+@EnumeratedConstant{CCSYS_MAP_FIXED}
+@EnumeratedConstant{CCSYS_MAP_GROWSDOWN}
+@EnumeratedConstant{CCSYS_MAP_HUGETLB}
+@EnumeratedConstant{CCSYS_MAP_HUGE_2MB}
+@EnumeratedConstant{CCSYS_MAP_HUGE_1GB}
+@EnumeratedConstant{CCSYS_MAP_LOCKED}
+@EnumeratedConstant{CCSYS_MAP_NONBLOCK}
+@EnumeratedConstant{CCSYS_MAP_NORESERVE}
+@EnumeratedConstant{CCSYS_MAP_POPULATE}
+@EnumeratedConstant{CCSYS_MAP_STACK}
+@EnumeratedConstant{CCSYS_MAP_UNINITIALIZED}
+@EnumeratedConstant{CCSYS_MAP_AUTOGROW}
+@EnumeratedConstant{CCSYS_MAP_AUTORESRV}
+@EnumeratedConstant{CCSYS_MAP_COPY}
+@EnumeratedConstant{CCSYS_MAP_LOCAL}
 Enumeration of constants for the argument @var{flags} in @cfunc{ccsys_mmap}.  It defines the
 following constants:
 
@@ -743,6 +748,21 @@ CCSYS_MAP_HUGE_1GB      CCSYS_MAP_LOCKED      CCSYS_MAP_NONBLOCK
 CCSYS_MAP_NORESERVE     CCSYS_MAP_POPULATE    CCSYS_MAP_STACK
 CCSYS_MAP_UNINITIALIZED CCSYS_MAP_AUTOGROW    CCSYS_MAP_AUTORESRV
 CCSYS_MAP_COPY          CCSYS_MAP_LOCAL
+@end example
+@end deftp
+
+
+@deftp {Enum Typedef} ccsys_memory_sync_flags_t
+@EnumeratedConstant{CCSYS_MS_ASYNC}
+@EnumeratedConstant{CCSYS_MS_SYNC}
+@EnumeratedConstant{CCSYS_MS_INVALIDATE}
+Enumeration of constants for the argument @var{flags} in @cfunc{ccsys_msync}.  It defines the
+following constants:
+
+@example
+CCSYS_MS_ASYNC
+CCSYS_MS_SYNC
+CCSYS_MS_INVALIDATE
 @end example
 @end deftp
 

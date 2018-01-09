@@ -182,11 +182,11 @@ ccsys_munmap (cce_location_t * L, void * addr, size_t length)
 
 #ifdef HAVE_MSYNC
 int
-ccsys_msync (cce_location_t * L, void *address, size_t length, int flags)
+ccsys_msync (cce_location_t * L, void *address, size_t length, ccsys_msync_flags_t flags)
 {
   int	rv;
   errno = 0;
-  rv = msync(address, length, flags);
+  rv = msync(address, length, flags.data);
   if (-1 != rv) {
     return rv;
   } else {

@@ -337,6 +337,13 @@
 @code{\NAME\}
 @end macro
 
+@macro EnumeratedConstant{NAME}
+@cindex @code{\NAME\}, enumerated constant
+@cindex Enumerated constant @code{\NAME\}
+@cindex Constant @code{\NAME\}
+@cindex Symbol @code{\NAME\}
+@end macro
+
 @c page
 @c ------------------------------------------------------------
 @c Macros for references to external documents.

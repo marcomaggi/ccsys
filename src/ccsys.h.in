@@ -135,6 +135,7 @@ typedef struct ccsys_iovec_t		ccsys_iovec_t;
 typedef struct ccsys_mlockall_flags_t	ccsys_mlockall_flags_t;
 typedef struct ccsys_mmap_flags_t	ccsys_mmap_flags_t;
 typedef struct ccsys_mmap_prot_t	ccsys_mmap_prot_t;
+typedef struct ccsys_msync_flags_t	ccsys_msync_flags_t;
 typedef struct ccsys_nlink_t		ccsys_nlink_t;
 typedef struct ccsys_off_t		ccsys_off_t;
 typedef struct ccsys_open_flags_t	ccsys_open_flags_t;
@@ -156,6 +157,7 @@ struct ccsys_iovec_t		{ uint8_t data[@SIZEOF_STRUCT_IOVEC@]; };
 struct ccsys_mlockall_flags_t	{ int				data; };
 struct ccsys_mmap_flags_t	{ int				data; };
 struct ccsys_mmap_prot_t	{ int				data; };
+struct ccsys_msync_flags_t	{ int				data; };
 struct ccsys_nlink_t		{ @CCSYS_TYPE_NLINK_T@		data; };
 struct ccsys_off_t		{ @CCSYS_TYPE_OFF_T@		data; };
 struct ccsys_open_flags_t	{ int				data; };
@@ -298,10 +300,16 @@ enum ccsys_memory_mapping_flags_t {
   @CCSYS_ENUM_DEF_CCSYS_MAP_LOCAL@
 };
 
-enum ccsys_mlock_flags_t {
+enum ccsys_memory_locking_flags_t {
   @CCSYS_ENUM_DEF_CCSYS_MCL_CURRENT@
   @CCSYS_ENUM_DEF_CCSYS_MCL_FUTURE@
   @CCSYS_ENUM_DEF_CCSYS_MCL_ONFAULT@
+};
+
+enum ccsys_memory_sync_flags_t {
+  @CCSYS_ENUM_DEF_CCSYS_MS_ASYNC@
+  @CCSYS_ENUM_DEF_CCSYS_MS_SYNC@
+  @CCSYS_ENUM_DEF_CCSYS_MS_INVALIDATE@
 };
 
 /* ------------------------------------------------------------------ */
@@ -313,7 +321,8 @@ typedef enum ccsys_socket_style_t		ccsys_socket_style_t;
 typedef enum ccsys_socket_protocol_t		ccsys_socket_protocol_t;
 typedef enum ccsys_memory_mapping_protection_t	ccsys_memory_mapping_protection_t;
 typedef enum ccsys_memory_mapping_flags_t	ccsys_memory_mapping_flags_t;
-typedef enum ccsys_mlock_flags_t		ccsys_mlock_flags_t;
+typedef enum ccsys_memory_locking_flags_t	ccsys_memory_locking_flags_t;
+typedef enum ccsys_memory_sync_flags_t		ccsys_memory_sync_flags_t;
 
 
 /** --------------------------------------------------------------------
@@ -423,7 +432,7 @@ cce_decl void * ccsys_mmap (cce_location_t * L, void * address, size_t length,
 cce_decl int ccsys_munmap (cce_location_t * L, void * address, size_t length)
   __attribute__((__nonnull__(1,2)));
 
-cce_decl int ccsys_msync (cce_location_t * L, void * address, size_t length, int flags)
+cce_decl int ccsys_msync (cce_location_t * L, void * address, size_t length, ccsys_msync_flags_t flags)
   __attribute__((__nonnull__(1,2)));
 
 cce_decl int ccsys_mprotect (cce_location_t * L, void * address, size_t length, int prot)
