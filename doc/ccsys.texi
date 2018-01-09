@@ -657,7 +657,7 @@ Wrapper for @cfunc{msync}.
 @end deftypefun
 
 
-@deftypefun int ccsys_mprotect (cce_location_t * @var{L}, void * @var{addr}, size_t @var{len}, int @var{prot})
+@deftypefun int ccsys_mprotect (cce_location_t * @var{L}, void * @var{addr}, size_t @var{len}, ccsys_mmap_prot_t @var{prot})
 Wrapper for @cfunc{mprotect}.
 @end deftypefun
 
@@ -681,7 +681,7 @@ Wrapper for @cfunc{madvise}.
 
 
 @deftp {Semantic Type} ccsys_mmap_prot_t
-Type of the argument @var{prot} in @cfunc{ccsys_mmap}.
+Type of the argument @var{prot} in @cfunc{ccsys_mmap} and in @cfunc{ccsys_mprotect}.
 @end deftp
 
 

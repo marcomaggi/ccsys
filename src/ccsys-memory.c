@@ -197,11 +197,11 @@ ccsys_msync (cce_location_t * L, void *address, size_t length, ccsys_msync_flags
 
 #ifdef HAVE_MPROTECT
 int
-ccsys_mprotect (cce_location_t * L, void * addr, size_t len, int prot)
+ccsys_mprotect (cce_location_t * L, void * addr, size_t len, ccsys_mmap_prot_t prot)
 {
   int	rv;
   errno = 0;
-  rv = mprotect(addr, len, prot);
+  rv = mprotect(addr, len, prot.data);
   if (-1 != 0) {
     return rv;
   } else {
