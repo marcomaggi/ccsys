@@ -662,11 +662,11 @@ Wrapper for @cfunc{mprotect}.
 @end deftypefun
 
 
-@deftypefun {void *} ccsys_mremap (cce_location_t * @var{L}, void * @var{address}, size_t @var{length}, size_t @var{new_length}, int @var{flag})
+@deftypefun {void *} ccsys_mremap (cce_location_t * @var{L}, void * @var{old_address}, size_t @var{length}, size_t @var{new_length}, ccsys_mremap_flags_t @var{flags}, void * @var{new_address})
 Wrapper for @cfunc{mremap}.
 
 @quotation
-@strong{NOTE}  This function is implemented by the @gnu{} C Library.
+@strong{NOTE}  This function is specific to Linux platforms.
 @end quotation
 @end deftypefun
 
@@ -692,6 +692,11 @@ Type of the argument @var{flags} in @cfunc{ccsys_mmap}.
 
 @deftp {Semantic Type} ccsys_msync_flags_t
 Type of the argument @var{flags} in @cfunc{ccsys_msync}.
+@end deftp
+
+
+@deftp {Semantic Type} ccsys_mremap_flags_t
+Type of the argument @var{flags} in @cfunc{ccsys_mremap}.
 @end deftp
 
 
@@ -765,6 +770,20 @@ CCSYS_MS_SYNC
 CCSYS_MS_INVALIDATE
 @end example
 @end deftp
+
+
+@deftp {Enum Typedef} ccsys_memory_remap_flags_t
+@EnumeratedConstant{CCSYS_MREMAP_MAYMOVE}
+@EnumeratedConstant{CCSYS_MREMAP_FIXED}
+Enumeration of constants for the argument @var{flags} in @cfunc{ccsys_mremap}.  It defines the
+following constants:
+
+@example
+CCSYS_MREMAP_MAYMOVE
+CCSYS_MREMAP_FIXED
+@end example
+@end deftp
+
 
 @c page
 @node io

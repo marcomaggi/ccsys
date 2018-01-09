@@ -214,11 +214,12 @@ ccsys_mprotect (cce_location_t * L, void * addr, size_t len, ccsys_mmap_prot_t p
 
 #ifdef HAVE_MREMAP
 void *
-ccsys_mremap (cce_location_t * L, void * address, size_t length, size_t new_length, int flag)
+ccsys_mremap (cce_location_t * L, void * old_address, size_t length, size_t new_length,
+	      ccsys_mremap_flags_t flags, void * new_address)
 {
   void *	rv;
   errno = 0;
-  rv = mremap(address, length, new_length, flag);
+  rv = mremap(old_address, length, new_length, flags.data, new_address);
   if (rv) {
     return rv;
   } else {

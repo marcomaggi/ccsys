@@ -136,6 +136,7 @@ typedef struct ccsys_mlockall_flags_t	ccsys_mlockall_flags_t;
 typedef struct ccsys_mmap_flags_t	ccsys_mmap_flags_t;
 typedef struct ccsys_mmap_prot_t	ccsys_mmap_prot_t;
 typedef struct ccsys_msync_flags_t	ccsys_msync_flags_t;
+typedef struct ccsys_mremap_flags_t	ccsys_mremap_flags_t;
 typedef struct ccsys_nlink_t		ccsys_nlink_t;
 typedef struct ccsys_off_t		ccsys_off_t;
 typedef struct ccsys_open_flags_t	ccsys_open_flags_t;
@@ -158,6 +159,7 @@ struct ccsys_mlockall_flags_t	{ int				data; };
 struct ccsys_mmap_flags_t	{ int				data; };
 struct ccsys_mmap_prot_t	{ int				data; };
 struct ccsys_msync_flags_t	{ int				data; };
+struct ccsys_mremap_flags_t	{ int				data; };
 struct ccsys_nlink_t		{ @CCSYS_TYPE_NLINK_T@		data; };
 struct ccsys_off_t		{ @CCSYS_TYPE_OFF_T@		data; };
 struct ccsys_open_flags_t	{ int				data; };
@@ -312,17 +314,23 @@ enum ccsys_memory_sync_flags_t {
   @CCSYS_ENUM_DEF_CCSYS_MS_INVALIDATE@
 };
 
+enum ccsys_memory_remap_flags_t {
+  @CCSYS_ENUM_DEF_CCSYS_MREMAP_MAYMOVE@
+  @CCSYS_ENUM_DEF_CCSYS_MREMAP_FIXED@
+};
+
 /* ------------------------------------------------------------------ */
 
 typedef enum ccsys_file_mode_t			ccsys_file_mode_t;
+typedef enum ccsys_memory_locking_flags_t	ccsys_memory_locking_flags_t;
+typedef enum ccsys_memory_mapping_flags_t	ccsys_memory_mapping_flags_t;
+typedef enum ccsys_memory_mapping_protection_t	ccsys_memory_mapping_protection_t;
+typedef enum ccsys_memory_remap_flags_t		ccsys_memory_remap_flags_t;
+typedef enum ccsys_memory_sync_flags_t		ccsys_memory_sync_flags_t;
 typedef enum ccsys_permissions_t		ccsys_permissions_t;
 typedef enum ccsys_socket_namespace_t		ccsys_socket_namespace_t;
-typedef enum ccsys_socket_style_t		ccsys_socket_style_t;
 typedef enum ccsys_socket_protocol_t		ccsys_socket_protocol_t;
-typedef enum ccsys_memory_mapping_protection_t	ccsys_memory_mapping_protection_t;
-typedef enum ccsys_memory_mapping_flags_t	ccsys_memory_mapping_flags_t;
-typedef enum ccsys_memory_locking_flags_t	ccsys_memory_locking_flags_t;
-typedef enum ccsys_memory_sync_flags_t		ccsys_memory_sync_flags_t;
+typedef enum ccsys_socket_style_t		ccsys_socket_style_t;
 
 
 /** --------------------------------------------------------------------
@@ -440,7 +448,8 @@ cce_decl int ccsys_mprotect (cce_location_t * L, void * address, size_t length, 
 
 /* ------------------------------------------------------------------ */
 
-cce_decl void * ccsys_mremap (cce_location_t * L, void * address, size_t length, size_t new_length, int flag)
+cce_decl void * ccsys_mremap (cce_location_t * L, void * old_address, size_t length, size_t new_length,
+			      ccsys_mremap_flags_t flags, void * new_address)
   __attribute__((__nonnull__(1,2),__returns_nonnull__));
 
 cce_decl void ccsys_madvise (cce_location_t * L, void * address, size_t length, int advice)
