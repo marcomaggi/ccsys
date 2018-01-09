@@ -123,8 +123,8 @@ included in the section entitled ``@gnu{} Free Documentation License''.
 * version::                     Version functions.
 * alloc::                       Memory allocation.
 * mlock::                       Locking memory pages.
-* io::                          Input/output system calls.
 * mmap::                        Memory mapping system calls.
+* io::                          Input/output system calls.
 * fs::                          File system system calls.
 * sockets::                     Socket system calls.
 * process::                     Process system calls.
@@ -446,6 +446,51 @@ CCSYS_MCL_ONFAULT
 @end deftp
 
 @c page
+@node mmap
+@chapter Memory mapping system calls
+
+
+The following symbols are defined in the header file @file{ccsys.h}.
+
+
+@deftypefun {void *} ccsys_mmap (cce_location_t * @var{L}, void * @var{address}, size_t @var{length}, int @var{protect}, int @var{flags}, int @var{filedes}, off_t @var{offset})
+Wrapper for @cfunc{mmap}.
+@end deftypefun
+
+
+@deftypefun int ccsys_munmap (cce_location_t * @var{L}, void * @var{addr}, size_t @var{length})
+Wrapper for @cfunc{munmap}.
+@end deftypefun
+
+
+@deftypefun int ccsys_msync (cce_location_t * @var{L}, void * @var{address}, size_t @var{length}, int @var{flags})
+Wrapper for @cfunc{msync}.
+@end deftypefun
+
+
+@deftypefun int ccsys_mprotect (cce_location_t * @var{L}, void * @var{addr}, size_t @var{len}, int @var{prot})
+Wrapper for @cfunc{mprotect}.
+@end deftypefun
+
+
+@deftypefun {void *} ccsys_mremap (cce_location_t * @var{L}, void * @var{address}, size_t @var{length}, size_t @var{new_length}, int @var{flag})
+Wrapper for @cfunc{mremap}.
+
+@quotation
+@strong{NOTE}  This function is implemented by the @gnu{} C Library.
+@end quotation
+@end deftypefun
+
+
+@deftypefun void ccsys_madvise (cce_location_t * @var{L}, void * @var{address}, size_t @var{length}, int @var{advice})
+Wrapper for @cfunc{madvise}.
+
+@quotation
+@strong{NOTE}  This function is implemented by the @gnu{} C Library.
+@end quotation
+@end deftypefun
+
+@c page
 @node io
 @chapter Input/output system calls
 
@@ -533,51 +578,6 @@ Wrapper for @cfunc{pipe}.
 
 @deftypefun void ccsys_mkfifo (cce_location_t * @var{L}, char const * @var{pathname}, mode_t @var{mode})
 Wrapper for @cfunc{mkfifo}.
-@end deftypefun
-
-@c page
-@node mmap
-@chapter Memory mapping system calls
-
-
-The following symbols are defined in the header file @file{ccsys.h}.
-
-
-@deftypefun {void *} ccsys_mmap (cce_location_t * @var{L}, void * @var{address}, size_t @var{length}, int @var{protect}, int @var{flags}, int @var{filedes}, off_t @var{offset})
-Wrapper for @cfunc{mmap}.
-@end deftypefun
-
-
-@deftypefun int ccsys_munmap (cce_location_t * @var{L}, void * @var{addr}, size_t @var{length})
-Wrapper for @cfunc{munmap}.
-@end deftypefun
-
-
-@deftypefun int ccsys_msync (cce_location_t * @var{L}, void * @var{address}, size_t @var{length}, int @var{flags})
-Wrapper for @cfunc{msync}.
-@end deftypefun
-
-
-@deftypefun int ccsys_mprotect (cce_location_t * @var{L}, void * @var{addr}, size_t @var{len}, int @var{prot})
-Wrapper for @cfunc{mprotect}.
-@end deftypefun
-
-
-@deftypefun {void *} ccsys_mremap (cce_location_t * @var{L}, void * @var{address}, size_t @var{length}, size_t @var{new_length}, int @var{flag})
-Wrapper for @cfunc{mremap}.
-
-@quotation
-@strong{NOTE}  This function is implemented by the @gnu{} C Library.
-@end quotation
-@end deftypefun
-
-
-@deftypefun void ccsys_madvise (cce_location_t * @var{L}, void * @var{address}, size_t @var{length}, int @var{advice})
-Wrapper for @cfunc{madvise}.
-
-@quotation
-@strong{NOTE}  This function is implemented by the @gnu{} C Library.
-@end quotation
 @end deftypefun
 
 @c page
