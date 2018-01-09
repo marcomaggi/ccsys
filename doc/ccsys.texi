@@ -671,7 +671,7 @@ Wrapper for @cfunc{mremap}.
 @end deftypefun
 
 
-@deftypefun void ccsys_madvise (cce_location_t * @var{L}, void * @var{address}, size_t @var{length}, int @var{advice})
+@deftypefun void ccsys_madvise (cce_location_t * @var{L}, void * @var{address}, size_t @var{length}, ccsys_madvise_advice_t @var{advice})
 Wrapper for @cfunc{madvise}.
 
 @quotation
@@ -679,6 +679,8 @@ Wrapper for @cfunc{madvise}.
 @end quotation
 @end deftypefun
 
+
+@c ------------------------------------------------------------------------
 
 @deftp {Semantic Type} ccsys_mmap_prot_t
 Type of the argument @var{prot} in @cfunc{ccsys_mmap} and in @cfunc{ccsys_mprotect}.
@@ -699,6 +701,12 @@ Type of the argument @var{flags} in @cfunc{ccsys_msync}.
 Type of the argument @var{flags} in @cfunc{ccsys_mremap}.
 @end deftp
 
+
+@deftp {Semantic Type} ccsys_madvise_advice_t
+Type of the argument @var{advice} in @cfunc{ccsys_advise}.
+@end deftp
+
+@c ------------------------------------------------------------------------
 
 @deftp {Enum Typedef} ccsys_memory_mapping_protection_t
 @EnumeratedConstant{CCSYS_PROT_EXEC}
@@ -784,6 +792,37 @@ CCSYS_MREMAP_FIXED
 @end example
 @end deftp
 
+
+@deftp {Enum Typedef} ccsys_memory_advice_flags_t
+@EnumeratedConstant{CCSYS_MADV_NORMAL}
+@EnumeratedConstant{CCSYS_MADV_RANDOM}
+@EnumeratedConstant{CCSYS_MADV_SEQUENTIAL}
+@EnumeratedConstant{CCSYS_MADV_WILLNEED}
+@EnumeratedConstant{CCSYS_MADV_DONTNEED}
+@EnumeratedConstant{CCSYS_MADV_REMOVE}
+@EnumeratedConstant{CCSYS_MADV_DONTFORK}
+@EnumeratedConstant{CCSYS_MADV_DOFORK}
+@EnumeratedConstant{CCSYS_MADV_HWPOISON}
+@EnumeratedConstant{CCSYS_MADV_MERGEABLE}
+@EnumeratedConstant{CCSYS_MADV_UNMERGEABLE}
+@EnumeratedConstant{CCSYS_MADV_SOFT_OFFLINE}
+@EnumeratedConstant{CCSYS_MADV_HUGEPAGE}
+@EnumeratedConstant{CCSYS_MADV_NOHUGEPAGE}
+@EnumeratedConstant{CCSYS_MADV_DONTDUMP}
+@EnumeratedConstant{CCSYS_MADV_DODUMP}
+@EnumeratedConstant{CCSYS_MADV_FREE}
+Enumeration of constants for the argument @var{advice} in @cfunc{ccsys_madvise}.  It defines the
+following constants:
+
+@example
+CCSYS_MADV_NORMAL       CCSYS_MADV_RANDOM       CCSYS_MADV_SEQUENTIAL
+CCSYS_MADV_WILLNEED     CCSYS_MADV_DONTNEED     CCSYS_MADV_REMOVE
+CCSYS_MADV_DONTFORK     CCSYS_MADV_DOFORK       CCSYS_MADV_HWPOISON
+CCSYS_MADV_MERGEABLE    CCSYS_MADV_UNMERGEABLE  CCSYS_MADV_SOFT_OFFLINE
+CCSYS_MADV_HUGEPAGE     CCSYS_MADV_NOHUGEPAGE   CCSYS_MADV_DONTDUMP
+CCSYS_MADV_DODUMP       CCSYS_MADV_FREE
+@end example
+@end deftp
 
 @c page
 @node io

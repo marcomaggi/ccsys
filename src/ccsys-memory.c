@@ -230,11 +230,11 @@ ccsys_mremap (cce_location_t * L, void * old_address, size_t length, size_t new_
 
 #ifdef HAVE_MADVISE
 void
-ccsys_madvise (cce_location_t * L, void * address, size_t length, int advice)
+ccsys_madvise (cce_location_t * L, void * address, size_t length, ccsys_madvise_advice_t advice)
 {
   int	rv;
   errno = 0;
-  rv = madvise(address, length, advice);
+  rv = madvise(address, length, advice.data);
   if (-1 == rv) {
     cce_raise(L, cce_condition_new_errno_clear());
   }
