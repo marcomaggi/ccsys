@@ -231,9 +231,10 @@ dnl
 AC_DEFUN([CCSYS_MAYBE_ENUM_DEF],
   [CCSYS_VALUEOF_NO_SUBST([$1],[$2],[$3])
    AS_VAR_SET(CCSYS_ENUM_DEF_$1)
-   AS_VAR_IF(ccsys_cv_valueof_$1,[-1],[],
-     [AS_VAR_SET(CCSYS_ENUM_DEF_$1,["$1=$ccsys_cv_valueof_$1"])])
-   AC_SUBST([CCSYS_ENUM_DEF_$1],[$CCSYS_ENUM_DEF_$1[],])])
+   AS_VAR_IF(ccsys_cv_valueof_$1,[-1],
+     [AS_VAR_SET(CCSYS_ENUM_DEF_$1,["/* undefined $1 */"])],
+     [AS_VAR_SET(CCSYS_ENUM_DEF_$1,["$1=$ccsys_cv_valueof_$1[],"])])
+   AC_SUBST([CCSYS_ENUM_DEF_$1])])
 
 dnl page
 dnl CCSYS_OFFSETOF --

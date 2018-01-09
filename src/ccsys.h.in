@@ -120,19 +120,21 @@ extern "C" {
 
 
 /** --------------------------------------------------------------------
- ** Common type definitions.
+ ** Semantic type definitions.
  ** ----------------------------------------------------------------- */
 
 typedef struct ccsys_blkcnt_t		ccsys_blkcnt_t;
 typedef struct ccsys_blksize_t		ccsys_blksize_t;
 typedef struct ccsys_dev_t		ccsys_dev_t;
 typedef struct ccsys_dir_t		ccsys_dir_t;
-typedef struct ccsys_dirent_t		ccsys_dirent_t;
 typedef struct ccsys_fd_set_t		ccsys_fd_set_t;
 typedef struct ccsys_fd_t		ccsys_fd_t;
 typedef struct ccsys_gid_t		ccsys_gid_t;
 typedef struct ccsys_ino_t		ccsys_ino_t;
 typedef struct ccsys_iovec_t		ccsys_iovec_t;
+typedef struct ccsys_mlockall_flags_t	ccsys_mlockall_flags_t;
+typedef struct ccsys_mmap_flags_t	ccsys_mmap_flags_t;
+typedef struct ccsys_mmap_prot_t	ccsys_mmap_prot_t;
 typedef struct ccsys_nlink_t		ccsys_nlink_t;
 typedef struct ccsys_off_t		ccsys_off_t;
 typedef struct ccsys_open_flags_t	ccsys_open_flags_t;
@@ -141,18 +143,19 @@ typedef struct ccsys_pid_t		ccsys_pid_t;
 typedef struct ccsys_socklen_t		ccsys_socklen_t;
 typedef struct ccsys_timeval_t		ccsys_timeval_t;
 typedef struct ccsys_uid_t		ccsys_uid_t;
-typedef struct ccsys_mlockall_flags_t	ccsys_mlockall_flags_t;
 
 struct ccsys_blkcnt_t		{ @CCSYS_TYPE_BLKCNT_T@		data; };
 struct ccsys_blksize_t		{ @CCSYS_TYPE_BLKSIZE_T@	data; };
 struct ccsys_dev_t		{ @CCSYS_TYPE_DEV_T@		data; };
 struct ccsys_dir_t		{ uint8_t data[1]; };
-struct ccsys_dirent_t		{ uint8_t data[@SIZEOF_STRUCT_DIRENT@]; };
 struct ccsys_fd_set_t		{ uint8_t data[@SIZEOF_STRUCT_FD_SET@]; };
 struct ccsys_fd_t		{ int				data; };
 struct ccsys_gid_t		{ @CCSYS_TYPE_GID_T@		data; };
 struct ccsys_ino_t		{ @CCSYS_TYPE_INO_T@		data; };
 struct ccsys_iovec_t		{ uint8_t data[@SIZEOF_STRUCT_IOVEC@]; };
+struct ccsys_mlockall_flags_t	{ int				data; };
+struct ccsys_mmap_flags_t	{ int				data; };
+struct ccsys_mmap_prot_t	{ int				data; };
 struct ccsys_nlink_t		{ @CCSYS_TYPE_NLINK_T@		data; };
 struct ccsys_off_t		{ @CCSYS_TYPE_OFF_T@		data; };
 struct ccsys_open_flags_t	{ int				data; };
@@ -162,30 +165,31 @@ struct ccsys_socklen_t		{ @CCSYS_TYPE_SOCKLEN_T@	data; };
 struct ccsys_timespec_t		{ uint8_t data[@SIZEOF_STRUCT_TIMESPEC@]; };
 struct ccsys_timeval_t		{ uint8_t data[@SIZEOF_STRUCT_TIMEVAL@]; };
 struct ccsys_uid_t		{ @CCSYS_TYPE_UID_T@		data; };
-struct ccsys_mlockall_flags_t	{ int				data; };
 
 
 /** --------------------------------------------------------------------
  ** System struct wrappers.
  ** ----------------------------------------------------------------- */
 
+typedef struct ccsys_dirent_t		ccsys_dirent_t;
+typedef struct ccsys_hostent_t		ccsys_hostent_t;
+typedef struct ccsys_in_addr_t		ccsys_in_addr_t;
+typedef struct ccsys_sockaddr_in6_t	ccsys_sockaddr_in6_t;
+typedef struct ccsys_sockaddr_in_t	ccsys_sockaddr_in_t;
+typedef struct ccsys_sockaddr_t		ccsys_sockaddr_t;
+typedef struct ccsys_sockaddr_un_t	ccsys_sockaddr_un_t;
 typedef struct ccsys_stat_t		ccsys_stat_t;
 typedef struct ccsys_utimbuf_t		ccsys_utimbuf_t;
-typedef struct ccsys_hostent_t		ccsys_hostent_t;
-typedef struct ccsys_sockaddr_t		ccsys_sockaddr_t;
-typedef struct ccsys_sockaddr_in_t	ccsys_sockaddr_in_t;
-typedef struct ccsys_sockaddr_in6_t	ccsys_sockaddr_in6_t;
-typedef struct ccsys_sockaddr_un_t	ccsys_sockaddr_un_t;
-typedef struct ccsys_in_addr_t		ccsys_in_addr_t;
 
-struct ccsys_stat_t		{ uint8_t data[@SIZEOF_STRUCT_STAT@]; };
-struct ccsys_utimbuf_t		{ uint8_t data[@SIZEOF_STRUCT_UTIMBUF@]; };
+struct ccsys_dirent_t		{ uint8_t data[@SIZEOF_STRUCT_DIRENT@]; };
 struct ccsys_hostent_t		{ uint8_t data[@SIZEOF_STRUCT_HOSTENT@]; };
 struct ccsys_in_addr_t		{ uint8_t data[@SIZEOF_STRUCT_IN_ADDR@]; };
-struct ccsys_sockaddr_t		{ uint8_t data[@SIZEOF_STRUCT_SOCKADDR@]; };
-struct ccsys_sockaddr_in_t	{ uint8_t data[@SIZEOF_STRUCT_SOCKADDR_IN@]; };
 struct ccsys_sockaddr_in6_t	{ uint8_t data[@SIZEOF_STRUCT_SOCKADDR_IN6@]; };
+struct ccsys_sockaddr_in_t	{ uint8_t data[@SIZEOF_STRUCT_SOCKADDR_IN@]; };
+struct ccsys_sockaddr_t		{ uint8_t data[@SIZEOF_STRUCT_SOCKADDR@]; };
 struct ccsys_sockaddr_un_t	{ uint8_t data[@SIZEOF_STRUCT_SOCKADDR_UN@]; };
+struct ccsys_stat_t		{ uint8_t data[@SIZEOF_STRUCT_STAT@]; };
+struct ccsys_utimbuf_t		{ uint8_t data[@SIZEOF_STRUCT_UTIMBUF@]; };
 
 
 /** --------------------------------------------------------------------
@@ -261,6 +265,39 @@ enum ccsys_socket_protocol_t {
   @CCSYS_ENUM_DEF_CCSYS_SOCK_PROTOCOL_IP@
 };
 
+enum ccsys_memory_mapping_protection_t {
+  @CCSYS_ENUM_DEF_CCSYS_PROT_EXEC@
+  @CCSYS_ENUM_DEF_CCSYS_PROT_READ@
+  @CCSYS_ENUM_DEF_CCSYS_PROT_WRITE@
+  @CCSYS_ENUM_DEF_CCSYS_PROT_NONE@
+};
+
+enum ccsys_memory_mapping_flags_t {
+  @CCSYS_ENUM_DEF_CCSYS_MAP_SHARED@
+  @CCSYS_ENUM_DEF_CCSYS_MAP_PRIVATE@
+  @CCSYS_ENUM_DEF_CCSYS_MAP_32BIT@
+  @CCSYS_ENUM_DEF_CCSYS_MAP_ANON@
+  @CCSYS_ENUM_DEF_CCSYS_MAP_ANONYMOUS@
+  @CCSYS_ENUM_DEF_CCSYS_MAP_DENYWRITE@
+  @CCSYS_ENUM_DEF_CCSYS_MAP_EXECUTABLE@
+  @CCSYS_ENUM_DEF_CCSYS_MAP_FILE@
+  @CCSYS_ENUM_DEF_CCSYS_MAP_FIXED@
+  @CCSYS_ENUM_DEF_CCSYS_MAP_GROWSDOWN@
+  @CCSYS_ENUM_DEF_CCSYS_MAP_HUGETLB@
+  @CCSYS_ENUM_DEF_CCSYS_MAP_HUGE_2MB@
+  @CCSYS_ENUM_DEF_CCSYS_MAP_HUGE_1GB@
+  @CCSYS_ENUM_DEF_CCSYS_MAP_LOCKED@
+  @CCSYS_ENUM_DEF_CCSYS_MAP_NONBLOCK@
+  @CCSYS_ENUM_DEF_CCSYS_MAP_NORESERVE@
+  @CCSYS_ENUM_DEF_CCSYS_MAP_POPULATE@
+  @CCSYS_ENUM_DEF_CCSYS_MAP_STACK@
+  @CCSYS_ENUM_DEF_CCSYS_MAP_UNINITIALIZED@
+  @CCSYS_ENUM_DEF_CCSYS_MAP_AUTOGROW@
+  @CCSYS_ENUM_DEF_CCSYS_MAP_AUTORESRV@
+  @CCSYS_ENUM_DEF_CCSYS_MAP_COPY@
+  @CCSYS_ENUM_DEF_CCSYS_MAP_LOCAL@
+};
+
 enum ccsys_mlock_flags_t {
   @CCSYS_ENUM_DEF_CCSYS_MCL_CURRENT@
   @CCSYS_ENUM_DEF_CCSYS_MCL_FUTURE@
@@ -274,6 +311,8 @@ typedef enum ccsys_permissions_t		ccsys_permissions_t;
 typedef enum ccsys_socket_namespace_t		ccsys_socket_namespace_t;
 typedef enum ccsys_socket_style_t		ccsys_socket_style_t;
 typedef enum ccsys_socket_protocol_t		ccsys_socket_protocol_t;
+typedef enum ccsys_memory_mapping_protection_t	ccsys_memory_mapping_protection_t;
+typedef enum ccsys_memory_mapping_flags_t	ccsys_memory_mapping_flags_t;
 typedef enum ccsys_mlock_flags_t		ccsys_mlock_flags_t;
 
 
@@ -376,7 +415,9 @@ cce_decl void ccsys_munlockall (cce_location_t * L)
  ** Memory mapping.
  ** ----------------------------------------------------------------- */
 
-cce_decl void * ccsys_mmap (cce_location_t * L, void * address, size_t length, int protect, int flags, ccsys_fd_t filedes, ccsys_off_t offset)
+cce_decl void * ccsys_mmap (cce_location_t * L, void * address, size_t length,
+			    ccsys_mmap_prot_t protect, ccsys_mmap_flags_t flags,
+			    ccsys_fd_t filedes, ccsys_off_t offset)
   __attribute__((__nonnull__(1,2)));
 
 cce_decl int ccsys_munmap (cce_location_t * L, void * address, size_t length)

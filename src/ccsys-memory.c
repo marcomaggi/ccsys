@@ -150,11 +150,13 @@ ccsys_munlockall (cce_location_t * L)
 
 #ifdef HAVE_MMAP
 void *
-ccsys_mmap (cce_location_t * L, void * address, size_t length, int protect, int flags, ccsys_fd_t filedes, ccsys_off_t offset)
+ccsys_mmap (cce_location_t * L, void * address, size_t length,
+	    ccsys_mmap_prot_t protect, ccsys_mmap_flags_t flags,
+	    ccsys_fd_t filedes, ccsys_off_t offset)
 {
   void *	rv;
   errno = 0;
-  rv = mmap(address, length, protect, flags, filedes.data, (off_t)(offset.data));
+  rv = mmap(address, length, protect.data, flags.data, filedes.data, (off_t)(offset.data));
   if (MAP_FAILED != rv) {
     return rv;
   } else {
