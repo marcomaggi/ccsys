@@ -304,6 +304,9 @@ ccsys_decl void * ccsys_realloc (cce_location_t * L, void * ptr, size_t newsize)
 ccsys_decl void * ccsys_calloc (cce_location_t * L, size_t count, size_t eltsize)
   __attribute__((__nonnull__(1),__returns_nonnull__));
 
+ccsys_decl void ccsys_free (cce_location_t * L CCSYS_UNUSED, void * ptr)
+  __attribute__((__nonnull__(1,2)));
+
 /* ------------------------------------------------------------------ */
 
 ccsys_decl void ccsys_cleanup_handler_malloc_init (cce_location_t * L, cce_handler_t * H, void * pointer)

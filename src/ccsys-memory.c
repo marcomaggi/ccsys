@@ -80,6 +80,12 @@ ccsys_calloc (cce_location_t * L, size_t count, size_t eltsize)
   }
 }
 
+void
+ccsys_free (cce_location_t * L CCSYS_UNUSED, void * ptr)
+{
+  free(ptr);
+}
+
 
 /** --------------------------------------------------------------------
  ** System wrappers: locking memory pages.
