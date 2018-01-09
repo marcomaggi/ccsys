@@ -396,10 +396,10 @@ ccsys_decl void ccsys_error_handler_malloc_init (cce_location_t * L, cce_handler
 
 /* ------------------------------------------------------------------ */
 
-cce_decl void * ccsys_malloc_guarded_cleanup (cce_location_t * L, cce_cleanup_handler_t * P_H, size_t size)
+ccsys_decl void * ccsys_malloc_guarded_cleanup (cce_location_t * L, cce_cleanup_handler_t * P_H, size_t size)
   __attribute__((__nonnull__(1,2),__returns_nonnull__));
 
-cce_decl void * ccsys_malloc_guarded_error   (cce_location_t * L, cce_error_handler_t *   P_H, size_t size)
+ccsys_decl void * ccsys_malloc_guarded_error   (cce_location_t * L, cce_error_handler_t *   P_H, size_t size)
   __attribute__((__nonnull__(1,2),__returns_nonnull__));
 
 #define ccsys_malloc_guarded(L,P_H,size) \
@@ -409,10 +409,10 @@ cce_decl void * ccsys_malloc_guarded_error   (cce_location_t * L, cce_error_hand
 
 /* ------------------------------------------------------------------ */
 
-cce_decl void * ccsys_realloc_guarded_cleanup (cce_location_t * L, cce_cleanup_handler_t * P_H, void * P, size_t newsize)
+ccsys_decl void * ccsys_realloc_guarded_cleanup (cce_location_t * L, cce_cleanup_handler_t * P_H, void * P, size_t newsize)
   __attribute__((__nonnull__(1,2),__returns_nonnull__));
 
-cce_decl void * ccsys_realloc_guarded_error   (cce_location_t * L, cce_error_handler_t *   P_H, void * P, size_t newsize)
+ccsys_decl void * ccsys_realloc_guarded_error   (cce_location_t * L, cce_error_handler_t *   P_H, void * P, size_t newsize)
   __attribute__((__nonnull__(1,2),__returns_nonnull__));
 
 #define ccsys_realloc_guarded(L,P_H,old_P,newsize) \
@@ -422,10 +422,10 @@ cce_decl void * ccsys_realloc_guarded_error   (cce_location_t * L, cce_error_han
 
 /* ------------------------------------------------------------------ */
 
-cce_decl void * ccsys_calloc_guarded_cleanup (cce_location_t * L, cce_cleanup_handler_t * P_H, size_t count, size_t eltsize)
+ccsys_decl void * ccsys_calloc_guarded_cleanup (cce_location_t * L, cce_cleanup_handler_t * P_H, size_t count, size_t eltsize)
   __attribute__((__nonnull__(1,2),__returns_nonnull__));
 
-cce_decl void * ccsys_calloc_guarded_error   (cce_location_t * L, cce_error_handler_t *   P_H, size_t count, size_t eltsize)
+ccsys_decl void * ccsys_calloc_guarded_error   (cce_location_t * L, cce_error_handler_t *   P_H, size_t count, size_t eltsize)
   __attribute__((__nonnull__(1,2),__returns_nonnull__));
 
 #define ccsys_calloc_guarded(L,P_H,count,eltsize) \
@@ -438,16 +438,16 @@ cce_decl void * ccsys_calloc_guarded_error   (cce_location_t * L, cce_error_hand
  ** Locking memory pages.
  ** ----------------------------------------------------------------- */
 
-cce_decl void ccsys_mlock (cce_location_t * L, void const * addr, size_t len)
+ccsys_decl void ccsys_mlock (cce_location_t * L, void const * addr, size_t len)
   __attribute__((__nonnull__(1,2)));
 
-cce_decl void ccsys_munlock (cce_location_t * L, void const * addr, size_t len)
+ccsys_decl void ccsys_munlock (cce_location_t * L, void const * addr, size_t len)
   __attribute__((__nonnull__(1,2)));
 
-cce_decl void ccsys_mlockall (cce_location_t * L, ccsys_mlockall_flags_t flags)
+ccsys_decl void ccsys_mlockall (cce_location_t * L, ccsys_mlockall_flags_t flags)
   __attribute__((__nonnull__(1)));
 
-cce_decl void ccsys_munlockall (cce_location_t * L)
+ccsys_decl void ccsys_munlockall (cce_location_t * L)
   __attribute__((__nonnull__(1)));
 
 
@@ -455,77 +455,94 @@ cce_decl void ccsys_munlockall (cce_location_t * L)
  ** Memory mapping.
  ** ----------------------------------------------------------------- */
 
-cce_decl void * ccsys_mmap (cce_location_t * L, void * address, size_t length,
-			    ccsys_mmap_prot_t prot, ccsys_mmap_flags_t flags,
-			    ccsys_fd_t filedes, ccsys_off_t offset)
+ccsys_decl void * ccsys_mmap (cce_location_t * L, void * address, size_t length,
+			      ccsys_mmap_prot_t prot, ccsys_mmap_flags_t flags,
+			      ccsys_fd_t filedes, ccsys_off_t offset)
   __attribute__((__nonnull__(1,2)));
 
-cce_decl int ccsys_munmap (cce_location_t * L, void * address, size_t length)
+ccsys_decl int ccsys_munmap (cce_location_t * L, void * address, size_t length)
   __attribute__((__nonnull__(1,2)));
 
-cce_decl int ccsys_msync (cce_location_t * L, void * address, size_t length, ccsys_msync_flags_t flags)
+ccsys_decl int ccsys_msync (cce_location_t * L, void * address, size_t length, ccsys_msync_flags_t flags)
   __attribute__((__nonnull__(1,2)));
 
-cce_decl int ccsys_mprotect (cce_location_t * L, void * address, size_t length, ccsys_mmap_prot_t prot)
+ccsys_decl int ccsys_mprotect (cce_location_t * L, void * address, size_t length, ccsys_mmap_prot_t prot)
   __attribute__((__nonnull__(1,2)));
 
 /* ------------------------------------------------------------------ */
 
-cce_decl void * ccsys_mremap (cce_location_t * L, void * old_address, size_t length, size_t new_length,
-			      ccsys_mremap_flags_t flags, void * new_address)
+ccsys_decl void * ccsys_mremap (cce_location_t * L, void * old_address, size_t length, size_t new_length,
+				ccsys_mremap_flags_t flags, void * new_address)
   __attribute__((__nonnull__(1,2),__returns_nonnull__));
 
-cce_decl void ccsys_madvise (cce_location_t * L, void * address, size_t length, ccsys_madvise_advice_t advice)
+ccsys_decl void ccsys_madvise (cce_location_t * L, void * address, size_t length, ccsys_madvise_advice_t advice)
   __attribute__((__nonnull__(1,2)));
 
 
 /** --------------------------------------------------------------------
- ** File system: reading files.
+ ** Input/output: opening and closing files.
  ** ----------------------------------------------------------------- */
 
-cce_decl ccsys_fd_t ccsys_open (cce_location_t * L, char const *filename, ccsys_open_flags_t flags, ccsys_open_mode_t mode)
+ccsys_decl ccsys_fd_t ccsys_open (cce_location_t * L, char const * filename, ccsys_open_flags_t flags, ccsys_open_mode_t mode)
   __attribute__((__nonnull__(1,2)));
 
-cce_decl ccsys_fd_t ccsys_openat (cce_location_t * L, ccsys_fd_t dirfd, char const *filename, ccsys_open_flags_t flags, ccsys_open_mode_t mode)
+ccsys_decl ccsys_fd_t ccsys_openat (cce_location_t * L, ccsys_fd_t dirfd, char const *filename, ccsys_open_flags_t flags, ccsys_open_mode_t mode)
   __attribute__((__nonnull__(1, 3)));
 
-cce_decl void ccsys_close (cce_location_t * L, ccsys_fd_t filedes)
+ccsys_decl void ccsys_close (cce_location_t * L, ccsys_fd_t filedes)
   __attribute__((__nonnull__(1)));
 
-cce_decl ccsys_off_t ccsys_lseek (cce_location_t * L, ccsys_fd_t filedes, ccsys_off_t offset, int whence)
-  __attribute__((__nonnull__(1)));
-
-/* ------------------------------------------------------------------ */
-
-cce_decl size_t ccsys_read (cce_location_t * L, ccsys_fd_t filedes, void * buffer, size_t size)
-  __attribute__((__nonnull__(1,3)));
-
-cce_decl size_t ccsys_pread (cce_location_t * L, ccsys_fd_t filedes, void * buffer, size_t size, ccsys_off_t offset)
-  __attribute__((__nonnull__(1,3)));
-
-cce_decl size_t ccsys_write (cce_location_t * L, ccsys_fd_t filedes, void const *buffer, size_t size)
-  __attribute__((__nonnull__(1,3)));
-
-cce_decl size_t ccsys_pwrite (cce_location_t * L, ccsys_fd_t filedes, void const *buffer, size_t size, ccsys_off_t offset)
-  __attribute__((__nonnull__(1,3)));
-
-/* ------------------------------------------------------------------ */
-
-cce_decl void ccsys_cleanup_handler_filedes_init (cce_location_t * L, cce_handler_t * H, ccsys_fd_t filedes)
+ccsys_decl void ccsys_mkfifo (cce_location_t * L, char const * pathname, ccsys_open_mode_t mode)
   __attribute__((__nonnull__(1,2)));
 
-cce_decl void ccsys_error_handler_filedes_init (cce_location_t * L, cce_handler_t * H, ccsys_fd_t filedes)
+ccsys_decl void ccsys_pipe (cce_location_t * L, ccsys_fd_t pipefd[2])
+  __attribute__((__nonnull__(1,2)));
+
+/* ------------------------------------------------------------------ */
+
+ccsys_decl ccsys_fd_t ccsys_dup (cce_location_t * L, ccsys_fd_t old)
+  __attribute__((__nonnull__(1)));
+
+ccsys_decl ccsys_fd_t ccsys_dup2 (cce_location_t * L, ccsys_fd_t old, ccsys_fd_t new)
+  __attribute__((__nonnull__(1)));
+
+/* ------------------------------------------------------------------ */
+
+ccsys_decl void ccsys_cleanup_handler_filedes_init (cce_location_t * L, cce_handler_t * H, ccsys_fd_t filedes)
+  __attribute__((__nonnull__(1,2)));
+
+ccsys_decl void ccsys_error_handler_filedes_init (cce_location_t * L, cce_handler_t * H, ccsys_fd_t filedes)
   __attribute__((__nonnull__(1,2)));
 
 
 /** --------------------------------------------------------------------
- ** File system: scatter-gather input/output.
+ ** Input/output system: reading and writing files.
  ** ----------------------------------------------------------------- */
 
-cce_decl size_t ccsys_readv (cce_location_t * L, ccsys_fd_t filedes, ccsys_iovec_t const * vector, int count)
+ccsys_decl size_t ccsys_read (cce_location_t * L, ccsys_fd_t filedes, void * buffer, size_t size)
   __attribute__((__nonnull__(1,3)));
 
-cce_decl size_t ccsys_writev (cce_location_t * L, ccsys_fd_t filedes, ccsys_iovec_t const * vector, int count)
+ccsys_decl size_t ccsys_pread (cce_location_t * L, ccsys_fd_t filedes, void * buffer, size_t size, ccsys_off_t offset)
+  __attribute__((__nonnull__(1,3)));
+
+ccsys_decl size_t ccsys_write (cce_location_t * L, ccsys_fd_t filedes, void const *buffer, size_t size)
+  __attribute__((__nonnull__(1,3)));
+
+ccsys_decl size_t ccsys_pwrite (cce_location_t * L, ccsys_fd_t filedes, void const *buffer, size_t size, ccsys_off_t offset)
+  __attribute__((__nonnull__(1,3)));
+
+ccsys_decl ccsys_off_t ccsys_lseek (cce_location_t * L, ccsys_fd_t filedes, ccsys_off_t offset, int whence)
+  __attribute__((__nonnull__(1)));
+
+
+/** --------------------------------------------------------------------
+ ** Input/output: scatter-gather input/output.
+ ** ----------------------------------------------------------------- */
+
+ccsys_decl size_t ccsys_readv (cce_location_t * L, ccsys_fd_t filedes, ccsys_iovec_t const * vector, int count)
+  __attribute__((__nonnull__(1,3)));
+
+ccsys_decl size_t ccsys_writev (cce_location_t * L, ccsys_fd_t filedes, ccsys_iovec_t const * vector, int count)
   __attribute__((__nonnull__(1,3)));
 
 /* Struct accessors. */
@@ -536,6 +553,16 @@ CCSYS_STRUCT_ACCESSOR(ccsys_iovec_iov_len,  ccsys_iovec_t, size_t, @OFFSETOF_STR
 
 
 /** --------------------------------------------------------------------
+ ** Input/output: waiting for input/output.
+ ** ----------------------------------------------------------------- */
+
+ccsys_decl int ccsys_select (cce_location_t * L, int nfds,
+			     ccsys_fd_set_t * read_fds, ccsys_fd_set_t * write_fds, ccsys_fd_set_t * except_fds,
+			     ccsys_timeval_t * timeout)
+  __attribute__((__nonnull__(1)));
+
+
+/** --------------------------------------------------------------------
  ** File system: reading directory entries.
  ** ----------------------------------------------------------------- */
 
@@ -543,54 +570,38 @@ CCSYS_STRUCT_ACCESSOR(ccsys_iovec_iov_len,  ccsys_iovec_t, size_t, @OFFSETOF_STR
 __attribute__((__returns_nonnull__))
 CCSYS_STRUCT_ACCESSOR(ccsys_dirent_d_name, ccsys_dirent_t, char const *, @OFFSETOF_STRUCT_DIRENT_D_NAME@)
 
-cce_decl ccsys_dir_t * ccsys_opendir (cce_location_t * L, char const * pathname)
+ccsys_decl ccsys_dir_t * ccsys_opendir (cce_location_t * L, char const * pathname)
   __attribute__((__nonnull__(1,2)));
 
-cce_decl ccsys_dir_t * ccsys_fdopendir (cce_location_t * L, ccsys_fd_t dirfd)
+ccsys_decl ccsys_dir_t * ccsys_fdopendir (cce_location_t * L, ccsys_fd_t dirfd)
   __attribute__((__nonnull__(1)));
 
-cce_decl ccsys_dirent_t * ccsys_readdir (cce_location_t * L, ccsys_dir_t * dirstream)
+ccsys_decl ccsys_dirent_t * ccsys_readdir (cce_location_t * L, ccsys_dir_t * dirstream)
   __attribute__((__nonnull__(1,2)));
 
-cce_decl void ccsys_closedir (cce_location_t * L, ccsys_dir_t * dirstream)
+ccsys_decl void ccsys_closedir (cce_location_t * L, ccsys_dir_t * dirstream)
   __attribute__((__nonnull__(1,2)));
 
 /* ------------------------------------------------------------------ */
 
-cce_decl void ccsys_cleanup_handler_dirstream_init (cce_location_t * L, cce_handler_t * H, ccsys_dir_t * dirstream)
+ccsys_decl void ccsys_cleanup_handler_dirstream_init (cce_location_t * L, cce_handler_t * H, ccsys_dir_t * dirstream)
   __attribute__((__nonnull__(1,2,3)));
 
-cce_decl void ccsys_error_handler_dirstream_init (cce_location_t * L, cce_handler_t * H, ccsys_dir_t * dirstream)
+ccsys_decl void ccsys_error_handler_dirstream_init (cce_location_t * L, cce_handler_t * H, ccsys_dir_t * dirstream)
   __attribute__((__nonnull__(1,2,3)));
-
-
-/** --------------------------------------------------------------------
- ** System call wrappers: input/output and file descriptors.
- ** ----------------------------------------------------------------- */
-
-cce_decl ccsys_fd_t ccsys_dup (cce_location_t * L, ccsys_fd_t old)
-  __attribute__((__nonnull__(1)));
-cce_decl ccsys_fd_t ccsys_dup2 (cce_location_t * L, ccsys_fd_t old, ccsys_fd_t new)
-  __attribute__((__nonnull__(1)));
-
-cce_decl void ccsys_pipe (cce_location_t * L, ccsys_fd_t pipefd[2])
-  __attribute__((__nonnull__(1,2)));
-
-cce_decl void ccsys_mkfifo (cce_location_t * L, char const * pathname, ccsys_open_mode_t mode)
-  __attribute__((__nonnull__(1,2)));
 
 
 /** --------------------------------------------------------------------
  ** File system operations: reading attributes.
  ** ----------------------------------------------------------------- */
 
-cce_decl void ccsys_stat (cce_location_t * L, char const * pathname, ccsys_stat_t * buf)
+ccsys_decl void ccsys_stat (cce_location_t * L, char const * pathname, ccsys_stat_t * buf)
   __attribute__((__nonnull__(1,2,3)));
 
-cce_decl void ccsys_fstat (cce_location_t * L, ccsys_fd_t fd, ccsys_stat_t * buf)
+ccsys_decl void ccsys_fstat (cce_location_t * L, ccsys_fd_t fd, ccsys_stat_t * buf)
   __attribute__((__nonnull__(1,3)));
 
-cce_decl void ccsys_lstat (cce_location_t * L, char const * pathname, ccsys_stat_t * buf)
+ccsys_decl void ccsys_lstat (cce_location_t * L, char const * pathname, ccsys_stat_t * buf)
   __attribute__((__nonnull__(1,2,3)));
 
 /* ------------------------------------------------------------------ */
@@ -624,112 +635,112 @@ ccsys_stat_st_dev (const ccsys_stat_t * S)
  ** System call wrappers: file system operations.
  ** ----------------------------------------------------------------- */
 
-cce_decl void ccsys_getcwd (cce_location_t * L, char * buffer, size_t size)
+ccsys_decl void ccsys_getcwd (cce_location_t * L, char * buffer, size_t size)
   __attribute__((__nonnull__(1)));
 
-cce_decl void ccsys_chdir (cce_location_t * L, char const * pathname)
+ccsys_decl void ccsys_chdir (cce_location_t * L, char const * pathname)
   __attribute__((__nonnull__(1,2)));
 
-cce_decl void ccsys_fchdir (cce_location_t * L, ccsys_fd_t dirfd)
+ccsys_decl void ccsys_fchdir (cce_location_t * L, ccsys_fd_t dirfd)
   __attribute__((__nonnull__(1)));
 
 /* ------------------------------------------------------------------ */
 
-cce_decl void ccsys_mkdir (cce_location_t * L, char const * pathname, ccsys_open_mode_t mode)
+ccsys_decl void ccsys_mkdir (cce_location_t * L, char const * pathname, ccsys_open_mode_t mode)
   __attribute__((__nonnull__(1,2)));
 
-cce_decl void ccsys_rmdir (cce_location_t * L, char const * pathname)
-  __attribute__((__nonnull__(1,2)));
-
-/* ------------------------------------------------------------------ */
-
-cce_decl int ccsys_mkstemp (cce_location_t * L, char * template)
-  __attribute__((__nonnull__(1,2)));
-
-cce_decl char * ccsys_mkdtemp (cce_location_t * L, char * template)
+ccsys_decl void ccsys_rmdir (cce_location_t * L, char const * pathname)
   __attribute__((__nonnull__(1,2)));
 
 /* ------------------------------------------------------------------ */
 
-cce_decl void ccsys_link (cce_location_t * L, char const * oldname, char const * newname)
+ccsys_decl int ccsys_mkstemp (cce_location_t * L, char * template)
+  __attribute__((__nonnull__(1,2)));
+
+ccsys_decl char * ccsys_mkdtemp (cce_location_t * L, char * template)
+  __attribute__((__nonnull__(1,2)));
+
+/* ------------------------------------------------------------------ */
+
+ccsys_decl void ccsys_link (cce_location_t * L, char const * oldname, char const * newname)
   __attribute__((__nonnull__(1,2,3)));
 
-cce_decl void ccsys_linkat (cce_location_t * L,
+ccsys_decl void ccsys_linkat (cce_location_t * L,
 			    int oldfd, char const * oldname,
 			    int newfd, char const * newname,
 			    int flags)
   __attribute__((__nonnull__(1,3,5)));
 
-cce_decl void ccsys_symlink (cce_location_t * L, char const * oldname, char const * newname)
+ccsys_decl void ccsys_symlink (cce_location_t * L, char const * oldname, char const * newname)
   __attribute__((__nonnull__(1,2,3)));
 
-cce_decl void ccsys_symlinkat (cce_location_t * L, char const * oldname, ccsys_fd_t newdirfd, char const * newname)
+ccsys_decl void ccsys_symlinkat (cce_location_t * L, char const * oldname, ccsys_fd_t newdirfd, char const * newname)
   __attribute__((__nonnull__(1,2,4)));
 
-cce_decl size_t ccsys_readlink (cce_location_t * L, char const * filename, char * buffer, size_t size)
+ccsys_decl size_t ccsys_readlink (cce_location_t * L, char const * filename, char * buffer, size_t size)
   __attribute__((__nonnull__(1,2,3)));
 
-cce_decl size_t ccsys_readlinkat (cce_location_t * L, ccsys_fd_t dirfd, char const * filename, char * buffer, size_t size)
+ccsys_decl size_t ccsys_readlinkat (cce_location_t * L, ccsys_fd_t dirfd, char const * filename, char * buffer, size_t size)
   __attribute__((__nonnull__(1,3,4)));
 
-cce_decl char * ccsys_realpath (cce_location_t * L, char const * pathname, char * resolved_path)
+ccsys_decl char * ccsys_realpath (cce_location_t * L, char const * pathname, char * resolved_path)
   __attribute__((__nonnull__(1,2),__returns_nonnull__));
 
 /* ------------------------------------------------------------------ */
 
-cce_decl void ccsys_unlink (cce_location_t * L, char const * pathname)
+ccsys_decl void ccsys_unlink (cce_location_t * L, char const * pathname)
   __attribute__((__nonnull__(1,2)));
 
-cce_decl void ccsys_unlinkat (cce_location_t * L, ccsys_fd_t dirfd, char const * pathname, int flags)
+ccsys_decl void ccsys_unlinkat (cce_location_t * L, ccsys_fd_t dirfd, char const * pathname, int flags)
   __attribute__((__nonnull__(1,3)));
 
-cce_decl void ccsys_remove (cce_location_t * L, char const * pathname)
+ccsys_decl void ccsys_remove (cce_location_t * L, char const * pathname)
   __attribute__((__nonnull__(1,2)));
 
 /* ------------------------------------------------------------------ */
 
-cce_decl void ccsys_rename (cce_location_t * L, char const * oldname, char const * newname)
+ccsys_decl void ccsys_rename (cce_location_t * L, char const * oldname, char const * newname)
   __attribute__((__nonnull__(1,2,3)));
 
 /* ------------------------------------------------------------------ */
 
-cce_decl void ccsys_chown (cce_location_t * L, char const * pathname, ccsys_uid_t owner, ccsys_gid_t group)
+ccsys_decl void ccsys_chown (cce_location_t * L, char const * pathname, ccsys_uid_t owner, ccsys_gid_t group)
   __attribute__((__nonnull__(1,2)));
 
-cce_decl void ccsys_fchown (cce_location_t * L, ccsys_fd_t filedes, ccsys_uid_t owner, ccsys_gid_t group)
+ccsys_decl void ccsys_fchown (cce_location_t * L, ccsys_fd_t filedes, ccsys_uid_t owner, ccsys_gid_t group)
   __attribute__((__nonnull__(1)));
 
-cce_decl void ccsys_lchown (cce_location_t * L, char const * pathname, ccsys_uid_t owner, ccsys_gid_t group)
+ccsys_decl void ccsys_lchown (cce_location_t * L, char const * pathname, ccsys_uid_t owner, ccsys_gid_t group)
   __attribute__((__nonnull__(1,2)));
 
-cce_decl void ccsys_fchownat (cce_location_t * L, ccsys_fd_t dirfd, char const * pathname, ccsys_uid_t owner, ccsys_gid_t group, int flags)
+ccsys_decl void ccsys_fchownat (cce_location_t * L, ccsys_fd_t dirfd, char const * pathname, ccsys_uid_t owner, ccsys_gid_t group, int flags)
   __attribute__((__nonnull__(1,3)));
 
 /* ------------------------------------------------------------------ */
 
-cce_decl void ccsys_chmod (cce_location_t * L, char const * pathname, ccsys_open_mode_t mode)
+ccsys_decl void ccsys_chmod (cce_location_t * L, char const * pathname, ccsys_open_mode_t mode)
   __attribute__((__nonnull__(1,2)));
 
-cce_decl void ccsys_fchmod (cce_location_t * L, ccsys_fd_t filedes, ccsys_open_mode_t mode)
+ccsys_decl void ccsys_fchmod (cce_location_t * L, ccsys_fd_t filedes, ccsys_open_mode_t mode)
   __attribute__((__nonnull__(1)));
 
-cce_decl void ccsys_fchmodat (cce_location_t * L, ccsys_fd_t dirfd, char const * pathname, ccsys_open_mode_t mode, int flags)
+ccsys_decl void ccsys_fchmodat (cce_location_t * L, ccsys_fd_t dirfd, char const * pathname, ccsys_open_mode_t mode, int flags)
   __attribute__((__nonnull__(1,3)));
 
 /* ------------------------------------------------------------------ */
 
-cce_decl int ccsys_access (cce_location_t * L, char const * pathname, int how)
+ccsys_decl int ccsys_access (cce_location_t * L, char const * pathname, int how)
   __attribute__((__nonnull__(1,2)));
 
-cce_decl int ccsys_faccessat (cce_location_t * L, ccsys_fd_t dirfd, char const * pathname, int how, int flags)
+ccsys_decl int ccsys_faccessat (cce_location_t * L, ccsys_fd_t dirfd, char const * pathname, int how, int flags)
   __attribute__((__nonnull__(1,3)));
 
 /* ------------------------------------------------------------------ */
 
-cce_decl void ccsys_truncate (cce_location_t * L, char const * pathname, ccsys_off_t length)
+ccsys_decl void ccsys_truncate (cce_location_t * L, char const * pathname, ccsys_off_t length)
   __attribute__((__nonnull__(1,2)));
 
-cce_decl void ccsys_ftruncate (cce_location_t * L, ccsys_fd_t filedes, ccsys_off_t length)
+ccsys_decl void ccsys_ftruncate (cce_location_t * L, ccsys_fd_t filedes, ccsys_off_t length)
   __attribute__((__nonnull__(1)));
 
 
@@ -737,53 +748,43 @@ cce_decl void ccsys_ftruncate (cce_location_t * L, ccsys_fd_t filedes, ccsys_off
  ** File system operations: file times.
  ** ----------------------------------------------------------------- */
 
-cce_decl void ccsys_utime (cce_location_t * L, char const * pathname, ccsys_utimbuf_t const * times)
+ccsys_decl void ccsys_utime (cce_location_t * L, char const * pathname, ccsys_utimbuf_t const * times)
   __attribute__((__nonnull__(1,2)));
 
-cce_decl void ccsys_utimes (cce_location_t * L, char const * pathname, ccsys_timeval_t const TVP[2])
+ccsys_decl void ccsys_utimes (cce_location_t * L, char const * pathname, ccsys_timeval_t const TVP[2])
   __attribute__((__nonnull__(1,2,3)));
 
-cce_decl void ccsys_lutimes (cce_location_t * L, char const * pathname, ccsys_timeval_t const TVP[2])
+ccsys_decl void ccsys_lutimes (cce_location_t * L, char const * pathname, ccsys_timeval_t const TVP[2])
   __attribute__((__nonnull__(1,2,3)));
 
-cce_decl void ccsys_futimes (cce_location_t * L, ccsys_fd_t filedes, ccsys_timeval_t const TVP[2])
+ccsys_decl void ccsys_futimes (cce_location_t * L, ccsys_fd_t filedes, ccsys_timeval_t const TVP[2])
   __attribute__((__nonnull__(1,3)));
-
-
-/** --------------------------------------------------------------------
- ** Waiting for input/output.
- ** ----------------------------------------------------------------- */
-
-cce_decl int ccsys_select (cce_location_t * L, int nfds,
-			   ccsys_fd_set_t * read_fds, ccsys_fd_set_t * write_fds, ccsys_fd_set_t * except_fds,
-			   ccsys_timeval_t * timeout)
-  __attribute__((__nonnull__(1)));
 
 
 /** --------------------------------------------------------------------
  ** System call wrappers: process handling.
  ** ----------------------------------------------------------------- */
 
-cce_decl int ccsys_system (cce_location_t * L, char const * command)
+ccsys_decl int ccsys_system (cce_location_t * L, char const * command)
   __attribute__((__nonnull__(1,2)));
 
-cce_decl ccsys_pid_t ccsys_fork (cce_location_t * L)
+ccsys_decl ccsys_pid_t ccsys_fork (cce_location_t * L)
   __attribute__((__nonnull__(1)));
 
 /* ------------------------------------------------------------------ */
 
-cce_decl void ccsys_execv (cce_location_t * L, char const * filename, char * const argv [])
+ccsys_decl void ccsys_execv (cce_location_t * L, char const * filename, char * const argv [])
   __attribute__((__nonnull__(1,2,3)));
 
-cce_decl void ccsys_execve (cce_location_t * L, char const * filename, char * const argv [], char * const env [])
+ccsys_decl void ccsys_execve (cce_location_t * L, char const * filename, char * const argv [], char * const env [])
   __attribute__((__nonnull__(1,2,3,4)));
 
-cce_decl void ccsys_execvp (cce_location_t * L, char const * filename, char * const argv [])
+ccsys_decl void ccsys_execvp (cce_location_t * L, char const * filename, char * const argv [])
   __attribute__((__nonnull__(1,2,3)));
 
 /* ------------------------------------------------------------------ */
 
-cce_decl void ccsys_waitpid (cce_location_t * L, ccsys_pid_t pid, int * wstatus, int options)
+ccsys_decl void ccsys_waitpid (cce_location_t * L, ccsys_pid_t pid, int * wstatus, int options)
   __attribute__((__nonnull__(1,3)));
 
 
@@ -863,10 +864,10 @@ ccsys_decl void ccsys_setsockopt (cce_location_t * L, ccsys_fd_t socket, int lev
  ** Predefined POSIX exception handler: pipe descriptors.
  ** ----------------------------------------------------------------- */
 
-cce_decl void ccsys_cleanup_handler_pipedes_init (cce_location_t * L, cce_handler_t * H, ccsys_fd_t pipedes[2])
+ccsys_decl void ccsys_cleanup_handler_pipedes_init (cce_location_t * L, cce_handler_t * H, ccsys_fd_t pipedes[2])
   __attribute__((__nonnull__(1,2,3)));
 
-cce_decl void ccsys_error_handler_pipedes_init (cce_location_t * L, cce_handler_t * H, ccsys_fd_t pipedes[2])
+ccsys_decl void ccsys_error_handler_pipedes_init (cce_location_t * L, cce_handler_t * H, ccsys_fd_t pipedes[2])
   __attribute__((__nonnull__(1,2,3)));
 
 
@@ -874,10 +875,10 @@ cce_decl void ccsys_error_handler_pipedes_init (cce_location_t * L, cce_handler_
  ** Predefined POSIX exception handler: removal of temporary file.
  ** ----------------------------------------------------------------- */
 
-cce_decl void ccsys_cleanup_handler_tmpfile_init (cce_location_t * L, cce_handler_t * H, char const * pathname)
+ccsys_decl void ccsys_cleanup_handler_tmpfile_init (cce_location_t * L, cce_handler_t * H, char const * pathname)
   __attribute__((__nonnull__(1,2,3)));
 
-cce_decl void ccsys_error_handler_tmpfile_init (cce_location_t * L, cce_handler_t * H, char const * pathname)
+ccsys_decl void ccsys_error_handler_tmpfile_init (cce_location_t * L, cce_handler_t * H, char const * pathname)
   __attribute__((__nonnull__(1,2,3)));
 
 
@@ -885,10 +886,10 @@ cce_decl void ccsys_error_handler_tmpfile_init (cce_location_t * L, cce_handler_
  ** Predefined POSIX exception handler: removal of temporary directory.
  ** ----------------------------------------------------------------- */
 
-cce_decl void ccsys_cleanup_handler_tmpdir_init (cce_location_t * L, cce_handler_t * H, char const * pathname)
+ccsys_decl void ccsys_cleanup_handler_tmpdir_init (cce_location_t * L, cce_handler_t * H, char const * pathname)
   __attribute__((__nonnull__(1,2,3)));
 
-cce_decl void ccsys_error_handler_tmpdir_init (cce_location_t * L, cce_handler_t * H, char const * pathname)
+ccsys_decl void ccsys_error_handler_tmpdir_init (cce_location_t * L, cce_handler_t * H, char const * pathname)
   __attribute__((__nonnull__(1,2,3)));
 
 

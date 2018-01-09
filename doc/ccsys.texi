@@ -121,6 +121,7 @@ included in the section entitled ``@gnu{} Free Documentation License''.
 @menu
 * overview::                    Overview of the package.
 * version::                     Version functions.
+* types::                       Generic type definitions.
 * memory::                      Memory allocation, locking, mapping.
 * io::                          Input/output system calls.
 * fs::                          File system system calls.
@@ -373,6 +374,30 @@ Return an integer representing the library interface current revision number.
 @deftypefun int ccsys_version_interface_age (void)
 Return an integer representing the library interface current age.
 @end deftypefun
+
+@c page
+@node types
+@chapter Generic type definitions
+
+
+@deftp {Semantic Type} ccsys_fd_t
+Type of file descriptors.  It is a singed integer.
+@end deftp
+
+
+@deftp {Semantic Type} ccsys_off_t
+Type of offsets.  Is is a signed integer.
+@end deftp
+
+
+@deftp {Semantic Type} ccsys_open_flags_t
+Exact signed integer representing file open flags.
+@end deftp
+
+
+@deftp {Semantic Type} ccsys_open_mode_t
+Exact signed integer representing file open modes.
+@end deftp
 
 @c page
 @node memory
@@ -642,7 +667,7 @@ CCSYS_MCL_ONFAULT
 The following symbols are defined in the header file @file{ccsys.h}.
 
 
-@deftypefun {void *} ccsys_mmap (cce_location_t * @var{L}, void * @var{address}, size_t @var{length}, ccsys_mmap_prot_t @var{prot}, ccsys_mmap_flags_t @var{flags}, int @var{filedes}, off_t @var{offset})
+@deftypefun {void *} ccsys_mmap (cce_location_t * @var{L}, void * @var{address}, size_t @var{length}, ccsys_mmap_prot_t @var{prot}, ccsys_mmap_flags_t @var{flags}, ccsys_fd_t @var{filedes}, ccsys_off_t @var{offset})
 Wrapper for @cfunc{mmap}.
 @end deftypefun
 
@@ -829,89 +854,125 @@ CCSYS_MADV_DODUMP       CCSYS_MADV_FREE
 @chapter Input/output system calls
 
 
+@menu
+* io open close::               Opening and closing files.
+* io read write::               Reading and writing files.
+* io scatter gather::           Scatter-gather input/output.
+* io waiting::                  Waiting for input/output.
+@end menu
+
+@c page
+@node io open close
+@section Opening and closing files
+
+
 The following symbols are defined in the header file @file{ccsys.h}.
 
 
-@deftypefun int ccsys_open (cce_location_t * @var{L}, char const * @var{filename}, int @var{flags}, mode_t @var{mode})
+@deftypefun ccsys_fd_t ccsys_open (cce_location_t * @var{L}, char const * @var{filename}, ccsys_open_flags_t @var{flags}, ccsys_open_mode_t @var{mode})
 Wrapper for @cfunc{open}.
 @end deftypefun
 
 
-@deftypefun int ccsys_openat (cce_location_t * @var{L}, int @var{dirfd}, char const * @var{filename}, int @var{flags}, mode_t @var{mode})
+@deftypefun ccsys_fd_t ccsys_openat (cce_location_t * @var{L}, ccsys_fd_t @var{filedes}, char const * @var{filename}, int @var{flags}, mode_t @var{mode})
 Wrapper for @cfunc{openat}.
 @end deftypefun
 
 
-@deftypefun void ccsys_close (cce_location_t * @var{L}, int @var{filedes})
+@deftypefun void ccsys_close (cce_location_t * @var{L}, ccsys_fd_t @var{filedes})
 Wrapper for @cfunc{close}.
 @end deftypefun
 
+@c ------------------------------------------------------------------------
 
-@deftypefun size_t ccsys_read (cce_location_t * @var{L}, int @var{filedes}, void * @var{buffer}, size_t @var{size})
+
+@deftypefun void ccsys_mkfifo (cce_location_t * @var{L}, char const * @var{pathname}, ccsys_open_mode_t @var{mode})
+Wrapper for @cfunc{mkfifo}.
+@end deftypefun
+
+
+@deftypefun void ccsys_pipe (cce_location_t * @var{L}, ccsys_fd_t @var{pipefd}[2])
+Wrapper for @cfunc{pipe}.
+@end deftypefun
+
+@c ------------------------------------------------------------------------
+
+@deftypefun ccsys_fd_t ccsys_dup (cce_location_t * @var{L}, ccsys_fd_t @var{old})
+Wrapper for @cfunc{dup}.
+@end deftypefun
+
+
+@deftypefun ccsys_fd_t ccsys_dup2 (cce_location_t * @var{L}, ccsys_fd_t @var{old}, ccsys_fd_t @var{new})
+Wrapper for @cfunc{dup2}.
+@end deftypefun
+
+@c page
+@node io read write
+@section Reading and writing files
+
+
+The following symbols are defined in the header file @file{ccsys.h}.
+
+
+@deftypefun size_t ccsys_read (cce_location_t * @var{L}, ccsys_fd_t @var{filedes}, void * @var{buffer}, size_t @var{size})
 Wrapper for @cfunc{read}.  Notice the return value of type @objtype{size_t}: the negative values
 returned by @cfunc{read} are consumed by this function, so the return value is an unsigned integer.
 @end deftypefun
 
 
-@deftypefun size_t ccsys_pread (cce_location_t * @var{L}, int @var{filedes}, void * @var{buffer}, size_t @var{size}, off_t @var{offset})
+@deftypefun size_t ccsys_pread (cce_location_t * @var{L}, ccsys_fd_t @var{filedes}, void * @var{buffer}, size_t @var{size}, ccsys_off_t @var{offset})
 Wrapper for @cfunc{pread}.  Notice the return value of type @objtype{size_t}: the negative values
 returned by @cfunc{pread} are consumed by this function, so the return value is an unsigned integer.
 @end deftypefun
 
 
-@deftypefun size_t ccsys_write (cce_location_t * @var{L}, int @var{filedes}, void const * @var{buffer}, size_t @var{size})
+@deftypefun size_t ccsys_write (cce_location_t * @var{L}, ccsys_fd_t @var{filedes}, void const * @var{buffer}, size_t @var{size})
 Wrapper for @cfunc{write}.  Notice the return value of type @objtype{size_t}: the negative values
 returned by @cfunc{write} are consumed by this function, so the return value is an unsigned integer.
 @end deftypefun
 
 
-@deftypefun size_t ccsys_pwrite (cce_location_t * @var{L}, int @var{filedes}, void const * @var{buffer}, size_t @var{size}, off_t @var{offset})
+@deftypefun size_t ccsys_pwrite (cce_location_t * @var{L}, ccsys_fd_t @var{filedes}, void const * @var{buffer}, size_t @var{size}, ccsys_off_t @var{offset})
 Wrapper for @cfunc{pwrite}.  Notice the return value of type @objtype{size_t}: the negative values
 returned by @cfunc{pwrite} are consumed by this function, so the return value is an unsigned
 integer.
 @end deftypefun
 
 
-@deftypefun off_t ccsys_lseek (cce_location_t * @var{L}, int @var{filedes}, off_t @var{offset}, int @var{whence})
+@deftypefun ccsys_off_t ccsys_lseek (cce_location_t * @var{L}, ccsys_fd_t @var{filedes}, ccsys_off_t @var{offset}, int @var{whence})
 Wrapper for @cfunc{lseek}.
 @end deftypefun
 
+@c page
+@node io scatter gather
+@section Scatter--gather input/output
 
-@deftypefun size_t ccsys_readv (cce_location_t * @var{L}, int @var{filedes}, const struct iovec * @var{vector}, int @var{count})
+
+The following symbols are defined in the header file @file{ccsys.h}.
+
+
+@deftypefun size_t ccsys_readv (cce_location_t * @var{L}, ccsys_fd_t @var{filedes}, ccsys_iovec_t const * @var{vector}, int @var{count})
 Wrapper for @cfunc{readv}.  Notice the return value of type @objtype{size_t}: the negative values
 returned by @cfunc{readv} are consumed by this function, so the return value is an unsigned integer.
 @end deftypefun
 
 
-@deftypefun size_t ccsys_writev (cce_location_t * @var{L}, int @var{filedes}, const struct iovec * @var{vector}, int @var{count})
+@deftypefun size_t ccsys_writev (cce_location_t * @var{L}, ccsys_fd_t @var{filedes}, ccsys_iovec_t const * @var{vector}, int @var{count})
 Wrapper for @cfunc{writev}.  Notice the return value of type @objtype{size_t}: the negative values
 returned by @cfunc{writev} are consumed by this function, so the return value is an unsigned
 integer.
 @end deftypefun
 
+@c page
+@node io waiting
+@section Waiting for input/output
 
-@deftypefun int ccsys_select (cce_location_t * @var{L}, int @var{nfds}, fd_set * @var{read_fds}, fd_set * @var{write_fds}, fd_set * @var{except_fds}, struct timeval * @var{timeout})
+
+The following symbols are defined in the header file @file{ccsys.h}.
+
+
+@deftypefun int ccsys_select (cce_location_t * @var{L}, int @var{nfds}, ccsys_fd_set_t * @var{read_fds}, ccsys_fd_set_t * @var{write_fds}, ccsys_fd_set_t * @var{except_fds}, ccsys_timeval_t * @var{timeout})
 Wrapper for @cfunc{select}.
-@end deftypefun
-
-
-@deftypefun int ccsys_dup (cce_location_t * @var{L}, int @var{old})
-Wrapper for @cfunc{dup}.
-@end deftypefun
-
-
-@deftypefun int ccsys_dup2 (cce_location_t * @var{L}, int @var{old}, int @var{new})
-Wrapper for @cfunc{dup2}.
-@end deftypefun
-
-
-@deftypefun void ccsys_pipe (cce_location_t * @var{L}, int @var{pipefd}[2])
-Wrapper for @cfunc{pipe}.
-@end deftypefun
-
-
-@deftypefun void ccsys_mkfifo (cce_location_t * @var{L}, char const * @var{pathname}, mode_t @var{mode})
-Wrapper for @cfunc{mkfifo}.
 @end deftypefun
 
 @c page
