@@ -124,6 +124,7 @@ extern "C" {
  ** ----------------------------------------------------------------- */
 
 typedef struct ccsys_blkcnt_t		ccsys_blkcnt_t;
+typedef struct ccsys_blkcnt_t		ccsys_blkcnt_t;
 typedef struct ccsys_blksize_t		ccsys_blksize_t;
 typedef struct ccsys_dev_t		ccsys_dev_t;
 typedef struct ccsys_dir_t		ccsys_dir_t;
@@ -132,17 +133,20 @@ typedef struct ccsys_fd_t		ccsys_fd_t;
 typedef struct ccsys_gid_t		ccsys_gid_t;
 typedef struct ccsys_ino_t		ccsys_ino_t;
 typedef struct ccsys_iovec_t		ccsys_iovec_t;
+typedef struct ccsys_madvise_advice_t	ccsys_madvise_advice_t;
 typedef struct ccsys_mlockall_flags_t	ccsys_mlockall_flags_t;
 typedef struct ccsys_mmap_flags_t	ccsys_mmap_flags_t;
 typedef struct ccsys_mmap_prot_t	ccsys_mmap_prot_t;
-typedef struct ccsys_msync_flags_t	ccsys_msync_flags_t;
 typedef struct ccsys_mremap_flags_t	ccsys_mremap_flags_t;
-typedef struct ccsys_madvise_advice_t	ccsys_madvise_advice_t;
+typedef struct ccsys_msync_flags_t	ccsys_msync_flags_t;
 typedef struct ccsys_nlink_t		ccsys_nlink_t;
 typedef struct ccsys_off_t		ccsys_off_t;
 typedef struct ccsys_open_flags_t	ccsys_open_flags_t;
 typedef struct ccsys_open_mode_t	ccsys_open_mode_t;
 typedef struct ccsys_pid_t		ccsys_pid_t;
+typedef struct ccsys_socket_namespace_t	ccsys_socket_namespace_t;
+typedef struct ccsys_socket_protocol_t	ccsys_socket_protocol_t;
+typedef struct ccsys_socket_style_t	ccsys_socket_style_t;
 typedef struct ccsys_socklen_t		ccsys_socklen_t;
 typedef struct ccsys_timeval_t		ccsys_timeval_t;
 typedef struct ccsys_uid_t		ccsys_uid_t;
@@ -156,17 +160,20 @@ struct ccsys_fd_t		{ int				data; };
 struct ccsys_gid_t		{ @CCSYS_TYPE_GID_T@		data; };
 struct ccsys_ino_t		{ @CCSYS_TYPE_INO_T@		data; };
 struct ccsys_iovec_t		{ uint8_t data[@SIZEOF_STRUCT_IOVEC@]; };
+struct ccsys_madvise_advice_t	{ int				data; };
 struct ccsys_mlockall_flags_t	{ int				data; };
 struct ccsys_mmap_flags_t	{ int				data; };
 struct ccsys_mmap_prot_t	{ int				data; };
-struct ccsys_msync_flags_t	{ int				data; };
 struct ccsys_mremap_flags_t	{ int				data; };
-struct ccsys_madvise_advice_t	{ int				data; };
+struct ccsys_msync_flags_t	{ int				data; };
 struct ccsys_nlink_t		{ @CCSYS_TYPE_NLINK_T@		data; };
 struct ccsys_off_t		{ @CCSYS_TYPE_OFF_T@		data; };
 struct ccsys_open_flags_t	{ int				data; };
 struct ccsys_open_mode_t	{ @CCSYS_TYPE_MODE_T@		data; };
 struct ccsys_pid_t		{ @CCSYS_TYPE_PID_T@		data; };
+struct ccsys_socket_namespace_t	{ int				data; };
+struct ccsys_socket_protocol_t	{ int				data; };
+struct ccsys_socket_style_t	{ int				data; };
 struct ccsys_socklen_t		{ @CCSYS_TYPE_SOCKLEN_T@	data; };
 struct ccsys_timespec_t		{ uint8_t data[@SIZEOF_STRUCT_TIMESPEC@]; };
 struct ccsys_timeval_t		{ uint8_t data[@SIZEOF_STRUCT_TIMEVAL@]; };
@@ -202,7 +209,7 @@ struct ccsys_utimbuf_t		{ uint8_t data[@SIZEOF_STRUCT_UTIMBUF@]; };
  ** System constants.
  ** ----------------------------------------------------------------- */
 
-enum ccsys_file_mode_t {
+enum ccsys_file_open_flags_t {
   /* Access modes. */
   @CCSYS_ENUM_DEF_CCSYS_O_RDONLY@
   @CCSYS_ENUM_DEF_CCSYS_O_WRONLY@
@@ -210,18 +217,28 @@ enum ccsys_file_mode_t {
 
   /* Open modes. */
   @CCSYS_ENUM_DEF_CCSYS_O_CREAT@
+  @CCSYS_ENUM_DEF_CCSYS_O_DIRECT@
+  @CCSYS_ENUM_DEF_CCSYS_O_DIRECTORY@
+  @CCSYS_ENUM_DEF_CCSYS_O_DSYNC@
   @CCSYS_ENUM_DEF_CCSYS_O_EXCL@
-  @CCSYS_ENUM_DEF_CCSYS_O_NONBLOCK@
+  @CCSYS_ENUM_DEF_CCSYS_O_LARGEFILE@
+  @CCSYS_ENUM_DEF_CCSYS_O_NDELAY@
   @CCSYS_ENUM_DEF_CCSYS_O_NOCTTY@
+  @CCSYS_ENUM_DEF_CCSYS_O_NOFOLLOW@
+  @CCSYS_ENUM_DEF_CCSYS_O_NONBLOCK@
+  @CCSYS_ENUM_DEF_CCSYS_O_PATH@
+  @CCSYS_ENUM_DEF_CCSYS_O_SYNC@
+  @CCSYS_ENUM_DEF_CCSYS_O_TMPFILE@
   @CCSYS_ENUM_DEF_CCSYS_O_TRUNC@
 
   /* Operating modes. */
   @CCSYS_ENUM_DEF_CCSYS_O_APPEND@
   @CCSYS_ENUM_DEF_CCSYS_O_ASYNC@
+  @CCSYS_ENUM_DEF_CCSYS_O_CLOEXEC@
   @CCSYS_ENUM_DEF_CCSYS_O_NOATIME@
 };
 
-enum ccsys_permissions_t {
+enum ccsys_file_open_mode_t {
   @CCSYS_ENUM_DEF_CCSYS_S_IRUSR@
   @CCSYS_ENUM_DEF_CCSYS_S_IWUSR@
   @CCSYS_ENUM_DEF_CCSYS_S_IXUSR@
@@ -243,16 +260,16 @@ enum ccsys_permissions_t {
   @CCSYS_ENUM_DEF_CCSYS_S_ISVTX@
 };
 
-enum ccsys_socket_namespace_t {
-  @CCSYS_ENUM_DEF_CCSYS_SOCK_STREAM@
+enum ccsys_socket_namespace_flags_t {
   @CCSYS_ENUM_DEF_CCSYS_SOCK_DGRAM@
-  @CCSYS_ENUM_DEF_CCSYS_SOCK_SEQPACKET@
+  @CCSYS_ENUM_DEF_CCSYS_SOCK_PACKET@
   @CCSYS_ENUM_DEF_CCSYS_SOCK_RAW@
   @CCSYS_ENUM_DEF_CCSYS_SOCK_RDM@
-  @CCSYS_ENUM_DEF_CCSYS_SOCK_PACKET@
+  @CCSYS_ENUM_DEF_CCSYS_SOCK_SEQPACKET@
+  @CCSYS_ENUM_DEF_CCSYS_SOCK_STREAM@
 };
 
-enum ccsys_socket_style_t {
+enum ccsys_socket_style_flags_t {
   @CCSYS_ENUM_DEF_CCSYS_AF_UNIX@
   @CCSYS_ENUM_DEF_CCSYS_AF_LOCAL@
   @CCSYS_ENUM_DEF_CCSYS_AF_INET@
@@ -267,7 +284,7 @@ enum ccsys_socket_style_t {
   @CCSYS_ENUM_DEF_CCSYS_AF_ALG@
 };
 
-enum ccsys_socket_protocol_t {
+enum ccsys_socket_protocol_flags_t {
   @CCSYS_ENUM_DEF_CCSYS_SOCK_PROTOCOL_IP@
 };
 
@@ -343,17 +360,17 @@ enum ccsys_memory_advice_flags_t {
 
 /* ------------------------------------------------------------------ */
 
-typedef enum ccsys_file_mode_t			ccsys_file_mode_t;
+typedef enum ccsys_file_open_flags_t		ccsys_file_open_flags_t;
+typedef enum ccsys_file_open_mode_t		ccsys_file_open_mode_t;
+typedef enum ccsys_memory_advice_flags_t	ccsys_memory_advice_flags_t;
 typedef enum ccsys_memory_locking_flags_t	ccsys_memory_locking_flags_t;
 typedef enum ccsys_memory_mapping_flags_t	ccsys_memory_mapping_flags_t;
 typedef enum ccsys_memory_mapping_protection_t	ccsys_memory_mapping_protection_t;
 typedef enum ccsys_memory_remap_flags_t		ccsys_memory_remap_flags_t;
 typedef enum ccsys_memory_sync_flags_t		ccsys_memory_sync_flags_t;
-typedef enum ccsys_memory_advice_flags_t	ccsys_memory_advice_flags_t;
-typedef enum ccsys_permissions_t		ccsys_permissions_t;
-typedef enum ccsys_socket_namespace_t		ccsys_socket_namespace_t;
-typedef enum ccsys_socket_protocol_t		ccsys_socket_protocol_t;
-typedef enum ccsys_socket_style_t		ccsys_socket_style_t;
+typedef enum ccsys_socket_namespace_flags_t	ccsys_socket_namespace_flags_t;
+typedef enum ccsys_socket_protocol_flags_t	ccsys_socket_protocol_flags_t;
+typedef enum ccsys_socket_style_flags_t		ccsys_socket_style_flags_t;
 
 
 /** --------------------------------------------------------------------

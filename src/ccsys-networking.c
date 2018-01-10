@@ -7,7 +7,7 @@
 
 
 
-  Copyright (C) 2017 Marco Maggi <marco.maggi-ipsu@poste.it>
+  Copyright (C) 2017, 2018 Marco Maggi <marco.maggi-ipsu@poste.it>
 
   This is free software; you can  redistribute it and/or modify it under
   the terms of the GNU Lesser General Public License as published by the
@@ -120,7 +120,7 @@ ccsys_socket (cce_location_t * L, ccsys_socket_namespace_t namespace,
 {
   int	rv;
   errno = 0;
-  rv = socket(namespace, style, protocol);
+  rv = socket(namespace.data, style.data, protocol.data);
   if (-1 == rv) {
     cce_raise(L, cce_condition_new_errno_clear());
   } else {
@@ -150,7 +150,7 @@ ccsys_socketpair (cce_location_t * L, ccsys_socket_namespace_t namespace,
 {
   int	rv;
   errno = 0;
-  rv = socketpair(namespace, style, protocol, (int *)filedes);
+  rv = socketpair(namespace.data, style.data, protocol.data, (int *)filedes);
   if (-1 == rv) {
     cce_raise(L, cce_condition_new_errno_clear());
   }

@@ -122,6 +122,7 @@ included in the section entitled ``@gnu{} Free Documentation License''.
 * overview::                    Overview of the package.
 * version::                     Version functions.
 * types::                       Generic type definitions.
+* enums::                       Enumerated constants.
 * memory::                      Memory allocation, locking, mapping.
 * io::                          Input/output system calls.
 * fs::                          File system system calls.
@@ -391,12 +392,327 @@ Type of offsets.  Is is a signed integer.
 
 
 @deftp {Semantic Type} ccsys_open_flags_t
-Exact signed integer representing file open flags.
+Exact signed integer representing file open flags.  It is meant to be a bitwise combination of the
+enumerated constants of type @objtype{ccsys_file_open_flags_t}.
 @end deftp
 
 
 @deftp {Semantic Type} ccsys_open_mode_t
-Exact signed integer representing file open modes.
+Exact signed integer representing file open modes.  It is meant to be a bitwise combination of the
+enumerated constants of type @objtype{ccsys_file_mode_flags_t}.
+@end deftp
+
+
+@deftp {Semantic Type} ccsys_socket_namespace_t
+Exact signed integer representing a socket namespace (or domain).  It is the of the argument
+@var{namespace} or @var{domain} of @cfunc{ccsys_socket}.
+@end deftp
+
+
+@deftp {Semantic Type} ccsys_socket_style_t
+Exact signed integer representing a socket style (or type).  It is the of the argument @var{style}
+or @var{type} of @cfunc{ccsys_socket}.
+@end deftp
+
+
+@deftp {Semantic Type} ccsys_socket_protocol_t
+Exact signed integer representing a socket protocol.  It is the of the argument @var{protocol} of
+@cfunc{ccsys_socket}.
+@end deftp
+
+
+@deftp {Semantic Type} ccsys_mlockall_flags_t
+Type of the argument @var{flags} in @cfunc{ccsys_mlockall}.
+@end deftp
+
+
+@deftp {Semantic Type} ccsys_mmap_prot_t
+Type of the argument @var{prot} in @cfunc{ccsys_mmap} and in @cfunc{ccsys_mprotect}.
+@end deftp
+
+
+@deftp {Semantic Type} ccsys_mmap_flags_t
+Type of the argument @var{flags} in @cfunc{ccsys_mmap}.
+@end deftp
+
+
+@deftp {Semantic Type} ccsys_msync_flags_t
+Type of the argument @var{flags} in @cfunc{ccsys_msync}.
+@end deftp
+
+
+@deftp {Semantic Type} ccsys_mremap_flags_t
+Type of the argument @var{flags} in @cfunc{ccsys_mremap}.
+@end deftp
+
+
+@deftp {Semantic Type} ccsys_madvise_advice_t
+Type of the argument @var{advice} in @cfunc{ccsys_advise}.
+@end deftp
+
+@c page
+@node enums
+@chapter Enumerated constants
+
+
+The following symbols are defined in the header file @file{ccsys.h}.
+
+
+@EnumeratedConstant{CCSYS_O_RDONLY}
+@EnumeratedConstant{CCSYS_O_WRONLY}
+@EnumeratedConstant{CCSYS_O_RDWR}
+@EnumeratedConstant{CCSYS_O_APPEND}
+@EnumeratedConstant{CCSYS_O_ASYNC}
+@EnumeratedConstant{CCSYS_O_CLOEXEC}
+@EnumeratedConstant{CCSYS_O_CREAT}
+@EnumeratedConstant{CCSYS_O_DIRECT}
+@EnumeratedConstant{CCSYS_O_DIRECTORY}
+@EnumeratedConstant{CCSYS_O_DSYNC}
+@EnumeratedConstant{CCSYS_O_EXCL}
+@EnumeratedConstant{CCSYS_O_LARGEFILE}
+@EnumeratedConstant{CCSYS_O_NDELAY}
+@EnumeratedConstant{CCSYS_O_NOATIME}
+@EnumeratedConstant{CCSYS_O_NOCTTY}
+@EnumeratedConstant{CCSYS_O_NOFOLLOW}
+@EnumeratedConstant{CCSYS_O_NONBLOCK}
+@EnumeratedConstant{CCSYS_O_PATH}
+@EnumeratedConstant{CCSYS_O_SYNC}
+@EnumeratedConstant{CCSYS_O_TMPFILE}
+@EnumeratedConstant{CCSYS_O_TRUNC}
+@deftp {Enum Typedef} ccsys_file_open_flags_t
+Type of file open flag constants.  These constants are meant to be combined bitwise, for example to
+produce a value for the argument @var{flags} for @cfunc{ccsys_open}.  It defines the following
+constants:
+
+@example
+CCSYS_O_RDONLY    CCSYS_O_WRONLY    CCSYS_O_RDWR
+
+CCSYS_O_APPEND    CCSYS_O_ASYNC     CCSYS_O_CLOEXEC
+CCSYS_O_CREAT     CCSYS_O_DIRECT    CCSYS_O_DIRECTORY
+CCSYS_O_DSYNC     CCSYS_O_EXCL      CCSYS_O_LARGEFILE
+CCSYS_O_NDELAY    CCSYS_O_NOATIME   CCSYS_O_NOCTTY
+CCSYS_O_NOFOLLOW  CCSYS_O_NONBLOCK  CCSYS_O_PATH
+CCSYS_O_SYNC      CCSYS_O_TMPFILE   CCSYS_O_TRUNC
+@end example
+@end deftp
+
+
+@EnumeratedConstant{CCSYS_S_IRUSR}
+@EnumeratedConstant{CCSYS_S_IWUSR}
+@EnumeratedConstant{CCSYS_S_IXUSR}
+@EnumeratedConstant{CCSYS_S_IRGRP}
+@EnumeratedConstant{CCSYS_S_IWGRP}
+@EnumeratedConstant{CCSYS_S_IXGRP}
+@EnumeratedConstant{CCSYS_S_IROTH}
+@EnumeratedConstant{CCSYS_S_IWOTH}
+@EnumeratedConstant{CCSYS_S_IXOTH}
+@EnumeratedConstant{CCSYS_S_IRWXU}
+@EnumeratedConstant{CCSYS_S_IRWXG}
+@EnumeratedConstant{CCSYS_S_IRWXO}
+@EnumeratedConstant{CCSYS_S_ISUID}
+@EnumeratedConstant{CCSYS_S_ISGID}
+@EnumeratedConstant{CCSYS_S_ISVTX}
+@deftp {Enum Typedef} ccsys_file_open_mode_t
+Type of file open mode constants.  These constants are meant to be combined bitwise, for example to
+produce a value for the argument @var{mode} for @cfunc{ccsys_open}.  It defines the following
+constants:
+
+@example
+CCSYS_S_IRUSR   CCSYS_S_IWUSR   CCSYS_S_IXUSR
+CCSYS_S_IRGRP   CCSYS_S_IWGRP   CCSYS_S_IXGRP
+CCSYS_S_IROTH   CCSYS_S_IWOTH   CCSYS_S_IXOTH
+CCSYS_S_IRWXU   CCSYS_S_IRWXG   CCSYS_S_IRWXO
+CCSYS_S_ISUID   CCSYS_S_ISGID   CCSYS_S_ISVTX
+@end example
+@end deftp
+
+
+@EnumeratedConstant{CCSYS_SOCK_STREAM}
+@EnumeratedConstant{CCSYS_SOCK_DGRAM}
+@EnumeratedConstant{CCSYS_SOCK_SEQPACKET}
+@EnumeratedConstant{CCSYS_SOCK_RAW}
+@EnumeratedConstant{CCSYS_SOCK_RDM}
+@EnumeratedConstant{CCSYS_SOCK_PACKET}
+@deftp {Enum Typedef} ccsys_socket_namespace_flags_t
+Type of socket namespace selection constants.  These constants are meant to be used, for example, as
+value for the argument @var{domain} of @cfunc{ccsys_socket}.  It defines the following constants:
+
+@example
+CCSYS_SOCK_DGRAM
+CCSYS_SOCK_PACKET
+CCSYS_SOCK_RAW
+CCSYS_SOCK_RDM
+CCSYS_SOCK_SEQPACKET
+CCSYS_SOCK_STREAM
+@end example
+@end deftp
+
+
+@EnumeratedConstant{CCSYS_AF_UNIX}
+@EnumeratedConstant{CCSYS_AF_LOCAL}
+@EnumeratedConstant{CCSYS_AF_INET}
+@EnumeratedConstant{CCSYS_AF_INET6}
+@EnumeratedConstant{CCSYS_AF_IPX}
+@EnumeratedConstant{CCSYS_AF_NETLINK}
+@EnumeratedConstant{CCSYS_AF_X25}
+@EnumeratedConstant{CCSYS_AF_AX25}
+@EnumeratedConstant{CCSYS_AF_ATMPVC}
+@EnumeratedConstant{CCSYS_AF_APPLETALK}
+@EnumeratedConstant{CCSYS_AF_PACKET}
+@EnumeratedConstant{CCSYS_AF_ALG}
+@deftp {Enum Typedef} ccsys_socket_style_flags_t
+Type of socket style selection constants.  These constants are meant to be used, for example, as
+value for the argument @var{type} of @cfunc{ccsys_socket}.  It defines the following constants:
+
+@example
+CCSYS_AF_UNIX       CCSYS_AF_LOCAL   CCSYS_AF_INET
+CCSYS_AF_INET6      CCSYS_AF_IPX     CCSYS_AF_NETLINK
+CCSYS_AF_X25        CCSYS_AF_AX25    CCSYS_AF_ATMPVC
+CCSYS_AF_APPLETALK  CCSYS_AF_PACKET  CCSYS_AF_ALG
+@end example
+@end deftp
+
+
+@EnumeratedConstant{CCSYS_SOCK_PROTOCOL_IP}
+@deftp {Enum Typedef} ccsys_socket_protocol_flags_t
+Type of socket protocol selection constants.  These constants are meant to be used, for example, as
+value for the argument @var{protocol} of @cfunc{ccsys_socket}.  It defines the following constants:
+
+@example
+CCSYS_SOCK_PROTOCOL_IP
+@end example
+@end deftp
+
+
+@EnumeratedConstant{CCSYS_MCL_CURRENT}
+@EnumeratedConstant{CCSYS_MCL_FUTURE}
+@EnumeratedConstant{CCSYS_MCL_ONFAULT}
+@deftp {Enum Typedef} ccsys_memory_locking_flags_t
+Enumeration of constants for the argument @var{flags} in @cfunc{ccsys_mlockall}.  It defines the
+following constants:
+
+@example
+CCSYS_MCL_CURRENT
+CCSYS_MCL_FUTURE
+CCSYS_MCL_ONFAULT
+@end example
+@end deftp
+
+
+@deftp {Enum Typedef} ccsys_memory_mapping_protection_t
+@EnumeratedConstant{CCSYS_PROT_EXEC}
+@EnumeratedConstant{CCSYS_PROT_READ}
+@EnumeratedConstant{CCSYS_PROT_WRITE}
+@EnumeratedConstant{CCSYS_PROT_NONE}
+Enumeration of constants for the argument @var{prot} in @cfunc{ccsys_mmap}.  It defines the
+following constants:
+
+@example
+CCSYS_PROT_EXEC
+CCSYS_PROT_READ
+CCSYS_PROT_WRITE
+CCSYS_PROT_NONE
+@end example
+@end deftp
+
+
+@deftp {Enum Typedef} ccsys_memory_mapping_flags_t
+@EnumeratedConstant{CCSYS_MAP_SHARED}
+@EnumeratedConstant{CCSYS_MAP_PRIVATE}
+@EnumeratedConstant{CCSYS_MAP_32BIT}
+@EnumeratedConstant{CCSYS_MAP_ANON}
+@EnumeratedConstant{CCSYS_MAP_ANONYMOUS}
+@EnumeratedConstant{CCSYS_MAP_DENYWRITE}
+@EnumeratedConstant{CCSYS_MAP_EXECUTABLE}
+@EnumeratedConstant{CCSYS_MAP_FILE}
+@EnumeratedConstant{CCSYS_MAP_FIXED}
+@EnumeratedConstant{CCSYS_MAP_GROWSDOWN}
+@EnumeratedConstant{CCSYS_MAP_HUGETLB}
+@EnumeratedConstant{CCSYS_MAP_HUGE_2MB}
+@EnumeratedConstant{CCSYS_MAP_HUGE_1GB}
+@EnumeratedConstant{CCSYS_MAP_LOCKED}
+@EnumeratedConstant{CCSYS_MAP_NONBLOCK}
+@EnumeratedConstant{CCSYS_MAP_NORESERVE}
+@EnumeratedConstant{CCSYS_MAP_POPULATE}
+@EnumeratedConstant{CCSYS_MAP_STACK}
+@EnumeratedConstant{CCSYS_MAP_UNINITIALIZED}
+@EnumeratedConstant{CCSYS_MAP_AUTOGROW}
+@EnumeratedConstant{CCSYS_MAP_AUTORESRV}
+@EnumeratedConstant{CCSYS_MAP_COPY}
+@EnumeratedConstant{CCSYS_MAP_LOCAL}
+Enumeration of constants for the argument @var{flags} in @cfunc{ccsys_mmap}.  It defines the
+following constants:
+
+@example
+CCSYS_MAP_SHARED        CCSYS_MAP_PRIVATE     CCSYS_MAP_32BIT
+CCSYS_MAP_ANON          CCSYS_MAP_ANONYMOUS   CCSYS_MAP_DENYWRITE
+CCSYS_MAP_EXECUTABLE    CCSYS_MAP_FILE        CCSYS_MAP_FIXED
+CCSYS_MAP_GROWSDOWN     CCSYS_MAP_HUGETLB     CCSYS_MAP_HUGE_2MB
+CCSYS_MAP_HUGE_1GB      CCSYS_MAP_LOCKED      CCSYS_MAP_NONBLOCK
+CCSYS_MAP_NORESERVE     CCSYS_MAP_POPULATE    CCSYS_MAP_STACK
+CCSYS_MAP_UNINITIALIZED CCSYS_MAP_AUTOGROW    CCSYS_MAP_AUTORESRV
+CCSYS_MAP_COPY          CCSYS_MAP_LOCAL
+@end example
+@end deftp
+
+
+@deftp {Enum Typedef} ccsys_memory_sync_flags_t
+@EnumeratedConstant{CCSYS_MS_ASYNC}
+@EnumeratedConstant{CCSYS_MS_SYNC}
+@EnumeratedConstant{CCSYS_MS_INVALIDATE}
+Enumeration of constants for the argument @var{flags} in @cfunc{ccsys_msync}.  It defines the
+following constants:
+
+@example
+CCSYS_MS_ASYNC
+CCSYS_MS_SYNC
+CCSYS_MS_INVALIDATE
+@end example
+@end deftp
+
+
+@deftp {Enum Typedef} ccsys_memory_remap_flags_t
+@EnumeratedConstant{CCSYS_MREMAP_MAYMOVE}
+@EnumeratedConstant{CCSYS_MREMAP_FIXED}
+Enumeration of constants for the argument @var{flags} in @cfunc{ccsys_mremap}.  It defines the
+following constants:
+
+@example
+CCSYS_MREMAP_MAYMOVE
+CCSYS_MREMAP_FIXED
+@end example
+@end deftp
+
+
+@deftp {Enum Typedef} ccsys_memory_advice_flags_t
+@EnumeratedConstant{CCSYS_MADV_NORMAL}
+@EnumeratedConstant{CCSYS_MADV_RANDOM}
+@EnumeratedConstant{CCSYS_MADV_SEQUENTIAL}
+@EnumeratedConstant{CCSYS_MADV_WILLNEED}
+@EnumeratedConstant{CCSYS_MADV_DONTNEED}
+@EnumeratedConstant{CCSYS_MADV_REMOVE}
+@EnumeratedConstant{CCSYS_MADV_DONTFORK}
+@EnumeratedConstant{CCSYS_MADV_DOFORK}
+@EnumeratedConstant{CCSYS_MADV_HWPOISON}
+@EnumeratedConstant{CCSYS_MADV_MERGEABLE}
+@EnumeratedConstant{CCSYS_MADV_UNMERGEABLE}
+@EnumeratedConstant{CCSYS_MADV_SOFT_OFFLINE}
+@EnumeratedConstant{CCSYS_MADV_HUGEPAGE}
+@EnumeratedConstant{CCSYS_MADV_NOHUGEPAGE}
+@EnumeratedConstant{CCSYS_MADV_DONTDUMP}
+@EnumeratedConstant{CCSYS_MADV_DODUMP}
+@EnumeratedConstant{CCSYS_MADV_FREE}
+Enumeration of constants for the argument @var{advice} in @cfunc{ccsys_madvise}.  It defines the
+following constants:
+
+@example
+CCSYS_MADV_NORMAL       CCSYS_MADV_RANDOM       CCSYS_MADV_SEQUENTIAL
+CCSYS_MADV_WILLNEED     CCSYS_MADV_DONTNEED     CCSYS_MADV_REMOVE
+CCSYS_MADV_DONTFORK     CCSYS_MADV_DOFORK       CCSYS_MADV_HWPOISON
+CCSYS_MADV_MERGEABLE    CCSYS_MADV_UNMERGEABLE  CCSYS_MADV_SOFT_OFFLINE
+CCSYS_MADV_HUGEPAGE     CCSYS_MADV_NOHUGEPAGE   CCSYS_MADV_DONTDUMP
+CCSYS_MADV_DODUMP       CCSYS_MADV_FREE
+@end example
 @end deftp
 
 @c page
@@ -631,33 +947,14 @@ Wrapper for @cfunc{munlock}.
 
 
 @deftypefun void ccsys_mlockall (cce_location_t * @var{L}, ccsys_mlockall_flags_t @var{flags})
-Wrapper for @cfunc{mlockall}.
+Wrapper for @cfunc{mlockall}.  The argument @var{flags} is meant to be a bitwise combination of the
+constants of type @objtype{ccsys_memory_locking_flags_t}.
 @end deftypefun
 
 
 @deftypefun void ccsys_munlockall (cce_location_t * @var{L})
 Wrapper for @cfunc{munlockall}.
 @end deftypefun
-
-
-@deftp {Semantic Type} ccsys_mlockall_flags_t
-Type of the argument @var{flags} in @cfunc{ccsys_mlockall}.
-@end deftp
-
-
-@deftp {Enum Typedef} ccsys_memory_locking_flags_t
-@EnumeratedConstant{CCSYS_MCL_CURRENT}
-@EnumeratedConstant{CCSYS_MCL_FUTURE}
-@EnumeratedConstant{CCSYS_MCL_ONFAULT}
-Enumeration of constants for the argument @var{flags} in @cfunc{ccsys_mlockall}.  It defines the
-following constants:
-
-@example
-CCSYS_MCL_CURRENT
-CCSYS_MCL_FUTURE
-CCSYS_MCL_ONFAULT
-@end example
-@end deftp
 
 @c page
 @node memory mapping
@@ -669,6 +966,12 @@ The following symbols are defined in the header file @file{ccsys.h}.
 
 @deftypefun {void *} ccsys_mmap (cce_location_t * @var{L}, void * @var{address}, size_t @var{length}, ccsys_mmap_prot_t @var{prot}, ccsys_mmap_flags_t @var{flags}, ccsys_fd_t @var{filedes}, ccsys_off_t @var{offset})
 Wrapper for @cfunc{mmap}.
+
+The argument @var{prot} is meant to be a bitwise combination of the constants of type
+@objtype{ccsys_memory_mapping_protection_t}.
+
+The argument @var{flags} is meant to be a bitwise combination of the constants of type
+@objtype{ccsys_memory_mapping_flags_t}.
 @end deftypefun
 
 
@@ -679,16 +982,25 @@ Wrapper for @cfunc{munmap}.
 
 @deftypefun int ccsys_msync (cce_location_t * @var{L}, void * @var{address}, size_t @var{length}, ccsys_msync_flags_t @var{flags})
 Wrapper for @cfunc{msync}.
+
+The argument @var{flags} is meant to be a bitwise combination of the constants of type
+@objtype{ccsys_memory_sync_flags_t}.
 @end deftypefun
 
 
 @deftypefun int ccsys_mprotect (cce_location_t * @var{L}, void * @var{addr}, size_t @var{len}, ccsys_mmap_prot_t @var{prot})
 Wrapper for @cfunc{mprotect}.
+
+The argument @var{prot} is meant to be a bitwise combination of the constants of type
+@objtype{ccsys_memory_mapping_protection_t}.
 @end deftypefun
 
 
 @deftypefun {void *} ccsys_mremap (cce_location_t * @var{L}, void * @var{old_address}, size_t @var{length}, size_t @var{new_length}, ccsys_mremap_flags_t @var{flags}, void * @var{new_address})
 Wrapper for @cfunc{mremap}.
+
+The argument @var{flags} is meant to be a bitwise combination of the constants of type
+@objtype{ccsys_memory_remap_flags_t}.
 
 @quotation
 @strong{NOTE}  This function is specific to Linux platforms.
@@ -699,155 +1011,13 @@ Wrapper for @cfunc{mremap}.
 @deftypefun void ccsys_madvise (cce_location_t * @var{L}, void * @var{address}, size_t @var{length}, ccsys_madvise_advice_t @var{advice})
 Wrapper for @cfunc{madvise}.
 
+The argument @var{advice} is meant to be a bitwise combination of the constants of type
+@objtype{ccsys_memory_advice_flags_t}.
+
 @quotation
 @strong{NOTE}  This function is implemented by the @gnu{} C Library.
 @end quotation
 @end deftypefun
-
-
-@c ------------------------------------------------------------------------
-
-@deftp {Semantic Type} ccsys_mmap_prot_t
-Type of the argument @var{prot} in @cfunc{ccsys_mmap} and in @cfunc{ccsys_mprotect}.
-@end deftp
-
-
-@deftp {Semantic Type} ccsys_mmap_flags_t
-Type of the argument @var{flags} in @cfunc{ccsys_mmap}.
-@end deftp
-
-
-@deftp {Semantic Type} ccsys_msync_flags_t
-Type of the argument @var{flags} in @cfunc{ccsys_msync}.
-@end deftp
-
-
-@deftp {Semantic Type} ccsys_mremap_flags_t
-Type of the argument @var{flags} in @cfunc{ccsys_mremap}.
-@end deftp
-
-
-@deftp {Semantic Type} ccsys_madvise_advice_t
-Type of the argument @var{advice} in @cfunc{ccsys_advise}.
-@end deftp
-
-@c ------------------------------------------------------------------------
-
-@deftp {Enum Typedef} ccsys_memory_mapping_protection_t
-@EnumeratedConstant{CCSYS_PROT_EXEC}
-@EnumeratedConstant{CCSYS_PROT_READ}
-@EnumeratedConstant{CCSYS_PROT_WRITE}
-@EnumeratedConstant{CCSYS_PROT_NONE}
-Enumeration of constants for the argument @var{prot} in @cfunc{ccsys_mmap}.  It defines the
-following constants:
-
-@example
-CCSYS_PROT_EXEC
-CCSYS_PROT_READ
-CCSYS_PROT_WRITE
-CCSYS_PROT_NONE
-@end example
-@end deftp
-
-
-@deftp {Enum Typedef} ccsys_memory_mapping_flags_t
-@EnumeratedConstant{CCSYS_MAP_SHARED}
-@EnumeratedConstant{CCSYS_MAP_PRIVATE}
-@EnumeratedConstant{CCSYS_MAP_32BIT}
-@EnumeratedConstant{CCSYS_MAP_ANON}
-@EnumeratedConstant{CCSYS_MAP_ANONYMOUS}
-@EnumeratedConstant{CCSYS_MAP_DENYWRITE}
-@EnumeratedConstant{CCSYS_MAP_EXECUTABLE}
-@EnumeratedConstant{CCSYS_MAP_FILE}
-@EnumeratedConstant{CCSYS_MAP_FIXED}
-@EnumeratedConstant{CCSYS_MAP_GROWSDOWN}
-@EnumeratedConstant{CCSYS_MAP_HUGETLB}
-@EnumeratedConstant{CCSYS_MAP_HUGE_2MB}
-@EnumeratedConstant{CCSYS_MAP_HUGE_1GB}
-@EnumeratedConstant{CCSYS_MAP_LOCKED}
-@EnumeratedConstant{CCSYS_MAP_NONBLOCK}
-@EnumeratedConstant{CCSYS_MAP_NORESERVE}
-@EnumeratedConstant{CCSYS_MAP_POPULATE}
-@EnumeratedConstant{CCSYS_MAP_STACK}
-@EnumeratedConstant{CCSYS_MAP_UNINITIALIZED}
-@EnumeratedConstant{CCSYS_MAP_AUTOGROW}
-@EnumeratedConstant{CCSYS_MAP_AUTORESRV}
-@EnumeratedConstant{CCSYS_MAP_COPY}
-@EnumeratedConstant{CCSYS_MAP_LOCAL}
-Enumeration of constants for the argument @var{flags} in @cfunc{ccsys_mmap}.  It defines the
-following constants:
-
-@example
-CCSYS_MAP_SHARED        CCSYS_MAP_PRIVATE     CCSYS_MAP_32BIT
-CCSYS_MAP_ANON          CCSYS_MAP_ANONYMOUS   CCSYS_MAP_DENYWRITE
-CCSYS_MAP_EXECUTABLE    CCSYS_MAP_FILE        CCSYS_MAP_FIXED
-CCSYS_MAP_GROWSDOWN     CCSYS_MAP_HUGETLB     CCSYS_MAP_HUGE_2MB
-CCSYS_MAP_HUGE_1GB      CCSYS_MAP_LOCKED      CCSYS_MAP_NONBLOCK
-CCSYS_MAP_NORESERVE     CCSYS_MAP_POPULATE    CCSYS_MAP_STACK
-CCSYS_MAP_UNINITIALIZED CCSYS_MAP_AUTOGROW    CCSYS_MAP_AUTORESRV
-CCSYS_MAP_COPY          CCSYS_MAP_LOCAL
-@end example
-@end deftp
-
-
-@deftp {Enum Typedef} ccsys_memory_sync_flags_t
-@EnumeratedConstant{CCSYS_MS_ASYNC}
-@EnumeratedConstant{CCSYS_MS_SYNC}
-@EnumeratedConstant{CCSYS_MS_INVALIDATE}
-Enumeration of constants for the argument @var{flags} in @cfunc{ccsys_msync}.  It defines the
-following constants:
-
-@example
-CCSYS_MS_ASYNC
-CCSYS_MS_SYNC
-CCSYS_MS_INVALIDATE
-@end example
-@end deftp
-
-
-@deftp {Enum Typedef} ccsys_memory_remap_flags_t
-@EnumeratedConstant{CCSYS_MREMAP_MAYMOVE}
-@EnumeratedConstant{CCSYS_MREMAP_FIXED}
-Enumeration of constants for the argument @var{flags} in @cfunc{ccsys_mremap}.  It defines the
-following constants:
-
-@example
-CCSYS_MREMAP_MAYMOVE
-CCSYS_MREMAP_FIXED
-@end example
-@end deftp
-
-
-@deftp {Enum Typedef} ccsys_memory_advice_flags_t
-@EnumeratedConstant{CCSYS_MADV_NORMAL}
-@EnumeratedConstant{CCSYS_MADV_RANDOM}
-@EnumeratedConstant{CCSYS_MADV_SEQUENTIAL}
-@EnumeratedConstant{CCSYS_MADV_WILLNEED}
-@EnumeratedConstant{CCSYS_MADV_DONTNEED}
-@EnumeratedConstant{CCSYS_MADV_REMOVE}
-@EnumeratedConstant{CCSYS_MADV_DONTFORK}
-@EnumeratedConstant{CCSYS_MADV_DOFORK}
-@EnumeratedConstant{CCSYS_MADV_HWPOISON}
-@EnumeratedConstant{CCSYS_MADV_MERGEABLE}
-@EnumeratedConstant{CCSYS_MADV_UNMERGEABLE}
-@EnumeratedConstant{CCSYS_MADV_SOFT_OFFLINE}
-@EnumeratedConstant{CCSYS_MADV_HUGEPAGE}
-@EnumeratedConstant{CCSYS_MADV_NOHUGEPAGE}
-@EnumeratedConstant{CCSYS_MADV_DONTDUMP}
-@EnumeratedConstant{CCSYS_MADV_DODUMP}
-@EnumeratedConstant{CCSYS_MADV_FREE}
-Enumeration of constants for the argument @var{advice} in @cfunc{ccsys_madvise}.  It defines the
-following constants:
-
-@example
-CCSYS_MADV_NORMAL       CCSYS_MADV_RANDOM       CCSYS_MADV_SEQUENTIAL
-CCSYS_MADV_WILLNEED     CCSYS_MADV_DONTNEED     CCSYS_MADV_REMOVE
-CCSYS_MADV_DONTFORK     CCSYS_MADV_DOFORK       CCSYS_MADV_HWPOISON
-CCSYS_MADV_MERGEABLE    CCSYS_MADV_UNMERGEABLE  CCSYS_MADV_SOFT_OFFLINE
-CCSYS_MADV_HUGEPAGE     CCSYS_MADV_NOHUGEPAGE   CCSYS_MADV_DONTDUMP
-CCSYS_MADV_DODUMP       CCSYS_MADV_FREE
-@end example
-@end deftp
 
 @c page
 @node io
