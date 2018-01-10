@@ -374,6 +374,15 @@ typedef enum ccsys_socket_style_flags_t		ccsys_socket_style_flags_t;
 
 
 /** --------------------------------------------------------------------
+ ** Global constants.
+ ** ----------------------------------------------------------------- */
+
+static ccsys_fd_t const CCSYS_FD_STDIN  = { .data = 0 };
+static ccsys_fd_t const CCSYS_FD_STDOUT = { .data = 1 };
+static ccsys_fd_t const CCSYS_FD_STDERR = { .data = 2 };
+
+
+/** --------------------------------------------------------------------
  ** Version functions.
  ** ----------------------------------------------------------------- */
 
@@ -500,10 +509,12 @@ ccsys_decl void ccsys_madvise (cce_location_t * L, void * address, size_t length
  ** Input/output: opening and closing files.
  ** ----------------------------------------------------------------- */
 
-ccsys_decl ccsys_fd_t ccsys_open (cce_location_t * L, char const * filename, ccsys_open_flags_t flags, ccsys_open_mode_t mode)
+ccsys_decl ccsys_fd_t ccsys_open (cce_location_t * L, char const * filename,
+				  ccsys_open_flags_t flags, ccsys_open_mode_t mode)
   __attribute__((__nonnull__(1,2)));
 
-ccsys_decl ccsys_fd_t ccsys_openat (cce_location_t * L, ccsys_fd_t dirfd, char const *filename, ccsys_open_flags_t flags, ccsys_open_mode_t mode)
+ccsys_decl ccsys_fd_t ccsys_openat (cce_location_t * L, ccsys_fd_t dirfd, char const *filename,
+				    ccsys_open_flags_t flags, ccsys_open_mode_t mode)
   __attribute__((__nonnull__(1, 3)));
 
 ccsys_decl void ccsys_close (cce_location_t * L, ccsys_fd_t filedes)
@@ -530,6 +541,14 @@ ccsys_decl void ccsys_cleanup_handler_filedes_init (cce_location_t * L, cce_hand
 
 ccsys_decl void ccsys_error_handler_filedes_init (cce_location_t * L, cce_handler_t * H, ccsys_fd_t filedes)
   __attribute__((__nonnull__(1,2)));
+
+/* ------------------------------------------------------------------ */
+
+ccsys_decl void ccsys_cleanup_handler_pipedes_init (cce_location_t * L, cce_handler_t * H, ccsys_fd_t pipefd[2])
+  __attribute__((__nonnull__(1,2,3)));
+
+ccsys_decl void ccsys_error_handler_pipedes_init (cce_location_t * L, cce_handler_t * H, ccsys_fd_t pipefd[2])
+  __attribute__((__nonnull__(1,2,3)));
 
 
 /** --------------------------------------------------------------------
@@ -875,17 +894,6 @@ ccsys_decl void ccsys_getsockopt (cce_location_t * L, ccsys_fd_t socket, int lev
 
 ccsys_decl void ccsys_setsockopt (cce_location_t * L, ccsys_fd_t socket, int level, int optname, void const * optval, ccsys_socklen_t optlen)
   __attribute__((__nonnull__(1,5)));
-
-
-/** --------------------------------------------------------------------
- ** Predefined POSIX exception handler: pipe descriptors.
- ** ----------------------------------------------------------------- */
-
-ccsys_decl void ccsys_cleanup_handler_pipedes_init (cce_location_t * L, cce_handler_t * H, ccsys_fd_t pipedes[2])
-  __attribute__((__nonnull__(1,2,3)));
-
-ccsys_decl void ccsys_error_handler_pipedes_init (cce_location_t * L, cce_handler_t * H, ccsys_fd_t pipedes[2])
-  __attribute__((__nonnull__(1,2,3)));
 
 
 /** --------------------------------------------------------------------

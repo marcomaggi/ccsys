@@ -51,7 +51,8 @@ libccsys_la_SOURCES	= \
 check_PROGRAMS	= \
 	tests/version				\
 	tests/system-memory			\
-	tests/system-handlers
+	tests/system-handlers			\
+	tests/input-output
 
 TESTS			= $(check_PROGRAMS)
 
@@ -66,6 +67,9 @@ tests_system_memory_LDADD	= $(ccsys_tests_ldadd)
 
 tests_system_handlers_CPPFLAGS	= $(ccsys_tests_cppflags)
 tests_system_handlers_LDADD	= $(ccsys_tests_ldadd)
+
+tests_input_output_CPPFLAGS	= $(ccsys_tests_cppflags)
+tests_input_output_LDADD	= $(ccsys_tests_ldadd)
 
 ## --------------------------------------------------------------------
 

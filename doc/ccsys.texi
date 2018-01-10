@@ -1025,11 +1025,31 @@ The argument @var{advice} is meant to be a bitwise combination of the constants 
 
 
 @menu
+* io constants::                Global constants.
 * io open close::               Opening and closing files.
 * io read write::               Reading and writing files.
 * io scatter gather::           Scatter-gather input/output.
 * io waiting::                  Waiting for input/output.
 @end menu
+
+@c page
+@node io constants
+@section Global constants
+
+
+@deftypevr Constant {ccsys_fd_t const} CCSYS_FD_STDIN
+Constant representing the standard input file descriptor.
+@end deftypevr
+
+
+@deftypevr Constant {ccsys_fd_t const} CCSYS_FD_STDOUT
+Constant representing the standard output file descriptor.
+@end deftypevr
+
+
+@deftypevr Constant {ccsys_fd_t const} CCSYS_FD_STDERR
+Constant representing the standard error file descriptor.
+@end deftypevr
 
 @c page
 @node io open close
@@ -1041,11 +1061,23 @@ The following symbols are defined in the header file @file{ccsys.h}.
 
 @deftypefun ccsys_fd_t ccsys_open (cce_location_t * @var{L}, char const * @var{filename}, ccsys_open_flags_t @var{flags}, ccsys_open_mode_t @var{mode})
 Wrapper for @cfunc{open}.
+
+The argument @var{flags} is meant to be a bitwise combination of the constants of type
+@objtype{ccsys_file_open_flags_t}.
+
+The argument @var{mode} is meant to be a bitwise combination of the constants of type
+@objtype{ccsys_file_open_mode_t}.
 @end deftypefun
 
 
-@deftypefun ccsys_fd_t ccsys_openat (cce_location_t * @var{L}, ccsys_fd_t @var{filedes}, char const * @var{filename}, int @var{flags}, mode_t @var{mode})
+@deftypefun ccsys_fd_t ccsys_openat (cce_location_t * @var{L}, ccsys_fd_t @var{filedes}, char const * @var{filename}, ccsys_open_flags_t @var{flags}, ccsys_open_mode_t @var{mode})
 Wrapper for @cfunc{openat}.
+
+The argument @var{flags} is meant to be a bitwise combination of the constants of type
+@objtype{ccsys_file_open_flags_t}.
+
+The argument @var{mode} is meant to be a bitwise combination of the constants of type
+@objtype{ccsys_file_open_mode_t}.
 @end deftypefun
 
 
@@ -1055,9 +1087,11 @@ Wrapper for @cfunc{close}.
 
 @c ------------------------------------------------------------------------
 
-
 @deftypefun void ccsys_mkfifo (cce_location_t * @var{L}, char const * @var{pathname}, ccsys_open_mode_t @var{mode})
 Wrapper for @cfunc{mkfifo}.
+
+The argument @var{mode} is meant to be a bitwise combination of the constants of type
+@objtype{ccsys_file_open_mode_t}.
 @end deftypefun
 
 
@@ -1074,6 +1108,70 @@ Wrapper for @cfunc{dup}.
 
 @deftypefun ccsys_fd_t ccsys_dup2 (cce_location_t * @var{L}, ccsys_fd_t @var{old}, ccsys_fd_t @var{new})
 Wrapper for @cfunc{dup2}.
+@end deftypefun
+
+@c ------------------------------------------------------------------------
+
+@subsubheading File descriptor handlers
+
+We can handle file descriptors that must be released with the standard function @cfunc{close} as
+follows:
+
+@example
+cce_location_t  L[1];
+cce_handler_t   H[1];
+
+if (cce_location(L)) @{
+  cce_run_error_handlers_final(L);
+@} else @{
+  ccsys_open_flags_t    flags = @{ .data = CCSYS_O_CREAT @};
+  ccsys_open_mode_t     mode  = @{ .data = CCSYS_S_IRWXU @};
+  ccsys_fd_t            fd;
+  fd = ccsys_open(L, "name.ext", flags, mode);
+  ccsys_cleanup_handler_filedes_init(L, H, fd);
+  cce_run_cleanup_handlers(L);
+@}
+@end example
+
+The following symbols are defined in the header file @file{ccsys.h}.
+
+
+@deftypefun void ccsys_cleanup_handler_filedes_init (cce_location_t * @var{L}, cce_handler_t * @var{H}, ccsys_fd_t @var{fd})
+@deftypefunx void ccsys_error_handler_filedes_init (cce_location_t * @var{L}, cce_handler_t * @var{H}, ccsys_fd_t @var{fd})
+Register @var{H} as cleanup or error handler in the context of @var{L}.  The handler function will
+release the file descriptor @var{fd} using the standard function @cfunc{close}; errors in
+@cfunc{close} are @strong{ignored}.
+@end deftypefun
+
+@c ------------------------------------------------------------------------
+
+@subsubheading Pipe handlers
+
+We can handle file descriptors that must be released with the standard function @cfunc{close} as
+follows:
+
+@example
+cce_location_t  L[1];
+cce_handler_t   H[1];
+
+if (cce_location(L)) @{
+  cce_run_error_handlers_final(L);
+@} else @{
+  ccsys_fd_t    pipefd[2]
+  ccsys_pipe(L, pipefd);
+  ccsys_cleanup_handler_pipefd_init(L, H, pipefd);
+  cce_run_cleanup_handlers(L);
+@}
+@end example
+
+The following symbols are defined in the header file @file{ccsys.h}.
+
+
+@deftypefun void ccsys_cleanup_handler_pipedes_init (cce_location_t * @var{L}, cce_handler_t * @var{H}, ccsys_fd_t @var{pipedes}[2])
+@deftypefunx void ccsys_error_handler_pipedes_init (cce_location_t * @var{L}, cce_handler_t * @var{H}, ccsys_fd_t @var{pipedes}[2])
+Register @var{H} as cleanup or error handler in the context of @var{L}.  The handler function will
+release the file descriptors in @var{pipedes} using the standard function @cfunc{close}; errors in
+@cfunc{close} are @strong{ignored}.
 @end deftypefun
 
 @c page
@@ -1543,77 +1641,10 @@ Wrapper for @cfunc{waitpid}.
 
 
 @menu
-* handlers filedes::            Handler for file descriptors.
-* handlers pipedes::            Handler for pipe descriptors.
 * handlers tmpfile::            Handler for temporary files.
 * handlers tmpdir::             Handler for temporary directories.
 * handlers dirstream::          Handler for directory streams.
 @end menu
-
-@c page
-@node handlers filedes
-@section Handler for file descriptors
-
-
-We can handle file descriptors that must be released with the standard function @cfunc{close} as
-follows:
-
-@example
-cce_location_t  L[1];
-cce_handler_t   H[1];
-
-if (cce_location(L)) @{
-  ccsys_run_error_handlers(L);
-  ccsys_condition_delete(ccsys_condition(L));
-@} else @{
-  int   fd = ccsys_open(L, "name.ext", O_CREAT, S_IRWXU);
-  ccsys_cleanup_handler_filedes_init(L, H, fd);
-  ccsys_run_cleanup_handlers(L);
-@}
-@end example
-
-The following symbols are defined in the header file @file{ccsys.h}.
-
-
-@deftypefun void ccsys_cleanup_handler_filedes_init (cce_location_t * @var{L}, cce_handler_t * @var{H}, int @var{fd})
-@deftypefunx void ccsys_error_handler_filedes_init (cce_location_t * @var{L}, cce_handler_t * @var{H}, int @var{fd})
-Register @var{H} as cleanup or error handler in the context of @var{L}.  The handler function will
-release the file descriptor @var{fd} using the standard function @cfunc{close}; errors in
-@cfunc{close} are @strong{ignored}.
-@end deftypefun
-
-@c page
-@node handlers pipedes
-@section Handler for file descriptors
-
-
-We can handle file descriptors that must be released with the standard function @cfunc{close} as
-follows:
-
-@example
-cce_location_t  L[1];
-cce_handler_t   H[1];
-
-if (cce_location(L)) @{
-  ccsys_run_error_handlers(L);
-  ccsys_condition_delete(ccsys_condition(L));
-@} else @{
-  int   pipedes[2]
-  ccsys_pipe(L, pipedes);
-  ccsys_cleanup_handler_pipedes_init(L, H, pipedes);
-  ccsys_run_cleanup_handlers(L);
-@}
-@end example
-
-The following symbols are defined in the header file @file{ccsys.h}.
-
-
-@deftypefun void ccsys_cleanup_handler_pipedes_init (cce_location_t * @var{L}, cce_handler_t * @var{H}, int @var{pipedes}[2])
-@deftypefunx void ccsys_error_handler_pipedes_init (cce_location_t * @var{L}, cce_handler_t * @var{H}, int @var{pipedes}[2])
-Register @var{H} as cleanup or error handler in the context of @var{L}.  The handler function will
-release the file descriptors in @var{pipedes} using the standard function @cfunc{close}; errors in
-@cfunc{close} are @strong{ignored}.
-@end deftypefun
 
 @c page
 @node handlers tmpfile

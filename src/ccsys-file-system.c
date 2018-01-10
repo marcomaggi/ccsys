@@ -340,9 +340,13 @@ void
 ccsys_pipe (cce_location_t * L, ccsys_fd_t pipefd[2])
 {
   int	rv;
+  int	fd[2];
   errno = 0;
-  rv = pipe((int *)pipefd);
-  if (-1 == rv) {
+  rv = pipe(fd);
+  if (-1 != rv) {
+    pipefd[0].data = fd[0];
+    pipefd[1].data = fd[1];
+  } else {
     cce_raise(L, cce_condition_new_errno_clear());
   }
 }
