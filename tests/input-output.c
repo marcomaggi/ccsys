@@ -18,6 +18,7 @@
  ** ----------------------------------------------------------------- */
 
 #include "ccexceptions.h"
+#include "cctests.h"
 #include "ccsys.h"
 #include <stdio.h>
 #include <stdlib.h>
@@ -29,7 +30,7 @@
  ** ----------------------------------------------------------------- */
 
 void
-test_1_1 (void)
+test_1_1 (cce_destination_t upper_L CCSYS_UNUSED)
 {
   cce_location_t  L[1];
   cce_handler_t   H[1];
@@ -42,6 +43,7 @@ test_1_1 (void)
     ccsys_fd_t            fd;
     fd = ccsys_open(L, "name.ext", flags, mode);
     ccsys_cleanup_handler_filedes_init(L, H, fd);
+    cctests_assert(0 != fd.data);
     cce_run_cleanup_handlers(L);
   }
 
@@ -56,9 +58,15 @@ test_1_1 (void)
 int
 main (void)
 {
-  if (1) { test_1_1(); }
-
-  exit(EXIT_SUCCESS);
+  cctests_init("input/output");
+  {
+    cctests_begin_group("file open close");
+    {
+      cctests_run(test_1_1);
+    }
+    cctests_end_group();
+  }
+  cctests_final();
 }
 
 /* end of file */

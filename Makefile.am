@@ -56,8 +56,8 @@ check_PROGRAMS	= \
 
 TESTS			= $(check_PROGRAMS)
 
-ccsys_tests_cppflags		= -I$(srcdir)/src $(CCEXCEPTIONS_FLAGS)
-ccsys_tests_ldadd		= libccsys.la $(CCEXCEPTIONS_LIBS)
+ccsys_tests_cppflags		= -I$(srcdir)/src $(CCEXCEPTIONS_FLAGS) $(CCTESTS_FLAGS)
+ccsys_tests_ldadd		= libccsys.la $(CCEXCEPTIONS_LIBS) $(CCTESTS_LIBS)
 
 tests_version_CPPFLAGS		= $(ccsys_tests_cppflags)
 tests_version_LDADD		= $(ccsys_tests_ldadd)

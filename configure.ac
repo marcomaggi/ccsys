@@ -83,6 +83,7 @@ dnl page
 #### external libraries
 
 PKG_CHECK_MODULES([CCEXCEPTIONS],[ccexceptions >= 0.6])
+PKG_CHECK_MODULES([CCTESTS],[cctests >= 0.1])
 
 AC_CACHE_SAVE
 
