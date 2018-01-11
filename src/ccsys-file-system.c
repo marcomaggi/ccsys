@@ -5,7 +5,7 @@
 
   Abstract
 
-
+	POSIX system calls wrappers, file system functions.
 
   Copyright (C) 2017, 2018 Marco Maggi <marco.maggi-ipsu@poste.it>
 
@@ -121,6 +121,24 @@ ccsys_closedir (cce_location_t * L, ccsys_dir_t * _dirstream)
   errno = 0;
   rv = closedir(dirstream);
   if (-1 == rv) {
+    cce_raise(L, cce_condition_new_errno_clear());
+  }
+}
+#endif
+
+#ifdef HAVE_DIRFD
+ccsys_fd_t
+ccsys_dirfd (cce_location_t * L, ccsys_dir_t * _dirstream)
+{
+  DIR *		dirstream = (DIR *) _dirstream;
+  int		rv;
+  errno = 0;
+  rv = dirfd(dirstream);
+  if (0 <= rv) {
+    ccsys_fd_t	dirfd = { .data = rv };
+    if (0) { fprintf(stderr, "%s: %d\n", __func__, dirfd.data); }
+    return dirfd;
+  } else {
     cce_raise(L, cce_condition_new_errno_clear());
   }
 }

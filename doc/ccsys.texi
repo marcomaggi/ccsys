@@ -1330,6 +1330,11 @@ Wrapper for @cfunc{readdir}.
 Wrapper for @cfunc{closedir}.
 @end deftypefun
 
+
+@deftypefun ccsys_fd_t ccsys_dirfd (cce_location_t * @var{L}, ccsys_dir_t * @var{dirstream})
+Wrapper for @cfunc{dirfd}.
+@end deftypefun
+
 @c ------------------------------------------------------------------------
 
 @subsubheading Making and removing directories
@@ -1696,14 +1701,13 @@ cce_location_t  L[1];
 cce_handler_t   H[1];
 
 if (cce_location(L)) @{
-  ccsys_run_error_handlers(L);
-  ccsys_condition_delete(ccsys_condition(L));
+  cce_run_error_handlers_final(L);
 @} else @{
   int   fd = ccsys_open(L, "name.ext", O_CREAT|O_EXCL,
                           S_IRUSR|S_IWUSR);
   ccsys_cleanup_handler_filedes_init(L, H, fd);
   ccsys_cleanup_handler_tmpfile_init(L, H, "name.ext");
-  ccsys_run_cleanup_handlers(L);
+  cce_run_cleanup_handlers(L);
 @}
 @end example
 
@@ -1741,12 +1745,13 @@ cce_location_t  L[1];
 cce_handler_t   tmpdir_H[1];
 
 if (cce_location(L)) @{
-  ccsys_run_error_handlers(L);
-  ccsys_condition_delete(ccsys_condition(L));
+  cce_run_error_handlers_final(L);
 @} else @{
-  ccsys_mkdir(L, "name.d", 0);
-  ccsys_cleanup_handler_tmpdir_init(L, tmpdir_H, "name.ext");
-  ccsys_run_cleanup_handlers(L);
+  ccsys_open_mode_t     mode  = @{ .data = CCSYS_S_IRWXU @};
+
+  ccsys_mkdir(L, "name.d", mode);
+  ccsys_cleanup_handler_tmpdir_init(L, tmpdir_H, "name.d");
+  cce_run_cleanup_handlers(L);
 @}
 @end example
 
@@ -1785,8 +1790,7 @@ cce_handler_t   dirstream_H[1];
 char const *    pathname = "./";
 
 if (cce_location(L)) @{
-  ccsys_run_error_handlers(L);
-  ccsys_condition_delete(ccsys_condition(L));
+  cce_run_error_handlers_final(L);
 @} else @{
   DIR *               dirstream;
   struct dirent *     direntry;
@@ -1799,7 +1803,7 @@ if (cce_location(L)) @{
     printf("%s\n", direntry->d_name);
     fflush(stdout);
   @}
-  ccsys_run_cleanup_handlers(L);
+  cce_run_cleanup_handlers(L);
 @}
 @end example
 
