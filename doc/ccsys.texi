@@ -1064,7 +1064,7 @@ The following symbols are defined in the header file @file{ccsys.h}.
 
 
 @deftypefun ccsys_fd_t ccsys_open (cce_location_t * @var{L}, char const * @var{filename}, ccsys_open_flags_t @var{flags}, ccsys_open_mode_t @var{mode})
-Wrapper for @cfunc{open}.
+Wrapper for @cfunc{open}.  @manpage{open, Open and possibly create a file}.
 
 The argument @var{flags} is meant to be a bitwise combination of the constants of type
 @objtype{ccsys_file_open_flags_t}.
@@ -1075,7 +1075,7 @@ The argument @var{mode} is meant to be a bitwise combination of the constants of
 
 
 @deftypefun ccsys_fd_t ccsys_openat (cce_location_t * @var{L}, ccsys_fd_t @var{filedes}, char const * @var{filename}, ccsys_open_flags_t @var{flags}, ccsys_open_mode_t @var{mode})
-Wrapper for @cfunc{openat}.
+Wrapper for @cfunc{openat}.  @manpage{openat, Open and possibly create a file}.
 
 The argument @var{flags} is meant to be a bitwise combination of the constants of type
 @objtype{ccsys_file_open_flags_t}.

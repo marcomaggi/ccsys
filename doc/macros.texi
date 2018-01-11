@@ -353,10 +353,6 @@
 @ref{\NODE\,\TITLE\,\TITLE\,libc}
 @end macro
 
-@c @macro rsixref{NODE, TITLE}
-@c @ref{\NODE\,\TITLE\,\TITLE\,r6rs}
-@c @end macro
-
 @macro bibref{TAG}
 @code{[\TAG\]}
 @end macro
@@ -365,16 +361,8 @@
 @ref{\NODE\,\TITLE\,\TITLE\,autoconf}
 @end macro
 
-@macro vicareref{NODE, TITLE}
-@ref{\NODE\,\TITLE\,\TITLE\,vicare}
-@end macro
-
-@macro nauref{NODE, TITLE}
-@ref{\NODE\,\TITLE\,\TITLE\,nausicaa}
-@end macro
-
-@macro naumoreref{NODE, TITLE}
-@ref{\NODE\,\TITLE\,\TITLE\,nausicaa-more}
+@macro manpage{NODE, TITLE}
+@ref{\NODE\,\TITLE\,\TITLE\,*manpages*}
 @end macro
 
 @c page
