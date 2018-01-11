@@ -40,6 +40,7 @@ libccsys_la_LDFLAGS	= -version-info $(ccsys_CURRENT):$(ccsys_REVISION):$(ccsys_A
 libccsys_la_SOURCES	= \
 	src/ccsys-internals.h		\
 	src/ccsys-memory.c		\
+	src/ccsys-input-output.c	\
 	src/ccsys-file-system.c		\
 	src/ccsys-processes.c		\
 	src/ccsys-networking.c		\

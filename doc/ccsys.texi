@@ -1026,9 +1026,13 @@ The argument @var{advice} is meant to be a bitwise combination of the constants 
 
 @menu
 * io constants::                Global constants.
-* io open close::               Opening and closing files.
+* io open::                     Opening files.
+* io pipes::                    Creating pipes.
+* io fifos::                    Creating FIFOs.
+* io close::                    Closing file descriptors.
 * io read write::               Reading and writing files.
 * io scatter gather::           Scatter-gather input/output.
+* io dup::                      Duplicating file descriptors.
 * io waiting::                  Waiting for input/output.
 @end menu
 
@@ -1052,8 +1056,8 @@ Constant representing the standard error file descriptor.
 @end deftypevr
 
 @c page
-@node io open close
-@section Opening and closing files
+@node io open
+@section Opening files
 
 
 The following symbols are defined in the header file @file{ccsys.h}.
@@ -1080,12 +1084,56 @@ The argument @var{mode} is meant to be a bitwise combination of the constants of
 @objtype{ccsys_file_open_mode_t}.
 @end deftypefun
 
+@c page
+@node io pipes
+@section Creating pipes
 
-@deftypefun void ccsys_close (cce_location_t * @var{L}, ccsys_fd_t @var{filedes})
-Wrapper for @cfunc{close}.
+
+The following symbols are defined in the header file @file{ccsys.h}.
+
+
+@deftypefun void ccsys_pipe (cce_location_t * @var{L}, ccsys_fd_t @var{pipefd}[2])
+Wrapper for @cfunc{pipe}.
 @end deftypefun
 
 @c ------------------------------------------------------------------------
+
+@subsubheading Pipe handlers
+
+We can handle file descriptors that must be released with the standard function @cfunc{close} as
+follows:
+
+@example
+cce_location_t  L[1];
+cce_handler_t   H[1];
+
+if (cce_location(L)) @{
+  cce_run_error_handlers_final(L);
+@} else @{
+  ccsys_fd_t    pipefd[2]
+  ccsys_pipe(L, pipefd);
+  ccsys_cleanup_handler_pipefd_init(L, H, pipefd);
+  cce_run_cleanup_handlers(L);
+@}
+@end example
+
+The following symbols are defined in the header file @file{ccsys.h}.
+
+
+@deftypefun void ccsys_cleanup_handler_pipedes_init (cce_location_t * @var{L}, cce_handler_t * @var{H}, ccsys_fd_t @var{pipedes}[2])
+@deftypefunx void ccsys_error_handler_pipedes_init (cce_location_t * @var{L}, cce_handler_t * @var{H}, ccsys_fd_t @var{pipedes}[2])
+Register @var{H} as cleanup or error handler in the context of @var{L}.  The handler function will
+release the file descriptors in @var{pipedes} using the standard function @cfunc{close}; errors in
+@cfunc{close} are @strong{ignored}.
+@end deftypefun
+
+@c page
+@node io fifos
+@section Creating FIFOs
+
+
+The following symbols are defined in the header file @file{ccsys.h}.
+
 
 @deftypefun void ccsys_mkfifo (cce_location_t * @var{L}, char const * @var{pathname}, ccsys_open_mode_t @var{mode})
 Wrapper for @cfunc{mkfifo}.
@@ -1095,19 +1143,23 @@ The argument @var{mode} is meant to be a bitwise combination of the constants of
 @end deftypefun
 
 
-@deftypefun void ccsys_pipe (cce_location_t * @var{L}, ccsys_fd_t @var{pipefd}[2])
-Wrapper for @cfunc{pipe}.
+@deftypefun void ccsys_mkfifoat (cce_location_t * @var{L}, ccsys_fd_t @var{dirfd}, char const * @var{pathname}, ccsys_open_mode_t @var{mode})
+Wrapper for @cfunc{mkfifoat}.
+
+The argument @var{mode} is meant to be a bitwise combination of the constants of type
+@objtype{ccsys_file_open_mode_t}.
 @end deftypefun
 
-@c ------------------------------------------------------------------------
-
-@deftypefun ccsys_fd_t ccsys_dup (cce_location_t * @var{L}, ccsys_fd_t @var{old})
-Wrapper for @cfunc{dup}.
-@end deftypefun
+@c page
+@node io close
+@section Closing file descriptors
 
 
-@deftypefun ccsys_fd_t ccsys_dup2 (cce_location_t * @var{L}, ccsys_fd_t @var{old}, ccsys_fd_t @var{new})
-Wrapper for @cfunc{dup2}.
+The following symbols are defined in the header file @file{ccsys.h}.
+
+
+@deftypefun void ccsys_close (cce_location_t * @var{L}, ccsys_fd_t @var{filedes})
+Wrapper for @cfunc{close}.
 @end deftypefun
 
 @c ------------------------------------------------------------------------
@@ -1140,37 +1192,6 @@ The following symbols are defined in the header file @file{ccsys.h}.
 @deftypefunx void ccsys_error_handler_filedes_init (cce_location_t * @var{L}, cce_handler_t * @var{H}, ccsys_fd_t @var{fd})
 Register @var{H} as cleanup or error handler in the context of @var{L}.  The handler function will
 release the file descriptor @var{fd} using the standard function @cfunc{close}; errors in
-@cfunc{close} are @strong{ignored}.
-@end deftypefun
-
-@c ------------------------------------------------------------------------
-
-@subsubheading Pipe handlers
-
-We can handle file descriptors that must be released with the standard function @cfunc{close} as
-follows:
-
-@example
-cce_location_t  L[1];
-cce_handler_t   H[1];
-
-if (cce_location(L)) @{
-  cce_run_error_handlers_final(L);
-@} else @{
-  ccsys_fd_t    pipefd[2]
-  ccsys_pipe(L, pipefd);
-  ccsys_cleanup_handler_pipefd_init(L, H, pipefd);
-  cce_run_cleanup_handlers(L);
-@}
-@end example
-
-The following symbols are defined in the header file @file{ccsys.h}.
-
-
-@deftypefun void ccsys_cleanup_handler_pipedes_init (cce_location_t * @var{L}, cce_handler_t * @var{H}, ccsys_fd_t @var{pipedes}[2])
-@deftypefunx void ccsys_error_handler_pipedes_init (cce_location_t * @var{L}, cce_handler_t * @var{H}, ccsys_fd_t @var{pipedes}[2])
-Register @var{H} as cleanup or error handler in the context of @var{L}.  The handler function will
-release the file descriptors in @var{pipedes} using the standard function @cfunc{close}; errors in
 @cfunc{close} are @strong{ignored}.
 @end deftypefun
 
@@ -1229,6 +1250,23 @@ returned by @cfunc{readv} are consumed by this function, so the return value is 
 Wrapper for @cfunc{writev}.  Notice the return value of type @objtype{size_t}: the negative values
 returned by @cfunc{writev} are consumed by this function, so the return value is an unsigned
 integer.
+@end deftypefun
+
+@c page
+@node io dup
+@section Duplicating file descriptors
+
+
+The following symbols are defined in the header file @file{ccsys.h}.
+
+
+@deftypefun ccsys_fd_t ccsys_dup (cce_location_t * @var{L}, ccsys_fd_t @var{old})
+Wrapper for @cfunc{dup}.
+@end deftypefun
+
+
+@deftypefun ccsys_fd_t ccsys_dup2 (cce_location_t * @var{L}, ccsys_fd_t @var{old}, ccsys_fd_t @var{new})
+Wrapper for @cfunc{dup2}.
 @end deftypefun
 
 @c page

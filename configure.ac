@@ -122,7 +122,7 @@ AC_FUNC_MALLOC
 
 AC_CHECK_FUNCS([mlock munlock mlockall munlockall])
 AC_CHECK_FUNCS([open openat close read pread write pwrite lseek readv writev])
-AC_CHECK_FUNCS([select dup dup2 pipe mkfifo])
+AC_CHECK_FUNCS([select dup dup2 pipe mkfifo mkfifoat])
 AC_CHECK_FUNCS([mmap munmap msync mprotect])
 AC_CHECK_FUNCS([getcwd chdir fchdir opendir fdopendir readdir closedir stat fstat lstat mkdir rmdir link linkat symlink symlinkat readlink readlinkat realpath unlink unlinkat remove rename chown fchown lchown fchownat chmod fchmod fchmodat access faccessat utime utimes truncate ftruncate])
 AC_CHECK_FUNCS([mkstemp])
