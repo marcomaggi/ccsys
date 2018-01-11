@@ -66,7 +66,7 @@
 
 #ifdef HAVE_OPENDIR
 ccsys_dir_t *
-ccsys_opendir (cce_location_t * L, const char * pathname)
+ccsys_opendir (cce_location_t * L, char const * pathname)
 {
   DIR *	rv;
   errno = 0;
@@ -146,7 +146,7 @@ ccsys_getcwd (cce_location_t * L, char * buffer, size_t size)
 
 #ifdef HAVE_CHDIR
 void
-ccsys_chdir (cce_location_t * L, const char * pathname)
+ccsys_chdir (cce_location_t * L, char const * pathname)
 {
   int	rv;
   errno = 0;
@@ -174,7 +174,7 @@ ccsys_fchdir (cce_location_t * L, ccsys_fd_t dirfd)
 
 #ifdef HAVE_STAT
 void
-ccsys_stat (cce_location_t * L, const char * pathname, ccsys_stat_t * _buf)
+ccsys_stat (cce_location_t * L, char const * pathname, ccsys_stat_t * _buf)
 {
   struct stat *	buf = (struct stat *)_buf;
   int		rv;
@@ -202,7 +202,7 @@ ccsys_fstat (cce_location_t * L, ccsys_fd_t fd, ccsys_stat_t * _buf)
 
 #ifdef HAVE_LSTAT
 void
-ccsys_lstat (cce_location_t * L, const char * pathname, ccsys_stat_t * _buf)
+ccsys_lstat (cce_location_t * L, char const * pathname, ccsys_stat_t * _buf)
 {
   struct stat *	buf = (struct stat *)_buf;
   int		rv;
@@ -218,7 +218,7 @@ ccsys_lstat (cce_location_t * L, const char * pathname, ccsys_stat_t * _buf)
 
 #ifdef HAVE_MKDIR
 void
-ccsys_mkdir (cce_location_t * L, const char * pathname, ccsys_open_mode_t mode)
+ccsys_mkdir (cce_location_t * L, char const * pathname, ccsys_open_mode_t mode)
 {
   int	rv;
   errno = 0;
@@ -231,7 +231,7 @@ ccsys_mkdir (cce_location_t * L, const char * pathname, ccsys_open_mode_t mode)
 
 #ifdef HAVE_RMDIR
 void
-ccsys_rmdir (cce_location_t * L, const char * pathname)
+ccsys_rmdir (cce_location_t * L, char const * pathname)
 {
   int	rv;
   errno = 0;
@@ -303,11 +303,11 @@ ccsys_symlinkat (cce_location_t * L, const char * oldname, ccsys_fd_t newdirfd, 
 
 #ifdef HAVE_READLINK
 size_t
-ccsys_readlink (cce_location_t * L, const char * filename, char * buffer, size_t size)
+ccsys_readlink (cce_location_t * L, char const * pathname, char * buffer, size_t size)
 {
   ssize_t	rv;
   errno = 0;
-  rv = readlink(filename, buffer, size);
+  rv = readlink(pathname, buffer, size);
   if (-1 == rv) {
     cce_raise(L, cce_condition_new_errno_clear());
   } else {
@@ -318,11 +318,11 @@ ccsys_readlink (cce_location_t * L, const char * filename, char * buffer, size_t
 
 #ifdef HAVE_READLINKAT
 size_t
-ccsys_readlinkat (cce_location_t * L, ccsys_fd_t dirfd, const char * filename, char * buffer, size_t size)
+ccsys_readlinkat (cce_location_t * L, ccsys_fd_t dirfd, char const * pathname, char * buffer, size_t size)
 {
   ssize_t	rv;
   errno = 0;
-  rv = readlinkat(dirfd.data, filename, buffer, size);
+  rv = readlinkat(dirfd.data, pathname, buffer, size);
   if (-1 == rv) {
     cce_raise(L, cce_condition_new_errno_clear());
   } else {
@@ -333,7 +333,7 @@ ccsys_readlinkat (cce_location_t * L, ccsys_fd_t dirfd, const char * filename, c
 
 #ifdef HAVE_REALPATH
 char *
-ccsys_realpath (cce_location_t * L, const char * pathname, char * resolved_path)
+ccsys_realpath (cce_location_t * L, char const * pathname, char * resolved_path)
 {
   char *	rv;
   errno = 0;
@@ -350,7 +350,7 @@ ccsys_realpath (cce_location_t * L, const char * pathname, char * resolved_path)
 
 #ifdef HAVE_UNLINK
 void
-ccsys_unlink (cce_location_t * L, const char * pathname)
+ccsys_unlink (cce_location_t * L, char const * pathname)
 {
   int	rv;
   errno = 0;
@@ -363,7 +363,7 @@ ccsys_unlink (cce_location_t * L, const char * pathname)
 
 #ifdef HAVE_UNLINKAT
 void
-ccsys_unlinkat (cce_location_t * L, ccsys_fd_t dirfd, const char * pathname, int flags)
+ccsys_unlinkat (cce_location_t * L, ccsys_fd_t dirfd, char const * pathname, int flags)
 {
   int	rv;
   errno = 0;
@@ -376,7 +376,7 @@ ccsys_unlinkat (cce_location_t * L, ccsys_fd_t dirfd, const char * pathname, int
 
 #ifdef HAVE_REMOVE
 void
-ccsys_remove (cce_location_t * L, const char * pathname)
+ccsys_remove (cce_location_t * L, char const * pathname)
 {
   int	rv;
   errno = 0;
@@ -406,7 +406,7 @@ ccsys_rename (cce_location_t * L, const char * oldname, const char * newname)
 
 #ifdef HAVE_CHOWN
 void
-ccsys_chown (cce_location_t * L, const char * pathname, ccsys_uid_t owner, ccsys_gid_t group)
+ccsys_chown (cce_location_t * L, char const * pathname, ccsys_uid_t owner, ccsys_gid_t group)
 {
   int	rv;
   errno = 0;
@@ -432,7 +432,7 @@ ccsys_fchown (cce_location_t * L, ccsys_fd_t filedes, ccsys_uid_t owner, ccsys_g
 
 #ifdef HAVE_LCHOWN
 void
-ccsys_lchown (cce_location_t * L, const char * pathname, ccsys_uid_t owner, ccsys_gid_t group)
+ccsys_lchown (cce_location_t * L, char const * pathname, ccsys_uid_t owner, ccsys_gid_t group)
 {
   int	rv;
   errno = 0;
@@ -445,7 +445,7 @@ ccsys_lchown (cce_location_t * L, const char * pathname, ccsys_uid_t owner, ccsy
 
 #ifdef HAVE_FCHOWNAT
 void
-ccsys_fchownat (cce_location_t * L, ccsys_fd_t dirfd, const char * pathname, ccsys_uid_t owner, ccsys_gid_t group, int flags)
+ccsys_fchownat (cce_location_t * L, ccsys_fd_t dirfd, char const * pathname, ccsys_uid_t owner, ccsys_gid_t group, int flags)
 {
   int	rv;
   errno = 0;
@@ -460,7 +460,7 @@ ccsys_fchownat (cce_location_t * L, ccsys_fd_t dirfd, const char * pathname, ccs
 
 #ifdef HAVE_CHMOD
 void
-ccsys_chmod (cce_location_t * L, const char * pathname, ccsys_open_mode_t mode)
+ccsys_chmod (cce_location_t * L, char const * pathname, ccsys_open_mode_t mode)
 {
   int	rv;
   errno = 0;
@@ -486,7 +486,7 @@ ccsys_fchmod (cce_location_t * L, ccsys_fd_t filedes, ccsys_open_mode_t mode)
 
 #ifdef HAVE_FCHMODAT
 void
-ccsys_fchmodat (cce_location_t * L, ccsys_fd_t dirfd, const char * pathname, ccsys_open_mode_t mode, int flags)
+ccsys_fchmodat (cce_location_t * L, ccsys_fd_t dirfd, char const * pathname, ccsys_open_mode_t mode, int flags)
 {
   int	rv;
   errno = 0;
@@ -501,7 +501,7 @@ ccsys_fchmodat (cce_location_t * L, ccsys_fd_t dirfd, const char * pathname, ccs
 
 #ifdef HAVE_ACCESS
 int
-ccsys_access (cce_location_t * L, const char * pathname, int how)
+ccsys_access (cce_location_t * L, char const * pathname, int how)
 {
   int	rv;
   errno = 0;
@@ -518,7 +518,7 @@ ccsys_access (cce_location_t * L, const char * pathname, int how)
 
 #ifdef HAVE_FACCESSAT
 int
-ccsys_faccessat (cce_location_t * L, ccsys_fd_t dirfd, const char * pathname, int how, int flags)
+ccsys_faccessat (cce_location_t * L, ccsys_fd_t dirfd, char const * pathname, int how, int flags)
 {
   int	rv;
   errno = 0;
@@ -537,7 +537,7 @@ ccsys_faccessat (cce_location_t * L, ccsys_fd_t dirfd, const char * pathname, in
 
 #ifdef HAVE_UTIME
 void
-ccsys_utime (cce_location_t * L, const char * pathname, const ccsys_utimbuf_t * _times)
+ccsys_utime (cce_location_t * L, char const * pathname, const ccsys_utimbuf_t * _times)
 {
   struct utimbuf *	times = (struct utimbuf *)_times;
   int			rv;
@@ -551,7 +551,7 @@ ccsys_utime (cce_location_t * L, const char * pathname, const ccsys_utimbuf_t * 
 
 #ifdef HAVE_UTIMES
 void
-ccsys_utimes (cce_location_t * L, const char * pathname, const ccsys_timeval_t TVP[2])
+ccsys_utimes (cce_location_t * L, char const * pathname, const ccsys_timeval_t TVP[2])
 {
   int	rv;
   errno = 0;
@@ -564,7 +564,7 @@ ccsys_utimes (cce_location_t * L, const char * pathname, const ccsys_timeval_t T
 
 #if ((defined HAVE_LUTIMES) && (! (defined CCSYS_ON_DARWIN)))
 void
-ccsys_lutimes (cce_location_t * L, const char * pathname, const ccsys_timeval_t TVP[2])
+ccsys_lutimes (cce_location_t * L, char const * pathname, const ccsys_timeval_t TVP[2])
 {
   int	rv;
   errno = 0;
@@ -592,7 +592,7 @@ ccsys_futimes (cce_location_t * L, ccsys_fd_t filedes, const ccsys_timeval_t TVP
 
 #ifdef HAVE_TRUNCATE
 void
-ccsys_truncate (cce_location_t * L, const char * pathname, ccsys_off_t length)
+ccsys_truncate (cce_location_t * L, char const * pathname, ccsys_off_t length)
 {
   int	rv;
   errno = 0;
@@ -733,7 +733,7 @@ cce_handler_tmpfile_function (const cce_condition_t * C CCE_UNUSED, cce_handler_
 }
 
 void
-ccsys_cleanup_handler_tmpfile_init (cce_location_t * L, cce_handler_t * H, const char * pathname)
+ccsys_cleanup_handler_tmpfile_init (cce_location_t * L, cce_handler_t * H, char const * pathname)
 {
   size_t	len = 1+strlen(pathname);
   char *	ptr = ccsys_malloc(L, len);
@@ -745,7 +745,7 @@ ccsys_cleanup_handler_tmpfile_init (cce_location_t * L, cce_handler_t * H, const
 }
 
 void
-ccsys_error_handler_tmpfile_init (cce_location_t * L, cce_handler_t * H, const char * pathname)
+ccsys_error_handler_tmpfile_init (cce_location_t * L, cce_handler_t * H, char const * pathname)
 {
   size_t	len = 1+strlen(pathname);
   char *	ptr = ccsys_malloc(L, len);
@@ -773,7 +773,7 @@ cce_handler_tmpdir_function (const cce_condition_t * C CCE_UNUSED, cce_handler_t
 }
 
 void
-ccsys_cleanup_handler_tmpdir_init (cce_location_t * L, cce_handler_t * H, const char * pathname)
+ccsys_cleanup_handler_tmpdir_init (cce_location_t * L, cce_handler_t * H, char const * pathname)
 {
   size_t	len = 1+strlen(pathname);
   char *	ptr = ccsys_malloc(L, len);
@@ -785,7 +785,7 @@ ccsys_cleanup_handler_tmpdir_init (cce_location_t * L, cce_handler_t * H, const 
 }
 
 void
-ccsys_error_handler_tmpdir_init (cce_location_t * L, cce_handler_t * H, const char * pathname)
+ccsys_error_handler_tmpdir_init (cce_location_t * L, cce_handler_t * H, char const * pathname)
 {
   size_t	len = 1+strlen(pathname);
   char *	ptr = ccsys_malloc(L, len);
