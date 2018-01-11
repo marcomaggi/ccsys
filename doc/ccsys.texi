@@ -1371,22 +1371,22 @@ Wrapper for @cfunc{fchdir}.
 @subsubheading Reading directory entries
 
 
-@deftypefun {DIR *} ccsys_opendir (cce_location_t * @var{L}, char const * @var{pathname})
+@deftypefun {ccsys_dir_t *} ccsys_opendir (cce_location_t * @var{L}, char const * @var{pathname})
 Wrapper for @cfunc{opendir}.
 @end deftypefun
 
 
-@deftypefun {DIR *} ccsys_fdopendir (cce_location_t * @var{L}, ccsys_dirfd_t @var{dirfd})
+@deftypefun {ccsys_dir_t *} ccsys_fdopendir (cce_location_t * @var{L}, ccsys_dirfd_t @var{dirfd})
 Wrapper for @cfunc{fdopendir}.
 @end deftypefun
 
 
-@deftypefun {struct dirent *} ccsys_readdir (cce_location_t * @var{L}, DIR * @var{dirstream})
+@deftypefun {ccsys_dirent_t *} ccsys_readdir (cce_location_t * @var{L}, ccsys_dir_t * @var{dirstream})
 Wrapper for @cfunc{readdir}.
 @end deftypefun
 
 
-@deftypefun void ccsys_closedir (cce_location_t * @var{L}, DIR * @var{dirstream})
+@deftypefun void ccsys_closedir (cce_location_t * @var{L}, ccsys_dir_t * @var{dirstream})
 Wrapper for @cfunc{closedir}.
 @end deftypefun
 
@@ -1400,7 +1400,7 @@ Wrapper for @cfunc{dirfd}.
 @subsubheading Making and removing directories
 
 
-@deftypefun void ccsys_mkdir (cce_location_t * @var{L}, char const * @var{pathname}, mode_t @var{mode})
+@deftypefun void ccsys_mkdir (cce_location_t * @var{L}, char const * @var{pathname}, ccsys_open_mode_t @var{mode})
 Wrapper for @cfunc{mkdir}.
 @end deftypefun
 
@@ -1545,17 +1545,17 @@ Wrapper for @cfunc{fchownat}.
 @end deftypefun
 
 
-@deftypefun void ccsys_chmod (cce_location_t * @var{L}, char const * @var{pathname}, mode_t @var{mode})
+@deftypefun void ccsys_chmod (cce_location_t * @var{L}, char const * @var{pathname}, ccsys_open_mode_t @var{mode})
 Wrapper for @cfunc{chmod}.
 @end deftypefun
 
 
-@deftypefun void ccsys_fchmod (cce_location_t * @var{L}, int @var{filedes}, mode_t @var{mode})
+@deftypefun void ccsys_fchmod (cce_location_t * @var{L}, int @var{filedes}, ccsys_open_mode_t @var{mode})
 Wrapper for @cfunc{fchmod}.
 @end deftypefun
 
 
-@deftypefun void ccsys_fchmodat (cce_location_t * @var{L}, ccsys_dirfd_t @var{dirfd}, char const * @var{pathname}, mode_t @var{mode}, int @var{flags})
+@deftypefun void ccsys_fchmodat (cce_location_t * @var{L}, ccsys_dirfd_t @var{dirfd}, char const * @var{pathname}, ccsys_open_mode_t @var{mode}, int @var{flags})
 Wrapper for @cfunc{fchmodat}.
 @end deftypefun
 
@@ -1882,8 +1882,8 @@ char const *    pathname = "./";
 if (cce_location(L)) @{
   cce_run_error_handlers_final(L);
 @} else @{
-  DIR *               dirstream;
-  struct dirent *     direntry;
+  ccsys_dir_t *         dirstream;
+  ccsys_dirent_t *      direntry;
 
   dirstream = ccsys_opendir(L, pathname);
   ccsys_cleanup_handler_dirstream_init(L, dirstream_H, dirstream);
@@ -1903,16 +1903,16 @@ we can use the source code of this handler as template to implement a more compl
 The following symbols are defined in the header file @file{ccsys.h}.
 
 
-@deftypefun void ccsys_cleanup_handler_dirstream_init (cce_location_t * @var{L}, cce_handler_t * @var{H}, DIR * @var{dirstream})
-@deftypefunx void ccsys_error_handler_dirstream_init (cce_location_t * @var{L}, cce_handler_t * @var{H}, DIR * @var{dirstream})
+@deftypefun void ccsys_cleanup_handler_dirstream_init (cce_location_t * @var{L}, cce_handler_t * @var{H}, ccsys_dir_t * @var{dirstream})
+@deftypefunx void ccsys_error_handler_dirstream_init (cce_location_t * @var{L}, cce_handler_t * @var{H}, ccsys_dir_t * @var{dirstream})
 Register @var{H} as cleanup or error handler in the context of @var{L}.  The handler function will
 finalise the directory stream using the standard function @cfunc{closedir}; errors in
 @cfunc{closedir} are @strong{ignored}.
 @end deftypefun
 
 
-@deftypefn {Preprocessor Macro} void ccsys_handler_dirstream_init (cce_location_t * @var{L}, cce_cleanup_handler_t * @var{H}, DIR * @var{dirstream})
-@deftypefnx {Preprocessor Macro} void ccsys_handler_dirstream_init (cce_location_t * @var{L}, cce_error_handler_t * @var{H}, DIR * @var{dirstream})
+@deftypefn {Preprocessor Macro} void ccsys_handler_dirstream_init (cce_location_t * @var{L}, cce_cleanup_handler_t * @var{H}, ccsys_dir_t * @var{dirstream})
+@deftypefnx {Preprocessor Macro} void ccsys_handler_dirstream_init (cce_location_t * @var{L}, cce_error_handler_t * @var{H}, ccsys_dir_t * @var{dirstream})
 This preprocessor macro uses @code{_Generic} to dispatch the call according to the type of the
 pointer @var{H}; if the type is:
 
