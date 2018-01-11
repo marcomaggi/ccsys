@@ -381,11 +381,11 @@ ccsys_unlink (cce_location_t * L, char const * pathname)
 
 #ifdef HAVE_UNLINKAT
 void
-ccsys_unlinkat (cce_location_t * L, ccsys_dirfd_t dirfd, char const * pathname, int flags)
+ccsys_unlinkat (cce_location_t * L, ccsys_dirfd_t dirfd, char const * pathname, ccsys_unlinkat_flags_t flags)
 {
   int	rv;
   errno = 0;
-  rv = unlinkat(dirfd.data, pathname, flags);
+  rv = unlinkat(dirfd.data, pathname, flags.data);
   if (-1 == rv) {
     cce_raise(L, cce_condition_new_errno_clear());
   }

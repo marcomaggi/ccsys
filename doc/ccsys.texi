@@ -408,6 +408,12 @@ enumerated constants of type @objtype{ccsys_file_mode_flags_t}.
 @end deftp
 
 
+@deftp {Semantic Type} ccsys_unlinkat_flags_t
+Exact signed integer representing an @code{at()} function flag.  It is meant to be a bitwise
+combination of the enumerated constants of type @objtype{ccsys_file_at_flags_t}.
+@end deftp
+
+
 @deftp {Semantic Type} ccsys_socket_namespace_t
 Exact signed integer representing a socket namespace (or domain).  It is the of the argument
 @var{namespace} or @var{domain} of @cfunc{ccsys_socket}.
@@ -528,6 +534,17 @@ CCSYS_S_IRGRP   CCSYS_S_IWGRP   CCSYS_S_IXGRP
 CCSYS_S_IROTH   CCSYS_S_IWOTH   CCSYS_S_IXOTH
 CCSYS_S_IRWXU   CCSYS_S_IRWXG   CCSYS_S_IRWXO
 CCSYS_S_ISUID   CCSYS_S_ISGID   CCSYS_S_ISVTX
+@end example
+@end deftp
+
+
+@EnumeratedConstant{CCSYS_AT_REMOVEDIR}
+@deftp {Enum Typedef} ccsys_file_at_flags_t
+Type of flags for @code{at()} functions.  These constants are meant to be used, for example, as
+value for the argument @var{flags} of @cfunc{ccsys_unlinkat}.  It defines the following constants:
+
+@example
+CCSYS_AT_REMOVEDIR
 @end example
 @end deftp
 
@@ -1138,7 +1155,9 @@ if (cce_location(L)) @{
 
   /* Remove the file. */
   @{
-    ccsys_unlinkat(L, dirfd, filename, 0);
+    ccsys_unlinkat_flags_t      flags = @{ .data = 0 @};
+
+    ccsys_unlinkat(L, dirfd, filename, flags);
   @}
 
   cce_run_cleanup_handlers(L);
@@ -1539,7 +1558,7 @@ Wrapper for @cfunc{unlink}.
 @end deftypefun
 
 
-@deftypefun void ccsys_unlinkat (cce_location_t * @var{L}, ccsys_dirfd_t @var{dirfd}, char const * @var{filename}, int @var{flags})
+@deftypefun void ccsys_unlinkat (cce_location_t * @var{L}, ccsys_dirfd_t @var{dirfd}, char const * @var{filename}, ccsys_unlinkat_flags_t @var{flags})
 Wrapper for @cfunc{unlinkat}.
 @end deftypefun
 

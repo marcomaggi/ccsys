@@ -100,7 +100,9 @@ test_2_1 (cce_destination_t upper_L)
 
     /* Remove the file. */
     {
-      ccsys_unlinkat(L, dirfd, filename, 0);
+      ccsys_unlinkat_flags_t      flags = { .data = 0 };
+
+      ccsys_unlinkat(L, dirfd, filename, flags);
     }
 
     cce_run_cleanup_handlers(L);
