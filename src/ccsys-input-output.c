@@ -73,7 +73,7 @@ ccsys_open (cce_location_t * L, const char *filename, ccsys_open_flags_t flags, 
 
 #ifdef HAVE_OPENAT
 ccsys_fd_t
-ccsys_openat (cce_location_t * L, ccsys_fd_t dirfd, const char *filename, ccsys_open_flags_t flags, ccsys_open_mode_t mode)
+ccsys_openat (cce_location_t * L, ccsys_dirfd_t dirfd, const char *filename, ccsys_open_flags_t flags, ccsys_open_mode_t mode)
 {
   int	rv;
   errno = 0;
@@ -147,7 +147,7 @@ ccsys_mkfifo (cce_location_t * L, const char * pathname, ccsys_open_mode_t mode)
 
 #ifdef HAVE_MKFIFOAT
 void
-ccsys_mkfifoat (cce_location_t * L, ccsys_fd_t dirfd, const char * pathname, ccsys_open_mode_t mode)
+ccsys_mkfifoat (cce_location_t * L, ccsys_dirfd_t dirfd, const char * pathname, ccsys_open_mode_t mode)
 {
   int	rv;
   errno = 0;
@@ -338,5 +338,97 @@ ccsys_select (cce_location_t * L, int nfds,
   }
 }
 #endif
+
+
+/** --------------------------------------------------------------------
+ ** Input/output: file descriptor handler.
+ ** ----------------------------------------------------------------- */
+
+__attribute__((nonnull(1,2)))
+static void
+cce_handler_filedes_function (const cce_condition_t * C CCE_UNUSED, cce_handler_t * H)
+{
+  close(H->filedes);
+  if (0) { fprintf(stderr, "%s: done\n", __func__); }
+}
+
+void
+ccsys_cleanup_handler_filedes_init (cce_location_t * L, cce_handler_t * H, ccsys_fd_t filedes)
+{
+  H->function	= cce_handler_filedes_function;
+  H->filedes	= filedes.data;
+  cce_register_cleanup_handler(L, H);
+}
+
+void
+ccsys_error_handler_filedes_init (cce_location_t * L, cce_handler_t * H, ccsys_fd_t filedes)
+{
+  H->function	= cce_handler_filedes_function;
+  H->filedes	= filedes.data;
+  cce_register_error_handler(L, H);
+}
+
+
+/** --------------------------------------------------------------------
+ ** Input/output: directory descriptor handler.
+ ** ----------------------------------------------------------------- */
+
+__attribute__((nonnull(1,2)))
+static void
+cce_handler_dirfd_function (const cce_condition_t * C CCE_UNUSED, cce_handler_t * H)
+{
+  close(H->filedes);
+  if (0) { fprintf(stderr, "%s: done\n", __func__); }
+}
+
+void
+ccsys_cleanup_handler_dirfd_init (cce_location_t * L, cce_handler_t * H, ccsys_dirfd_t dirfd)
+{
+  H->function	= cce_handler_dirfd_function;
+  H->filedes	= dirfd.data;
+  cce_register_cleanup_handler(L, H);
+}
+
+void
+ccsys_error_handler_dirfd_init (cce_location_t * L, cce_handler_t * H, ccsys_dirfd_t dirfd)
+{
+  H->function	= cce_handler_dirfd_function;
+  H->filedes	= dirfd.data;
+  cce_register_error_handler(L, H);
+}
+
+
+/** --------------------------------------------------------------------
+ ** Input/output: pipe descriptors handlers.
+ ** ----------------------------------------------------------------- */
+
+__attribute__((nonnull(1,2)))
+static void
+cce_handler_pipedes_function (const cce_condition_t * C CCE_UNUSED, cce_handler_t * H)
+{
+#ifdef HAVE_CLOSE
+  close(H->pipedes[0]);
+  close(H->pipedes[1]);
+  if (0) { fprintf(stderr, "%s: done\n", __func__); }
+#endif
+}
+
+void
+ccsys_cleanup_handler_pipedes_init (cce_location_t * L, cce_handler_t * H, ccsys_fd_t pipedes[2])
+{
+  H->function	= cce_handler_pipedes_function;
+  H->pipedes[0]	= pipedes[0].data;
+  H->pipedes[1]	= pipedes[1].data;
+  cce_register_cleanup_handler(L, H);
+}
+
+void
+ccsys_error_handler_pipedes_init (cce_location_t * L, cce_handler_t * H, ccsys_fd_t pipedes[2])
+{
+  H->function	= cce_handler_pipedes_function;
+  H->pipedes[0]	= pipedes[0].data;
+  H->pipedes[1]	= pipedes[1].data;
+  cce_register_error_handler(L, H);
+}
 
 /* end of file */

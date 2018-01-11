@@ -81,7 +81,7 @@ ccsys_opendir (cce_location_t * L, char const * pathname)
 
 #ifdef HAVE_FDOPENDIR
 ccsys_dir_t *
-ccsys_fdopendir (cce_location_t * L, ccsys_fd_t dirfd)
+ccsys_fdopendir (cce_location_t * L, ccsys_dirfd_t dirfd)
 {
   DIR *	rv;
   errno = 0;
@@ -127,7 +127,7 @@ ccsys_closedir (cce_location_t * L, ccsys_dir_t * _dirstream)
 #endif
 
 #ifdef HAVE_DIRFD
-ccsys_fd_t
+ccsys_dirfd_t
 ccsys_dirfd (cce_location_t * L, ccsys_dir_t * _dirstream)
 {
   DIR *		dirstream = (DIR *) _dirstream;
@@ -135,7 +135,7 @@ ccsys_dirfd (cce_location_t * L, ccsys_dir_t * _dirstream)
   errno = 0;
   rv = dirfd(dirstream);
   if (0 <= rv) {
-    ccsys_fd_t	dirfd = { .data = rv };
+    ccsys_dirfd_t	dirfd = { .data = rv };
     if (0) { fprintf(stderr, "%s: %d\n", __func__, dirfd.data); }
     return dirfd;
   } else {
@@ -177,7 +177,7 @@ ccsys_chdir (cce_location_t * L, char const * pathname)
 
 #ifdef HAVE_FCHDIR
 void
-ccsys_fchdir (cce_location_t * L, ccsys_fd_t dirfd)
+ccsys_fchdir (cce_location_t * L, ccsys_dirfd_t dirfd)
 {
   int	rv;
   errno = 0;
@@ -308,7 +308,7 @@ ccsys_symlink (cce_location_t * L, const char * oldname, const char * newname)
 
 #ifdef HAVE_SYMLINKAT
 void
-ccsys_symlinkat (cce_location_t * L, const char * oldname, ccsys_fd_t newdirfd, const char * newname)
+ccsys_symlinkat (cce_location_t * L, const char * oldname, ccsys_dirfd_t newdirfd, const char * newname)
 {
   int	rv;
   errno = 0;
@@ -336,7 +336,7 @@ ccsys_readlink (cce_location_t * L, char const * pathname, char * buffer, size_t
 
 #ifdef HAVE_READLINKAT
 size_t
-ccsys_readlinkat (cce_location_t * L, ccsys_fd_t dirfd, char const * pathname, char * buffer, size_t size)
+ccsys_readlinkat (cce_location_t * L, ccsys_dirfd_t dirfd, char const * pathname, char * buffer, size_t size)
 {
   ssize_t	rv;
   errno = 0;
@@ -381,7 +381,7 @@ ccsys_unlink (cce_location_t * L, char const * pathname)
 
 #ifdef HAVE_UNLINKAT
 void
-ccsys_unlinkat (cce_location_t * L, ccsys_fd_t dirfd, char const * pathname, int flags)
+ccsys_unlinkat (cce_location_t * L, ccsys_dirfd_t dirfd, char const * pathname, int flags)
 {
   int	rv;
   errno = 0;
@@ -463,7 +463,7 @@ ccsys_lchown (cce_location_t * L, char const * pathname, ccsys_uid_t owner, ccsy
 
 #ifdef HAVE_FCHOWNAT
 void
-ccsys_fchownat (cce_location_t * L, ccsys_fd_t dirfd, char const * pathname, ccsys_uid_t owner, ccsys_gid_t group, int flags)
+ccsys_fchownat (cce_location_t * L, ccsys_dirfd_t dirfd, char const * pathname, ccsys_uid_t owner, ccsys_gid_t group, int flags)
 {
   int	rv;
   errno = 0;
@@ -504,7 +504,7 @@ ccsys_fchmod (cce_location_t * L, ccsys_fd_t filedes, ccsys_open_mode_t mode)
 
 #ifdef HAVE_FCHMODAT
 void
-ccsys_fchmodat (cce_location_t * L, ccsys_fd_t dirfd, char const * pathname, ccsys_open_mode_t mode, int flags)
+ccsys_fchmodat (cce_location_t * L, ccsys_dirfd_t dirfd, char const * pathname, ccsys_open_mode_t mode, int flags)
 {
   int	rv;
   errno = 0;
@@ -536,7 +536,7 @@ ccsys_access (cce_location_t * L, char const * pathname, int how)
 
 #ifdef HAVE_FACCESSAT
 int
-ccsys_faccessat (cce_location_t * L, ccsys_fd_t dirfd, char const * pathname, int how, int flags)
+ccsys_faccessat (cce_location_t * L, ccsys_dirfd_t dirfd, char const * pathname, int how, int flags)
 {
   int	rv;
   errno = 0;
@@ -670,69 +670,6 @@ ccsys_mkdtemp (cce_location_t * L, char * template)
   }
 }
 #endif
-
-
-/** --------------------------------------------------------------------
- ** Predefined POSIX exception handler: file descriptor.
- ** ----------------------------------------------------------------- */
-
-__attribute__((nonnull(1,2)))
-static void
-cce_handler_filedes_function (const cce_condition_t * C CCE_UNUSED, cce_handler_t * H)
-{
-  close(H->filedes);
-  if (0) { fprintf(stderr, "%s: done\n", __func__); }
-}
-
-void
-ccsys_cleanup_handler_filedes_init (cce_location_t * L, cce_handler_t * H, ccsys_fd_t filedes)
-{
-  H->function	= cce_handler_filedes_function;
-  H->filedes	= filedes.data;
-  cce_register_cleanup_handler(L, H);
-}
-
-void
-ccsys_error_handler_filedes_init (cce_location_t * L, cce_handler_t * H, ccsys_fd_t filedes)
-{
-  H->function	= cce_handler_filedes_function;
-  H->filedes	= filedes.data;
-  cce_register_error_handler(L, H);
-}
-
-
-/** --------------------------------------------------------------------
- ** Predefined POSIX exception handler: pipe descriptors.
- ** ----------------------------------------------------------------- */
-
-__attribute__((nonnull(1,2)))
-static void
-cce_handler_pipedes_function (const cce_condition_t * C CCE_UNUSED, cce_handler_t * H)
-{
-#ifdef HAVE_CLOSE
-  close(H->pipedes[0]);
-  close(H->pipedes[1]);
-  if (0) { fprintf(stderr, "%s: done\n", __func__); }
-#endif
-}
-
-void
-ccsys_cleanup_handler_pipedes_init (cce_location_t * L, cce_handler_t * H, ccsys_fd_t pipedes[2])
-{
-  H->function	= cce_handler_pipedes_function;
-  H->pipedes[0]	= pipedes[0].data;
-  H->pipedes[1]	= pipedes[1].data;
-  cce_register_cleanup_handler(L, H);
-}
-
-void
-ccsys_error_handler_pipedes_init (cce_location_t * L, cce_handler_t * H, ccsys_fd_t pipedes[2])
-{
-  H->function	= cce_handler_pipedes_function;
-  H->pipedes[0]	= pipedes[0].data;
-  H->pipedes[1]	= pipedes[1].data;
-  cce_register_error_handler(L, H);
-}
 
 
 /** --------------------------------------------------------------------
