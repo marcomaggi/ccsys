@@ -1110,13 +1110,13 @@ The argument @var{mode} is meant to be a bitwise combination of the constants of
 We can use  @cfunc{ccsys_openat} as follows:
 
 @example
-cce_location_t        L[1];
-cce_handler_t         tmpdir_H[1];
-cce_handler_t         dirstream_H[1];
-cce_handler_t         file_H[1];
+cce_location_t          L[1];
+cce_cleanup_handler_t   tmpdir_H[1];
+cce_cleanup_handler_t   dirstream_H[1];
+cce_cleanup_handler_t   file_H[1];
 
 if (cce_location(L)) @{
-  cce_run_error_handlers_raise(L, upper_L);
+  cce_run_error_handlers_final(L);
 @} else @{
   static char const * dirname  = "dir.d";
   static char const * filename = "name.ext";
@@ -1126,7 +1126,7 @@ if (cce_location(L)) @{
   @{
     ccsys_open_mode_t mode  = @{ .data = CCSYS_S_IRWXU @};
     ccsys_mkdir(L, dirname, mode);
-    ccsys_cleanup_handler_tmpdir_init(L, tmpdir_H, dirname);
+    ccsys_handler_tmpdir_init(L, tmpdir_H, dirname);
   @}
 
   /* Open the directory.  The descriptor in "dirfd" is released
@@ -1135,7 +1135,7 @@ if (cce_location(L)) @{
     ccsys_dir_t *     dirstream;
 
     dirstream = ccsys_opendir(L, dirname);
-    ccsys_cleanup_handler_dirstream_init(L, dirstream_H, dirstream);
+    ccsys_handler_dirstream_init(L, dirstream_H, dirstream);
     dirfd = ccsys_dirfd(L, dirstream);
   @}
 
@@ -1148,7 +1148,7 @@ if (cce_location(L)) @{
     ccsys_fd_t            fd;
 
     fd = ccsys_openat(L, dirfd, filename, flags, mode);
-    ccsys_cleanup_handler_filedes_init(L, file_H, fd);
+    ccsys_handler_filedes_init(L, file_H, fd);
 
     /* Do something with "fd" here. */
   @}
