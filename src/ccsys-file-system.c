@@ -144,6 +144,35 @@ ccsys_dirfd (cce_location_t * L, ccsys_dir_t * _dirstream)
 }
 #endif
 
+/* ------------------------------------------------------------------ */
+
+#ifdef HAVE_CLOSEDIR
+__attribute__((nonnull(1,2)))
+static void
+cce_handler_dirstream_function (const cce_condition_t * C CCE_UNUSED, cce_handler_t * H)
+{
+  DIR *		dirstream = H->pointer;
+  closedir(dirstream);
+  if (0) { fprintf(stderr, "%s: done\n", __func__); }
+}
+
+void
+ccsys_cleanup_handler_dirstream_init (cce_location_t * L, cce_handler_t * H, ccsys_dir_t * dirstream)
+{
+  H->function	= cce_handler_dirstream_function;
+  H->pointer	= dirstream;
+  cce_register_cleanup_handler(L, H);
+}
+
+void
+ccsys_error_handler_dirstream_init (cce_location_t * L, cce_handler_t * H, ccsys_dir_t * dirstream)
+{
+  H->function	= cce_handler_dirstream_function;
+  H->pointer	= dirstream;
+  cce_register_error_handler(L, H);
+}
+#endif
+
 
 /** --------------------------------------------------------------------
  ** File system: reading attributes.
@@ -271,7 +300,7 @@ ccsys_rmdir (cce_location_t * L, char const * pathname)
 #ifdef HAVE_RMDIR
 __attribute__((nonnull(1,2)))
 static void
-cce_handler_tmpdir_function (const cce_condition_t * C CCE_UNUSED, cce_handler_t * H)
+cce_handler_rmdir_function (const cce_condition_t * C CCE_UNUSED, cce_handler_t * H)
 {
   rmdir(H->pathname);
   free(H->pathname);
@@ -279,29 +308,28 @@ cce_handler_tmpdir_function (const cce_condition_t * C CCE_UNUSED, cce_handler_t
 }
 
 void
-ccsys_cleanup_handler_tmpdir_init (cce_location_t * L, cce_handler_t * H, char const * pathname)
+ccsys_cleanup_handler_rmdir_init (cce_location_t * L, cce_handler_t * H, char const * pathname)
 {
   size_t	len = 1+strlen(pathname);
   char *	ptr = ccsys_malloc(L, len);
   strncpy(ptr, pathname, len);
   ptr[len] = '\n';
-  H->function	= cce_handler_tmpdir_function;
+  H->function	= cce_handler_rmdir_function;
   H->pathname	= ptr;
   cce_register_cleanup_handler(L, H);
 }
 
 void
-ccsys_error_handler_tmpdir_init (cce_location_t * L, cce_handler_t * H, char const * pathname)
+ccsys_error_handler_rmdir_init (cce_location_t * L, cce_handler_t * H, char const * pathname)
 {
   size_t	len = 1+strlen(pathname);
   char *	ptr = ccsys_malloc(L, len);
   strncpy(ptr, pathname, len);
   ptr[len] = '\n';
-  H->function	= cce_handler_tmpdir_function;
+  H->function	= cce_handler_rmdir_function;
   H->pathname	= ptr;
   cce_register_error_handler(L, H);
 }
-
 #endif
 
 
@@ -476,19 +504,6 @@ ccsys_unlinkat (cce_location_t * L, ccsys_dirfd_t dirfd, char const * pathname, 
 }
 #endif
 
-#ifdef HAVE_REMOVE
-void
-ccsys_remove (cce_location_t * L, char const * pathname)
-{
-  int	rv;
-  errno = 0;
-  rv = remove(pathname);
-  if (-1 == rv) {
-    cce_raise(L, cce_condition_new_errno_clear());
-  }
-}
-#endif
-
 /* ------------------------------------------------------------------ */
 
 #ifdef HAVE_UNLINKAT
@@ -517,6 +532,61 @@ ccsys_error_handler_unlinkat_init (cce_location_t * L, cce_handler_t * H, ccsys_
   cce_register_error_handler(L, H);
 }
 #endif
+
+
+/** --------------------------------------------------------------------
+ ** File system: removing files.
+ ** ----------------------------------------------------------------- */
+
+#ifdef HAVE_REMOVE
+void
+ccsys_remove (cce_location_t * L, char const * pathname)
+{
+  int	rv;
+  errno = 0;
+  rv = remove(pathname);
+  if (-1 == rv) {
+    cce_raise(L, cce_condition_new_errno_clear());
+  }
+}
+#endif
+
+/* ------------------------------------------------------------------ */
+
+__attribute__((nonnull(1,2)))
+static void
+cce_handler_remove_function (const cce_condition_t * C CCE_UNUSED, cce_handler_t * H)
+{
+#ifdef HAVE_REMOVE
+  remove(H->pathname);
+  free(H->pathname);
+  if (0) { fprintf(stderr, "%s: done\n", __func__); }
+#endif
+}
+
+void
+ccsys_cleanup_handler_remove_init (cce_location_t * L, cce_handler_t * H, char const * pathname)
+{
+  size_t	len = 1+strlen(pathname);
+  char *	ptr = ccsys_malloc(L, len);
+  strncpy(ptr, pathname, len);
+  ptr[len] = '\n';
+  H->function	= cce_handler_remove_function;
+  H->pathname	= ptr;
+  cce_register_cleanup_handler(L, H);
+}
+
+void
+ccsys_error_handler_remove_init (cce_location_t * L, cce_handler_t * H, char const * pathname)
+{
+  size_t	len = 1+strlen(pathname);
+  char *	ptr = ccsys_malloc(L, len);
+  strncpy(ptr, pathname, len);
+  ptr[len] = '\n';
+  H->function	= cce_handler_remove_function;
+  H->pathname	= ptr;
+  cce_register_error_handler(L, H);
+}
 
 
 /** --------------------------------------------------------------------
@@ -764,82 +834,5 @@ ccsys_futimes (cce_location_t * L, ccsys_fd_t filedes, const ccsys_timeval_t TVP
   }
 }
 #endif
-
-
-/** --------------------------------------------------------------------
- ** Predefined POSIX exception handler: temporary files.
- ** ----------------------------------------------------------------- */
-
-__attribute__((nonnull(1,2)))
-static void
-cce_handler_tmpfile_function (const cce_condition_t * C CCE_UNUSED, cce_handler_t * H)
-{
-#ifdef HAVE_REMOVE
-  remove(H->pathname);
-  free(H->pathname);
-  if (0) { fprintf(stderr, "%s: done\n", __func__); }
-#endif
-}
-
-void
-ccsys_cleanup_handler_tmpfile_init (cce_location_t * L, cce_handler_t * H, char const * pathname)
-{
-  size_t	len = 1+strlen(pathname);
-  char *	ptr = ccsys_malloc(L, len);
-  strncpy(ptr, pathname, len);
-  ptr[len] = '\n';
-  H->function	= cce_handler_tmpfile_function;
-  H->pathname	= ptr;
-  cce_register_cleanup_handler(L, H);
-}
-
-void
-ccsys_error_handler_tmpfile_init (cce_location_t * L, cce_handler_t * H, char const * pathname)
-{
-  size_t	len = 1+strlen(pathname);
-  char *	ptr = ccsys_malloc(L, len);
-  strncpy(ptr, pathname, len);
-  ptr[len] = '\n';
-  H->function	= cce_handler_tmpfile_function;
-  H->pathname	= ptr;
-  cce_register_error_handler(L, H);
-}
-
-
-/** --------------------------------------------------------------------
- ** Predefined POSIX exception handler: temporary directories.
- ** ----------------------------------------------------------------- */
-
-
-/** --------------------------------------------------------------------
- ** Predefined POSIX exception handler: directory streams.
- ** ----------------------------------------------------------------- */
-
-__attribute__((nonnull(1,2)))
-static void
-cce_handler_dirstream_function (const cce_condition_t * C CCE_UNUSED, cce_handler_t * H)
-{
-#ifdef HAVE_CLOSEDIR
-  DIR *		dirstream = H->pointer;
-  closedir(dirstream);
-  if (0) { fprintf(stderr, "%s: done\n", __func__); }
-#endif
-}
-
-void
-ccsys_cleanup_handler_dirstream_init (cce_location_t * L, cce_handler_t * H, ccsys_dir_t * dirstream)
-{
-  H->function	= cce_handler_dirstream_function;
-  H->pointer	= dirstream;
-  cce_register_cleanup_handler(L, H);
-}
-
-void
-ccsys_error_handler_dirstream_init (cce_location_t * L, cce_handler_t * H, ccsys_dir_t * dirstream)
-{
-  H->function	= cce_handler_dirstream_function;
-  H->pointer	= dirstream;
-  cce_register_error_handler(L, H);
-}
 
 /* end of file */

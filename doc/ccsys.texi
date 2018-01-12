@@ -1111,7 +1111,7 @@ We can use  @cfunc{ccsys_openat} as follows:
 
 @example
 cce_location_t          L[1];
-cce_cleanup_handler_t   tmpdir_H[1];
+cce_cleanup_handler_t   dir_H[1];
 cce_cleanup_handler_t   dirstream_H[1];
 cce_cleanup_handler_t   file_H[1];
 
@@ -1126,7 +1126,7 @@ if (cce_location(L)) @{
   @{
     ccsys_open_mode_t mode  = @{ .data = CCSYS_S_IRWXU @};
     ccsys_mkdir(L, dirname, mode);
-    ccsys_handler_tmpdir_init(L, tmpdir_H, dirname);
+    ccsys_handler_rmdir_init(L, dir_H, dirname);
   @}
 
   /* Open the directory.  The descriptor in "dirfd" is released
@@ -1819,14 +1819,14 @@ Wrapper for @cfunc{waitpid}.
 
 
 @menu
-* handlers tmpfile::            Handler for temporary files.
-* handlers tmpdir::             Handler for temporary directories.
+* handlers remove::             Handler for files removal.
+* handlers rmdir::              Handler for directories removal.
 * handlers dirstream::          Handler for directory streams.
 @end menu
 
 @c page
-@node handlers tmpfile
-@section Handler for temporary files
+@node handlers remove
+@section Handler for files removal
 
 
 We can remove temporary files with the standard function @cfunc{remove} as follows:
@@ -1841,7 +1841,7 @@ if (cce_location(L)) @{
   int   fd = ccsys_open(L, "name.ext", O_CREAT|O_EXCL,
                           S_IRUSR|S_IWUSR);
   ccsys_cleanup_handler_filedes_init(L, H, fd);
-  ccsys_cleanup_handler_tmpfile_init(L, H, "name.ext");
+  ccsys_cleanup_handler_remove_init(L, H, "name.ext");
   cce_run_cleanup_handlers(L);
 @}
 @end example
@@ -1854,8 +1854,8 @@ Remember that a good way to create temporary files is to use the @posix{} standa
 The following symbols are defined in the header file @file{ccsys.h}.
 
 
-@deftypefun void ccsys_cleanup_handler_tmpfile_init (cce_location_t * @var{L}, cce_handler_t * @var{H}, char const * @var{pathname})
-@deftypefunx void ccsys_error_handler_tmpfile_init (cce_location_t * @var{L}, cce_handler_t * @var{H}, char const * @var{pathname})
+@deftypefun void ccsys_cleanup_handler_remove_init (cce_location_t * @var{L}, cce_handler_t * @var{H}, char const * @var{pathname})
+@deftypefunx void ccsys_error_handler_remove_init (cce_location_t * @var{L}, cce_handler_t * @var{H}, char const * @var{pathname})
 Register @var{H} as cleanup or error handler in the context of @var{L}.  The handler function will
 remove the file whose pathname is @var{pathname} using the standard function @cfunc{remove}; errors
 in @cfunc{remove} are @strong{ignored}.
@@ -1868,23 +1868,23 @@ exit to @var{L}.
 @end deftypefun
 
 
-@deftypefn {Preprocessor Macro} void ccsys_handler_tmpfile_init (cce_location_t * @var{L}, cce_cleanup_handler_t * @var{H}, char const * @var{pathname})
-@deftypefnx {Preprocessor Macro} void ccsys_handler_tmpfile_init (cce_location_t * @var{L}, cce_error_handler_t * @var{H}, char const * @var{pathname})
+@deftypefn {Preprocessor Macro} void ccsys_handler_remove_init (cce_location_t * @var{L}, cce_cleanup_handler_t * @var{H}, char const * @var{pathname})
+@deftypefnx {Preprocessor Macro} void ccsys_handler_remove_init (cce_location_t * @var{L}, cce_error_handler_t * @var{H}, char const * @var{pathname})
 This preprocessor macro uses @code{_Generic} to dispatch the call according to the type of the
 pointer @var{H}; if the type is:
 
 @table @code
 @item cce_cleanup_handler_t
-The macro expands into a call to @cfunc{ccsys_cleanup_handler_tmpfile_init}.
+The macro expands into a call to @cfunc{ccsys_cleanup_handler_remove_init}.
 
 @item cce_error_handler_t
-The macro expands into a call to @cfunc{ccsys_error_handler_tmpfile_init}.
+The macro expands into a call to @cfunc{ccsys_error_handler_remove_init}.
 @end table
 @end deftypefn
 
 @c page
-@node handlers tmpdir
-@section Handler for temporary files
+@node handlers rmdir
+@section Handler for directories removal
 
 
 We can remove @strong{empty} temporary directories with the standard function @cfunc{rmdir} as
@@ -1892,7 +1892,7 @@ follows:
 
 @example
 cce_location_t  L[1];
-cce_handler_t   tmpdir_H[1];
+cce_handler_t   dir_H[1];
 
 if (cce_location(L)) @{
   cce_run_error_handlers_final(L);
@@ -1900,7 +1900,7 @@ if (cce_location(L)) @{
   ccsys_open_mode_t     mode  = @{ .data = CCSYS_S_IRWXU @};
 
   ccsys_mkdir(L, "name.d", mode);
-  ccsys_cleanup_handler_tmpdir_init(L, tmpdir_H, "name.d");
+  ccsys_cleanup_handler_rmdir_init(L, dir_H, "name.d");
   cce_run_cleanup_handlers(L);
 @}
 @end example
@@ -1913,8 +1913,8 @@ implemented by the @gnu{} C Library.
 The following symbols are defined in the header file @file{ccsys.h}.
 
 
-@deftypefun void ccsys_cleanup_handler_tmpdir_init (cce_location_t * @var{L}, cce_handler_t * @var{H}, char const * @var{pathname})
-@deftypefunx void ccsys_error_handler_tmpdir_init (cce_location_t * @var{L}, cce_handler_t * @var{H}, char const * @var{pathname})
+@deftypefun void ccsys_cleanup_handler_rmdir_init (cce_location_t * @var{L}, cce_handler_t * @var{H}, char const * @var{pathname})
+@deftypefunx void ccsys_error_handler_rmdir_init (cce_location_t * @var{L}, cce_handler_t * @var{H}, char const * @var{pathname})
 Register @var{H} as cleanup or error handler in the context of @var{L}.  The handler function will
 remove the directory whose pathname is @var{pathname} using the standard function @cfunc{rmdir};
 errors in @cfunc{rmdir} are @strong{ignored}.  The directory is removed only if it is empty.
@@ -1927,17 +1927,17 @@ exit to @var{L}.
 @end deftypefun
 
 
-@deftypefn {Preprocessor Macro} void ccsys_handler_tmpdir_init (cce_location_t * @var{L}, cce_cleanup_handler_t * @var{H}, char const * @var{pathname})
-@deftypefnx {Preprocessor Macro} void ccsys_handler_tmpdir_init (cce_location_t * @var{L}, cce_error_handler_t * @var{H}, char const * @var{pathname})
+@deftypefn {Preprocessor Macro} void ccsys_handler_rmdir_init (cce_location_t * @var{L}, cce_cleanup_handler_t * @var{H}, char const * @var{pathname})
+@deftypefnx {Preprocessor Macro} void ccsys_handler_rmdir_init (cce_location_t * @var{L}, cce_error_handler_t * @var{H}, char const * @var{pathname})
 This preprocessor macro uses @code{_Generic} to dispatch the call according to the type of the
 pointer @var{H}; if the type is:
 
 @table @code
 @item cce_cleanup_handler_t
-The macro expands into a call to @cfunc{ccsys_cleanup_handler_tmpdir_init}.
+The macro expands into a call to @cfunc{ccsys_cleanup_handler_rmdir_init}.
 
 @item cce_error_handler_t
-The macro expands into a call to @cfunc{ccsys_error_handler_tmpdir_init}.
+The macro expands into a call to @cfunc{ccsys_error_handler_rmdir_init}.
 @end table
 @end deftypefn
 

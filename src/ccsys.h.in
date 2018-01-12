@@ -754,16 +754,16 @@ ccsys_decl void ccsys_rmdir (cce_location_t * L, char const * pathname)
 
 /* ------------------------------------------------------------------ */
 
-ccsys_decl void ccsys_cleanup_handler_tmpdir_init (cce_location_t * L, cce_handler_t * H, char const * pathname)
+ccsys_decl void ccsys_cleanup_handler_rmdir_init (cce_location_t * L, cce_handler_t * H, char const * pathname)
   __attribute__((__nonnull__(1,2,3)));
 
-ccsys_decl void ccsys_error_handler_tmpdir_init (cce_location_t * L, cce_handler_t * H, char const * pathname)
+ccsys_decl void ccsys_error_handler_rmdir_init (cce_location_t * L, cce_handler_t * H, char const * pathname)
   __attribute__((__nonnull__(1,2,3)));
 
-#define ccsys_handler_tmpdir_init(L,H,R)				\
+#define ccsys_handler_rmdir_init(L,H,R)				\
   _Generic((H),								\
-	   cce_cleanup_handler_t	*: ccsys_cleanup_handler_tmpdir_init, \
-	   cce_error_handler_t		*: ccsys_error_handler_tmpdir_init)(L,&(H->handler),R)
+	   cce_cleanup_handler_t	*: ccsys_cleanup_handler_rmdir_init, \
+	   cce_error_handler_t		*: ccsys_error_handler_rmdir_init)(L,&(H->handler),R)
 
 
 /** --------------------------------------------------------------------
@@ -775,19 +775,6 @@ ccsys_decl int ccsys_mkstemp (cce_location_t * L, char * template)
 
 ccsys_decl char * ccsys_mkdtemp (cce_location_t * L, char * template)
   __attribute__((__nonnull__(1,2)));
-
-/* ------------------------------------------------------------------ */
-
-ccsys_decl void ccsys_cleanup_handler_tmpfile_init (cce_location_t * L, cce_handler_t * H, char const * pathname)
-  __attribute__((__nonnull__(1,2,3)));
-
-ccsys_decl void ccsys_error_handler_tmpfile_init (cce_location_t * L, cce_handler_t * H, char const * pathname)
-  __attribute__((__nonnull__(1,2,3)));
-
-#define ccsys_handler_tmpfile_init(L,H,R)				\
-  _Generic((H),								\
-	   cce_cleanup_handler_t	*: ccsys_cleanup_handler_tmpfile_init, \
-	   cce_error_handler_t		*: ccsys_error_handler_tmpfile_init)(L,&(H->handler),R)
 
 
 /** --------------------------------------------------------------------
@@ -826,9 +813,6 @@ ccsys_decl void ccsys_unlink (cce_location_t * L, char const * pathname)
 ccsys_decl void ccsys_unlinkat (cce_location_t * L, ccsys_dirfd_t dirfd, char const * pathname, ccsys_unlinkat_flags_t flags)
   __attribute__((__nonnull__(1,3)));
 
-ccsys_decl void ccsys_remove (cce_location_t * L, char const * pathname)
-  __attribute__((__nonnull__(1,2)));
-
 /* ------------------------------------------------------------------ */
 
 typedef struct ccsys_at_link_t		ccsys_at_link_t;
@@ -848,6 +832,27 @@ ccsys_decl void ccsys_error_handler_unlinkat_init (cce_location_t * L, cce_handl
   _Generic((H),								\
 	   cce_cleanup_handler_t	*: ccsys_cleanup_handler_unlinkat_init, \
 	   cce_error_handler_t		*: ccsys_error_handler_unlinkat_init)(L,&(H->handler),LNK)
+
+
+/** --------------------------------------------------------------------
+ ** File system: removing files.
+ ** ----------------------------------------------------------------- */
+
+ccsys_decl void ccsys_remove (cce_location_t * L, char const * pathname)
+  __attribute__((__nonnull__(1,2)));
+
+/* ------------------------------------------------------------------ */
+
+ccsys_decl void ccsys_cleanup_handler_remove_init (cce_location_t * L, cce_handler_t * H, char const * pathname)
+  __attribute__((__nonnull__(1,2,3)));
+
+ccsys_decl void ccsys_error_handler_remove_init (cce_location_t * L, cce_handler_t * H, char const * pathname)
+  __attribute__((__nonnull__(1,2,3)));
+
+#define ccsys_handler_remove_init(L,H,R)				\
+  _Generic((H),								\
+	   cce_cleanup_handler_t	*: ccsys_cleanup_handler_remove_init, \
+	   cce_error_handler_t		*: ccsys_error_handler_remove_init)(L,&(H->handler),R)
 
 
 /** --------------------------------------------------------------------

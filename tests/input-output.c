@@ -58,7 +58,7 @@ test_2_1 (cce_destination_t upper_L)
 /* Open a file with "ccsys_openat()". */
 {
   cce_location_t		L[1];
-  cce_cleanup_handler_t		tmpdir_H[1];
+  cce_cleanup_handler_t		dir_H[1];
   cce_cleanup_handler_t		dirstream_H[1];
   cce_cleanup_handler_t		file_H[1];
 
@@ -74,7 +74,7 @@ test_2_1 (cce_destination_t upper_L)
     {
       ccsys_open_mode_t	mode  = { .data = CCSYS_S_IRWXU };
       ccsys_mkdir(L, dirname, mode);
-      ccsys_handler_tmpdir_init(L, tmpdir_H, dirname);
+      ccsys_handler_rmdir_init(L, dir_H, dirname);
     }
 
     /* Open  the  directory.   The  descriptor in  "dirfd"  is  released
