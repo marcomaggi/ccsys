@@ -767,7 +767,7 @@ ccsys_decl void ccsys_error_handler_tmpdir_init (cce_location_t * L, cce_handler
 
 
 /** --------------------------------------------------------------------
- ** File system: temporary files.
+ ** File system: temporary files and directories.
  ** ----------------------------------------------------------------- */
 
 ccsys_decl int ccsys_mkstemp (cce_location_t * L, char * template)

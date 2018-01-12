@@ -146,49 +146,8 @@ ccsys_dirfd (cce_location_t * L, ccsys_dir_t * _dirstream)
 
 
 /** --------------------------------------------------------------------
- ** File system operations.
+ ** File system: reading attributes.
  ** ----------------------------------------------------------------- */
-
-#ifdef HAVE_GETCWD
-void
-ccsys_getcwd (cce_location_t * L, char * buffer, size_t size)
-{
-  char *	rv;
-  errno = 0;
-  rv = getcwd(buffer, size);
-  if (NULL == rv) {
-    cce_raise(L, cce_condition_new_errno_clear());
-  }
-}
-#endif
-
-#ifdef HAVE_CHDIR
-void
-ccsys_chdir (cce_location_t * L, char const * pathname)
-{
-  int	rv;
-  errno = 0;
-  rv = chdir(pathname);
-  if (-1 == rv) {
-    cce_raise(L, cce_condition_new_errno_clear());
-  }
-}
-#endif
-
-#ifdef HAVE_FCHDIR
-void
-ccsys_fchdir (cce_location_t * L, ccsys_dirfd_t dirfd)
-{
-  int	rv;
-  errno = 0;
-  rv = fchdir(dirfd.data);
-  if (-1 == rv) {
-    cce_raise(L, cce_condition_new_errno_clear());
-  }
-}
-#endif
-
-/* ------------------------------------------------------------------ */
 
 #ifdef HAVE_STAT
 void
@@ -232,7 +191,54 @@ ccsys_lstat (cce_location_t * L, char const * pathname, ccsys_stat_t * _buf)
 }
 #endif
 
-/* ------------------------------------------------------------------ */
+
+/** --------------------------------------------------------------------
+ ** File system: working directory.
+ ** ----------------------------------------------------------------- */
+
+#ifdef HAVE_GETCWD
+void
+ccsys_getcwd (cce_location_t * L, char * buffer, size_t size)
+{
+  char *	rv;
+  errno = 0;
+  rv = getcwd(buffer, size);
+  if (NULL == rv) {
+    cce_raise(L, cce_condition_new_errno_clear());
+  }
+}
+#endif
+
+#ifdef HAVE_CHDIR
+void
+ccsys_chdir (cce_location_t * L, char const * pathname)
+{
+  int	rv;
+  errno = 0;
+  rv = chdir(pathname);
+  if (-1 == rv) {
+    cce_raise(L, cce_condition_new_errno_clear());
+  }
+}
+#endif
+
+#ifdef HAVE_FCHDIR
+void
+ccsys_fchdir (cce_location_t * L, ccsys_dirfd_t dirfd)
+{
+  int	rv;
+  errno = 0;
+  rv = fchdir(dirfd.data);
+  if (-1 == rv) {
+    cce_raise(L, cce_condition_new_errno_clear());
+  }
+}
+#endif
+
+
+/** --------------------------------------------------------------------
+ ** File system: creating and deleting directories.
+ ** ----------------------------------------------------------------- */
 
 #ifdef HAVE_MKDIR
 void
@@ -261,6 +267,84 @@ ccsys_rmdir (cce_location_t * L, char const * pathname)
 #endif
 
 /* ------------------------------------------------------------------ */
+
+#ifdef HAVE_RMDIR
+__attribute__((nonnull(1,2)))
+static void
+cce_handler_tmpdir_function (const cce_condition_t * C CCE_UNUSED, cce_handler_t * H)
+{
+  rmdir(H->pathname);
+  free(H->pathname);
+  if (0) { fprintf(stderr, "%s: done\n", __func__); }
+}
+
+void
+ccsys_cleanup_handler_tmpdir_init (cce_location_t * L, cce_handler_t * H, char const * pathname)
+{
+  size_t	len = 1+strlen(pathname);
+  char *	ptr = ccsys_malloc(L, len);
+  strncpy(ptr, pathname, len);
+  ptr[len] = '\n';
+  H->function	= cce_handler_tmpdir_function;
+  H->pathname	= ptr;
+  cce_register_cleanup_handler(L, H);
+}
+
+void
+ccsys_error_handler_tmpdir_init (cce_location_t * L, cce_handler_t * H, char const * pathname)
+{
+  size_t	len = 1+strlen(pathname);
+  char *	ptr = ccsys_malloc(L, len);
+  strncpy(ptr, pathname, len);
+  ptr[len] = '\n';
+  H->function	= cce_handler_tmpdir_function;
+  H->pathname	= ptr;
+  cce_register_error_handler(L, H);
+}
+
+#endif
+
+
+/** --------------------------------------------------------------------
+ ** File system: temporary files and directories.
+ ** ----------------------------------------------------------------- */
+
+#ifdef HAVE_MKSTEMP
+int
+ccsys_mkstemp (cce_location_t * L, char * template)
+{
+  int	rv;
+  errno = 0;
+  /* Remember that this call will mutate TEMPLATE. */
+  rv = mkstemp(template);
+  if (-1 == rv) {
+    cce_raise(L, cce_condition_new_errno_clear());
+  } else {
+    return rv;
+  }
+}
+#endif
+
+#ifdef HAVE_MKDTEMP
+char *
+ccsys_mkdtemp (cce_location_t * L, char * template)
+{
+  char *	rv;
+  errno = 0;
+  /* Remember that this call will mutate TEMPLATE. */
+  rv = mkdtemp(template);
+  if (NULL != rv) {
+    return rv;
+  } else {
+    cce_raise(L, cce_condition_new_errno_clear());
+  }
+}
+#endif
+
+
+/** --------------------------------------------------------------------
+ ** File system: links.
+ ** ----------------------------------------------------------------- */
 
 #ifdef HAVE_LINK
 void
@@ -407,6 +491,38 @@ ccsys_remove (cce_location_t * L, char const * pathname)
 
 /* ------------------------------------------------------------------ */
 
+#ifdef HAVE_UNLINKAT
+__attribute__((nonnull(1,2)))
+static void
+cce_handler_unlinkat_function (const cce_condition_t * C CCE_UNUSED, cce_handler_t * H)
+{
+  ccsys_at_link_t *	lnk	= H->pointer;
+  unlinkat(lnk->dirfd.data, lnk->pathname, 0);
+  if (0) { fprintf(stderr, "%s: done\n", __func__); }
+}
+
+void
+ccsys_cleanup_handler_unlinkat_init (cce_location_t * L, cce_handler_t * H, ccsys_at_link_t * lnk)
+{
+  H->function	= cce_handler_unlinkat_function;
+  H->pointer	= lnk;
+  cce_register_cleanup_handler(L, H);
+}
+
+void
+ccsys_error_handler_unlinkat_init (cce_location_t * L, cce_handler_t * H, ccsys_at_link_t * lnk)
+{
+  H->function	= cce_handler_unlinkat_function;
+  H->pointer	= lnk;
+  cce_register_error_handler(L, H);
+}
+#endif
+
+
+/** --------------------------------------------------------------------
+ ** File system: renaming directory entries.
+ ** ----------------------------------------------------------------- */
+
 #ifdef HAVE_RENAME
 void
 ccsys_rename (cce_location_t * L, const char * oldname, const char * newname)
@@ -420,7 +536,10 @@ ccsys_rename (cce_location_t * L, const char * oldname, const char * newname)
 }
 #endif
 
-/* ------------------------------------------------------------------ */
+
+/** --------------------------------------------------------------------
+ ** File system: changing owner.
+ ** ----------------------------------------------------------------- */
 
 #ifdef HAVE_CHOWN
 void
@@ -474,7 +593,10 @@ ccsys_fchownat (cce_location_t * L, ccsys_dirfd_t dirfd, char const * pathname, 
 }
 #endif
 
-/* ------------------------------------------------------------------ */
+
+/** --------------------------------------------------------------------
+ ** File system: changing access permissions.
+ ** ----------------------------------------------------------------- */
 
 #ifdef HAVE_CHMOD
 void
@@ -515,7 +637,10 @@ ccsys_fchmodat (cce_location_t * L, ccsys_dirfd_t dirfd, char const * pathname, 
 }
 #endif
 
-/* ------------------------------------------------------------------ */
+
+/** --------------------------------------------------------------------
+ ** File system: testing access permissions.
+ ** ----------------------------------------------------------------- */
 
 #ifdef HAVE_ACCESS
 int
@@ -551,7 +676,41 @@ ccsys_faccessat (cce_location_t * L, ccsys_dirfd_t dirfd, char const * pathname,
 }
 #endif
 
-/* ------------------------------------------------------------------ */
+
+/** --------------------------------------------------------------------
+ ** File system: truncating files.
+ ** ----------------------------------------------------------------- */
+
+#ifdef HAVE_TRUNCATE
+void
+ccsys_truncate (cce_location_t * L, char const * pathname, ccsys_off_t length)
+{
+  int	rv;
+  errno = 0;
+  rv = truncate(pathname, (off_t)(length.data));
+  if (-1 == rv) {
+    cce_raise(L, cce_condition_new_errno_clear());
+  }
+}
+#endif
+
+#ifdef HAVE_FTRUNCATE
+void
+ccsys_ftruncate (cce_location_t * L, ccsys_fd_t filedes, ccsys_off_t length)
+{
+  int	rv;
+  errno = 0;
+  rv = ftruncate(filedes.data, (off_t)(length.data));
+  if (-1 == rv) {
+    cce_raise(L, cce_condition_new_errno_clear());
+  }
+}
+#endif
+
+
+/** --------------------------------------------------------------------
+ ** File system: file times.
+ ** ----------------------------------------------------------------- */
 
 #ifdef HAVE_UTIME
 void
@@ -606,71 +765,6 @@ ccsys_futimes (cce_location_t * L, ccsys_fd_t filedes, const ccsys_timeval_t TVP
 }
 #endif
 
-/* ------------------------------------------------------------------ */
-
-#ifdef HAVE_TRUNCATE
-void
-ccsys_truncate (cce_location_t * L, char const * pathname, ccsys_off_t length)
-{
-  int	rv;
-  errno = 0;
-  rv = truncate(pathname, (off_t)(length.data));
-  if (-1 == rv) {
-    cce_raise(L, cce_condition_new_errno_clear());
-  }
-}
-#endif
-
-#ifdef HAVE_FTRUNCATE
-void
-ccsys_ftruncate (cce_location_t * L, ccsys_fd_t filedes, ccsys_off_t length)
-{
-  int	rv;
-  errno = 0;
-  rv = ftruncate(filedes.data, (off_t)(length.data));
-  if (-1 == rv) {
-    cce_raise(L, cce_condition_new_errno_clear());
-  }
-}
-#endif
-
-
-/** --------------------------------------------------------------------
- ** Temporary files and directories.
- ** ----------------------------------------------------------------- */
-
-#ifdef HAVE_MKSTEMP
-int
-ccsys_mkstemp (cce_location_t * L, char * template)
-{
-  int	rv;
-  errno = 0;
-  /* Remember that this call will mutate TEMPLATE. */
-  rv = mkstemp(template);
-  if (-1 == rv) {
-    cce_raise(L, cce_condition_new_errno_clear());
-  } else {
-    return rv;
-  }
-}
-#endif
-
-#ifdef HAVE_MKDTEMP
-char *
-ccsys_mkdtemp (cce_location_t * L, char * template)
-{
-  char *	rv;
-  errno = 0;
-  /* Remember that this call will mutate TEMPLATE. */
-  rv = mkdtemp(template);
-  if (NULL != rv) {
-    return rv;
-  } else {
-    cce_raise(L, cce_condition_new_errno_clear());
-  }
-}
-#endif
-
 
 /** --------------------------------------------------------------------
  ** Predefined POSIX exception handler: temporary files.
@@ -716,41 +810,6 @@ ccsys_error_handler_tmpfile_init (cce_location_t * L, cce_handler_t * H, char co
  ** Predefined POSIX exception handler: temporary directories.
  ** ----------------------------------------------------------------- */
 
-__attribute__((nonnull(1,2)))
-static void
-cce_handler_tmpdir_function (const cce_condition_t * C CCE_UNUSED, cce_handler_t * H)
-{
-#ifdef HAVE_RMDIR
-  rmdir(H->pathname);
-  free(H->pathname);
-  if (0) { fprintf(stderr, "%s: done\n", __func__); }
-#endif
-}
-
-void
-ccsys_cleanup_handler_tmpdir_init (cce_location_t * L, cce_handler_t * H, char const * pathname)
-{
-  size_t	len = 1+strlen(pathname);
-  char *	ptr = ccsys_malloc(L, len);
-  strncpy(ptr, pathname, len);
-  ptr[len] = '\n';
-  H->function	= cce_handler_tmpdir_function;
-  H->pathname	= ptr;
-  cce_register_cleanup_handler(L, H);
-}
-
-void
-ccsys_error_handler_tmpdir_init (cce_location_t * L, cce_handler_t * H, char const * pathname)
-{
-  size_t	len = 1+strlen(pathname);
-  char *	ptr = ccsys_malloc(L, len);
-  strncpy(ptr, pathname, len);
-  ptr[len] = '\n';
-  H->function	= cce_handler_tmpdir_function;
-  H->pathname	= ptr;
-  cce_register_error_handler(L, H);
-}
-
 
 /** --------------------------------------------------------------------
  ** Predefined POSIX exception handler: directory streams.
@@ -782,37 +841,5 @@ ccsys_error_handler_dirstream_init (cce_location_t * L, cce_handler_t * H, ccsys
   H->pointer	= dirstream;
   cce_register_error_handler(L, H);
 }
-
-
-/** --------------------------------------------------------------------
- ** File systeam: unlinking handler.
- ** ----------------------------------------------------------------- */
-
-#ifdef HAVE_UNLINKAT
-__attribute__((nonnull(1,2)))
-static void
-cce_handler_unlinkat_function (const cce_condition_t * C CCE_UNUSED, cce_handler_t * H)
-{
-  ccsys_at_link_t *	lnk	= H->pointer;
-  unlinkat(lnk->dirfd.data, lnk->pathname, 0);
-  if (0) { fprintf(stderr, "%s: done\n", __func__); }
-}
-
-void
-ccsys_cleanup_handler_unlinkat_init (cce_location_t * L, cce_handler_t * H, ccsys_at_link_t * lnk)
-{
-  H->function	= cce_handler_unlinkat_function;
-  H->pointer	= lnk;
-  cce_register_cleanup_handler(L, H);
-}
-
-void
-ccsys_error_handler_unlinkat_init (cce_location_t * L, cce_handler_t * H, ccsys_at_link_t * lnk)
-{
-  H->function	= cce_handler_unlinkat_function;
-  H->pointer	= lnk;
-  cce_register_error_handler(L, H);
-}
-#endif
 
 /* end of file */
