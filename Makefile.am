@@ -47,6 +47,27 @@ libccsys_la_SOURCES	= \
 	src/ccsys-version.c
 
 #page
+#### libraries
+
+check_LTLIBRARIES	= libcctests.la
+libcctests_la_CPPFLAGS	= $(CCEXCEPTIONS_CFLAGS) \
+	-Dcctests_VERSION_INTERFACE_STRING='"0.0.0"'	\
+	-Dcctests_VERSION_INTERFACE_CURRENT=0		\
+	-Dcctests_VERSION_INTERFACE_REVISION=0		\
+	-Dcctests_VERSION_INTERFACE_AGE=0
+libcctests_la_LDFLAGS	= $(CCEXCEPTIONS_LIBS)
+libcctests_la_SOURCES	= \
+	cctests/cctests.h			\
+	cctests/cctests-internals.h		\
+	cctests/cctests-version.c		\
+	cctests/cctests-conditions.c		\
+	cctests/cctests-exception-handlers.c	\
+	cctests/cctests-system.c		\
+	cctests/cctests-driver.c		\
+	cctests/cctests-assertions.c
+
+
+#page
 #### tests
 
 check_PROGRAMS	= \
@@ -57,8 +78,8 @@ check_PROGRAMS	= \
 
 TESTS			= $(check_PROGRAMS)
 
-ccsys_tests_cppflags		= -I$(srcdir)/src $(CCEXCEPTIONS_FLAGS) $(CCTESTS_FLAGS)
-ccsys_tests_ldadd		= libccsys.la $(CCEXCEPTIONS_LIBS) $(CCTESTS_LIBS)
+ccsys_tests_cppflags		= -I$(srcdir)/src $(CCEXCEPTIONS_FLAGS) -I$(srcdir)/cctests
+ccsys_tests_ldadd		= libccsys.la $(CCEXCEPTIONS_LIBS) libcctests.la
 
 tests_version_CPPFLAGS		= $(ccsys_tests_cppflags)
 tests_version_LDADD		= $(ccsys_tests_ldadd)

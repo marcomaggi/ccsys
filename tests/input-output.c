@@ -17,7 +17,7 @@
  ** Headers.
  ** ----------------------------------------------------------------- */
 
-#include "ccexceptions.h"
+#include <ccexceptions.h>
 #include "cctests.h"
 #include "ccsys.h"
 #include <stdio.h>
