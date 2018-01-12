@@ -128,7 +128,6 @@ included in the section entitled ``@gnu{} Free Documentation License''.
 * fs::                          File system system calls.
 * sockets::                     Socket system calls.
 * process::                     Process system calls.
-* handlers::                    Predefined exception handlers.
 
 Appendices
 
@@ -1421,10 +1420,28 @@ Wrapper for @cfunc{select}.
 @chapter File system system calls
 
 
+@menu
+* fs dirs working::             The working directory.
+* fs dirs reading::             Reading directory entries.
+* fs dirs creating::            Creating and deleting directories.
+* fs links::                    Operating on links.
+* fs removing::                 Removing files.
+* fs renaming::                 Renaming files and directories.
+* fs attributes::               Reading file attributes.
+* fs owner::                    Changing owner.
+* fs access perms::             Changing access permissions.
+* fs access tests::             Testing access permissions.
+* fs trunc::                    Truncating files.
+* fs times::                    File times.
+* fs temp::                     Temporary files and directories.
+@end menu
+
+@c page
+@node fs dirs working
+@section The working directory
+
+
 The following symbols are defined in the header file @file{ccsys.h}.
-
-
-@subsubheading Current working directory
 
 
 @deftypefun void ccsys_getcwd (cce_location_t * @var{L}, char * @var{buffer}, size_t @var{size})
@@ -1441,9 +1458,12 @@ Wrapper for @cfunc{chdir}.
 Wrapper for @cfunc{fchdir}.
 @end deftypefun
 
-@c ------------------------------------------------------------------------
+@c page
+@node fs dirs reading
+@section Reading directory entries
 
-@subsubheading Reading directory entries
+
+The following symbols are defined in the header file @file{ccsys.h}.
 
 
 @deftypefun {ccsys_dir_t *} ccsys_opendir (cce_location_t * @var{L}, char const * @var{pathname})
@@ -1472,7 +1492,69 @@ Wrapper for @cfunc{dirfd}.
 
 @c ------------------------------------------------------------------------
 
-@subsubheading Making and removing directories
+@subsubheading Handler for directory streams
+
+
+We can read the contents of a directory opening a directory stream with @cfunc{ccsys_opendir} and
+closing it with @cfunc{closedir}:
+
+@example
+cce_location_t          L[1];
+cce_cleanup_handler_t   dirstream_H[1];
+char const *            pathname = "./";
+
+if (cce_location(L)) @{
+  cce_run_error_handlers_final(L);
+@} else @{
+  ccsys_dir_t *         dirstream;
+  ccsys_dirent_t *      direntry;
+
+  dirstream = ccsys_opendir(L, pathname);
+  ccsys_handler_dirstream_init(L, dirstream_H, dirstream);
+  for (direntry = ccsys_readdir(L, dirstream);
+       direntry;
+       direntry = ccsys_readdir(L, dirstream)) @{
+    printf("%s\n", direntry->d_name);
+    fflush(stdout);
+  @}
+  cce_run_cleanup_handlers(L);
+@}
+@end example
+
+The handler documented here will ignore errors returned by @cfunc{closedir}, which is generally bad;
+we can use the source code of this handler as template to implement a more complete procedure.
+
+The following symbols are defined in the header file @file{ccsys.h}.
+
+
+@deftypefun void ccsys_cleanup_handler_dirstream_init (cce_location_t * @var{L}, cce_handler_t * @var{H}, ccsys_dir_t * @var{dirstream})
+@deftypefunx void ccsys_error_handler_dirstream_init (cce_location_t * @var{L}, cce_handler_t * @var{H}, ccsys_dir_t * @var{dirstream})
+Register @var{H} as cleanup or error handler in the context of @var{L}.  The handler function will
+finalise the directory stream using the standard function @cfunc{closedir}; errors in
+@cfunc{closedir} are @strong{ignored}.
+@end deftypefun
+
+
+@deftypefn {Preprocessor Macro} void ccsys_handler_dirstream_init (cce_location_t * @var{L}, cce_cleanup_handler_t * @var{H}, ccsys_dir_t * @var{dirstream})
+@deftypefnx {Preprocessor Macro} void ccsys_handler_dirstream_init (cce_location_t * @var{L}, cce_error_handler_t * @var{H}, ccsys_dir_t * @var{dirstream})
+This preprocessor macro uses @code{_Generic} to dispatch the call according to the type of the
+pointer @var{H}; if the type is:
+
+@table @code
+@item cce_cleanup_handler_t
+The macro expands into a call to @cfunc{ccsys_cleanup_handler_dirstream_init}.
+
+@item cce_error_handler_t
+The macro expands into a call to @cfunc{ccsys_error_handler_dirstream_init}.
+@end table
+@end deftypefn
+
+@c page
+@node fs dirs creating
+@section Creating and deleting directories
+
+
+The following symbols are defined in the header file @file{ccsys.h}.
 
 
 @deftypefun void ccsys_mkdir (cce_location_t * @var{L}, char const * @var{pathname}, ccsys_open_mode_t @var{mode})
@@ -1486,7 +1568,68 @@ Wrapper for @cfunc{rmdir}.
 
 @c ------------------------------------------------------------------------
 
-@subsubheading Hard and symbolic links
+@subsubheading Handler for directories removal
+
+
+We can remove @strong{empty} temporary directories with the standard function @cfunc{rmdir} as
+follows:
+
+@example
+cce_location_t          L[1];
+cce_cleanup_handler_t   dir_H[1];
+
+if (cce_location(L)) @{
+  cce_run_error_handlers_final(L);
+@} else @{
+  ccsys_open_mode_t     mode;
+
+  mode.data = CCSYS_S_IRWXU;
+  ccsys_mkdir(L, "name.d", mode);
+  ccsys_handler_rmdir_init(L, dir_H, "name.d");
+  cce_run_cleanup_handlers(L);
+@}
+@end example
+
+The handler documented here will ignore errors returned by @cfunc{rmdir}, which is generally bad; we
+can use the source code of this handler as template to implement a more complete procedure.
+Remember that a good way to create temporary files is to use the function @cfunc{mkdtemp}
+implemented by the @gnu{} C Library.
+
+
+@deftypefun void ccsys_cleanup_handler_rmdir_init (cce_location_t * @var{L}, cce_handler_t * @var{H}, char const * @var{pathname})
+@deftypefunx void ccsys_error_handler_rmdir_init (cce_location_t * @var{L}, cce_handler_t * @var{H}, char const * @var{pathname})
+Register @var{H} as cleanup or error handler in the context of @var{L}.  The handler function will
+remove the directory whose pathname is @var{pathname} using the standard function @cfunc{rmdir};
+errors in @cfunc{rmdir} are @strong{ignored}.  The directory is removed only if it is empty.
+
+The string referenced by @var{pathname} is duplicated and stored in the structure referenced by
+@var{H}.
+
+If an error occurs while configuring the handler: an exception is raised by performing a non--local
+exit to @var{L}.
+@end deftypefun
+
+
+@deftypefn {Preprocessor Macro} void ccsys_handler_rmdir_init (cce_location_t * @var{L}, cce_cleanup_handler_t * @var{H}, char const * @var{pathname})
+@deftypefnx {Preprocessor Macro} void ccsys_handler_rmdir_init (cce_location_t * @var{L}, cce_error_handler_t * @var{H}, char const * @var{pathname})
+This preprocessor macro uses @code{_Generic} to dispatch the call according to the type of the
+pointer @var{H}; if the type is:
+
+@table @code
+@item cce_cleanup_handler_t
+The macro expands into a call to @cfunc{ccsys_cleanup_handler_rmdir_init}.
+
+@item cce_error_handler_t
+The macro expands into a call to @cfunc{ccsys_error_handler_rmdir_init}.
+@end table
+@end deftypefn
+
+@c page
+@node fs links
+@section Operating on links
+
+
+The following symbols are defined in the header file @file{ccsys.h}.
 
 
 @deftypefun void ccsys_link (cce_location_t * @var{L}, char const * @var{oldname}, char const * @var{newname})
@@ -1529,30 +1672,6 @@ Wrapper for @cfunc{realpath}.  Notice that this function never returns @cnull{}.
 
 @c ------------------------------------------------------------------------
 
-@subsubheading Temporary files and directories
-
-
-@deftypefun int ccsys_mkstemp (cce_location_t * @var{L}, char * @var{template})
-Wrapper for @cfunc{mkstemp}.  Remember that this call will mutate @var{template}.
-@end deftypefun
-
-
-@deftypefun {char *} ccsys_mkdtemp (cce_location_t * @var{L}, char * @var{template})
-Wrapper for @cfunc{mkdtemp}.  This function never returns @cnull{}.  Remember that this call will
-mutate @var{template}.
-
-@quotation
-@strong{NOTE} This function is implemented by the @gnu{} C Library.  The feature is available only
-if the package is configured with @option{--enable-glibc}; otherwise the function will raise an
-exception with condition object of type @objtype{ccsys_unimplemented_C_t}.
-@end quotation
-@end deftypefun
-
-@c ------------------------------------------------------------------------
-
-@subsubheading Removing files
-
-
 @deftypefun void ccsys_unlink (cce_location_t * @var{L}, char const * @var{filename})
 Wrapper for @cfunc{unlink}.
 @end deftypefun
@@ -1562,6 +1681,13 @@ Wrapper for @cfunc{unlink}.
 Wrapper for @cfunc{unlinkat}.
 @end deftypefun
 
+@c page
+@node fs removing
+@section Removing files
+
+
+The following symbols are defined in the header file @file{ccsys.h}.
+
 
 @deftypefun void ccsys_remove (cce_location_t * @var{L}, char const * @var{pathname})
 Wrapper for @cfunc{remove}.  This function removes both files and empty directories.
@@ -1569,16 +1695,86 @@ Wrapper for @cfunc{remove}.  This function removes both files and empty director
 
 @c ------------------------------------------------------------------------
 
-@subsubheading Renaming files
+@subsubheading Handler for files removal
+
+
+We can remove temporary files with the standard function @cfunc{remove} as follows:
+
+@example
+cce_location_t          L[1];
+cce_cleanup_handler_t   fd_H[1];
+cce_cleanup_handler_t   file_H[1];
+
+if (cce_location(L)) @{
+  cce_run_error_handlers_final(L);
+@} else @{
+  ccsys_open_flags_t    flags;
+  ccsys_open_mode_t     mode;
+  ccsys_fd_t            fd;
+
+  flags.data    = CCSYS_O_CREAT;
+  mode.data     = CCSYS_S_IRUSR | CCSYS_S_IWUSR;
+  fd            = ccsys_open(L, "name.ext", flags, mode);
+  ccsys_cleanup_handler_filedes_init(L, fd_H, fd);
+  ccsys_cleanup_handler_remove_init(L, file_H, "name.ext");
+  cce_run_cleanup_handlers(L);
+@}
+@end example
+
+The handler documented here will ignore errors returned by @cfunc{remove}, which is generally bad;
+we can use the source code of this handler as template to implement a more complete procedure.
+Remember that a good way to create temporary files is to use the @posix{} standard function
+@cfunc{mkstemp}.
+
+The following symbols are defined in the header file @file{ccsys.h}.
+
+
+@deftypefun void ccsys_cleanup_handler_remove_init (cce_location_t * @var{L}, cce_handler_t * @var{H}, char const * @var{pathname})
+@deftypefunx void ccsys_error_handler_remove_init (cce_location_t * @var{L}, cce_handler_t * @var{H}, char const * @var{pathname})
+Register @var{H} as cleanup or error handler in the context of @var{L}.  The handler function will
+remove the file whose pathname is @var{pathname} using the standard function @cfunc{remove}; errors
+in @cfunc{remove} are @strong{ignored}.
+
+The string referenced by @var{pathname} is duplicated and stored in the structure referenced by
+@var{H}.
+
+If an error occurs while configuring the handler: an exception is raised by performing a non--local
+exit to @var{L}.
+@end deftypefun
+
+
+@deftypefn {Preprocessor Macro} void ccsys_handler_remove_init (cce_location_t * @var{L}, cce_cleanup_handler_t * @var{H}, char const * @var{pathname})
+@deftypefnx {Preprocessor Macro} void ccsys_handler_remove_init (cce_location_t * @var{L}, cce_error_handler_t * @var{H}, char const * @var{pathname})
+This preprocessor macro uses @code{_Generic} to dispatch the call according to the type of the
+pointer @var{H}; if the type is:
+
+@table @code
+@item cce_cleanup_handler_t
+The macro expands into a call to @cfunc{ccsys_cleanup_handler_remove_init}.
+
+@item cce_error_handler_t
+The macro expands into a call to @cfunc{ccsys_error_handler_remove_init}.
+@end table
+@end deftypefn
+
+@c page
+@node fs renaming
+@section Renaming files and directories
+
+
+The following symbols are defined in the header file @file{ccsys.h}.
 
 
 @deftypefun void ccsys_rename (cce_location_t * @var{L}, char const * @var{oldname}, char const * @var{newname})
 Wrapper for @cfunc{rename}.
 @end deftypefun
 
-@c ------------------------------------------------------------------------
+@c page
+@node fs attributes
+@section Reading file attributes
 
-@subsubheading Inspecting the file system
+
+The following symbols are defined in the header file @file{ccsys.h}.
 
 
 @deftypefun void ccsys_stat (cce_location_t * @var{L}, char const * @var{pathname}, struct stat * @var{buf})
@@ -1595,9 +1791,12 @@ Wrapper for @cfunc{fstat}.
 Wrapper for @cfunc{lstat}.
 @end deftypefun
 
-@c ------------------------------------------------------------------------
+@c page
+@node fs owner
+@section Changing owner
 
-@subsubheading File system attributes
+
+The following symbols are defined in the header file @file{ccsys.h}.
 
 
 @deftypefun void ccsys_chown (cce_location_t * @var{L}, char const * @var{pathname}, uid_t @var{owner}, gid_t @var{group})
@@ -1619,6 +1818,13 @@ Wrapper for @cfunc{lchown}.
 Wrapper for @cfunc{fchownat}.
 @end deftypefun
 
+@c page
+@node fs access perms
+@section Changing access permissions
+
+
+The following symbols are defined in the header file @file{ccsys.h}.
+
 
 @deftypefun void ccsys_chmod (cce_location_t * @var{L}, char const * @var{pathname}, ccsys_open_mode_t @var{mode})
 Wrapper for @cfunc{chmod}.
@@ -1634,6 +1840,13 @@ Wrapper for @cfunc{fchmod}.
 Wrapper for @cfunc{fchmodat}.
 @end deftypefun
 
+@c page
+@node fs access tests
+@section Testing access permissions
+
+
+The following symbols are defined in the header file @file{ccsys.h}.
+
 
 @deftypefun int ccsys_access (cce_location_t * @var{L}, char const * @var{pathname}, int @var{how})
 Wrapper for @cfunc{access}.  The return value is @samp{0} if access is denied; the return value is
@@ -1645,9 +1858,29 @@ Wrapper for @cfunc{access}.  The return value is @samp{0} if access is denied; t
 Wrapper for @cfunc{faccessat}.
 @end deftypefun
 
-@c ------------------------------------------------------------------------
+@c page
+@node fs trunc
+@section Truncating files
 
-@subsubheading File times
+
+The following symbols are defined in the header file @file{ccsys.h}.
+
+
+@deftypefun void ccsys_truncate (cce_location_t * @var{L}, char const * @var{pathname}, off_t @var{length})
+Wrapper for @cfunc{truncate}.
+@end deftypefun
+
+
+@deftypefun void ccsys_ftruncate (cce_location_t * @var{L}, int @var{filedes}, off_t @var{length})
+Wrapper for @cfunc{ftruncate}.
+@end deftypefun
+
+@c page
+@node fs times
+@section File times
+
+
+The following symbols are defined in the header file @file{ccsys.h}.
 
 
 @deftypefun void ccsys_utime (cce_location_t * @var{L}, char const * @var{pathname}, const struct utimbuf * @var{times})
@@ -1669,20 +1902,29 @@ Wrapper for @cfunc{lutimes}.
 Wrapper for @cfunc{futimes}.
 @end deftypefun
 
-@c ------------------------------------------------------------------------
+@c page
+@node fs temp
+@section Temporary files and directories
 
-@subsubheading Truncating files
+
+The following symbols are defined in the header file @file{ccsys.h}.
 
 
-@deftypefun void ccsys_truncate (cce_location_t * @var{L}, char const * @var{pathname}, off_t @var{length})
-Wrapper for @cfunc{truncate}.
+@deftypefun int ccsys_mkstemp (cce_location_t * @var{L}, char * @var{template})
+Wrapper for @cfunc{mkstemp}.  Remember that this call will mutate @var{template}.
 @end deftypefun
 
 
-@deftypefun void ccsys_ftruncate (cce_location_t * @var{L}, int @var{filedes}, off_t @var{length})
-Wrapper for @cfunc{ftruncate}.
-@end deftypefun
+@deftypefun {char *} ccsys_mkdtemp (cce_location_t * @var{L}, char * @var{template})
+Wrapper for @cfunc{mkdtemp}.  This function never returns @cnull{}.  Remember that this call will
+mutate @var{template}.
 
+@quotation
+@strong{NOTE} This function is implemented by the @gnu{} C Library.  The feature is available only
+if the package is configured with @option{--enable-glibc}; otherwise the function will raise an
+exception with condition object of type @objtype{ccsys_unimplemented_C_t}.
+@end quotation
+@end deftypefun
 
 @c page
 @node sockets
@@ -1812,193 +2054,6 @@ Wrapper for @cfunc{execvp}.
 @deftypefun void ccsys_waitpid (cce_location_t * @var{L}, pid_t @var{pid}, int * @var{wstatus}, int @var{options})
 Wrapper for @cfunc{waitpid}.
 @end deftypefun
-
-@c page
-@node handlers
-@chapter Predefined exception handlers
-
-
-@menu
-* handlers remove::             Handler for files removal.
-* handlers rmdir::              Handler for directories removal.
-* handlers dirstream::          Handler for directory streams.
-@end menu
-
-@c page
-@node handlers remove
-@section Handler for files removal
-
-
-We can remove temporary files with the standard function @cfunc{remove} as follows:
-
-@example
-cce_location_t  L[1];
-cce_handler_t   H[1];
-
-if (cce_location(L)) @{
-  cce_run_error_handlers_final(L);
-@} else @{
-  int   fd = ccsys_open(L, "name.ext", O_CREAT|O_EXCL,
-                          S_IRUSR|S_IWUSR);
-  ccsys_cleanup_handler_filedes_init(L, H, fd);
-  ccsys_cleanup_handler_remove_init(L, H, "name.ext");
-  cce_run_cleanup_handlers(L);
-@}
-@end example
-
-The handler documented here will ignore errors returned by @cfunc{remove}, which is generally bad;
-we can use the source code of this handler as template to implement a more complete procedure.
-Remember that a good way to create temporary files is to use the @posix{} standard function
-@cfunc{mkstemp}.
-
-The following symbols are defined in the header file @file{ccsys.h}.
-
-
-@deftypefun void ccsys_cleanup_handler_remove_init (cce_location_t * @var{L}, cce_handler_t * @var{H}, char const * @var{pathname})
-@deftypefunx void ccsys_error_handler_remove_init (cce_location_t * @var{L}, cce_handler_t * @var{H}, char const * @var{pathname})
-Register @var{H} as cleanup or error handler in the context of @var{L}.  The handler function will
-remove the file whose pathname is @var{pathname} using the standard function @cfunc{remove}; errors
-in @cfunc{remove} are @strong{ignored}.
-
-The string referenced by @var{pathname} is duplicated and stored in the structure referenced by
-@var{H}.
-
-If an error occurs while configuring the handler: an exception is raised by performing a non--local
-exit to @var{L}.
-@end deftypefun
-
-
-@deftypefn {Preprocessor Macro} void ccsys_handler_remove_init (cce_location_t * @var{L}, cce_cleanup_handler_t * @var{H}, char const * @var{pathname})
-@deftypefnx {Preprocessor Macro} void ccsys_handler_remove_init (cce_location_t * @var{L}, cce_error_handler_t * @var{H}, char const * @var{pathname})
-This preprocessor macro uses @code{_Generic} to dispatch the call according to the type of the
-pointer @var{H}; if the type is:
-
-@table @code
-@item cce_cleanup_handler_t
-The macro expands into a call to @cfunc{ccsys_cleanup_handler_remove_init}.
-
-@item cce_error_handler_t
-The macro expands into a call to @cfunc{ccsys_error_handler_remove_init}.
-@end table
-@end deftypefn
-
-@c page
-@node handlers rmdir
-@section Handler for directories removal
-
-
-We can remove @strong{empty} temporary directories with the standard function @cfunc{rmdir} as
-follows:
-
-@example
-cce_location_t  L[1];
-cce_handler_t   dir_H[1];
-
-if (cce_location(L)) @{
-  cce_run_error_handlers_final(L);
-@} else @{
-  ccsys_open_mode_t     mode  = @{ .data = CCSYS_S_IRWXU @};
-
-  ccsys_mkdir(L, "name.d", mode);
-  ccsys_cleanup_handler_rmdir_init(L, dir_H, "name.d");
-  cce_run_cleanup_handlers(L);
-@}
-@end example
-
-The handler documented here will ignore errors returned by @cfunc{rmdir}, which is generally bad; we
-can use the source code of this handler as template to implement a more complete procedure.
-Remember that a good way to create temporary files is to use the function @cfunc{mkdtemp}
-implemented by the @gnu{} C Library.
-
-The following symbols are defined in the header file @file{ccsys.h}.
-
-
-@deftypefun void ccsys_cleanup_handler_rmdir_init (cce_location_t * @var{L}, cce_handler_t * @var{H}, char const * @var{pathname})
-@deftypefunx void ccsys_error_handler_rmdir_init (cce_location_t * @var{L}, cce_handler_t * @var{H}, char const * @var{pathname})
-Register @var{H} as cleanup or error handler in the context of @var{L}.  The handler function will
-remove the directory whose pathname is @var{pathname} using the standard function @cfunc{rmdir};
-errors in @cfunc{rmdir} are @strong{ignored}.  The directory is removed only if it is empty.
-
-The string referenced by @var{pathname} is duplicated and stored in the structure referenced by
-@var{H}.
-
-If an error occurs while configuring the handler: an exception is raised by performing a non--local
-exit to @var{L}.
-@end deftypefun
-
-
-@deftypefn {Preprocessor Macro} void ccsys_handler_rmdir_init (cce_location_t * @var{L}, cce_cleanup_handler_t * @var{H}, char const * @var{pathname})
-@deftypefnx {Preprocessor Macro} void ccsys_handler_rmdir_init (cce_location_t * @var{L}, cce_error_handler_t * @var{H}, char const * @var{pathname})
-This preprocessor macro uses @code{_Generic} to dispatch the call according to the type of the
-pointer @var{H}; if the type is:
-
-@table @code
-@item cce_cleanup_handler_t
-The macro expands into a call to @cfunc{ccsys_cleanup_handler_rmdir_init}.
-
-@item cce_error_handler_t
-The macro expands into a call to @cfunc{ccsys_error_handler_rmdir_init}.
-@end table
-@end deftypefn
-
-@c page
-@node handlers dirstream
-@section Handler for directory streams
-
-
-We can read the contents of a directory opening a directory stream with @cfunc{ccsys_opendir} and
-closing it with @cfunc{closedir}:
-
-@example
-cce_location_t  L[1];
-cce_handler_t   dirstream_H[1];
-char const *    pathname = "./";
-
-if (cce_location(L)) @{
-  cce_run_error_handlers_final(L);
-@} else @{
-  ccsys_dir_t *         dirstream;
-  ccsys_dirent_t *      direntry;
-
-  dirstream = ccsys_opendir(L, pathname);
-  ccsys_cleanup_handler_dirstream_init(L, dirstream_H, dirstream);
-  for (direntry = ccsys_readdir(L, dirstream);
-       direntry;
-       direntry = ccsys_readdir(L, dirstream)) @{
-    printf("%s\n", direntry->d_name);
-    fflush(stdout);
-  @}
-  cce_run_cleanup_handlers(L);
-@}
-@end example
-
-The handler documented here will ignore errors returned by @cfunc{closedir}, which is generally bad;
-we can use the source code of this handler as template to implement a more complete procedure.
-
-The following symbols are defined in the header file @file{ccsys.h}.
-
-
-@deftypefun void ccsys_cleanup_handler_dirstream_init (cce_location_t * @var{L}, cce_handler_t * @var{H}, ccsys_dir_t * @var{dirstream})
-@deftypefunx void ccsys_error_handler_dirstream_init (cce_location_t * @var{L}, cce_handler_t * @var{H}, ccsys_dir_t * @var{dirstream})
-Register @var{H} as cleanup or error handler in the context of @var{L}.  The handler function will
-finalise the directory stream using the standard function @cfunc{closedir}; errors in
-@cfunc{closedir} are @strong{ignored}.
-@end deftypefun
-
-
-@deftypefn {Preprocessor Macro} void ccsys_handler_dirstream_init (cce_location_t * @var{L}, cce_cleanup_handler_t * @var{H}, ccsys_dir_t * @var{dirstream})
-@deftypefnx {Preprocessor Macro} void ccsys_handler_dirstream_init (cce_location_t * @var{L}, cce_error_handler_t * @var{H}, ccsys_dir_t * @var{dirstream})
-This preprocessor macro uses @code{_Generic} to dispatch the call according to the type of the
-pointer @var{H}; if the type is:
-
-@table @code
-@item cce_cleanup_handler_t
-The macro expands into a call to @cfunc{ccsys_cleanup_handler_dirstream_init}.
-
-@item cce_error_handler_t
-The macro expands into a call to @cfunc{ccsys_error_handler_dirstream_init}.
-@end table
-@end deftypefn
 
 @c page
 @c ------------------------------------------------------------
