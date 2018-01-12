@@ -783,4 +783,36 @@ ccsys_error_handler_dirstream_init (cce_location_t * L, cce_handler_t * H, ccsys
   cce_register_error_handler(L, H);
 }
 
+
+/** --------------------------------------------------------------------
+ ** File systeam: unlinking handler.
+ ** ----------------------------------------------------------------- */
+
+#ifdef HAVE_UNLINKAT
+__attribute__((nonnull(1,2)))
+static void
+cce_handler_unlinkat_function (const cce_condition_t * C CCE_UNUSED, cce_handler_t * H)
+{
+  ccsys_at_link_t *	lnk	= H->pointer;
+  unlinkat(lnk->dirfd.data, lnk->pathname, 0);
+  if (0) { fprintf(stderr, "%s: done\n", __func__); }
+}
+
+void
+ccsys_cleanup_handler_unlinkat_init (cce_location_t * L, cce_handler_t * H, ccsys_at_link_t * lnk)
+{
+  H->function	= cce_handler_unlinkat_function;
+  H->pointer	= lnk;
+  cce_register_cleanup_handler(L, H);
+}
+
+void
+ccsys_error_handler_unlinkat_init (cce_location_t * L, cce_handler_t * H, ccsys_at_link_t * lnk)
+{
+  H->function	= cce_handler_unlinkat_function;
+  H->pointer	= lnk;
+  cce_register_error_handler(L, H);
+}
+#endif
+
 /* end of file */

@@ -33,8 +33,8 @@ void
 test_1_1 (cce_destination_t upper_L CCSYS_UNUSED)
 /* Open a file with "ccsys_open()". */
 {
-  cce_location_t  L[1];
-  cce_handler_t   H[1];
+  cce_location_t	  L[1];
+  cce_cleanup_handler_t   H[1];
 
   if (cce_location(L)) {
     cce_run_error_handlers_raise(L, upper_L);
@@ -44,7 +44,7 @@ test_1_1 (cce_destination_t upper_L CCSYS_UNUSED)
     ccsys_open_mode_t	mode  = { .data = CCSYS_S_IRUSR | CCSYS_S_IWUSR };
     ccsys_fd_t		fd;
     fd = ccsys_open(L, filename, flags, mode);
-    ccsys_cleanup_handler_filedes_init(L, H, fd);
+    ccsys_handler_filedes_init(L, H, fd);
     cctests_assert(0 != fd.data);
     ccsys_remove(L, filename);
     cce_run_cleanup_handlers(L);
@@ -57,10 +57,10 @@ void
 test_2_1 (cce_destination_t upper_L)
 /* Open a file with "ccsys_openat()". */
 {
-  cce_location_t	L[1];
-  cce_handler_t		tmpdir_H[1];
-  cce_handler_t		dirstream_H[1];
-  cce_handler_t		file_H[1];
+  cce_location_t		L[1];
+  cce_cleanup_handler_t		tmpdir_H[1];
+  cce_cleanup_handler_t		dirstream_H[1];
+  cce_cleanup_handler_t		file_H[1];
 
   if (cce_location(L)) {
     fprintf(stderr, "%s: %s\n", __func__, cce_condition_static_message(cce_condition(L)));
@@ -74,7 +74,7 @@ test_2_1 (cce_destination_t upper_L)
     {
       ccsys_open_mode_t	mode  = { .data = CCSYS_S_IRWXU };
       ccsys_mkdir(L, dirname, mode);
-      ccsys_cleanup_handler_tmpdir_init(L, tmpdir_H, dirname);
+      ccsys_handler_tmpdir_init(L, tmpdir_H, dirname);
     }
 
     /* Open  the  directory.   The  descriptor in  "dirfd"  is  released
@@ -83,7 +83,7 @@ test_2_1 (cce_destination_t upper_L)
       ccsys_dir_t *	dirstream;
 
       dirstream = ccsys_opendir(L, dirname);
-      ccsys_cleanup_handler_dirstream_init(L, dirstream_H, dirstream);
+      ccsys_handler_dirstream_init(L, dirstream_H, dirstream);
       dirfd = ccsys_dirfd(L, dirstream);
     }
 
@@ -94,7 +94,7 @@ test_2_1 (cce_destination_t upper_L)
       ccsys_fd_t            fd;
 
       fd = ccsys_openat(L, dirfd, filename, flags, mode);
-      ccsys_cleanup_handler_filedes_init(L, file_H, fd);
+      ccsys_handler_filedes_init(L, file_H, fd);
       cctests_assert(0 != fd.data);
     }
 
