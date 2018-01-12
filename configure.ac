@@ -91,9 +91,14 @@ dnl page
 
 AC_LANG([C])
 AC_PROG_CC_C99
-
 AX_CHECK_COMPILE_FLAG([-std=c11],[],[AC_MSG_ERROR([*** Compiler does not support -std=c11])],[-pedantic])
-AX_CFLAGS="-std=c11"
+
+AS_VAR_SET(AX_CFLAGS,[-std=c11])
+AS_VAR_APPEND(AX_CFLAGS,[" -Wall -Wextra"])
+AX_GCC_VERSION
+AS_IF([test "x$GCC" = "xyes"],
+  [AS_CASE("$GCC_VERSION",
+     [7.*],[AS_VAR_APPEND(AX_CFLAGS,[" -pedantic -Wduplicated-cond -Wduplicated-branches -Wlogical-op -Wrestrict -Wnull-dereference -Wjump-misses-init -Wdouble-promotion -Wshadow -Wformat=2 -Wmisleading-indentation"])])])
 AC_SUBST(AX_CFLAGS)
 
 AM_PROG_AS
