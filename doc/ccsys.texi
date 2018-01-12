@@ -397,7 +397,7 @@ Type of offsets.  Is is a signed integer.
 
 @deftp {Semantic Type} ccsys_open_flags_t
 Exact signed integer representing file open flags.  It is meant to be a bitwise combination of the
-enumerated constants of type @objtype{ccsys_file_open_flags_t}.
+enumerated constants of type @objtype{ccsys_open_flags_enum_t}.
 @end deftp
 
 
@@ -489,7 +489,7 @@ The following symbols are defined in the header file @file{ccsys.h}.
 @EnumeratedConstant{CCSYS_O_SYNC}
 @EnumeratedConstant{CCSYS_O_TMPFILE}
 @EnumeratedConstant{CCSYS_O_TRUNC}
-@deftp {Enum Typedef} ccsys_file_open_flags_t
+@deftp {Enum Typedef} ccsys_open_flags_enum_t
 Type of file open flag constants.  These constants are meant to be combined bitwise, for example to
 produce a value for the argument @var{flags} for @cfunc{ccsys_open}.  It defines the following
 constants:
@@ -522,7 +522,7 @@ CCSYS_O_SYNC      CCSYS_O_TMPFILE   CCSYS_O_TRUNC
 @EnumeratedConstant{CCSYS_S_ISUID}
 @EnumeratedConstant{CCSYS_S_ISGID}
 @EnumeratedConstant{CCSYS_S_ISVTX}
-@deftp {Enum Typedef} ccsys_file_open_mode_t
+@deftp {Enum Typedef} ccsys_open_mode_enum_t
 Type of file open mode constants.  These constants are meant to be combined bitwise, for example to
 produce a value for the argument @var{mode} for @cfunc{ccsys_open}.  It defines the following
 constants:
@@ -554,7 +554,7 @@ CCSYS_AT_REMOVEDIR
 @EnumeratedConstant{CCSYS_SOCK_RAW}
 @EnumeratedConstant{CCSYS_SOCK_RDM}
 @EnumeratedConstant{CCSYS_SOCK_PACKET}
-@deftp {Enum Typedef} ccsys_socket_namespace_flags_t
+@deftp {Enum Typedef} ccsys_socket_namespace_enum_t
 Type of socket namespace selection constants.  These constants are meant to be used, for example, as
 value for the argument @var{domain} of @cfunc{ccsys_socket}.  It defines the following constants:
 
@@ -581,7 +581,7 @@ CCSYS_SOCK_STREAM
 @EnumeratedConstant{CCSYS_AF_APPLETALK}
 @EnumeratedConstant{CCSYS_AF_PACKET}
 @EnumeratedConstant{CCSYS_AF_ALG}
-@deftp {Enum Typedef} ccsys_socket_style_flags_t
+@deftp {Enum Typedef} ccsys_socket_style_enum_t
 Type of socket style selection constants.  These constants are meant to be used, for example, as
 value for the argument @var{type} of @cfunc{ccsys_socket}.  It defines the following constants:
 
@@ -595,7 +595,7 @@ CCSYS_AF_APPLETALK  CCSYS_AF_PACKET  CCSYS_AF_ALG
 
 
 @EnumeratedConstant{CCSYS_SOCK_PROTOCOL_IP}
-@deftp {Enum Typedef} ccsys_socket_protocol_flags_t
+@deftp {Enum Typedef} ccsys_socket_protocol_enum_t
 Type of socket protocol selection constants.  These constants are meant to be used, for example, as
 value for the argument @var{protocol} of @cfunc{ccsys_socket}.  It defines the following constants:
 
@@ -608,7 +608,7 @@ CCSYS_SOCK_PROTOCOL_IP
 @EnumeratedConstant{CCSYS_MCL_CURRENT}
 @EnumeratedConstant{CCSYS_MCL_FUTURE}
 @EnumeratedConstant{CCSYS_MCL_ONFAULT}
-@deftp {Enum Typedef} ccsys_memory_locking_flags_t
+@deftp {Enum Typedef} ccsys_memory_locking_enum_t
 Enumeration of constants for the argument @var{flags} in @cfunc{ccsys_mlockall}.  It defines the
 following constants:
 
@@ -620,7 +620,7 @@ CCSYS_MCL_ONFAULT
 @end deftp
 
 
-@deftp {Enum Typedef} ccsys_memory_mapping_protection_t
+@deftp {Enum Typedef} ccsys_memory_protection_enum_t
 @EnumeratedConstant{CCSYS_PROT_EXEC}
 @EnumeratedConstant{CCSYS_PROT_READ}
 @EnumeratedConstant{CCSYS_PROT_WRITE}
@@ -637,7 +637,7 @@ CCSYS_PROT_NONE
 @end deftp
 
 
-@deftp {Enum Typedef} ccsys_memory_mapping_flags_t
+@deftp {Enum Typedef} ccsys_memory_mapping_enum_t
 @EnumeratedConstant{CCSYS_MAP_SHARED}
 @EnumeratedConstant{CCSYS_MAP_PRIVATE}
 @EnumeratedConstant{CCSYS_MAP_32BIT}
@@ -677,7 +677,7 @@ CCSYS_MAP_COPY          CCSYS_MAP_LOCAL
 @end deftp
 
 
-@deftp {Enum Typedef} ccsys_memory_sync_flags_t
+@deftp {Enum Typedef} ccsys_memory_sync_enum_t
 @EnumeratedConstant{CCSYS_MS_ASYNC}
 @EnumeratedConstant{CCSYS_MS_SYNC}
 @EnumeratedConstant{CCSYS_MS_INVALIDATE}
@@ -692,7 +692,7 @@ CCSYS_MS_INVALIDATE
 @end deftp
 
 
-@deftp {Enum Typedef} ccsys_memory_remap_flags_t
+@deftp {Enum Typedef} ccsys_memory_remap_enum_t
 @EnumeratedConstant{CCSYS_MREMAP_MAYMOVE}
 @EnumeratedConstant{CCSYS_MREMAP_FIXED}
 Enumeration of constants for the argument @var{flags} in @cfunc{ccsys_mremap}.  It defines the
@@ -705,7 +705,7 @@ CCSYS_MREMAP_FIXED
 @end deftp
 
 
-@deftp {Enum Typedef} ccsys_memory_advice_flags_t
+@deftp {Enum Typedef} ccsys_memory_advice_enum_t
 @EnumeratedConstant{CCSYS_MADV_NORMAL}
 @EnumeratedConstant{CCSYS_MADV_RANDOM}
 @EnumeratedConstant{CCSYS_MADV_SEQUENTIAL}
@@ -969,7 +969,7 @@ Wrapper for @cfunc{munlock}.
 
 @deftypefun void ccsys_mlockall (cce_location_t * @var{L}, ccsys_mlockall_flags_t @var{flags})
 Wrapper for @cfunc{mlockall}.  The argument @var{flags} is meant to be a bitwise combination of the
-constants of type @objtype{ccsys_memory_locking_flags_t}.
+constants of type @objtype{ccsys_memory_locking_enum_t}.
 @end deftypefun
 
 
@@ -989,10 +989,10 @@ The following symbols are defined in the header file @file{ccsys.h}.
 Wrapper for @cfunc{mmap}.
 
 The argument @var{prot} is meant to be a bitwise combination of the constants of type
-@objtype{ccsys_memory_mapping_protection_t}.
+@objtype{ccsys_memory_protection_enum_t}.
 
 The argument @var{flags} is meant to be a bitwise combination of the constants of type
-@objtype{ccsys_memory_mapping_flags_t}.
+@objtype{ccsys_memory_mapping_enum_t}.
 @end deftypefun
 
 
@@ -1005,7 +1005,7 @@ Wrapper for @cfunc{munmap}.
 Wrapper for @cfunc{msync}.
 
 The argument @var{flags} is meant to be a bitwise combination of the constants of type
-@objtype{ccsys_memory_sync_flags_t}.
+@objtype{ccsys_memory_sync_enum_t}.
 @end deftypefun
 
 
@@ -1013,7 +1013,7 @@ The argument @var{flags} is meant to be a bitwise combination of the constants o
 Wrapper for @cfunc{mprotect}.
 
 The argument @var{prot} is meant to be a bitwise combination of the constants of type
-@objtype{ccsys_memory_mapping_protection_t}.
+@objtype{ccsys_memory_protection_enum_t}.
 @end deftypefun
 
 
@@ -1021,7 +1021,7 @@ The argument @var{prot} is meant to be a bitwise combination of the constants of
 Wrapper for @cfunc{mremap}.
 
 The argument @var{flags} is meant to be a bitwise combination of the constants of type
-@objtype{ccsys_memory_remap_flags_t}.
+@objtype{ccsys_memory_remap_enum_t}.
 
 @quotation
 @strong{NOTE}  This function is specific to Linux platforms.
@@ -1033,7 +1033,7 @@ The argument @var{flags} is meant to be a bitwise combination of the constants o
 Wrapper for @cfunc{madvise}.
 
 The argument @var{advice} is meant to be a bitwise combination of the constants of type
-@objtype{ccsys_memory_advice_flags_t}.
+@objtype{ccsys_memory_advice_enum_t}.
 
 @quotation
 @strong{NOTE}  This function is implemented by the @gnu{} C Library.
@@ -1088,10 +1088,10 @@ The following symbols are defined in the header file @file{ccsys.h}.
 Wrapper for @cfunc{open}.  @manpage{open, Open and possibly create a file}.
 
 The argument @var{flags} is meant to be a bitwise combination of the constants of type
-@objtype{ccsys_file_open_flags_t}.
+@objtype{ccsys_open_flags_enum_t}.
 
 The argument @var{mode} is meant to be a bitwise combination of the constants of type
-@objtype{ccsys_file_open_mode_t}.
+@objtype{ccsys_open_mode_enum_t}.
 @end deftypefun
 
 
@@ -1099,10 +1099,10 @@ The argument @var{mode} is meant to be a bitwise combination of the constants of
 Wrapper for @cfunc{openat}.  @manpage{openat, Open and possibly create a file}.
 
 The argument @var{flags} is meant to be a bitwise combination of the constants of type
-@objtype{ccsys_file_open_flags_t}.
+@objtype{ccsys_open_flags_enum_t}.
 
 The argument @var{mode} is meant to be a bitwise combination of the constants of type
-@objtype{ccsys_file_open_mode_t}.
+@objtype{ccsys_open_mode_enum_t}.
 @end deftypefun
 
 
@@ -1236,7 +1236,7 @@ The following symbols are defined in the header file @file{ccsys.h}.
 Wrapper for @cfunc{mkfifo}.
 
 The argument @var{mode} is meant to be a bitwise combination of the constants of type
-@objtype{ccsys_file_open_mode_t}.
+@objtype{ccsys_open_mode_enum_t}.
 @end deftypefun
 
 
@@ -1244,7 +1244,7 @@ The argument @var{mode} is meant to be a bitwise combination of the constants of
 Wrapper for @cfunc{mkfifoat}.
 
 The argument @var{mode} is meant to be a bitwise combination of the constants of type
-@objtype{ccsys_file_open_mode_t}.
+@objtype{ccsys_open_mode_enum_t}.
 @end deftypefun
 
 @c page
