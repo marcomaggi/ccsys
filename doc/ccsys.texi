@@ -1123,7 +1123,9 @@ if (cce_location(L)) @{
 
   /* Create the directory. */
   @{
-    ccsys_open_mode_t mode  = @{ .data = CCSYS_S_IRWXU @};
+    ccsys_open_mode_t   mode;
+
+    mode.data = CCSYS_S_IRWXU;
     ccsys_mkdir(L, dirname, mode);
     ccsys_handler_rmdir_init(L, dir_H, dirname);
   @}
@@ -1140,12 +1142,12 @@ if (cce_location(L)) @{
 
   /* Open the file. */
   @{
-    ccsys_open_flags_t    flags = @{ .data = CCSYS_O_CREAT @};
-    ccsys_open_mode_t     mode  = @{
-      .data = CCSYS_S_IRUSR | CCSYS_S_IWUSR
-    @};
+    ccsys_open_flags_t    flags;
+    ccsys_open_mode_t     mode;
     ccsys_fd_t            fd;
 
+    flags.data = CCSYS_O_CREAT;
+    mode.data  = CCSYS_S_IRUSR | CCSYS_S_IWUSR;
     fd = ccsys_openat(L, dirfd, filename, flags, mode);
     ccsys_handler_filedes_init(L, file_H, fd);
 
@@ -1154,8 +1156,9 @@ if (cce_location(L)) @{
 
   /* Remove the file. */
   @{
-    ccsys_unlinkat_flags_t      flags = @{ .data = 0 @};
+    ccsys_unlinkat_flags_t flags;
 
+    flags.data = 0;
     ccsys_unlinkat(L, dirfd, filename, flags);
   @}
 
