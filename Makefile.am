@@ -76,7 +76,7 @@ check_PROGRAMS	= \
 	tests/system-handlers			\
 	tests/input-output
 
-TESTS			= $(check_PROGRAMS)
+TESTS				= $(check_PROGRAMS)
 
 ccsys_tests_cppflags		= -I$(srcdir)/src $(CCEXCEPTIONS_FLAGS) -I$(srcdir)/cctests
 ccsys_tests_ldadd		= libccsys.la $(CCEXCEPTIONS_LIBS) libcctests.la
