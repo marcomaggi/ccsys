@@ -121,7 +121,7 @@ included in the section entitled ``@gnu{} Free Documentation License''.
 @menu
 * overview::                    Overview of the package.
 * version::                     Version functions.
-* types::                       Generic type definitions.
+* types::                       Semantic type definitions.
 * enums::                       Enumerated constants.
 * memory::                      Memory allocation, locking, mapping.
 * io::                          Input/output system calls.
@@ -246,14 +246,14 @@ All the constants are redefined as enumerated values, with the same system name 
 are redefined with the following enumeration:
 
 @example
-enum ccsys_file_mode_t @{
+enum ccsys_open_flags_enum_t @{
   CCSYS_O_RDONLY=0,
   CCSYS_O_WRONLY=1,
   CCSYS_O_RDWR=2,
   ...
 @};
 
-typedef enum ccsys_file_mode_t  ccsys_file_mode_t;
+typedef enum ccsys_open_flags_enum_t ccsys_open_flags_enum_t;
 @end example
 
 @noindent
@@ -265,7 +265,7 @@ example, in the unlikely case that the underlying platform does not define @code
 above redefinition would be:
 
 @example
-enum ccsys_file_mode_t @{
+enum ccsys_open_flags_enum_t @{
   CCSYS_O_RDONLY=0,
   CCSYS_O_RDWR=2,
   ...
@@ -377,87 +377,120 @@ Return an integer representing the library interface current age.
 
 @c page
 @node types
-@chapter Generic type definitions
+@chapter Semantic type definitions
 
 
+@anchor{ccsys_fd_t}
 @deftp {Semantic Type} ccsys_fd_t
 Type of file descriptors.  It is a singed integer.
 @end deftp
 
 
+@anchor{ccsys_dirfd_t}
 @deftp {Semantic Type} ccsys_dirfd_t
 Type of file descriptors for directories.  It is a singed integer.
 @end deftp
 
 
+@anchor{ccsys_off_t}
 @deftp {Semantic Type} ccsys_off_t
 Type of offsets.  Is is a signed integer.
 @end deftp
 
 
+@anchor{ccsys_open_flags_t}
 @deftp {Semantic Type} ccsys_open_flags_t
 Exact signed integer representing file open flags.  It is meant to be a bitwise combination of the
-enumerated constants of type @objtype{ccsys_open_flags_enum_t}.
+enumerated constants of type @objtype{ccsys_open_flags_enum_t}; @ref{ccsys_open_flags_enum_t,
+Enumerated constants}.
 @end deftp
 
 
+@anchor{ccsys_open_mode_t}
 @deftp {Semantic Type} ccsys_open_mode_t
 Exact signed integer representing file open modes.  It is meant to be a bitwise combination of the
-enumerated constants of type @objtype{ccsys_file_mode_flags_t}.
+enumerated constants of type @objtype{ccsys_open_mode_enum_t}; @ref{ccsys_open_mode_enum_t,
+Enumerated constants}.
 @end deftp
 
 
+@anchor{ccsys_unlinkat_flags_t}
 @deftp {Semantic Type} ccsys_unlinkat_flags_t
 Exact signed integer representing an @code{at()} function flag.  It is meant to be a bitwise
-combination of the enumerated constants of type @objtype{ccsys_file_at_flags_t}.
+combination of the enumerated constants of type @objtype{ccsys_unlinkat_flags_enum_t}.
+@ref{ccsys_unlinkat_flags_enum_t, Enumerated constants}.
 @end deftp
 
 
+@anchor{ccsys_socket_namespace_t}
 @deftp {Semantic Type} ccsys_socket_namespace_t
 Exact signed integer representing a socket namespace (or domain).  It is the of the argument
-@var{namespace} or @var{domain} of @cfunc{ccsys_socket}.
+@var{namespace} or @var{domain} of @cfunc{ccsys_socket}: one of the constants of type
+@objtype{ccsys_socket_namespace_enum_t}; @ref{ccsys_socket_namespace_enum_t, Enumerated constants}.
 @end deftp
 
 
+@anchor{ccsys_socket_style_t}
 @deftp {Semantic Type} ccsys_socket_style_t
 Exact signed integer representing a socket style (or type).  It is the of the argument @var{style}
-or @var{type} of @cfunc{ccsys_socket}.
+or @var{type} of @cfunc{ccsys_socket}: one of the constants of type
+@objtype{ccsys_socket_style_enum_t}; @ref{ccsys_socket_style_enum_t, Enumerated constants}.
 @end deftp
 
 
+@anchor{ccsys_socket_protocol_t}
 @deftp {Semantic Type} ccsys_socket_protocol_t
 Exact signed integer representing a socket protocol.  It is the of the argument @var{protocol} of
-@cfunc{ccsys_socket}.
+@cfunc{ccsys_socket}: one of the constants of type @objtype{ccsys_socket_protocol_enum_t};
+@ref{ccsys_socket_protocol_enum_t, Enumerated constants}.
 @end deftp
 
 
+@anchor{ccsys_mlockall_flags_t}
 @deftp {Semantic Type} ccsys_mlockall_flags_t
-Type of the argument @var{flags} in @cfunc{ccsys_mlockall}.
+Type of the argument @var{flags} in @cfunc{ccsys_mlockall}.  It is meant to be a bitwise combination
+of the constants of type @objtype{ccsys_memory_locking_enum_t}; @ref{ccsys_memory_locking_enum_t,
+Enumerated constants}.
 @end deftp
 
 
+@anchor{ccsys_mmap_prot_t}
 @deftp {Semantic Type} ccsys_mmap_prot_t
-Type of the argument @var{prot} in @cfunc{ccsys_mmap} and in @cfunc{ccsys_mprotect}.
+Type of the argument @var{prot} in @cfunc{ccsys_mmap} and in @cfunc{ccsys_mprotect}.  It is meant to
+be a bitwise combination of the constants of type @objtype{ccsys_memory_protection_enum_t};
+@ref{ccsys_memory_protection_enum_t, Enumerated constants}.
 @end deftp
 
 
+@anchor{ccsys_mmap_flags_t}
 @deftp {Semantic Type} ccsys_mmap_flags_t
-Type of the argument @var{flags} in @cfunc{ccsys_mmap}.
+Type of the argument @var{flags} in @cfunc{ccsys_mmap}.  It is meant to be a bitwise combination of
+the constants of type @objtype{ccsys_memory_mapping_enum_t}; @ref{ccsys_memory_mapping_enum_t,
+Enumerated constants}.
 @end deftp
 
 
+@anchor{ccsys_msync_flags_t}
 @deftp {Semantic Type} ccsys_msync_flags_t
-Type of the argument @var{flags} in @cfunc{ccsys_msync}.
+Type of the argument @var{flags} in @cfunc{ccsys_msync}.  It is meant to be a bitwise combination of
+the constants of type @objtype{ccsys_memory_sync_enum_t}; @ref{ccsys_memory_sync_enum_t, Enumerated
+constants}.
 @end deftp
 
 
+@anchor{ccsys_mremap_flags_t}
 @deftp {Semantic Type} ccsys_mremap_flags_t
-Type of the argument @var{flags} in @cfunc{ccsys_mremap}.
+Type of the argument @var{flags} in @cfunc{ccsys_mremap}.  It is meant to be a bitwise combination
+of the constants of type @objtype{ccsys_memory_remap_enum_t}; @ref{ccsys_memory_remap_enum_t,
+Enumerated constants}.
 @end deftp
 
 
+@anchor{ccsys_madvise_advice_t}
 @deftp {Semantic Type} ccsys_madvise_advice_t
-Type of the argument @var{advice} in @cfunc{ccsys_advise}.
+Type of the argument @var{advice} in @cfunc{ccsys_advise}.  It is meant to be a bitwise combination
+of the constants of type @objtype{ccsys_memory_advice_enum_t}; @ref{ccsys_memory_advice_enum_t,
+Enumerated constants}.
 @end deftp
 
 @c page
@@ -489,6 +522,7 @@ The following symbols are defined in the header file @file{ccsys.h}.
 @EnumeratedConstant{CCSYS_O_SYNC}
 @EnumeratedConstant{CCSYS_O_TMPFILE}
 @EnumeratedConstant{CCSYS_O_TRUNC}
+@anchor{ccsys_open_flags_enum_t}
 @deftp {Enum Typedef} ccsys_open_flags_enum_t
 Type of file open flag constants.  These constants are meant to be combined bitwise, for example to
 produce a value for the argument @var{flags} for @cfunc{ccsys_open}.  It defines the following
@@ -504,6 +538,9 @@ CCSYS_O_NDELAY    CCSYS_O_NOATIME   CCSYS_O_NOCTTY
 CCSYS_O_NOFOLLOW  CCSYS_O_NONBLOCK  CCSYS_O_PATH
 CCSYS_O_SYNC      CCSYS_O_TMPFILE   CCSYS_O_TRUNC
 @end example
+
+A bitwise combination of these constants is meant to be used as value for arguments of type
+@objtype{ccsys_open_flags_t}; @ref{ccsys_open_flags_t, Semantic type definitions}.
 @end deftp
 
 
@@ -522,6 +559,7 @@ CCSYS_O_SYNC      CCSYS_O_TMPFILE   CCSYS_O_TRUNC
 @EnumeratedConstant{CCSYS_S_ISUID}
 @EnumeratedConstant{CCSYS_S_ISGID}
 @EnumeratedConstant{CCSYS_S_ISVTX}
+@anchor{ccsys_open_mode_enum_t}
 @deftp {Enum Typedef} ccsys_open_mode_enum_t
 Type of file open mode constants.  These constants are meant to be combined bitwise, for example to
 produce a value for the argument @var{mode} for @cfunc{ccsys_open}.  It defines the following
@@ -534,17 +572,24 @@ CCSYS_S_IROTH   CCSYS_S_IWOTH   CCSYS_S_IXOTH
 CCSYS_S_IRWXU   CCSYS_S_IRWXG   CCSYS_S_IRWXO
 CCSYS_S_ISUID   CCSYS_S_ISGID   CCSYS_S_ISVTX
 @end example
+
+A bitwise combination of these constants is meant to be used as value for arguments of type
+@objtype{ccsys_open_mode_t}; @ref{ccsys_open_mode_t, Semantic type definitions}.
 @end deftp
 
 
 @EnumeratedConstant{CCSYS_AT_REMOVEDIR}
-@deftp {Enum Typedef} ccsys_file_at_flags_t
+@anchor{ccsys_unlinkat_flags_enum_t}
+@deftp {Enum Typedef} ccsys_unlinkat_flags_enum_t
 Type of flags for @code{at()} functions.  These constants are meant to be used, for example, as
 value for the argument @var{flags} of @cfunc{ccsys_unlinkat}.  It defines the following constants:
 
 @example
 CCSYS_AT_REMOVEDIR
 @end example
+
+A bitwise combination of these constants is meant to be used as value for arguments of type
+@objtype{ccsys_unlinkat_flags_t}; @ref{ccsys_unlinkat_flags_t, Semantic type definitions}.
 @end deftp
 
 
@@ -554,6 +599,7 @@ CCSYS_AT_REMOVEDIR
 @EnumeratedConstant{CCSYS_SOCK_RAW}
 @EnumeratedConstant{CCSYS_SOCK_RDM}
 @EnumeratedConstant{CCSYS_SOCK_PACKET}
+@anchor{ccsys_socket_namespace_enum_t}
 @deftp {Enum Typedef} ccsys_socket_namespace_enum_t
 Type of socket namespace selection constants.  These constants are meant to be used, for example, as
 value for the argument @var{domain} of @cfunc{ccsys_socket}.  It defines the following constants:
@@ -566,6 +612,9 @@ CCSYS_SOCK_RDM
 CCSYS_SOCK_SEQPACKET
 CCSYS_SOCK_STREAM
 @end example
+
+A bitwise combination of these constants is meant to be used as value for arguments of type
+@objtype{ccsys_socket_namespce_t}; @ref{ccsys_socket_namespace_t, Semantic type definitions}.
 @end deftp
 
 
@@ -581,6 +630,7 @@ CCSYS_SOCK_STREAM
 @EnumeratedConstant{CCSYS_AF_APPLETALK}
 @EnumeratedConstant{CCSYS_AF_PACKET}
 @EnumeratedConstant{CCSYS_AF_ALG}
+@anchor{ccsys_socket_style_enum_t}
 @deftp {Enum Typedef} ccsys_socket_style_enum_t
 Type of socket style selection constants.  These constants are meant to be used, for example, as
 value for the argument @var{type} of @cfunc{ccsys_socket}.  It defines the following constants:
@@ -591,10 +641,14 @@ CCSYS_AF_INET6      CCSYS_AF_IPX     CCSYS_AF_NETLINK
 CCSYS_AF_X25        CCSYS_AF_AX25    CCSYS_AF_ATMPVC
 CCSYS_AF_APPLETALK  CCSYS_AF_PACKET  CCSYS_AF_ALG
 @end example
+
+A bitwise combination of these constants is meant to be used as value for arguments of type
+@objtype{ccsys_socket_style_t}; @ref{ccsys_socket_style_t, Semantic type definitions}.
 @end deftp
 
 
 @EnumeratedConstant{CCSYS_SOCK_PROTOCOL_IP}
+@anchor{ccsys_socket_protocol_enum_t}
 @deftp {Enum Typedef} ccsys_socket_protocol_enum_t
 Type of socket protocol selection constants.  These constants are meant to be used, for example, as
 value for the argument @var{protocol} of @cfunc{ccsys_socket}.  It defines the following constants:
@@ -602,12 +656,16 @@ value for the argument @var{protocol} of @cfunc{ccsys_socket}.  It defines the f
 @example
 CCSYS_SOCK_PROTOCOL_IP
 @end example
+
+A bitwise combination of these constants is meant to be used as value for arguments of type
+@objtype{ccsys_socket_protocol_t}; @ref{ccsys_socket_protocol_t, Semantic type definitions}.
 @end deftp
 
 
 @EnumeratedConstant{CCSYS_MCL_CURRENT}
 @EnumeratedConstant{CCSYS_MCL_FUTURE}
 @EnumeratedConstant{CCSYS_MCL_ONFAULT}
+@anchor{ccsys_memory_locking_enum_t}
 @deftp {Enum Typedef} ccsys_memory_locking_enum_t
 Enumeration of constants for the argument @var{flags} in @cfunc{ccsys_mlockall}.  It defines the
 following constants:
@@ -617,14 +675,18 @@ CCSYS_MCL_CURRENT
 CCSYS_MCL_FUTURE
 CCSYS_MCL_ONFAULT
 @end example
+
+A bitwise combination of these constants is meant to be used as value for arguments of type
+@objtype{ccsys_mlockall_flags_t}; @ref{ccsys_mlockall_flags_t, Semantic type definitions}.
 @end deftp
 
 
-@deftp {Enum Typedef} ccsys_memory_protection_enum_t
 @EnumeratedConstant{CCSYS_PROT_EXEC}
 @EnumeratedConstant{CCSYS_PROT_READ}
 @EnumeratedConstant{CCSYS_PROT_WRITE}
 @EnumeratedConstant{CCSYS_PROT_NONE}
+@anchor{ccsys_memory_protection_enum_t}
+@deftp {Enum Typedef} ccsys_memory_protection_enum_t
 Enumeration of constants for the argument @var{prot} in @cfunc{ccsys_mmap}.  It defines the
 following constants:
 
@@ -634,10 +696,12 @@ CCSYS_PROT_READ
 CCSYS_PROT_WRITE
 CCSYS_PROT_NONE
 @end example
+
+A bitwise combination of these constants is meant to be used as value for arguments of type
+@objtype{ccsys_mmap_prot_t}; @ref{ccsys_mmap_prot_t, Semantic type definitions}.
 @end deftp
 
 
-@deftp {Enum Typedef} ccsys_memory_mapping_enum_t
 @EnumeratedConstant{CCSYS_MAP_SHARED}
 @EnumeratedConstant{CCSYS_MAP_PRIVATE}
 @EnumeratedConstant{CCSYS_MAP_32BIT}
@@ -661,6 +725,8 @@ CCSYS_PROT_NONE
 @EnumeratedConstant{CCSYS_MAP_AUTORESRV}
 @EnumeratedConstant{CCSYS_MAP_COPY}
 @EnumeratedConstant{CCSYS_MAP_LOCAL}
+@anchor{ccsys_memory_mapping_enum_t}
+@deftp {Enum Typedef} ccsys_memory_mapping_enum_t
 Enumeration of constants for the argument @var{flags} in @cfunc{ccsys_mmap}.  It defines the
 following constants:
 
@@ -674,13 +740,17 @@ CCSYS_MAP_NORESERVE     CCSYS_MAP_POPULATE    CCSYS_MAP_STACK
 CCSYS_MAP_UNINITIALIZED CCSYS_MAP_AUTOGROW    CCSYS_MAP_AUTORESRV
 CCSYS_MAP_COPY          CCSYS_MAP_LOCAL
 @end example
+
+A bitwise combination of these constants is meant to be used as value for arguments of type
+@objtype{ccsys_mmap_flags_t}; @ref{ccsys_mmap_flags_t, Semantic type definitions}.
 @end deftp
 
 
-@deftp {Enum Typedef} ccsys_memory_sync_enum_t
 @EnumeratedConstant{CCSYS_MS_ASYNC}
 @EnumeratedConstant{CCSYS_MS_SYNC}
 @EnumeratedConstant{CCSYS_MS_INVALIDATE}
+@anchor{ccsys_memory_sync_enum_t}
+@deftp {Enum Typedef} ccsys_memory_sync_enum_t
 Enumeration of constants for the argument @var{flags} in @cfunc{ccsys_msync}.  It defines the
 following constants:
 
@@ -689,12 +759,16 @@ CCSYS_MS_ASYNC
 CCSYS_MS_SYNC
 CCSYS_MS_INVALIDATE
 @end example
+
+A bitwise combination of these constants is meant to be used as value for arguments of type
+@objtype{ccsys_msync_flags_t}; @ref{ccsys_msync_flags_t, Semantic type definitions}.
 @end deftp
 
 
-@deftp {Enum Typedef} ccsys_memory_remap_enum_t
 @EnumeratedConstant{CCSYS_MREMAP_MAYMOVE}
 @EnumeratedConstant{CCSYS_MREMAP_FIXED}
+@anchor{ccsys_memory_remap_enum_t}
+@deftp {Enum Typedef} ccsys_memory_remap_enum_t
 Enumeration of constants for the argument @var{flags} in @cfunc{ccsys_mremap}.  It defines the
 following constants:
 
@@ -702,10 +776,12 @@ following constants:
 CCSYS_MREMAP_MAYMOVE
 CCSYS_MREMAP_FIXED
 @end example
+
+A bitwise combination of these constants is meant to be used as value for arguments of type
+@objtype{ccsys_mremap_flags_t}; @ref{ccsys_mremap_flags_t, Semantic type definitions}.
 @end deftp
 
 
-@deftp {Enum Typedef} ccsys_memory_advice_enum_t
 @EnumeratedConstant{CCSYS_MADV_NORMAL}
 @EnumeratedConstant{CCSYS_MADV_RANDOM}
 @EnumeratedConstant{CCSYS_MADV_SEQUENTIAL}
@@ -723,6 +799,8 @@ CCSYS_MREMAP_FIXED
 @EnumeratedConstant{CCSYS_MADV_DONTDUMP}
 @EnumeratedConstant{CCSYS_MADV_DODUMP}
 @EnumeratedConstant{CCSYS_MADV_FREE}
+@anchor{ccsys_memory_advice_enum_t}
+@deftp {Enum Typedef} ccsys_memory_advice_enum_t
 Enumeration of constants for the argument @var{advice} in @cfunc{ccsys_madvise}.  It defines the
 following constants:
 
@@ -734,6 +812,9 @@ CCSYS_MADV_MERGEABLE    CCSYS_MADV_UNMERGEABLE  CCSYS_MADV_SOFT_OFFLINE
 CCSYS_MADV_HUGEPAGE     CCSYS_MADV_NOHUGEPAGE   CCSYS_MADV_DONTDUMP
 CCSYS_MADV_DODUMP       CCSYS_MADV_FREE
 @end example
+
+A bitwise combination of these constants is meant to be used as value for arguments of type
+@objtype{ccsys_madvise_advice_t}; @ref{ccsys_madvise_advice_t, Semantic type definitions}.
 @end deftp
 
 @c page
