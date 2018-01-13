@@ -136,6 +136,9 @@ test_3_1 (cce_destination_t upper_L CCSYS_UNUSED)
  ** Input/output: fifos.
  ** ----------------------------------------------------------------- */
 
+static void test_4_1_parent (cce_destination_t upper_L, char const * pathname);
+static void test_4_1_child  (char const * pathname);
+
 void
 test_4_1 (cce_destination_t upper_L CCSYS_UNUSED)
 /* Open a FIFO with "ccsys_mkfifo()". */
@@ -162,88 +165,100 @@ test_4_1 (cce_destination_t upper_L CCSYS_UNUSED)
     if (pid.data) {
       /* We are in the parent process.  Here we read from the FIFO, wait
 	 for the child process, done. */
-      cce_location_t		parent_L[1];
-      cce_cleanup_handler_t	infd_H[1];
-      ccsys_fd_t		infd;
+      test_4_1_parent(L, pathname);
 
-      if (cce_location(parent_L)) {
-	cce_run_error_handlers_raise(parent_L, L);
-      } else {
-	/* Open the FIFO for reading. */
-	{
-	  ccsys_open_flags_t	flags;
-	  ccsys_open_mode_t	mode;
+      /* Wait for the child process. */
+      {
+	ccsys_wait_options_t	options;
+	int			wstatus;
 
-	  flags.data = CCSYS_O_RDONLY;
-	  mode.data  = 0;
-	  if (1) { fprintf(stderr, "%s: open fifo for reading\n", __func__); }
-	  infd = ccsys_open(parent_L, pathname, flags, mode);
-	  if (1) { fprintf(stderr, "%s: open fifo for reading done\n", __func__); }
-	  ccsys_handler_filedes_init(parent_L, infd_H, infd);
-	}
-
-	/* Read from the FIFO. */
-	{
-	  size_t	len = 11;
-	  char *	oubuf = "0123456789";
-	  char		inbuf[len];
-	  if (1) { fprintf(stderr, "%s: reading from %s\n", __func__, pathname); }
-	  ccsys_read (parent_L, infd, inbuf, len);
-	  cctests_assert(0 == strncmp(inbuf, oubuf, len));
-	  if (1) { fprintf(stderr, "%s: read input='%s' \n", __func__, inbuf); }
-	}
-
-	/* Wait for the child process. */
-	{
-	  ccsys_wait_options_t	options;
-	  int			wstatus;
-
-	  options.data = 0;
-	  ccsys_waitpid(parent_L, pid, &wstatus, options);
-	}
-	cce_run_cleanup_handlers(parent_L);
+	options.data = 0;
+	ccsys_waitpid(L, pid, &wstatus, options);
       }
-      /* Done with the parent process. */
     } else {
       /* We are  in the child process.   Here we write something  to the
 	 FIFO then exit. */
-      cce_location_t		child_L[1];
-      ccsys_fd_t		oufd;
-      cce_cleanup_handler_t	oufd_H[1];
-
-      if (cce_location(child_L)) {
-	cce_run_error_handlers_final(child_L);
-      } else {
-	/* Open the FIFO for writing. */
-	{
-	  ccsys_open_flags_t	flags;
-	  ccsys_open_mode_t	mode;
-
-	  flags.data = CCSYS_O_WRONLY;
-	  mode.data  = 0;
-	  if (1) { fprintf(stderr, "%s: open fifo for writing\n", __func__); }
-	  oufd = ccsys_open(child_L, pathname, flags, mode);
-	  ccsys_handler_filedes_init(child_L, oufd_H, oufd);
-	}
-
-	/* Write to the FIFO. */
-	{
-	  size_t	len = 11;
-	  char *	oubuf = "0123456789";
-	  if (1) { fprintf(stderr, "%s: writing to %s\n", __func__, pathname); }
-	  ccsys_write(child_L, oufd, oubuf, len);
-	}
-	cce_run_cleanup_handlers(child_L);
-      }
-
-      /* Out of the child process. */
-      {
-	ccsys_exit_status_t	status;
-	status.data = CCSYS_EXIT_SUCCESS;
-	ccsys_exit(status);
-      }
+      test_4_1_child(pathname);
     }
     cce_run_cleanup_handlers(L);
+  }
+}
+
+void
+test_4_1_parent (cce_destination_t upper_L, char const * pathname)
+{
+  cce_location_t	L[1];
+  cce_cleanup_handler_t	infd_H[1];
+  ccsys_fd_t		infd;
+
+  if (cce_location(L)) {
+    cce_run_error_handlers_raise(L, upper_L);
+  } else {
+    /* Open the FIFO for reading. */
+    {
+      ccsys_open_flags_t	flags;
+      ccsys_open_mode_t	mode;
+
+      flags.data = CCSYS_O_RDONLY;
+      mode.data  = 0;
+      if (1) { fprintf(stderr, "%s: open fifo for reading\n", __func__); }
+      infd = ccsys_open(L, pathname, flags, mode);
+      if (1) { fprintf(stderr, "%s: open fifo for reading done\n", __func__); }
+      ccsys_handler_filedes_init(L, infd_H, infd);
+    }
+
+    /* Read from the FIFO. */
+    {
+      size_t	len = 11;
+      char *	oubuf = "0123456789";
+      char		inbuf[len];
+      if (1) { fprintf(stderr, "%s: reading from %s\n", __func__, pathname); }
+      ccsys_read (L, infd, inbuf, len);
+      cctests_assert(0 == strncmp(inbuf, oubuf, len));
+      if (1) { fprintf(stderr, "%s: read input='%s' \n", __func__, inbuf); }
+    }
+
+    cce_run_cleanup_handlers(L);
+  }
+}
+
+void
+test_4_1_child  (char const * pathname)
+{
+  cce_location_t	L[1];
+  ccsys_fd_t		oufd;
+  cce_cleanup_handler_t	oufd_H[1];
+
+  if (cce_location(L)) {
+    cce_run_error_handlers_final(L);
+  } else {
+    /* Open the FIFO for writing. */
+    {
+      ccsys_open_flags_t	flags;
+      ccsys_open_mode_t	mode;
+
+      flags.data = CCSYS_O_WRONLY;
+      mode.data  = 0;
+      if (1) { fprintf(stderr, "%s: open fifo for writing\n", __func__); }
+      oufd = ccsys_open(L, pathname, flags, mode);
+      ccsys_handler_filedes_init(L, oufd_H, oufd);
+    }
+
+    /* Write to the FIFO. */
+    {
+      size_t	len = 11;
+      char *	oubuf = "0123456789";
+      if (1) { fprintf(stderr, "%s: writing to %s\n", __func__, pathname); }
+      ccsys_write(L, oufd, oubuf, len);
+    }
+    cce_run_cleanup_handlers(L);
+  }
+
+  /* Terminate the child process. */
+  {
+    ccsys_exit_status_t	status;
+    status.data = CCSYS_EXIT_SUCCESS;
+    ccsys_exit(status);
   }
 }
 
