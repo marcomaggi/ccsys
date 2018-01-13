@@ -163,8 +163,8 @@ test_4_1 (cce_destination_t upper_L CCSYS_UNUSED)
 
     pid = ccsys_fork(L);
     if (pid.data) {
-      /* We are in the parent process.  Here we read from the FIFO, wait
-	 for the child process, done. */
+      /* We are in  the parent process.  Here we read  from the FIFO and
+	 wait for the child process. */
       test_4_1_parent(L, pathname);
 
       /* Wait for the child process. */
