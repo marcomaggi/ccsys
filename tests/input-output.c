@@ -110,15 +110,44 @@ test_2_1 (cce_destination_t upper_L)
 }
 
 
+/** --------------------------------------------------------------------
+ ** Input/output: pipes.
+ ** ----------------------------------------------------------------- */
+
+void
+test_3_1 (cce_destination_t upper_L CCSYS_UNUSED)
+/* Open a pipe with "ccsys_pipe()". */
+{
+  cce_location_t	  L[1];
+  cce_cleanup_handler_t   H[1];
+
+  if (cce_location(L)) {
+    cce_run_error_handlers_raise(L, upper_L);
+  } else {
+    ccsys_fd_t    pipefd[2];
+    ccsys_pipe(L, pipefd);
+    ccsys_handler_pipedes_init(L, H, pipefd);
+    cce_run_cleanup_handlers(L);
+  }
+}
+
+
+
 int
 main (void)
 {
   cctests_init("input/output");
   {
-    cctests_begin_group("file open close");
+    cctests_begin_group("file open");
     {
       cctests_run(test_1_1);
       cctests_run(test_2_1);
+    }
+    cctests_end_group();
+
+    cctests_begin_group("file pipes");
+    {
+      cctests_run(test_3_1);
     }
     cctests_end_group();
   }

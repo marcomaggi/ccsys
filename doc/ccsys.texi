@@ -1186,15 +1186,15 @@ We can handle file descriptors that must be released with the standard function 
 follows:
 
 @example
-cce_location_t  L[1];
-cce_handler_t   H[1];
+cce_location_t          L[1];
+cce_cleanup_handler_t   H[1];
 
 if (cce_location(L)) @{
   cce_run_error_handlers_final(L);
 @} else @{
-  ccsys_fd_t    pipefd[2]
+  ccsys_fd_t    pipefd[2];
   ccsys_pipe(L, pipefd);
-  ccsys_cleanup_handler_pipefd_init(L, H, pipefd);
+  ccsys_handler_pipedes_init(L, H, pipefd);
   cce_run_cleanup_handlers(L);
 @}
 @end example
