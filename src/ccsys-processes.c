@@ -7,7 +7,7 @@
 
 
 
-  Copyright (C) 2017 Marco Maggi <marco.maggi-ipsu@poste.it>
+  Copyright (C) 2017, 2018 Marco Maggi <marco.maggi-ipsu@poste.it>
 
   This is free software; you  can redistribute it and/or modify it under
   the terms of the GNU Lesser General Public License as published by the
@@ -73,6 +73,14 @@ ccsys_fork (cce_location_t * L)
   } else {
     return rv;
   }
+}
+#endif
+
+#ifdef HAVE_EXIT
+void
+ccsys_exit (ccsys_exit_status_t status)
+{
+  exit(status.data);
 }
 #endif
 

@@ -186,11 +186,11 @@ test_4_1 (cce_destination_t upper_L CCSYS_UNUSED)
 	{
 	  size_t	len = 11;
 	  char *	oubuf = "0123456789";
-	  char	inbuf[len];
+	  char		inbuf[len];
 	  if (1) { fprintf(stderr, "%s: reading from %s\n", __func__, pathname); }
 	  ccsys_read (parent_L, infd, inbuf, len);
 	  cctests_assert(0 == strncmp(inbuf, oubuf, len));
-	  if (1) { fprintf(stderr, "%s: %s \n", __func__, inbuf); }
+	  if (1) { fprintf(stderr, "%s: read input='%s' \n", __func__, inbuf); }
 	}
 
 	/* Wait for the child process. */
@@ -199,10 +199,9 @@ test_4_1 (cce_destination_t upper_L CCSYS_UNUSED)
 
 	  ccsys_waitpid(parent_L, pid, &wstatus, 0);
 	}
-
-	/* Done with the parent process. */
 	cce_run_cleanup_handlers(parent_L);
       }
+      /* Done with the parent process. */
     } else {
       /* We are  in the child process.   Here we write something  to the
 	 FIFO then exit. */
@@ -225,7 +224,7 @@ test_4_1 (cce_destination_t upper_L CCSYS_UNUSED)
 	  ccsys_handler_filedes_init(child_L, oufd_H, oufd);
 	}
 
-	/* Write to and read from the FIFO. */
+	/* Write to the FIFO. */
 	{
 	  size_t	len = 11;
 	  char *	oubuf = "0123456789";
@@ -234,8 +233,13 @@ test_4_1 (cce_destination_t upper_L CCSYS_UNUSED)
 	}
 	cce_run_cleanup_handlers(child_L);
       }
-      exit(EXIT_SUCCESS);
+
       /* Out of the child process. */
+      {
+	ccsys_exit_status_t	status;
+	status.data = CCSYS_EXIT_SUCCESS;
+	ccsys_exit(status);
+      }
     }
     cce_run_cleanup_handlers(L);
   }

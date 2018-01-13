@@ -75,6 +75,12 @@ AC_DEFUN([CCSYS_STDDEF_HEADER],[
 #endif
 ])
 
+AC_DEFUN([CCSYS_STDLIB_HEADER],[
+#ifdef HAVE_STDLIB_H
+#  include <stdlib.h>
+#endif
+])
+
 AC_DEFUN([CCSYS_SYS_TYPES_HEADER],[
 #ifdef HAVE_SYS_TYPES_H
 #  include <sys/types.h>

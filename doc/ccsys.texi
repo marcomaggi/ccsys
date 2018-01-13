@@ -493,12 +493,35 @@ of the constants of type @objtype{ccsys_memory_advice_enum_t}; @ref{ccsys_memory
 Enumerated constants}.
 @end deftp
 
+
+@anchor{ccsys_exit_status_t}
+@deftp {Semantic Type} ccsys_exit_status_t
+Type of the argument @var{statis} in @cfunc{ccsys_exit}.  It is meant to be one of the constants of
+type @objtype{ccsys_exit_status_enum_t}; @ref{ccsys_exit_status_enum_t, Enumerated constants}.
+@end deftp
+
 @c page
 @node enums
 @chapter Enumerated constants
 
 
 The following symbols are defined in the header file @file{ccsys.h}.
+
+
+@EnumeratedConstant{CCSYS_EXIT_SUCCESS}
+@EnumeratedConstant{CCSYS_EXIT_FAILURE}
+@anchor{ccsys_exit_status_enum_t}
+@deftp {Enum Typedef} ccsys_exit_status_enum_t
+Exit statuses for @cfunc{ccsys_exit}.  It defines the following constants:
+
+@example
+CCSYS_EXIT_SUCCESS
+CCSYS_EXIT_FAILURE
+@end example
+
+These constants are meant to be used as value for arguments of type @objtype{ccsys_exit_status_t};
+@ref{ccsys_exit_status_t, Semantic type definitions}.
+@end deftp
 
 
 @EnumeratedConstant{CCSYS_O_RDONLY}
@@ -2112,6 +2135,11 @@ The following symbols are defined in the header file @file{ccsys.h}.
 
 @deftypefun int ccsys_system (cce_location_t * @var{L}, char const * @var{command})
 Wrapper for @cfunc{system}.
+@end deftypefun
+
+
+@deftypefun void ccsys_exit (ccsys_exit_status_t @var{status})
+Wrapper for @cfunc{exit}.
 @end deftypefun
 
 

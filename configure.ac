@@ -131,7 +131,7 @@ AC_CHECK_FUNCS([mmap munmap msync mprotect])
 AC_CHECK_FUNCS([getcwd chdir fchdir opendir fdopendir readdir closedir dirfd stat fstat lstat mkdir rmdir link linkat symlink symlinkat readlink readlinkat realpath unlink unlinkat remove rename chown fchown lchown fchownat chmod fchmod fchmodat access faccessat utime utimes truncate ftruncate])
 AC_CHECK_FUNCS([mkstemp])
 AC_CHECK_FUNCS([bind getsockname inet_network socket shutdown socketpair connect listen accept getpeername send recv sendto recvfrom getsockopt setsockopt])
-AC_CHECK_FUNCS([system fork execv execve execvp waitpid])
+AC_CHECK_FUNCS([system exit fork execv execve execvp waitpid])
 
 dnl GNU C library stuff
 
@@ -384,6 +384,11 @@ CCSYS_MAYBE_ENUM_DEF([CCSYS_MADV_NOHUGEPAGE],[MADV_NOHUGEPAGE],[CCSYS_SYS_MMAN_H
 CCSYS_MAYBE_ENUM_DEF([CCSYS_MADV_DONTDUMP],[MADV_DONTDUMP],[CCSYS_SYS_MMAN_HEADER])
 CCSYS_MAYBE_ENUM_DEF([CCSYS_MADV_DODUMP],[MADV_DODUMP],[CCSYS_SYS_MMAN_HEADER])
 CCSYS_MAYBE_ENUM_DEF([CCSYS_MADV_FREE],[MADV_FREE],[CCSYS_SYS_MMAN_HEADER])
+
+# Exit statuses modes.
+#
+CCSYS_MAYBE_ENUM_DEF([CCSYS_EXIT_SUCCESS],[EXIT_SUCCESS],[CCSYS_STDLIB_HEADER])
+CCSYS_MAYBE_ENUM_DEF([CCSYS_EXIT_FAILURE],[EXIT_FAILURE],[CCSYS_STDLIB_HEADER])
 
 dnl page
 #### finish

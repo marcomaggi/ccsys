@@ -129,6 +129,7 @@ typedef struct ccsys_blksize_t		ccsys_blksize_t;
 typedef struct ccsys_dev_t		ccsys_dev_t;
 typedef struct ccsys_dir_t		ccsys_dir_t;
 typedef struct ccsys_dirfd_t		ccsys_dirfd_t;
+typedef struct ccsys_exit_status_t	ccsys_exit_status_t;
 typedef struct ccsys_fd_set_t		ccsys_fd_set_t;
 typedef struct ccsys_fd_t		ccsys_fd_t;
 typedef struct ccsys_gid_t		ccsys_gid_t;
@@ -158,6 +159,7 @@ struct ccsys_blksize_t		{ @CCSYS_TYPE_BLKSIZE_T@	data; };
 struct ccsys_dev_t		{ @CCSYS_TYPE_DEV_T@		data; };
 struct ccsys_dir_t		{ uint8_t data[1]; };
 struct ccsys_dirfd_t		{ int				data; };
+struct ccsys_exit_status_t	{ int				data; };
 struct ccsys_fd_set_t		{ uint8_t data[@SIZEOF_STRUCT_FD_SET@]; };
 struct ccsys_fd_t		{ int				data; };
 struct ccsys_gid_t		{ @CCSYS_TYPE_GID_T@		data; };
@@ -212,6 +214,11 @@ struct ccsys_utimbuf_t		{ uint8_t data[@SIZEOF_STRUCT_UTIMBUF@]; };
 /** --------------------------------------------------------------------
  ** System constants.
  ** ----------------------------------------------------------------- */
+
+enum ccsys_exit_status_enum_t {
+  @CCSYS_ENUM_DEF_CCSYS_EXIT_SUCCESS@
+  @CCSYS_ENUM_DEF_CCSYS_EXIT_FAILURE@
+};
 
 enum ccsys_open_flags_enum_t {
   /* Access modes. */
@@ -368,18 +375,19 @@ enum ccsys_memory_advice_enum_t {
 
 /* ------------------------------------------------------------------ */
 
-typedef enum ccsys_open_flags_enum_t		ccsys_open_flags_enum_t;
-typedef enum ccsys_open_mode_enum_t		ccsys_open_mode_enum_t;
-typedef enum ccsys_unlinkat_flags_enum_t	ccsys_unlinkat_flags_enum_t;
+typedef enum ccsys_exit_status_enum_t		ccsys_exit_status_enum_t;
 typedef enum ccsys_memory_advice_enum_t		ccsys_memory_advice_enum_t;
 typedef enum ccsys_memory_locking_enum_t	ccsys_memory_locking_enum_t;
 typedef enum ccsys_memory_mapping_enum_t	ccsys_memory_mapping_enum_t;
 typedef enum ccsys_memory_protection_enum_t	ccsys_memory_protection_enum_t;
 typedef enum ccsys_memory_remap_enum_t		ccsys_memory_remap_enum_t;
 typedef enum ccsys_memory_sync_enum_t		ccsys_memory_sync_enum_t;
+typedef enum ccsys_open_flags_enum_t		ccsys_open_flags_enum_t;
+typedef enum ccsys_open_mode_enum_t		ccsys_open_mode_enum_t;
 typedef enum ccsys_socket_namespace_enum_t	ccsys_socket_namespace_enum_t;
 typedef enum ccsys_socket_protocol_enum_t	ccsys_socket_protocol_enum_t;
 typedef enum ccsys_socket_style_enum_t		ccsys_socket_style_enum_t;
+typedef enum ccsys_unlinkat_flags_enum_t	ccsys_unlinkat_flags_enum_t;
 
 
 /** --------------------------------------------------------------------
@@ -943,6 +951,9 @@ ccsys_decl int ccsys_system (cce_location_t * L, char const * command)
 
 ccsys_decl ccsys_pid_t ccsys_fork (cce_location_t * L)
   __attribute__((__nonnull__(1)));
+
+ccsys_decl void ccsys_exit (ccsys_exit_status_t status)
+  __attribute__((__noreturn__));
 
 /* ------------------------------------------------------------------ */
 
