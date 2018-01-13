@@ -496,8 +496,16 @@ Enumerated constants}.
 
 @anchor{ccsys_exit_status_t}
 @deftp {Semantic Type} ccsys_exit_status_t
-Type of the argument @var{statis} in @cfunc{ccsys_exit}.  It is meant to be one of the constants of
+Type of the argument @var{status} in @cfunc{ccsys_exit}.  It is meant to be one of the constants of
 type @objtype{ccsys_exit_status_enum_t}; @ref{ccsys_exit_status_enum_t, Enumerated constants}.
+@end deftp
+
+
+@anchor{ccsys_wait_options_t}
+@deftp {Semantic Type} ccsys_wait_options_t
+Type of the argument @var{options} in @cfunc{ccsys_waitpid}.  It is meant to be a bitwise
+combination of the constants of type @objtype{ccsys_process_wait_options_enum_t};
+@ref{ccsys_process_wait_options_enum_t, Enumerated constants}.
 @end deftp
 
 @c page
@@ -838,6 +846,21 @@ CCSYS_MADV_DODUMP       CCSYS_MADV_FREE
 
 A bitwise combination of these constants is meant to be used as value for arguments of type
 @objtype{ccsys_madvise_advice_t}; @ref{ccsys_madvise_advice_t, Semantic type definitions}.
+@end deftp
+
+
+@EnumeratedConstant{CCSYS_WNOHANG}
+@EnumeratedConstant{CCSYS_WUNTRACED}
+@EnumeratedConstant{CCSYS_WCONTINUED}
+@anchor{ccsys_process_wait_options_enum_t}
+@deftp {Enum Typedef} ccsys_process_wait_options_enum_t
+Enumeration of constants representing process wait options.
+
+@example
+CCSYS_WNOHANG
+CCSYS_WUNTRACED
+CCSYS_WCONTINUED
+@end example
 @end deftp
 
 @c page
@@ -2163,7 +2186,7 @@ Wrapper for @cfunc{execvp}.
 @end deftypefun
 
 
-@deftypefun void ccsys_waitpid (cce_location_t * @var{L}, pid_t @var{pid}, int * @var{wstatus}, int @var{options})
+@deftypefun void ccsys_waitpid (cce_location_t * @var{L}, pid_t @var{pid}, int * @var{wstatus}, ccsys_wait_options_t @var{options})
 Wrapper for @cfunc{waitpid}.
 @end deftypefun
 

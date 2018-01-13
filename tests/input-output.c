@@ -195,9 +195,11 @@ test_4_1 (cce_destination_t upper_L CCSYS_UNUSED)
 
 	/* Wait for the child process. */
 	{
-	  int	wstatus;
+	  ccsys_wait_options_t	options;
+	  int			wstatus;
 
-	  ccsys_waitpid(parent_L, pid, &wstatus, 0);
+	  options.data = 0;
+	  ccsys_waitpid(parent_L, pid, &wstatus, options);
 	}
 	cce_run_cleanup_handlers(parent_L);
       }

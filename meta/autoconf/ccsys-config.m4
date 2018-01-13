@@ -129,6 +129,12 @@ AC_DEFUN([CCSYS_UTIME_HEADER],[
 #endif
 ])
 
+AC_DEFUN([CCSYS_WAIT_HEADER],[
+#ifdef HAVE_WAIT_H
+#  include <wait.h>
+#endif
+])
+
 dnl page
 dnl CCSYS_SIZEOF --
 dnl

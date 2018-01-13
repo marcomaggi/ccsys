@@ -135,11 +135,11 @@ ccsys_execvp (cce_location_t * L, const char * filename, char * const argv [])
 
 #ifdef HAVE_WAITPID
 void
-ccsys_waitpid (cce_location_t * L, ccsys_pid_t pid, int * wstatus, int options)
+ccsys_waitpid (cce_location_t * L, ccsys_pid_t pid, int * wstatus, ccsys_wait_options_t options)
 {
   ccsys_pid_t	rv;
   errno = 0;
-  rv.data = waitpid(pid.data, wstatus, options);
+  rv.data = waitpid(pid.data, wstatus, options.data);
   if (-1 == rv.data) {
     cce_raise(L, cce_condition_new_errno_clear());
   }
