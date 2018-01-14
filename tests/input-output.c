@@ -309,7 +309,7 @@ test_4_2 (cce_destination_t upper_L)
     {
       ccsys_open_mode_t	mode;
 
-      mode.data = CCSYS_S_IRUSR | CCSYS_S_IWUSR | CCSYS_S_IXUSR;
+      mode.data = CCSYS_S_IRUSR | CCSYS_S_IWUSR;
       ccsys_mkfifoat(L, dirfd, fifoname, mode);
       fifo_unlink_data.dirfd	= dirfd;
       fifo_unlink_data.pathname	= fifoname;

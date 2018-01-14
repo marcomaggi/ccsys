@@ -1528,6 +1528,166 @@ sample_child  (char const * fifoname)
 @subsection Usage example for @cfunc{ccsys_mkfifoat}
 
 
+As example of @cfunc{ccsys_mkfifoat} usage consider the following, which:
+
+@enumerate
+@item
+Creates a directory.
+
+@item
+Creates a named @fifo{} in the directory.
+
+@item
+Forks a child process using @cfunc{ccsys_fork}.
+
+@item
+The child process: opens the @fifo{}; writes to it; closes it; finally terminates.
+
+@item
+The parent process: opens the @fifo{}; reads from it; closes it; removes it with @cfunc{unlinkat};
+removes the directory; waits for the child process to terminate.
+@end enumerate
+
+
+@smallexample
+void sample_parent (cce_destination_t upper_L,
+                    ccsys_dirfd_t dirfd, char const * fifoname);
+void sample_child  (ccsys_dirfd_t dirfd, char const * fifoname);
+
+void
+sample (void)
+@{
+  cce_location_t        L[1];
+  cce_cleanup_handler_t dir_H[1];
+  cce_cleanup_handler_t dirstream_H[1];
+  cce_cleanup_handler_t fifo_H[1];
+  ccsys_at_link_t       fifo_unlink_data;
+
+  if (cce_location(L)) @{
+    cce_run_error_handlers_final(L);
+  @} else @{
+    static char const * dirname  = "name.d";
+    static char const * fifoname = "fifo.ext";
+    ccsys_dirfd_t       dirfd;
+    ccsys_pid_t         pid;
+
+    /* Create the directory. */
+    @{
+      ccsys_open_mode_t mode;
+      mode.data = CCSYS_S_IRWXU;
+      ccsys_mkdir(L, dirname, mode);
+      ccsys_handler_rmdir_init(L, dir_H, dirname);
+    @}
+
+    /* Open the directory. */
+    @{
+      ccsys_dir_t *     dirstream;
+      dirstream = ccsys_opendir(L, dirname);
+      ccsys_handler_dirstream_init(L, dirstream_H, dirstream);
+      dirfd = ccsys_dirfd(L, dirstream);
+    @}
+
+    /* Create the FIFO. */
+    @{
+      ccsys_open_mode_t mode;
+      mode.data = CCSYS_S_IRUSR | CCSYS_S_IWUSR;
+      ccsys_mkfifoat(L, dirfd, fifoname, mode);
+      fifo_unlink_data.dirfd    = dirfd;
+      fifo_unlink_data.pathname = fifoname;
+      ccsys_handler_unlinkat_init(L, fifo_H, &fifo_unlink_data);
+    @}
+
+    pid = ccsys_fork(L);
+    if (pid.data) @{
+      /* We are in the parent process. */
+      sample_parent(L, dirfd, fifoname);
+
+      /* Wait for the child process. */
+      @{
+        ccsys_waitpid_options_t options;
+        ccsys_waitpid_status_t  wstatus;
+
+        options.data = 0;
+        ccsys_waitpid(L, pid, &wstatus, options);
+      @}
+    @} else @{
+      /* We are in the child process. */
+      sample_child(dirfd, fifoname);
+    @}
+    cce_run_cleanup_handlers(L);
+  @}
+@}
+
+void
+sample_parent (cce_destination_t upper_L,
+               ccsys_dirfd_t dirfd, char const * fifoname)
+@{
+  cce_location_t        L[1];
+  cce_cleanup_handler_t infd_H[1];
+  ccsys_fd_t            infd;
+
+  if (cce_location(L)) @{
+    cce_run_error_handlers_raise(L, upper_L);
+  @} else @{
+    /* Open the FIFO for reading. */
+    @{
+      ccsys_open_flags_t        flags;
+      ccsys_open_mode_t         mode;
+      flags.data = CCSYS_O_RDONLY;
+      mode.data  = 0;
+      infd = ccsys_openat(L, dirfd, fifoname, flags, mode);
+      ccsys_handler_filedes_init(L, infd_H, infd);
+    @}
+
+    /* Read from the FIFO. */
+    @{
+      size_t    len = 11;
+      char      inbuf[len];
+      ccsys_read (L, infd, inbuf, len);
+    @}
+
+    cce_run_cleanup_handlers(L);
+  @}
+@}
+
+void
+sample_child (ccsys_dirfd_t dirfd, char const * fifoname)
+@{
+  cce_location_t        L[1];
+  ccsys_fd_t            oufd;
+  cce_cleanup_handler_t oufd_H[1];
+
+  if (cce_location(L)) @{
+    cce_run_error_handlers_final(L);
+  @} else @{
+    /* Open the FIFO for writing. */
+    @{
+      ccsys_open_flags_t        flags;
+      ccsys_open_mode_t         mode;
+      flags.data = CCSYS_O_WRONLY;
+      mode.data  = 0;
+      oufd = ccsys_openat(L, dirfd, fifoname, flags, mode);
+      ccsys_handler_filedes_init(L, oufd_H, oufd);
+    @}
+
+    /* Write to the FIFO. */
+    @{
+      size_t    len = 11;
+      char *    oubuf = "0123456789";
+      ccsys_write(L, oufd, oubuf, len);
+    @}
+    cce_run_cleanup_handlers(L);
+  @}
+
+  /* Terminate the child process. */
+  @{
+    ccsys_exit_status_t status;
+    status.data = CCSYS_EXIT_SUCCESS;
+    ccsys_exit(status);
+  @}
+@}
+@end smallexample
+
 @c page
 @node io close
 @section Closing file descriptors
