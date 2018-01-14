@@ -1374,6 +1374,154 @@ The argument @var{mode} is meant to be a bitwise combination of the constants of
 @objtype{ccsys_open_mode_enum_t}.
 @end deftypefun
 
+
+@menu
+* io fifos mkfifo::             Usage example for @cfunc{ccsys_mkfifo}.
+* io fifos mkfifoat::           Usage example for @cfunc{ccsys_mkfifoat}.
+@end menu
+
+@c page
+@node io fifos mkfifo
+@subsection Usage example for @cfunc{ccsys_mkfifo}
+
+
+As example of @cfunc{ccsys_mkfifo} usage consider the following, which:
+
+@enumerate
+@item
+Creates a named @fifo{}.
+
+@item
+Forks a child process using @cfunc{ccsys_fork}.
+
+@item
+The child process: opens the @fifo{}; writes to it; closes it; finally terminates.
+
+@item
+The parent process: opens the @fifo{}; reads from it; closes it; removes it with @cfunc{remove};
+waits for the child process to terminate.
+@end enumerate
+
+
+@smallexample
+void sample_parent (cce_destination_t upper_L,
+                    char const * fifoname);
+void sample_child  (char const * fifoname);
+
+void
+sample (void)
+@{
+  cce_location_t        L[1];
+  cce_cleanup_handler_t fifo_H[1];
+
+  if (cce_location(L)) @{
+    cce_run_error_handlers_final(L);
+  @} else @{
+    static char const * fifoname = "fifo.ext";
+    ccsys_pid_t         pid;
+
+    /* Create the FIFO. */
+    @{
+      ccsys_open_mode_t         mode;
+      mode.data = CCSYS_S_IRUSR | CCSYS_S_IWUSR;
+      ccsys_mkfifo(L, fifoname, mode);
+      ccsys_handler_remove_init(L, fifo_H, fifoname);
+    @}
+
+    pid = ccsys_fork(L);
+    if (pid.data) @{
+      /* We are in the parent process. */
+      sample_parent(L, fifoname);
+
+      /* Wait for the child process. */
+      @{
+        ccsys_wait_options_t    options;
+        int                     wstatus;
+        options.data = 0;
+        ccsys_waitpid(L, pid, &wstatus, options);
+      @}
+    @} else @{
+      /* We are in the child process. */
+      sample_child(fifoname);
+    @}
+    cce_run_cleanup_handlers(L);
+  @}
+@}
+
+void
+sample_parent (cce_destination_t upper_L, char const * fifoname)
+@{
+  cce_location_t        L[1];
+  cce_cleanup_handler_t infd_H[1];
+  ccsys_fd_t            infd;
+
+  if (cce_location(L)) @{
+    cce_run_error_handlers_raise(L, upper_L);
+  @} else @{
+    /* Open the FIFO for reading. */
+    @{
+      ccsys_open_flags_t        flags;
+      ccsys_open_mode_t         mode;
+      flags.data = CCSYS_O_RDONLY;
+      mode.data  = 0;
+      infd = ccsys_open(L, fifoname, flags, mode);
+      ccsys_handler_filedes_init(L, infd_H, infd);
+    @}
+
+    /* Read from the FIFO. */
+    @{
+      size_t    len = 11;
+      char      inbuf[len];
+      ccsys_read (L, infd, inbuf, len);
+    @}
+
+    cce_run_cleanup_handlers(L);
+  @}
+@}
+
+void
+sample_child  (char const * fifoname)
+@{
+  cce_location_t        L[1];
+  ccsys_fd_t            oufd;
+  cce_cleanup_handler_t oufd_H[1];
+
+  if (cce_location(L)) @{
+    cce_run_error_handlers_final(L);
+  @} else @{
+    /* Open the FIFO for writing. */
+    @{
+      ccsys_open_flags_t        flags;
+      ccsys_open_mode_t         mode;
+      flags.data = CCSYS_O_WRONLY;
+      mode.data  = 0;
+      oufd = ccsys_open(L, fifoname, flags, mode);
+      ccsys_handler_filedes_init(L, oufd_H, oufd);
+    @}
+
+    /* Write to the FIFO. */
+    @{
+      size_t    len = 11;
+      char *    oubuf = "0123456789";
+      ccsys_write(L, oufd, oubuf, len);
+    @}
+    cce_run_cleanup_handlers(L);
+  @}
+
+  /* Terminate the child process. */
+  @{
+    ccsys_exit_status_t status;
+    status.data = CCSYS_EXIT_SUCCESS;
+    ccsys_exit(status);
+  @}
+@}
+@end smallexample
+
+@c page
+@node io fifos mkfifoat
+@subsection Usage example for @cfunc{ccsys_mkfifoat}
+
+
 @c page
 @node io close
 @section Closing file descriptors

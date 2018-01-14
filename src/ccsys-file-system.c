@@ -513,7 +513,7 @@ cce_handler_unlinkat_function (const cce_condition_t * C CCE_UNUSED, cce_handler
 {
   ccsys_at_link_t *	lnk	= H->pointer;
   unlinkat(lnk->dirfd.data, lnk->pathname, 0);
-  if (0) { fprintf(stderr, "%s: done\n", __func__); }
+  if (0) { fprintf(stderr, "%s: done unlinking '%s'\n", __func__, lnk->pathname); }
 }
 
 void
@@ -558,6 +558,7 @@ static void
 cce_handler_remove_function (const cce_condition_t * C CCE_UNUSED, cce_handler_t * H)
 {
 #ifdef HAVE_REMOVE
+  if (0) { fprintf(stderr, "%s: removing %s\n", __func__, H->pathname); }
   remove(H->pathname);
   free(H->pathname);
   if (0) { fprintf(stderr, "%s: done\n", __func__); }
