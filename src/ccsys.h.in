@@ -598,19 +598,6 @@ ccsys_decl void ccsys_error_handler_filedes_init (cce_location_t * L, cce_handle
 	   cce_cleanup_handler_t	*: ccsys_cleanup_handler_filedes_init, \
 	   cce_error_handler_t		*: ccsys_error_handler_filedes_init)(L,&(H->handler),filedes)
 
-/* ------------------------------------------------------------------ */
-
-ccsys_decl void ccsys_cleanup_handler_dirfd_init (cce_location_t * L, cce_handler_t * H, ccsys_dirfd_t dirfd)
-  __attribute__((__nonnull__(1,2)));
-
-ccsys_decl void ccsys_error_handler_dirfd_init (cce_location_t * L, cce_handler_t * H, ccsys_dirfd_t dirfd)
-  __attribute__((__nonnull__(1,2)));
-
-#define ccsys_handler_dirfd_init(L,H,dirfd)				\
-  _Generic((H),								\
-	   cce_cleanup_handler_t	*: ccsys_cleanup_handler_dirfd_init, \
-	   cce_error_handler_t		*: ccsys_error_handler_dirfd_init)(L,&(H->handler),dirfd)
-
 
 /** --------------------------------------------------------------------
  ** Input/output system: reading and writing files.
