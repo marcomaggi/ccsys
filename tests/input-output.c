@@ -30,7 +30,7 @@
  ** ----------------------------------------------------------------- */
 
 void
-test_1_1 (cce_destination_t upper_L CCSYS_UNUSED)
+test_1_1 (cce_destination_t upper_L)
 /* Open a file with "ccsys_open()". */
 {
   cce_location_t	  L[1];
@@ -40,9 +40,12 @@ test_1_1 (cce_destination_t upper_L CCSYS_UNUSED)
     cce_run_error_handlers_raise(L, upper_L);
   } else {
     static char const *	filename = "name.ext";
-    ccsys_open_flags_t	flags = { .data = CCSYS_O_CREAT };
-    ccsys_open_mode_t	mode  = { .data = CCSYS_S_IRUSR | CCSYS_S_IWUSR };
+    ccsys_open_flags_t	flags;
+    ccsys_open_mode_t	mode;
     ccsys_fd_t		fd;
+
+    flags.data = CCSYS_O_CREAT;
+    mode.data  = CCSYS_S_IRUSR | CCSYS_S_IWUSR;
     fd = ccsys_open(L, filename, flags, mode);
     ccsys_handler_filedes_init(L, H, fd);
     cctests_assert(0 != fd.data);
@@ -115,7 +118,7 @@ test_2_1 (cce_destination_t upper_L)
  ** ----------------------------------------------------------------- */
 
 void
-test_3_1 (cce_destination_t upper_L CCSYS_UNUSED)
+test_3_1 (cce_destination_t upper_L)
 /* Open a pipe with "ccsys_pipe()". */
 {
   cce_location_t	  L[1];
@@ -201,9 +204,9 @@ test_4_1_parent (cce_destination_t upper_L, char const * fifoname)
 
       flags.data = CCSYS_O_RDONLY;
       mode.data  = 0;
-      if (1) { fprintf(stderr, "%s: open fifo for reading\n", __func__); }
+      if (0) { fprintf(stderr, "%s: open fifo for reading\n", __func__); }
       infd = ccsys_open(L, fifoname, flags, mode);
-      if (1) { fprintf(stderr, "%s: open fifo for reading done\n", __func__); }
+      if (0) { fprintf(stderr, "%s: open fifo for reading done\n", __func__); }
       ccsys_handler_filedes_init(L, infd_H, infd);
     }
 
@@ -212,10 +215,10 @@ test_4_1_parent (cce_destination_t upper_L, char const * fifoname)
       size_t	len = 11;
       char *	oubuf = "0123456789";
       char	inbuf[len];
-      if (1) { fprintf(stderr, "%s: reading from %s\n", __func__, fifoname); }
+      if (0) { fprintf(stderr, "%s: reading from %s\n", __func__, fifoname); }
       ccsys_read (L, infd, inbuf, len);
       cctests_assert(0 == strncmp(inbuf, oubuf, len));
-      if (1) { fprintf(stderr, "%s: read input='%s' \n", __func__, inbuf); }
+      if (0) { fprintf(stderr, "%s: read input='%s' \n", __func__, inbuf); }
     }
 
     cce_run_cleanup_handlers(L);
@@ -239,7 +242,7 @@ test_4_1_child  (char const * fifoname)
 
       flags.data = CCSYS_O_WRONLY;
       mode.data  = 0;
-      if (1) { fprintf(stderr, "%s: open fifo for writing\n", __func__); }
+      if (0) { fprintf(stderr, "%s: open fifo for writing\n", __func__); }
       oufd = ccsys_open(L, fifoname, flags, mode);
       ccsys_handler_filedes_init(L, oufd_H, oufd);
     }
@@ -248,7 +251,7 @@ test_4_1_child  (char const * fifoname)
     {
       size_t	len = 11;
       char *	oubuf = "0123456789";
-      if (1) { fprintf(stderr, "%s: writing to %s\n", __func__, fifoname); }
+      if (0) { fprintf(stderr, "%s: writing to %s\n", __func__, fifoname); }
       ccsys_write(L, oufd, oubuf, len);
     }
     cce_run_cleanup_handlers(L);
@@ -356,9 +359,9 @@ test_4_2_parent (cce_destination_t upper_L, ccsys_dirfd_t dirfd, char const * fi
 
       flags.data = CCSYS_O_RDONLY;
       mode.data  = 0;
-      if (1) { fprintf(stderr, "%s: open fifo for reading\n", __func__); }
+      if (0) { fprintf(stderr, "%s: open fifo for reading\n", __func__); }
       infd = ccsys_openat(L, dirfd, fifoname, flags, mode);
-      if (1) { fprintf(stderr, "%s: open fifo for reading done\n", __func__); }
+      if (0) { fprintf(stderr, "%s: open fifo for reading done\n", __func__); }
       ccsys_handler_filedes_init(L, infd_H, infd);
     }
 
@@ -367,10 +370,10 @@ test_4_2_parent (cce_destination_t upper_L, ccsys_dirfd_t dirfd, char const * fi
       size_t	len = 11;
       char *	oubuf = "0123456789";
       char		inbuf[len];
-      if (1) { fprintf(stderr, "%s: reading from %s\n", __func__, fifoname); }
+      if (0) { fprintf(stderr, "%s: reading from %s\n", __func__, fifoname); }
       ccsys_read (L, infd, inbuf, len);
       cctests_assert(0 == strncmp(inbuf, oubuf, len));
-      if (1) { fprintf(stderr, "%s: read input='%s' \n", __func__, inbuf); }
+      if (0) { fprintf(stderr, "%s: read input='%s' \n", __func__, inbuf); }
     }
 
     cce_run_cleanup_handlers(L);
@@ -394,7 +397,7 @@ test_4_2_child (ccsys_dirfd_t dirfd, char const * fifoname)
 
       flags.data = CCSYS_O_WRONLY;
       mode.data  = 0;
-      if (1) { fprintf(stderr, "%s: open fifo for writing\n", __func__); }
+      if (0) { fprintf(stderr, "%s: open fifo for writing\n", __func__); }
       oufd = ccsys_openat(L, dirfd, fifoname, flags, mode);
       ccsys_handler_filedes_init(L, oufd_H, oufd);
     }
@@ -403,7 +406,7 @@ test_4_2_child (ccsys_dirfd_t dirfd, char const * fifoname)
     {
       size_t	len = 11;
       char *	oubuf = "0123456789";
-      if (1) { fprintf(stderr, "%s: writing to %s\n", __func__, fifoname); }
+      if (0) { fprintf(stderr, "%s: writing to %s\n", __func__, fifoname); }
       ccsys_write(L, oufd, oubuf, len);
     }
     cce_run_cleanup_handlers(L);
@@ -414,6 +417,34 @@ test_4_2_child (ccsys_dirfd_t dirfd, char const * fifoname)
     ccsys_exit_status_t	status;
     status.data = CCSYS_EXIT_SUCCESS;
     ccsys_exit(status);
+  }
+}
+
+
+/** --------------------------------------------------------------------
+ ** Closing a file descriptor.
+ ** ----------------------------------------------------------------- */
+
+void
+test_5_1 (cce_destination_t upper_L)
+/* Closing a file with "ccsys_close()". */
+{
+  cce_location_t	  L[1];
+
+  if (cce_location(L)) {
+    cce_run_error_handlers_raise(L, upper_L);
+  } else {
+    static char const *	filename = "name.ext";
+    ccsys_open_flags_t	flags;
+    ccsys_open_mode_t	mode;
+    ccsys_fd_t		fd;
+
+    flags.data = CCSYS_O_CREAT;
+    mode.data  = CCSYS_S_IRUSR | CCSYS_S_IWUSR;
+    fd = ccsys_open(L, filename, flags, mode);
+    ccsys_close(L, fd);
+    ccsys_remove(L, filename);
+    cce_run_cleanup_handlers(L);
   }
 }
 
@@ -440,6 +471,12 @@ main (void)
     {
       cctests_run(test_4_1);
       cctests_run(test_4_2);
+    }
+    cctests_end_group();
+
+    cctests_begin_group("file closing");
+    {
+      cctests_run(test_5_1);
     }
     cctests_end_group();
   }

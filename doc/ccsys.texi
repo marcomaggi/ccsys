@@ -1308,7 +1308,7 @@ The following symbols are defined in the header file @file{ccsys.h}.
 
 
 @deftypefun void ccsys_pipe (cce_location_t * @var{L}, ccsys_fd_t @var{pipefd}[2])
-Wrapper for @cfunc{pipe}.
+Wrapper for @cfunc{pipe}.  @manpage{pipe, Create pipes}.
 @end deftypefun
 
 @c ------------------------------------------------------------------------
@@ -1366,7 +1366,7 @@ The following symbols are defined in the header file @file{ccsys.h}.
 
 
 @deftypefun void ccsys_mkfifo (cce_location_t * @var{L}, char const * @var{pathname}, ccsys_open_mode_t @var{mode})
-Wrapper for @cfunc{mkfifo}.
+Wrapper for @cfunc{mkfifo}.  @manpage{mkfifo, Make a FIFO special file}.
 
 The argument @var{mode} is meant to be a bitwise combination of the constants of type
 @objtype{ccsys_open_mode_enum_t}.
@@ -1374,7 +1374,7 @@ The argument @var{mode} is meant to be a bitwise combination of the constants of
 
 
 @deftypefun void ccsys_mkfifoat (cce_location_t * @var{L}, ccsys_dirfd_t @var{dirfd}, char const * @var{pathname}, ccsys_open_mode_t @var{mode})
-Wrapper for @cfunc{mkfifoat}.
+Wrapper for @cfunc{mkfifoat}.  @manpage{mkfifoat, Make a FIFO special file}.
 
 The argument @var{mode} is meant to be a bitwise combination of the constants of type
 @objtype{ccsys_open_mode_enum_t}.
@@ -1697,7 +1697,7 @@ The following symbols are defined in the header file @file{ccsys.h}.
 
 
 @deftypefun void ccsys_close (cce_location_t * @var{L}, ccsys_fd_t @var{filedes})
-Wrapper for @cfunc{close}.
+Wrapper for @cfunc{close}.  @manpage{close, Close a file descriptor}.
 @end deftypefun
 
 @c ------------------------------------------------------------------------
@@ -1708,17 +1708,23 @@ We can handle file descriptors that must be released with the standard function 
 follows:
 
 @example
-cce_location_t  L[1];
-cce_handler_t   H[1];
+cce_location_t          L[1];
+cce_cleanup_handler_t   H[1];
 
 if (cce_location(L)) @{
-  cce_run_error_handlers_final(L);
+  cce_run_error_handlers_raise(L, upper_L);
 @} else @{
-  ccsys_open_flags_t    flags = @{ .data = CCSYS_O_CREAT @};
-  ccsys_open_mode_t     mode  = @{ .data = CCSYS_S_IRWXU @};
-  ccsys_fd_t            fd;
-  fd = ccsys_open(L, "name.ext", flags, mode);
-  ccsys_cleanup_handler_filedes_init(L, H, fd);
+  static char const * filename = "name.ext";
+  ccsys_open_flags_t  flags;
+  ccsys_open_mode_t   mode;
+  ccsys_fd_t          fd;
+
+  flags.data = CCSYS_O_CREAT;
+  mode.data  = CCSYS_S_IRUSR | CCSYS_S_IWUSR;
+  fd = ccsys_open(L, filename, flags, mode);
+  ccsys_handler_filedes_init(L, H, fd);
+
+  /* Do something with "fd" here. */
   cce_run_cleanup_handlers(L);
 @}
 @end example
