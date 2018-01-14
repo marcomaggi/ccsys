@@ -153,7 +153,8 @@ typedef struct ccsys_socklen_t		ccsys_socklen_t;
 typedef struct ccsys_timeval_t		ccsys_timeval_t;
 typedef struct ccsys_uid_t		ccsys_uid_t;
 typedef struct ccsys_unlinkat_flags_t	ccsys_unlinkat_flags_t;
-typedef struct ccsys_wait_options_t	ccsys_wait_options_t;
+typedef struct ccsys_waitpid_options_t	ccsys_waitpid_options_t;
+typedef struct ccsys_waitpid_status_t	ccsys_waitpid_status_t;
 
 struct ccsys_blkcnt_t		{ @CCSYS_TYPE_BLKCNT_T@		data; };
 struct ccsys_blksize_t		{ @CCSYS_TYPE_BLKSIZE_T@	data; };
@@ -185,7 +186,8 @@ struct ccsys_timespec_t		{ uint8_t data[@SIZEOF_STRUCT_TIMESPEC@]; };
 struct ccsys_timeval_t		{ uint8_t data[@SIZEOF_STRUCT_TIMEVAL@]; };
 struct ccsys_uid_t		{ @CCSYS_TYPE_UID_T@		data; };
 struct ccsys_unlinkat_flags_t	{ int				data; };
-struct ccsys_wait_options_t	{ int				data; };
+struct ccsys_waitpid_options_t	{ int				data; };
+struct ccsys_waitpid_status_t	{ int				data; };
 
 
 /** --------------------------------------------------------------------
@@ -375,7 +377,7 @@ enum ccsys_memory_advice_enum_t {
   @CCSYS_ENUM_DEF_CCSYS_MADV_FREE@
 };
 
-enum ccsys_process_wait_options_enum_t {
+enum ccsys_waitpid_options_enum_t {
   @CCSYS_ENUM_DEF_CCSYS_WNOHANG@
   @CCSYS_ENUM_DEF_CCSYS_WUNTRACED@
   @CCSYS_ENUM_DEF_CCSYS_WCONTINUED@
@@ -392,7 +394,7 @@ typedef enum ccsys_memory_remap_enum_t		ccsys_memory_remap_enum_t;
 typedef enum ccsys_memory_sync_enum_t		ccsys_memory_sync_enum_t;
 typedef enum ccsys_open_flags_enum_t		ccsys_open_flags_enum_t;
 typedef enum ccsys_open_mode_enum_t		ccsys_open_mode_enum_t;
-typedef enum ccsys_process_wait_options_enum_t	ccsys_process_wait_options_enum_t;
+typedef enum ccsys_waitpid_options_enum_t	ccsys_waitpid_options_enum_t;
 typedef enum ccsys_socket_namespace_enum_t	ccsys_socket_namespace_enum_t;
 typedef enum ccsys_socket_protocol_enum_t	ccsys_socket_protocol_enum_t;
 typedef enum ccsys_socket_style_enum_t		ccsys_socket_style_enum_t;
@@ -977,7 +979,7 @@ ccsys_decl void ccsys_execvp (cce_location_t * L, char const * filename, char * 
 
 /* ------------------------------------------------------------------ */
 
-ccsys_decl void ccsys_waitpid (cce_location_t * L, ccsys_pid_t pid, int * wstatus, ccsys_wait_options_t options)
+ccsys_decl void ccsys_waitpid (cce_location_t * L, ccsys_pid_t pid, ccsys_waitpid_status_t * wstatus, ccsys_waitpid_options_t options)
   __attribute__((__nonnull__(1,3)));
 
 

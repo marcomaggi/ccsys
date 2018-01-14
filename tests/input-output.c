@@ -169,8 +169,8 @@ test_4_1 (cce_destination_t upper_L)
 
       /* Wait for the child process. */
       {
-	ccsys_wait_options_t	options;
-	int			wstatus;
+	ccsys_waitpid_options_t	options;
+	ccsys_waitpid_status_t	wstatus;
 
 	options.data = 0;
 	ccsys_waitpid(L, pid, &wstatus, options);
@@ -324,8 +324,8 @@ test_4_2 (cce_destination_t upper_L)
 
       /* Wait for the child process. */
       {
-	ccsys_wait_options_t	options;
-	int			wstatus;
+	ccsys_waitpid_options_t	options;
+	ccsys_waitpid_status_t	wstatus;
 
 	options.data = 0;
 	ccsys_waitpid(L, pid, &wstatus, options);

@@ -501,11 +501,17 @@ type @objtype{ccsys_exit_status_enum_t}; @ref{ccsys_exit_status_enum_t, Enumerat
 @end deftp
 
 
-@anchor{ccsys_wait_options_t}
-@deftp {Semantic Type} ccsys_wait_options_t
+@anchor{ccsys_waitpid_status_t}
+@deftp {Semantic Type} ccsys_waitpid_status_t
+Type of the argument @var{wstatus} in @cfunc{ccsys_waitpid}.
+@end deftp
+
+
+@anchor{ccsys_waitpid_options_t}
+@deftp {Semantic Type} ccsys_waitpid_options_t
 Type of the argument @var{options} in @cfunc{ccsys_waitpid}.  It is meant to be a bitwise
-combination of the constants of type @objtype{ccsys_process_wait_options_enum_t};
-@ref{ccsys_process_wait_options_enum_t, Enumerated constants}.
+combination of the constants of type @objtype{ccsys_waitpid_options_enum_t};
+@ref{ccsys_waitpid_options_enum_t, Enumerated constants}.
 @end deftp
 
 @c page
@@ -852,8 +858,8 @@ A bitwise combination of these constants is meant to be used as value for argume
 @EnumeratedConstant{CCSYS_WNOHANG}
 @EnumeratedConstant{CCSYS_WUNTRACED}
 @EnumeratedConstant{CCSYS_WCONTINUED}
-@anchor{ccsys_process_wait_options_enum_t}
-@deftp {Enum Typedef} ccsys_process_wait_options_enum_t
+@anchor{ccsys_waitpid_options_enum_t}
+@deftp {Enum Typedef} ccsys_waitpid_options_enum_t
 Enumeration of constants representing process wait options.
 
 @example
@@ -1435,8 +1441,8 @@ sample (void)
 
       /* Wait for the child process. */
       @{
-        ccsys_wait_options_t    options;
-        int                     wstatus;
+        ccsys_waitpid_options_t options;
+        ccsys_waitpid_status_t  wstatus;
         options.data = 0;
         ccsys_waitpid(L, pid, &wstatus, options);
       @}
@@ -2334,7 +2340,7 @@ Wrapper for @cfunc{execvp}.
 @end deftypefun
 
 
-@deftypefun void ccsys_waitpid (cce_location_t * @var{L}, pid_t @var{pid}, int * @var{wstatus}, ccsys_wait_options_t @var{options})
+@deftypefun void ccsys_waitpid (cce_location_t * @var{L}, pid_t @var{pid}, ccsys_waitpid_status_t * @var{wstatus}, ccsys_waitpid_options_t @var{options})
 Wrapper for @cfunc{waitpid}.
 @end deftypefun
 
