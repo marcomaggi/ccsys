@@ -1815,6 +1815,130 @@ integer.
 Wrapper for @cfunc{lseek}.
 @end deftypefun
 
+@menu
+* io read write one::           @cfunc{ccsys_read} and @cfunc{ccsys_write}.
+* io read write two::           @cfunc{ccsys_pread} and @cfunc{ccsys_pwrite}.
+@end menu
+
+@c page
+@node io read write one
+@subsection @cfunc{ccsys_read} and @cfunc{ccsys_write}
+
+
+As example of using @cfunc{ccsys_read} and @cfunc{ccsys_write} see the following code which opens a
+file, writes bytes to it, reads bytes from it, closes the file, removes the file.
+
+@example
+cce_location_t          L[1];
+cce_cleanup_handler_t   filedes_H[1];
+cce_cleanup_handler_t   file_H[1];
+
+if (cce_location(L)) @{
+  cce_run_error_handlers_raise(L, upper_L);
+@} else @{
+  static char const * filename = "name.ext";
+  ccsys_fd_t          fd;
+
+  /* Create and open the file. */
+  @{
+    ccsys_open_flags_t        flags;
+    ccsys_open_mode_t         mode;
+    flags.data = CCSYS_O_CREAT | CCSYS_O_RDWR;
+    mode.data  = CCSYS_S_IRUSR | CCSYS_S_IWUSR;
+    fd = ccsys_open(L, filename, flags, mode);
+    ccsys_handler_filedes_init(L, filedes_H, fd);
+    ccsys_handler_remove_init(L, file_H, filename);
+  @}
+
+  /* Writing. */
+  @{
+    size_t    N;
+    size_t    len = 1024;
+    uint8_t   buf[len];
+    for (size_t i=0; i<len; ++i) @{
+      buf[i] = i%256;
+    @}
+    N = ccsys_write(L, fd, buf, len);
+  @}
+
+  /* Seeking. */
+  @{
+    ccsys_off_t       offset;
+    ccsys_whence_t    whence;
+    offset.data = 0;
+    whence.data = CCSYS_SEEK_SET;
+    offset = ccsys_lseek(L, fd, offset, whence);
+  @}
+
+  /* Reading. */
+  @{
+    size_t    N;
+    size_t    len = 1024;
+    uint8_t   buf[len];
+    N = ccsys_read(L, fd, buf, len);
+  @}
+
+  cce_run_cleanup_handlers(L);
+@}
+@end example
+
+@c page
+@node io read write two
+@subsection @cfunc{ccsys_pread} and @cfunc{ccsys_pwrite}
+
+
+As example of using @cfunc{ccsys_pread} and @cfunc{ccsys_pwrite} see the following code which opens
+a file, writes bytes to it, reads bytes from it, closes the file, removes the file.
+
+@example
+cce_location_t          L[1];
+cce_cleanup_handler_t   filedes_H[1];
+cce_cleanup_handler_t   file_H[1];
+
+if (cce_location(L)) @{
+  cce_run_error_handlers_raise(L, upper_L);
+@} else @{
+  static char const * filename = "name.ext";
+  ccsys_fd_t          fd;
+
+  /* Create and open the file. */
+  @{
+    ccsys_open_flags_t        flags;
+    ccsys_open_mode_t         mode;
+    flags.data = CCSYS_O_CREAT | CCSYS_O_RDWR;
+    mode.data  = CCSYS_S_IRUSR | CCSYS_S_IWUSR;
+    fd = ccsys_open(L, filename, flags, mode);
+    ccsys_handler_filedes_init(L, filedes_H, fd);
+    ccsys_handler_remove_init(L, file_H, filename);
+  @}
+
+  /* Writing. */
+  @{
+    size_t            N;
+    size_t            len = 1024;
+    uint8_t           buf[len];
+    ccsys_off_t       offset;
+    for (size_t i=0; i<len; ++i) @{
+      buf[i] = i%256;
+    @}
+    offset.data = 0;
+    N = ccsys_pwrite(L, fd, buf, len, offset);
+  @}
+
+  /* Reading. */
+  @{
+    size_t            N;
+    size_t            len = 1024;
+    uint8_t           buf[len];
+    ccsys_off_t       offset;
+
+    offset.data = 0;
+    N = ccsys_pread(L, fd, buf, len, offset);
+  @}
+  cce_run_cleanup_handlers(L);
+@}
+@end example
+
 @c page
 @node io scatter gather
 @section Scatter--gather input/output
