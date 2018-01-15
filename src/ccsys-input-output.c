@@ -227,11 +227,11 @@ ccsys_pwrite (cce_location_t * L, ccsys_fd_t filedes, const void *buffer, size_t
 
 #ifdef HAVE_LSEEK
 ccsys_off_t
-ccsys_lseek (cce_location_t * L, ccsys_fd_t filedes, ccsys_off_t offset, int whence)
+ccsys_lseek (cce_location_t * L, ccsys_fd_t filedes, ccsys_off_t offset, ccsys_whence_t whence)
 {
   off_t		rv;
   errno = 0;
-  rv = lseek (filedes.data, offset.data, whence);
+  rv = lseek (filedes.data, offset.data, whence.data);
   if (rv >= 0) {
     ccsys_off_t	off = { .data = rv };
     return off;

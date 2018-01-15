@@ -26,7 +26,7 @@
 
 
 /** --------------------------------------------------------------------
- ** Opening a file.
+ ** Input/output: opening a file.
  ** ----------------------------------------------------------------- */
 
 void
@@ -48,7 +48,7 @@ test_1_1 (cce_destination_t upper_L)
     mode.data  = CCSYS_S_IRUSR | CCSYS_S_IWUSR;
     fd = ccsys_open(L, filename, flags, mode);
     ccsys_handler_filedes_init(L, H, fd);
-    cctests_assert(0 != fd.data);
+    cctests_assert(L, 0 != fd.data);
     ccsys_remove(L, filename);
     cce_run_cleanup_handlers(L);
   }
@@ -98,7 +98,7 @@ test_2_1 (cce_destination_t upper_L)
 
       fd = ccsys_openat(L, dirfd, filename, flags, mode);
       ccsys_handler_filedes_init(L, file_H, fd);
-      cctests_assert(0 != fd.data);
+      cctests_assert(L, 0 != fd.data);
     }
 
     /* Remove the file. */
@@ -217,7 +217,7 @@ test_4_1_parent (cce_destination_t upper_L, char const * fifoname)
       char	inbuf[len];
       if (0) { fprintf(stderr, "%s: reading from %s\n", __func__, fifoname); }
       ccsys_read (L, infd, inbuf, len);
-      cctests_assert(0 == strncmp(inbuf, oubuf, len));
+      cctests_assert(L, 0 == strncmp(inbuf, oubuf, len));
       if (0) { fprintf(stderr, "%s: read input='%s' \n", __func__, inbuf); }
     }
 
@@ -372,7 +372,7 @@ test_4_2_parent (cce_destination_t upper_L, ccsys_dirfd_t dirfd, char const * fi
       char		inbuf[len];
       if (0) { fprintf(stderr, "%s: reading from %s\n", __func__, fifoname); }
       ccsys_read (L, infd, inbuf, len);
-      cctests_assert(0 == strncmp(inbuf, oubuf, len));
+      cctests_assert(L, 0 == strncmp(inbuf, oubuf, len));
       if (0) { fprintf(stderr, "%s: read input='%s' \n", __func__, inbuf); }
     }
 
@@ -422,7 +422,7 @@ test_4_2_child (ccsys_dirfd_t dirfd, char const * fifoname)
 
 
 /** --------------------------------------------------------------------
- ** Closing a file descriptor.
+ ** Input/output: closing a file descriptor.
  ** ----------------------------------------------------------------- */
 
 void
@@ -444,6 +444,146 @@ test_5_1 (cce_destination_t upper_L)
     fd = ccsys_open(L, filename, flags, mode);
     ccsys_close(L, fd);
     ccsys_remove(L, filename);
+    cce_run_cleanup_handlers(L);
+  }
+}
+
+
+/** --------------------------------------------------------------------
+ ** Input/output: reading and writing with read/write.
+ ** ----------------------------------------------------------------- */
+
+void
+test_6_1 (cce_destination_t upper_L)
+/* Open a file; write  bytes to it; read bytes from  it; close the file;
+   remove the file. */
+{
+  cce_location_t	  L[1];
+  cce_cleanup_handler_t   filedes_H[1];
+  cce_cleanup_handler_t   file_H[1];
+
+  if (cce_location(L)) {
+    cce_run_error_handlers_raise(L, upper_L);
+  } else {
+    static char const *	filename = "name.ext";
+    ccsys_fd_t		fd;
+
+    /* Create and open the file. */
+    {
+      ccsys_open_flags_t	flags;
+      ccsys_open_mode_t		mode;
+      flags.data = CCSYS_O_CREAT | CCSYS_O_RDWR;
+      mode.data  = CCSYS_S_IRUSR | CCSYS_S_IWUSR;
+      fd = ccsys_open(L, filename, flags, mode);
+      ccsys_handler_filedes_init(L, filedes_H, fd);
+      ccsys_handler_remove_init(L, file_H, filename);
+    }
+
+    /* Writing. */
+    {
+      size_t	N;
+      size_t	len = 1024;
+      uint8_t	buf[len];
+
+      for (size_t i=0; i<len; ++i) {
+	buf[i] = i%256;
+      }
+
+      N = ccsys_write(L, fd, buf, len);
+      cctests_assert(L, N == len);
+    }
+
+    /* Seeking. */
+    {
+      ccsys_off_t	offset;
+      ccsys_whence_t	whence;
+      offset.data = 0;
+      whence.data = CCSYS_SEEK_SET;
+      offset = ccsys_lseek(L, fd, offset, whence);
+      cctests_assert(L, 0 == offset.data);
+    }
+
+    /* Reading. */
+    {
+      size_t	N;
+      size_t	len = 1024;
+      uint8_t	buf[len];
+
+      N = ccsys_read(L, fd, buf, len);
+      cctests_assert(L, N == len);
+      for (size_t i=0; i<len; ++i) {
+	if (0) { fprintf(stderr, "%s: %lu %u\n", __func__, i%256, buf[i]); }
+	cctests_assert(L, (size_t)(buf[i]) == i%256);
+      }
+    }
+
+    cce_run_cleanup_handlers(L);
+  }
+}
+
+
+/** --------------------------------------------------------------------
+ ** Input/output: reading and writing with pread/pwrite.
+ ** ----------------------------------------------------------------- */
+
+void
+test_6_2 (cce_destination_t upper_L)
+/* Open a file; write  bytes to it; read bytes from  it; close the file;
+   remove the file. */
+{
+  cce_location_t	  L[1];
+  cce_cleanup_handler_t   filedes_H[1];
+  cce_cleanup_handler_t   file_H[1];
+
+  if (cce_location(L)) {
+    cce_run_error_handlers_raise(L, upper_L);
+  } else {
+    static char const *	filename = "name.ext";
+    ccsys_fd_t		fd;
+
+    /* Create and open the file. */
+    {
+      ccsys_open_flags_t	flags;
+      ccsys_open_mode_t		mode;
+      flags.data = CCSYS_O_CREAT | CCSYS_O_RDWR;
+      mode.data  = CCSYS_S_IRUSR | CCSYS_S_IWUSR;
+      fd = ccsys_open(L, filename, flags, mode);
+      ccsys_handler_filedes_init(L, filedes_H, fd);
+      ccsys_handler_remove_init(L, file_H, filename);
+    }
+
+    /* Writing. */
+    {
+      size_t		N;
+      size_t		len = 1024;
+      uint8_t		buf[len];
+      ccsys_off_t	offset;
+
+      for (size_t i=0; i<len; ++i) {
+	buf[i] = i%256;
+      }
+
+      offset.data = 0;
+      N = ccsys_pwrite(L, fd, buf, len, offset);
+      cctests_assert(L, N == len);
+    }
+
+    /* Reading. */
+    {
+      size_t		N;
+      size_t		len = 1024;
+      uint8_t		buf[len];
+      ccsys_off_t	offset;
+
+      offset.data = 0;
+      N = ccsys_pread(L, fd, buf, len, offset);
+      cctests_assert(L, N == len);
+      for (size_t i=0; i<len; ++i) {
+	if (0) { fprintf(stderr, "%s: %lu %u\n", __func__, i%256, buf[i]); }
+	cctests_assert(L, (size_t)(buf[i]) == i%256);
+      }
+    }
+
     cce_run_cleanup_handlers(L);
   }
 }
@@ -477,6 +617,13 @@ main (void)
     cctests_begin_group("file closing");
     {
       cctests_run(test_5_1);
+    }
+    cctests_end_group();
+
+    cctests_begin_group("file read/write");
+    {
+      cctests_run(test_6_1);
+      cctests_run(test_6_2);
     }
     cctests_end_group();
   }

@@ -394,7 +394,15 @@ Type of file descriptors for directories.  It is a singed integer.
 
 @anchor{ccsys_off_t}
 @deftp {Semantic Type} ccsys_off_t
-Type of offsets.  Is is a signed integer.
+Type of offsets.  It is a signed integer.
+@end deftp
+
+
+@anchor{ccsys_whence_t}
+@deftp {Semantic Type} ccsys_whence_t
+Type of @var{whence} arguments for file seek functions.  It is a signed integer.  It is meant to be
+one of the enumerated constants of type @objtype{ccsys_whence_enum_t}; @ref{ccsys_whence_enum_t,
+Enumerated constants}.
 @end deftp
 
 
@@ -612,6 +620,24 @@ CCSYS_S_ISUID   CCSYS_S_ISGID   CCSYS_S_ISVTX
 
 A bitwise combination of these constants is meant to be used as value for arguments of type
 @objtype{ccsys_open_mode_t}; @ref{ccsys_open_mode_t, Semantic type definitions}.
+@end deftp
+
+
+@EnumeratedConstant{CCSYS_SEEK_SET}
+@EnumeratedConstant{CCSYS_SEEK_CUR}
+@EnumeratedConstant{CCSYS_SEEK_END}
+@anchor{ccsys_whence_enum_t}
+@deftp {Enum Typedef} ccsys_whence_enum_t
+Type of @var{whence} arguments to file seek functions.  It defines the following constants:
+
+@example
+CCSYS_SEEK_SET
+CCSYS_SEEK_CUR
+CCSYS_SEEK_END
+@end example
+
+These constants are meant to be used as value for arguments of type @objtype{ccsys_whence_t};
+@ref{ccsys_whence_t, Semantic type definitions}.
 @end deftp
 
 
@@ -1785,7 +1811,7 @@ integer.
 @end deftypefun
 
 
-@deftypefun ccsys_off_t ccsys_lseek (cce_location_t * @var{L}, ccsys_fd_t @var{filedes}, ccsys_off_t @var{offset}, int @var{whence})
+@deftypefun ccsys_off_t ccsys_lseek (cce_location_t * @var{L}, ccsys_fd_t @var{filedes}, ccsys_off_t @var{offset}, ccsys_whence_t @var{whence})
 Wrapper for @cfunc{lseek}.
 @end deftypefun
 
