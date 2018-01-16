@@ -406,6 +406,15 @@ Enumerated constants}.
 @end deftp
 
 
+@anchor{ccsys_scatter_gather_flags_t}
+@deftp {Semantic Type} ccsys_scatter_gather_flags_t
+Type of @var{flags} arguments for some scatter/gather file input/output functions.  It is a signed
+integer.  It is meant to be a bitwise combination of the enumerated constants of type
+@objtype{ccsys_scatter_gather_flags_enum_t}; @ref{ccsys_scatter_gather_flags_enum_t, Enumerated
+constants}.
+@end deftp
+
+
 @anchor{ccsys_open_flags_t}
 @deftp {Semantic Type} ccsys_open_flags_t
 Exact signed integer representing file open flags.  It is meant to be a bitwise combination of the
@@ -638,6 +647,24 @@ CCSYS_SEEK_END
 
 These constants are meant to be used as value for arguments of type @objtype{ccsys_whence_t};
 @ref{ccsys_whence_t, Semantic type definitions}.
+@end deftp
+
+
+@EnumeratedConstant{CCSYS_RWF_HIPRI}
+@EnumeratedConstant{CCSYS_RWF_NOWAIT}
+@anchor{ccsys_scatter_gather_flags_enum_t}
+@deftp {Enum Typedef} ccsys_scatter_gather_flags_enum_t
+Type of @var{flags} arguments to some scatter/gather file input/output functions.  It defines the
+following constants:
+
+@example
+CCSYS_RWF_HIPRI
+CCSYS_RWF_NOWAIT
+@end example
+
+A bitwise combination of these constants is meant to be used as value for arguments of type
+@objtype{ccsys_scatter_gather_flags_t}; @ref{ccsys_scatter_gather_flags_t, Semantic type
+definitions}.
 @end deftp
 
 
@@ -1947,21 +1974,224 @@ if (cce_location(L)) @{
 @section Scatter--gather input/output
 
 
+For all the functions: notice the return value of type @objtype{size_t}: the negative values
+returned by the system function is consumed by the wrapper function, so either the return value is
+an unsigned integer or an exception is raised.
+
 The following symbols are defined in the header file @file{ccsys.h}.
+
+
+@deftp {Struct Typedef} ccsys_iovec_t
+Wrapper type for @objtype{struct iovec}.
+@end deftp
+
+
+@deftypefun {void **} ccsys_iovec_iov_base (ccsys_iovect_t const * @var{S})
+Return a pointer to the field @code{iov_base} in the structure referenced by @var{S}.
+@end deftypefun
+
+
+@deftypefun {size_t *} ccsys_iovec_iov_len (ccsys_iovect_t const * @var{S})
+Return a pointer to the field @code{iov_len} in the structure referenced by @var{S}.
+@end deftypefun
 
 
 @deftypefun size_t ccsys_readv (cce_location_t * @var{L}, ccsys_fd_t @var{filedes}, ccsys_iovec_t const * @var{vector}, int @var{count})
 Wrapper for @cfunc{readv}; @manpage{readv, Read from a file descriptor using multiple buffers}.
-Notice the return value of type @objtype{size_t}: the negative values returned by @cfunc{readv} are
-consumed by this function, so the return value is an unsigned integer.
 @end deftypefun
 
 
 @deftypefun size_t ccsys_writev (cce_location_t * @var{L}, ccsys_fd_t @var{filedes}, ccsys_iovec_t const * @var{vector}, int @var{count})
 Wrapper for @cfunc{writev}; @manpage{writev, Write to a file descriptor using multiple buffers}.
-Notice the return value of type @objtype{size_t}: the negative values returned by @cfunc{writev} are
-consumed by this function, so the return value is an unsigned integer.
 @end deftypefun
+
+
+@deftypefun size_t ccsys_preadv (cce_location_t * @var{L}, ccsys_fd_t @var{filedes}, ccsys_iovec_t const * @var{vector}, int @var{count}, ccsys_off_t @var{offset})
+Wrapper for @cfunc{preadv}; @manpage{preadv, Read from a file descriptor using multiple buffers}.
+@end deftypefun
+
+
+@deftypefun size_t ccsys_pwritev (cce_location_t * @var{L}, ccsys_fd_t @var{filedes}, ccsys_iovec_t const * @var{vector}, int @var{count}, ccsys_off_t @var{offset})
+Wrapper for @cfunc{pwritev}; @manpage{pwritev, Write to a file descriptor using multiple buffers}.
+@end deftypefun
+
+
+@deftypefun size_t ccsys_preadv2 (cce_location_t * @var{L}, ccsys_fd_t @var{filedes}, ccsys_iovec_t const * @var{vector}, int @var{count}, ccsys_off_t @var{offset}, ccsys_scatter_gather_flags_t @var{flags})
+Wrapper for @cfunc{preadv2}; @manpage{preadv2, Read from a file descriptor using multiple buffers}.
+@end deftypefun
+
+
+@deftypefun size_t ccsys_pwritev2 (cce_location_t * @var{L}, ccsys_fd_t @var{filedes}, ccsys_iovec_t const * @var{vector}, int @var{count}, ccsys_off_t @var{offset}, ccsys_scatter_gather_flags_t @var{flags})
+Wrapper for @cfunc{pwritev2}; @manpage{pwritev2, Write to a file descriptor using multiple buffers}.
+@end deftypefun
+
+@menu
+* io scatter gather one::       Using @cfunc{ccsys_readv} and @cfunc{ccsys_writev}.
+* io scatter gather two::       Using @cfunc{ccsys_preadv} and @cfunc{ccsys_pwritev}.
+@end menu
+
+@c page
+@node io scatter gather one
+@subsection Using @cfunc{ccsys_readv} and @cfunc{ccsys_writev}
+
+
+As example of using @cfunc{ccsys_readv} and @cfunc{ccsys_writev} see the following code which opens
+a file, writes bytes to it, reads bytes from it, closes the file, removes the file.
+
+@example
+cce_location_t          L[1];
+cce_cleanup_handler_t   filedes_H[1];
+cce_cleanup_handler_t   file_H[1];
+
+if (cce_location(L)) @{
+  cce_run_error_handlers_raise(L, upper_L);
+@} else @{
+  static char const * filename = "name.ext";
+  ccsys_fd_t          fd;
+
+  /* Create and open the file. */
+  @{
+    ccsys_open_flags_t        flags;
+    ccsys_open_mode_t         mode;
+    flags.data = CCSYS_O_CREAT | CCSYS_O_RDWR;
+    mode.data  = CCSYS_S_IRUSR | CCSYS_S_IWUSR;
+    fd = ccsys_open(L, filename, flags, mode);
+    ccsys_handler_filedes_init(L, filedes_H, fd);
+    ccsys_handler_remove_init(L, file_H, filename);
+  @}
+
+  /* Writing. */
+  @{
+    size_t            buf_count       = 4;
+    size_t            buf_len         = 25;
+    uint8_t           bufs[buf_count][buf_len];
+    ccsys_iovec_t     vec[buf_count];
+    size_t            N;
+
+    /* Fill the buffers with some known data. */
+    for (size_t i=0; i<buf_count; ++i) @{
+      for (size_t j=0; j<buf_len; ++j) @{
+        bufs[i][j] = j%256;
+      @}
+    @}
+
+    /* Initialise the vector of buffers. */
+    for (size_t i=0; i<buf_count; ++i) @{
+      *ccsys_iovec_iov_base(&vec[i])  = bufs[i];
+      *ccsys_iovec_iov_len(&vec[i])   = buf_len;
+    @}
+
+    N = ccsys_writev(L, fd, vec, buf_count);
+  @}
+
+  /* Seeking. */
+  @{
+    ccsys_off_t       offset;
+    ccsys_whence_t    whence;
+    offset.data = 0;
+    whence.data = CCSYS_SEEK_SET;
+    offset = ccsys_lseek(L, fd, offset, whence);
+  @}
+
+  /* Reading. */
+  @{
+    size_t            buf_count       = 4;
+    size_t            buf_len         = 25;
+    uint8_t           bufs[buf_count][buf_len];
+    ccsys_iovec_t     vec[buf_count];
+    size_t            N;
+
+    /* Initialise the vector of buffers. */
+    for (size_t i=0; i<buf_count; ++i) @{
+      *ccsys_iovec_iov_base(&vec[i])  = bufs[i];
+      *ccsys_iovec_iov_len(&vec[i])   = buf_len;
+    @}
+
+    N = ccsys_readv(L, fd, vec, buf_count);
+  @}
+
+  cce_run_cleanup_handlers(L);
+@}
+@end example
+
+@c page
+@node io scatter gather two
+@subsection Using @cfunc{ccsys_preadv} and @cfunc{ccsys_pwritev}
+
+
+As example of using @cfunc{ccsys_preadv} and @cfunc{ccsys_pwritev} see the following code which
+opens a file, writes bytes to it, reads bytes from it, closes the file, removes the file.
+
+@example
+cce_location_t          L[1];
+cce_cleanup_handler_t   filedes_H[1];
+cce_cleanup_handler_t   file_H[1];
+
+if (cce_location(L)) @{
+  cce_run_error_handlers_raise(L, upper_L);
+@} else @{
+  static char const * filename = "name.ext";
+  ccsys_fd_t          fd;
+
+  /* Create and open the file. */
+  @{
+    ccsys_open_flags_t        flags;
+    ccsys_open_mode_t         mode;
+    flags.data = CCSYS_O_CREAT | CCSYS_O_RDWR;
+    mode.data  = CCSYS_S_IRUSR | CCSYS_S_IWUSR;
+    fd = ccsys_open(L, filename, flags, mode);
+    ccsys_handler_filedes_init(L, filedes_H, fd);
+    ccsys_handler_remove_init(L, file_H, filename);
+  @}
+
+  /* Writing. */
+  @{
+    size_t            buf_count       = 4;
+    size_t            buf_len         = 25;
+    uint8_t           bufs[buf_count][buf_len];
+    ccsys_iovec_t     vec[buf_count];
+    ccsys_off_t       offset;
+    size_t            N;
+
+    /* Fill the buffers with some known data. */
+    for (size_t i=0; i<buf_count; ++i) @{
+      for (size_t j=0; j<buf_len; ++j) @{
+        bufs[i][j] = j%256;
+      @}
+    @}
+
+    /* Initialise the vector of buffers. */
+    for (size_t i=0; i<buf_count; ++i) @{
+      *ccsys_iovec_iov_base(&vec[i])  = bufs[i];
+      *ccsys_iovec_iov_len(&vec[i])   = buf_len;
+    @}
+
+    offset.data = 0;
+    N = ccsys_pwritev(L, fd, vec, buf_count, offset);
+  @}
+
+  /* Reading. */
+  @{
+    size_t            buf_count       = 4;
+    size_t            buf_len         = 25;
+    uint8_t           bufs[buf_count][buf_len];
+    ccsys_iovec_t     vec[buf_count];
+    ccsys_off_t       offset;
+    size_t            N;
+
+    /* Initialise the vector of buffers. */
+    for (size_t i=0; i<buf_count; ++i) @{
+      *ccsys_iovec_iov_base(&vec[i])  = bufs[i];
+      *ccsys_iovec_iov_len(&vec[i])   = buf_len;
+    @}
+
+    offset.data = 0;
+    N = ccsys_preadv(L, fd, vec, buf_count, offset);
+  @}
+
+  cce_run_cleanup_handlers(L);
+@}
+@end example
 
 @c page
 @node io dup

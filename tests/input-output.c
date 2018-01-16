@@ -20,6 +20,7 @@
 #include <ccexceptions.h>
 #include "cctests.h"
 #include "ccsys.h"
+#include "config.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -531,6 +532,7 @@ test_6_2 (cce_destination_t upper_L)
 /* Open a file; write  bytes to it; read bytes from  it; close the file;
    remove the file. */
 {
+#if ((defined HAVE_PREAD) && (defined HAVE_PWRITE))
   cce_location_t	  L[1];
   cce_cleanup_handler_t   filedes_H[1];
   cce_cleanup_handler_t   file_H[1];
@@ -586,6 +588,197 @@ test_6_2 (cce_destination_t upper_L)
 
     cce_run_cleanup_handlers(L);
   }
+#endif
+}
+
+
+/** --------------------------------------------------------------------
+ ** Input/output: scatter-gather reading and writing with readv/writev.
+ ** ----------------------------------------------------------------- */
+
+void
+test_7_1 (cce_destination_t upper_L)
+/* Open a file; write  bytes to it; read bytes from  it; close the file;
+   remove the file. */
+{
+#if ((defined HAVE_READV) && (defined HAVE_WRITEV))
+  cce_location_t	  L[1];
+  cce_cleanup_handler_t   filedes_H[1];
+  cce_cleanup_handler_t   file_H[1];
+
+  if (cce_location(L)) {
+    cce_run_error_handlers_raise(L, upper_L);
+  } else {
+    static char const *	filename = "name.ext";
+    ccsys_fd_t		fd;
+
+    /* Create and open the file. */
+    {
+      ccsys_open_flags_t	flags;
+      ccsys_open_mode_t		mode;
+      flags.data = CCSYS_O_CREAT | CCSYS_O_RDWR;
+      mode.data  = CCSYS_S_IRUSR | CCSYS_S_IWUSR;
+      fd = ccsys_open(L, filename, flags, mode);
+      ccsys_handler_filedes_init(L, filedes_H, fd);
+      ccsys_handler_remove_init(L, file_H, filename);
+    }
+
+    /* Writing. */
+    {
+      size_t		buf_count	= 4;
+      size_t		buf_len		= 25;
+      uint8_t		bufs[buf_count][buf_len];
+      ccsys_iovec_t	vec[buf_count];
+      size_t		N;
+
+      /* Fill the buffers with some known data. */
+      for (size_t i=0; i<buf_count; ++i) {
+	for (size_t j=0; j<buf_len; ++j) {
+	  bufs[i][j] = j%256;
+	  if (0) { fprintf(stderr, "%s: setting i=%lu j=%lu, val=%u\n", __func__, i, j, bufs[i][j]); }
+	}
+      }
+
+      /* Initialise the vector of buffers. */
+      for (size_t i=0; i<buf_count; ++i) {
+	*ccsys_iovec_iov_base(&vec[i])	= bufs[i];
+	*ccsys_iovec_iov_len(&vec[i])	= buf_len;
+      }
+
+      N = ccsys_writev(L, fd, vec, buf_count);
+      cctests_assert(L, N == (buf_count*buf_len));
+    }
+
+    /* Seeking. */
+    {
+      ccsys_off_t	offset;
+      ccsys_whence_t	whence;
+      offset.data = 0;
+      whence.data = CCSYS_SEEK_SET;
+      offset = ccsys_lseek(L, fd, offset, whence);
+      cctests_assert(L, 0 == offset.data);
+    }
+
+    /* Reading. */
+    {
+      size_t		buf_count	= 4;
+      size_t		buf_len		= 25;
+      uint8_t		bufs[buf_count][buf_len];
+      ccsys_iovec_t	vec[buf_count];
+      size_t		N;
+
+      /* Initialise the vector of buffers. */
+      for (size_t i=0; i<buf_count; ++i) {
+	*ccsys_iovec_iov_base(&vec[i])	= bufs[i];
+	*ccsys_iovec_iov_len(&vec[i])	= buf_len;
+      }
+
+      N = ccsys_readv(L, fd, vec, buf_count);
+      cctests_assert(L, N == (buf_count*buf_len));
+
+      for (size_t i=0; i<buf_count; ++i) {
+	for (size_t j=0; j<buf_len; ++j) {
+	  if (0) { fprintf(stderr, "%s: checking i=%lu j=%lu, expected=%lu, found=%u\n", __func__, i, j, j%256, bufs[i][j]); }
+	  cctests_assert(L, (size_t)(bufs[i][j]) == j%256);
+	}
+      }
+    }
+
+    cce_run_cleanup_handlers(L);
+  }
+#endif
+}
+
+
+/** --------------------------------------------------------------------
+ ** Input/output: scatter-gather reading and writing with preadv/pwritev.
+ ** ----------------------------------------------------------------- */
+
+void
+test_7_2 (cce_destination_t upper_L)
+/* Open a file; write  bytes to it; read bytes from  it; close the file;
+   remove the file. */
+{
+#if ((defined HAVE_PREADV) && (defined HAVE_PWRITEV))
+  cce_location_t	  L[1];
+  cce_cleanup_handler_t   filedes_H[1];
+  cce_cleanup_handler_t   file_H[1];
+
+  if (cce_location(L)) {
+    cce_run_error_handlers_raise(L, upper_L);
+  } else {
+    static char const *	filename = "name.ext";
+    ccsys_fd_t		fd;
+
+    /* Create and open the file. */
+    {
+      ccsys_open_flags_t	flags;
+      ccsys_open_mode_t		mode;
+      flags.data = CCSYS_O_CREAT | CCSYS_O_RDWR;
+      mode.data  = CCSYS_S_IRUSR | CCSYS_S_IWUSR;
+      fd = ccsys_open(L, filename, flags, mode);
+      ccsys_handler_filedes_init(L, filedes_H, fd);
+      ccsys_handler_remove_init(L, file_H, filename);
+    }
+
+    /* Writing. */
+    {
+      size_t		buf_count	= 4;
+      size_t		buf_len		= 25;
+      uint8_t		bufs[buf_count][buf_len];
+      ccsys_iovec_t	vec[buf_count];
+      ccsys_off_t	offset;
+      size_t		N;
+
+      /* Fill the buffers with some known data. */
+      for (size_t i=0; i<buf_count; ++i) {
+	for (size_t j=0; j<buf_len; ++j) {
+	  bufs[i][j] = j%256;
+	  if (0) { fprintf(stderr, "%s: setting i=%lu j=%lu, val=%u\n", __func__, i, j, bufs[i][j]); }
+	}
+      }
+
+      /* Initialise the vector of buffers. */
+      for (size_t i=0; i<buf_count; ++i) {
+	*ccsys_iovec_iov_base(&vec[i])	= bufs[i];
+	*ccsys_iovec_iov_len(&vec[i])	= buf_len;
+      }
+
+      offset.data = 0;
+      N = ccsys_pwritev(L, fd, vec, buf_count, offset);
+      cctests_assert(L, N == (buf_count*buf_len));
+    }
+
+    /* Reading. */
+    {
+      size_t		buf_count	= 4;
+      size_t		buf_len		= 25;
+      uint8_t		bufs[buf_count][buf_len];
+      ccsys_iovec_t	vec[buf_count];
+      ccsys_off_t	offset;
+      size_t		N;
+
+      /* Initialise the vector of buffers. */
+      for (size_t i=0; i<buf_count; ++i) {
+	*ccsys_iovec_iov_base(&vec[i])	= bufs[i];
+	*ccsys_iovec_iov_len(&vec[i])	= buf_len;
+      }
+
+      offset.data = 0;
+      N = ccsys_preadv(L, fd, vec, buf_count, offset);
+      cctests_assert(L, N == (buf_count*buf_len));
+
+      for (size_t i=0; i<buf_count; ++i) {
+	for (size_t j=0; j<buf_len; ++j) {
+	  if (0) { fprintf(stderr, "%s: checking i=%lu j=%lu, expected=%lu, found=%u\n", __func__, i, j, j%256, bufs[i][j]); }
+	  cctests_assert(L, (size_t)(bufs[i][j]) == j%256);
+	}
+      }
+    }
+
+    cce_run_cleanup_handlers(L);
+  }
+#endif
 }
 
 
@@ -624,6 +817,13 @@ main (void)
     {
       cctests_run(test_6_1);
       cctests_run(test_6_2);
+    }
+    cctests_end_group();
+
+    cctests_begin_group("file scatter-gather read/write");
+    {
+      cctests_run(test_7_1);
+      cctests_run(test_7_2);
     }
     cctests_end_group();
   }

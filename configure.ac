@@ -120,7 +120,8 @@ AC_DEFINE([_GNU_SOURCE],[1],[enable everything GNU])
 AC_FUNC_MALLOC
 
 AC_CHECK_FUNCS([mlock munlock mlockall munlockall])
-AC_CHECK_FUNCS([open openat close read pread write pwrite lseek readv writev])
+AC_CHECK_FUNCS([open openat close read pread write pwrite lseek])
+AC_CHECK_FUNCS([readv writev preadv pwritev preadv2 pwritev2])
 AC_CHECK_FUNCS([select dup dup2 pipe mkfifo mkfifoat])
 AC_CHECK_FUNCS([mmap munmap msync mprotect])
 AC_CHECK_FUNCS([getcwd chdir fchdir opendir fdopendir readdir closedir dirfd stat fstat lstat mkdir rmdir link linkat symlink symlinkat readlink readlinkat realpath unlink unlinkat remove rename chown fchown lchown fchownat chmod fchmod fchmodat access faccessat utime utimes truncate ftruncate])
@@ -274,6 +275,11 @@ CCSYS_MAYBE_ENUM_DEF([CCSYS_S_ISVTX],[S_ISVTX],[CCSYS_SYS_STAT_HEADER])
 CCSYS_MAYBE_ENUM_DEF([CCSYS_SEEK_SET],[SEEK_SET],[CCSYS_UNISTD_HEADER])
 CCSYS_MAYBE_ENUM_DEF([CCSYS_SEEK_CUR],[SEEK_CUR],[CCSYS_UNISTD_HEADER])
 CCSYS_MAYBE_ENUM_DEF([CCSYS_SEEK_END],[SEEK_END],[CCSYS_UNISTD_HEADER])
+
+# Flags for scatter-gather input/output.
+#
+CCSYS_MAYBE_ENUM_DEF([CCSYS_RWF_HIPRI],[RWF_HIPRI],[CCSYS_SYS_UIO_HEADER])
+CCSYS_MAYBE_ENUM_DEF([CCSYS_RWF_NOWAIT],[RWF_NOWAIT],[CCSYS_SYS_UIO_HEADER])
 
 # Flags for "unlinkat(2)".
 #

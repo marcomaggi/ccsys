@@ -248,9 +248,9 @@ ccsys_lseek (cce_location_t * L, ccsys_fd_t filedes, ccsys_off_t offset, ccsys_w
 
 #ifdef HAVE_READV
 size_t
-ccsys_readv (cce_location_t * L, ccsys_fd_t filedes, const ccsys_iovec_t * _vector, int count)
+ccsys_readv (cce_location_t * L, ccsys_fd_t filedes, ccsys_iovec_t const * _vector, int count)
 {
-  const struct iovec *	vector = (const struct iovec *)_vector;
+  struct iovec const *	vector = (struct iovec const *)_vector;
   ssize_t		rv;
   errno = 0;
   rv = readv(filedes.data, vector, count);
@@ -266,12 +266,90 @@ ccsys_readv (cce_location_t * L, ccsys_fd_t filedes, const ccsys_iovec_t * _vect
 
 #ifdef HAVE_WRITEV
 size_t
-ccsys_writev (cce_location_t * L, ccsys_fd_t filedes, const ccsys_iovec_t * _vector, int count)
+ccsys_writev (cce_location_t * L, ccsys_fd_t filedes, ccsys_iovec_t const * _vector, int count)
 {
-  const struct iovec *	vector = (const struct iovec *)_vector;
+  struct iovec const *	vector = (struct iovec const *)_vector;
   ssize_t		rv;
   errno = 0;
   rv = writev(filedes.data, vector, count);
+  if (rv >= 0) {
+    /* We  return  a  "size_t"  because   we  have  excluded  the  error
+       values. */
+    return (size_t)rv;
+  } else {
+    cce_raise(L, cce_condition_new_errno_clear());
+  }
+}
+#endif
+
+/* ------------------------------------------------------------------ */
+
+#ifdef HAVE_PREADV
+size_t
+ccsys_preadv (cce_location_t * L, ccsys_fd_t filedes, ccsys_iovec_t const * _vector, int count, ccsys_off_t offset)
+{
+  struct iovec const *	vector = (struct iovec const *)_vector;
+  ssize_t		rv;
+  errno = 0;
+  rv = preadv(filedes.data, vector, count, offset.data);
+  if (rv >= 0) {
+    /* We  return  a  "size_t"  because   we  have  excluded  the  error
+       values. */
+    return (size_t)rv;
+  } else {
+    cce_raise(L, cce_condition_new_errno_clear());
+  }
+}
+#endif
+
+#ifdef HAVE_PWRITEV
+size_t
+ccsys_pwritev (cce_location_t * L, ccsys_fd_t filedes, ccsys_iovec_t const * _vector, int count, ccsys_off_t offset)
+{
+  struct iovec const *	vector = (struct iovec const *)_vector;
+  ssize_t		rv;
+  errno = 0;
+  rv = pwritev(filedes.data, vector, count, offset.data);
+  if (rv >= 0) {
+    /* We  return  a  "size_t"  because   we  have  excluded  the  error
+       values. */
+    return (size_t)rv;
+  } else {
+    cce_raise(L, cce_condition_new_errno_clear());
+  }
+}
+#endif
+
+/* ------------------------------------------------------------------ */
+
+#ifdef HAVE_PREADV2
+size_t
+ccsys_preadv2 (cce_location_t * L, ccsys_fd_t filedes, ccsys_iovec_t const * _vector, int count,
+	       ccsys_off_t offset, ccsys_scatter_gather_flags_t flags)
+{
+  struct iovec const *	vector = (struct iovec const *)_vector;
+  ssize_t		rv;
+  errno = 0;
+  rv = preadv2(filedes.data, vector, count, offset.data, flags.data);
+  if (rv >= 0) {
+    /* We  return  a  "size_t"  because   we  have  excluded  the  error
+       values. */
+    return (size_t)rv;
+  } else {
+    cce_raise(L, cce_condition_new_errno_clear());
+  }
+}
+#endif
+
+#ifdef HAVE_PWRITEV2
+size_t
+ccsys_pwritev2 (cce_location_t * L, ccsys_fd_t filedes, ccsys_iovec_t const * _vector, int count,
+		ccsys_off_t offset, ccsys_scatter_gather_flags_t flags)
+{
+  struct iovec const *	vector = (struct iovec const *)_vector;
+  ssize_t		rv;
+  errno = 0;
+  rv = pwritev2(filedes.data, vector, count, offset.data, flags.data);
   if (rv >= 0) {
     /* We  return  a  "size_t"  because   we  have  excluded  the  error
        values. */
