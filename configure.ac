@@ -43,24 +43,19 @@ LT_INIT
 dnl page
 #### configuration
 
-case "$target_os" in
-  *linux*)
-    ccsys_OS_LINUX=yes
-    AC_MSG_NOTICE([detected OS: linux])
-    ;;
-  *bsd*)
-    ccsys_OS_BSD=yes
-    AC_MSG_NOTICE([detected OS: BSD])
-    ;;
-  *cygwin*)
-    ccsys_OS_CYGWIN=yes
-    AC_MSG_NOTICE([detected OS: CYGWIN])
-    ;;
-  *darwin*)
-    ccsys_OS_DARWIN=yes
-    AC_MSG_NOTICE([detected OS: DARWIN])
-    ;;
-esac
+AS_CASE("$target_os",
+  [*linux*],
+  [ccsys_OS_LINUX=yes
+   AC_MSG_NOTICE([detected OS: linux])],
+  [*bsd*],
+  [ccsys_OS_BSD=yes
+   AC_MSG_NOTICE([detected OS: BSD])],
+  [*cygwin*],
+  [ccsys_OS_CYGWIN=yes
+   AC_MSG_NOTICE([detected OS: CYGWIN])],
+  [*darwin*],
+  [ccsys_OS_DARWIN=yes
+   AC_MSG_NOTICE([detected OS: DARWIN])])
 AM_CONDITIONAL([ON_LINUX], [test "x$ccsys_OS_LINUX"  = xyes])
 AM_CONDITIONAL([ON_BSD],   [test "x$ccsys_OS_BSD"    = xyes])
 AM_CONDITIONAL([ON_CYGWIN],[test "x$ccsys_OS_CYGWIN" = xyes])
