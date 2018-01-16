@@ -1787,32 +1787,35 @@ The following symbols are defined in the header file @file{ccsys.h}.
 
 
 @deftypefun size_t ccsys_read (cce_location_t * @var{L}, ccsys_fd_t @var{filedes}, void * @var{buffer}, size_t @var{size})
-Wrapper for @cfunc{read}.  Notice the return value of type @objtype{size_t}: the negative values
-returned by @cfunc{read} are consumed by this function, so the return value is an unsigned integer.
+Wrapper for @cfunc{read}; @manpage{read, Read from a file descriptor}.  Notice the return value of
+type @objtype{size_t}: the negative values returned by @cfunc{read} are consumed by this function,
+so the return value is an unsigned integer.
 @end deftypefun
 
 
 @deftypefun size_t ccsys_pread (cce_location_t * @var{L}, ccsys_fd_t @var{filedes}, void * @var{buffer}, size_t @var{size}, ccsys_off_t @var{offset})
-Wrapper for @cfunc{pread}.  Notice the return value of type @objtype{size_t}: the negative values
-returned by @cfunc{pread} are consumed by this function, so the return value is an unsigned integer.
+Wrapper for @cfunc{pread}; @manpage{pread, Read from a file descriptor}.  Notice the return value of
+type @objtype{size_t}: the negative values returned by @cfunc{pread} are consumed by this function,
+so the return value is an unsigned integer.
 @end deftypefun
 
 
 @deftypefun size_t ccsys_write (cce_location_t * @var{L}, ccsys_fd_t @var{filedes}, void const * @var{buffer}, size_t @var{size})
-Wrapper for @cfunc{write}.  Notice the return value of type @objtype{size_t}: the negative values
-returned by @cfunc{write} are consumed by this function, so the return value is an unsigned integer.
+Wrapper for @cfunc{write}; @manpage{read, Write to a file descriptor}.  Notice the return value of
+type @objtype{size_t}: the negative values returned by @cfunc{write} are consumed by this function,
+so the return value is an unsigned integer.
 @end deftypefun
 
 
 @deftypefun size_t ccsys_pwrite (cce_location_t * @var{L}, ccsys_fd_t @var{filedes}, void const * @var{buffer}, size_t @var{size}, ccsys_off_t @var{offset})
-Wrapper for @cfunc{pwrite}.  Notice the return value of type @objtype{size_t}: the negative values
-returned by @cfunc{pwrite} are consumed by this function, so the return value is an unsigned
-integer.
+Wrapper for @cfunc{pwrite}; @manpage{pwrite, Writing to a file descriptor}.  Notice the return value
+of type @objtype{size_t}: the negative values returned by @cfunc{pwrite} are consumed by this
+function, so the return value is an unsigned integer.
 @end deftypefun
 
 
 @deftypefun ccsys_off_t ccsys_lseek (cce_location_t * @var{L}, ccsys_fd_t @var{filedes}, ccsys_off_t @var{offset}, ccsys_whence_t @var{whence})
-Wrapper for @cfunc{lseek}.
+Wrapper for @cfunc{lseek}; @manpage{lseek, Reposition a read/write file offset}.
 @end deftypefun
 
 @menu
@@ -1948,15 +1951,16 @@ The following symbols are defined in the header file @file{ccsys.h}.
 
 
 @deftypefun size_t ccsys_readv (cce_location_t * @var{L}, ccsys_fd_t @var{filedes}, ccsys_iovec_t const * @var{vector}, int @var{count})
-Wrapper for @cfunc{readv}.  Notice the return value of type @objtype{size_t}: the negative values
-returned by @cfunc{readv} are consumed by this function, so the return value is an unsigned integer.
+Wrapper for @cfunc{readv}; @manpage{readv, Read from a file descriptor using multiple buffers}.
+Notice the return value of type @objtype{size_t}: the negative values returned by @cfunc{readv} are
+consumed by this function, so the return value is an unsigned integer.
 @end deftypefun
 
 
 @deftypefun size_t ccsys_writev (cce_location_t * @var{L}, ccsys_fd_t @var{filedes}, ccsys_iovec_t const * @var{vector}, int @var{count})
-Wrapper for @cfunc{writev}.  Notice the return value of type @objtype{size_t}: the negative values
-returned by @cfunc{writev} are consumed by this function, so the return value is an unsigned
-integer.
+Wrapper for @cfunc{writev}; @manpage{writev, Write to a file descriptor using multiple buffers}.
+Notice the return value of type @objtype{size_t}: the negative values returned by @cfunc{writev} are
+consumed by this function, so the return value is an unsigned integer.
 @end deftypefun
 
 @c page
