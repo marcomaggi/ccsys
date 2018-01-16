@@ -105,7 +105,7 @@ extern "C" {
  *
  */
 #define CCSYS_STRUCT_ACCESSOR(FUNCNAME,STRUCT_TYPE,FIELD_TYPE,FIELD_OFFSET) \
-  __attribute__((__always_inline__,__nonnull__(1),__pure__))	\
+  __attribute__((__always_inline__,__nonnull__(1),__returns_nonnull__,__pure__))	\
   static inline FIELD_TYPE * FUNCNAME (STRUCT_TYPE const * S) { return (FIELD_TYPE *) &(S->data[FIELD_OFFSET]); }
 
 
@@ -668,9 +668,7 @@ ccsys_decl size_t ccsys_pwritev2 (cce_location_t * L, ccsys_fd_t filedes, ccsys_
 /* ------------------------------------------------------------------ */
 
 /* Accessors for "struct iovect". */
-__attribute__((__returns_nonnull__))
 CCSYS_STRUCT_ACCESSOR(ccsys_iovec_iov_base, ccsys_iovec_t, void *, @OFFSETOF_STRUCT_IOVEC_IOV_BASE@)
-
 CCSYS_STRUCT_ACCESSOR(ccsys_iovec_iov_len,  ccsys_iovec_t, size_t, @OFFSETOF_STRUCT_IOVEC_IOV_LEN@)
 
 
@@ -699,9 +697,9 @@ ccsys_decl int ccsys_select (cce_location_t * L, int nfds,
  ** File system: reading directory entries.
  ** ----------------------------------------------------------------- */
 
-/* Struct accessors. */
-__attribute__((__returns_nonnull__))
-CCSYS_STRUCT_ACCESSOR(ccsys_dirent_d_name, ccsys_dirent_t, char const *, @OFFSETOF_STRUCT_DIRENT_D_NAME@)
+CCSYS_STRUCT_ACCESSOR(ccsys_dirent_d_name, ccsys_dirent_t, char const, @OFFSETOF_STRUCT_DIRENT_D_NAME@)
+
+/* ------------------------------------------------------------------ */
 
 ccsys_decl ccsys_dir_t * ccsys_opendir (cce_location_t * L, char const * pathname)
   __attribute__((__nonnull__(1,2)));
