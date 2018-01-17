@@ -44,6 +44,7 @@ libccsys_la_SOURCES	= \
 	src/ccsys-file-system.c		\
 	src/ccsys-processes.c		\
 	src/ccsys-networking.c		\
+	src/ccsys-time.c		\
 	src/ccsys-version.c
 
 #page

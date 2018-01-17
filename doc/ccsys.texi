@@ -128,6 +128,7 @@ included in the section entitled ``@gnu{} Free Documentation License''.
 * fs::                          File system system calls.
 * sockets::                     Socket system calls.
 * process::                     Process system calls.
+* time::                        Time handling.
 
 Appendices
 
@@ -3116,6 +3117,45 @@ Wrapper for @cfunc{execvp}.
 @deftypefun void ccsys_waitpid (cce_location_t * @var{L}, pid_t @var{pid}, ccsys_waitpid_status_t * @var{wstatus}, ccsys_waitpid_options_t @var{options})
 Wrapper for @cfunc{waitpid}.
 @end deftypefun
+
+@c page
+@node time
+@chapter Time handling
+
+
+@menu
+* time structs::                Time structures.
+@end menu
+
+@c page
+@node time structs
+@section Time structures
+
+
+@deftp {Struct Typedef} ccsys_timespec_t
+Replacement of @code{struct timespec}.  It has the following fields:
+
+@table @code
+@item ccsys_seconds_t seconds
+The number of seconds.
+
+@item ccsys_microseconds_t microseconds
+The number of microseconds.
+@end table
+@end deftp
+
+
+@deftp {Struct Typedef} ccsys_timespec_t
+Replacement of @code{struct timespec}.  It has the following fields:
+
+@table @code
+@item ccsys_seconds_t seconds
+The number of seconds.
+
+@item ccsys_nanoseconds_t nanoseconds
+The number of nanoseconds.
+@end table
+@end deftp
 
 @c page
 @c ------------------------------------------------------------

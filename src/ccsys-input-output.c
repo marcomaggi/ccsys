@@ -424,9 +424,10 @@ ccsys_select (cce_location_t * L, int nfds,
 	      ccsys_fd_set_t * read_fds, ccsys_fd_set_t * write_fds, ccsys_fd_set_t * except_fds,
 	      ccsys_timeval_t * timeout)
 {
-  int	rv;
+  struct timeval	T = ccsys_timeval_to_timeval(*timeout);
+  int			rv;
   errno = 0;
-  rv = select(nfds, (fd_set *)read_fds, (fd_set *)write_fds, (fd_set *)except_fds, (struct timeval *)timeout);
+  rv = select(nfds, (fd_set *)read_fds, (fd_set *)write_fds, (fd_set *)except_fds, &T);
   if (-1 != rv) {
     return rv;
   } else {
@@ -441,10 +442,11 @@ ccsys_pselect (cce_location_t * L, int nfds,
 	       ccsys_fd_set_t * read_fds, ccsys_fd_set_t * write_fds, ccsys_fd_set_t * except_fds,
 	       ccsys_timespec_t * timeout, ccsys_sigset_t const * sigmask)
 {
-  int	rv;
+  struct timespec	T = ccsys_timespec_to_timespec(*timeout);
+  int			rv;
   errno = 0;
   rv = pselect(nfds, (fd_set *)read_fds, (fd_set *)write_fds, (fd_set *)except_fds,
-	       (struct timespec *)timeout, (sigset_t const *)sigmask);
+	       &T, (sigset_t const *)sigmask);
   if (-1 != rv) {
     return rv;
   } else {

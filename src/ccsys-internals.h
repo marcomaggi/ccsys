@@ -8,7 +8,7 @@
 	This  header  file is  for  internal  definitions.  It  must  be
 	included by all the source files in this package.
 
-  Copyright (C) 2016, 2017 Marco Maggi <marco.maggi-ipsu@poste.it>
+  Copyright (C) 2016, 2017, 2018 Marco Maggi <marco.maggi-ipsu@poste.it>
 
   This program is  free software: you can redistribute  it and/or modify
   it  under the  terms  of  the GNU  lesser  General  Public License  as
@@ -70,6 +70,18 @@ typedef bool _Bool;
 #  define true 1
 #  define __bool_true_false_are_defined 1
 #endif
+
+
+/** --------------------------------------------------------------------
+ ** Internal functions.
+ ** ----------------------------------------------------------------- */
+
+ccsys_private_decl struct timeval ccsys_timeval_to_timeval (ccsys_timeval_t in);
+ccsys_private_decl ccsys_timeval_t ccsys_timeval_from_timeval (struct timeval in);
+
+ccsys_private_decl struct timespec ccsys_timespec_to_timespec (ccsys_timespec_t in);
+ccsys_private_decl ccsys_timespec_t ccsys_timespec_from_timespec (struct timespec in);
+
 
 
 /** --------------------------------------------------------------------

@@ -207,8 +207,6 @@ typedef struct ccsys_sockaddr_in_t		ccsys_sockaddr_in_t;
 typedef struct ccsys_sockaddr_t			ccsys_sockaddr_t;
 typedef struct ccsys_sockaddr_un_t		ccsys_sockaddr_un_t;
 typedef struct ccsys_stat_t			ccsys_stat_t;
-typedef struct ccsys_timespec_t			ccsys_timespec_t;
-typedef struct ccsys_timeval_t			ccsys_timeval_t;
 typedef struct ccsys_utimbuf_t			ccsys_utimbuf_t;
 
 struct ccsys_dirent_t		{ uint8_t data[@SIZEOF_STRUCT_DIRENT@]; };
@@ -221,9 +219,29 @@ struct ccsys_sockaddr_in_t	{ uint8_t data[@SIZEOF_STRUCT_SOCKADDR_IN@]; };
 struct ccsys_sockaddr_t		{ uint8_t data[@SIZEOF_STRUCT_SOCKADDR@]; };
 struct ccsys_sockaddr_un_t	{ uint8_t data[@SIZEOF_STRUCT_SOCKADDR_UN@]; };
 struct ccsys_stat_t		{ uint8_t data[@SIZEOF_STRUCT_STAT@]; };
-struct ccsys_timespec_t		{ uint8_t data[@SIZEOF_STRUCT_TIMESPEC@]; };
-struct ccsys_timeval_t		{ uint8_t data[@SIZEOF_STRUCT_TIMEVAL@]; };
 struct ccsys_utimbuf_t		{ uint8_t data[@SIZEOF_STRUCT_UTIMBUF@]; };
+
+
+/** --------------------------------------------------------------------
+ ** Type definisions: time handling.
+ ** ----------------------------------------------------------------- */
+
+typedef long int			ccsys_seconds_t;
+typedef long int			ccsys_microseconds_t;
+typedef long int			ccsys_nanoseconds_t;
+
+typedef struct ccsys_timeval_t		ccsys_timeval_t;
+typedef struct ccsys_timespec_t		ccsys_timespec_t;
+
+struct ccsys_timeval_t {
+  ccsys_seconds_t	seconds;
+  ccsys_microseconds_t	microseconds;
+};
+
+struct ccsys_timespec_t {
+  ccsys_seconds_t	seconds;
+  ccsys_nanoseconds_t	nanoseconds;
+};
 
 
 /** --------------------------------------------------------------------
