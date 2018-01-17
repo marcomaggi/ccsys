@@ -1415,9 +1415,21 @@ The following symbols are defined in the header file @file{ccsys.h}.
 Wrapper for @cfunc{pipe}.  @manpage{pipe, Create pipes}.
 @end deftypefun
 
-@c ------------------------------------------------------------------------
 
-@subsubheading Pipe handlers
+@deftypefun void ccsys_pipe2 (cce_location_t * @var{L}, ccsys_fd_t @var{pipefd}[2], ccsys_open_flags_t @var{flags})
+Wrapper for @cfunc{pipe2}.  @manpage{pipe2, Create pipes}.
+@end deftypefun
+
+@menu
+* io pipes handlers::           Pipes cleanup and error handlers.
+* io pipes one::                Using @cfunc{ccsys_pipe}.
+* io pipes two::                Using @cfunc{ccsys_pipe2}.
+@end menu
+
+@c page
+@node io pipes handlers
+@subsection Pipes cleanup and error handlers
+
 
 We can handle file descriptors that must be released with the standard function @cfunc{close} as
 follows:
@@ -1460,6 +1472,98 @@ The macro expands into a call to @cfunc{ccsys_cleanup_handler_pipedes_init}.
 The macro expands into a call to @cfunc{ccsys_error_handler_pipedes_init}.
 @end table
 @end deftypefn
+
+@c page
+@node io pipes one
+@subsection Using @cfunc{ccsys_pipe}
+
+
+As usage example of @cfunc{ccsys_pipe} see the following code.
+
+@example
+cce_location_t          L[1];
+cce_cleanup_handler_t   H[1];
+
+if (cce_location(L)) @{
+  cce_run_error_handlers_raise(L, upper_L);
+@} else @{
+  ccsys_fd_t    pipefd[2];
+
+  /* Create the pipe. */
+  @{
+    ccsys_pipe(L, pipefd);
+    ccsys_handler_pipedes_init(L, H, pipefd);
+  @}
+
+  /* Write to the pipe. */
+  @{
+    char *    buf = "0123456789";
+    size_t    len = strlen(buf);
+    size_t    N;
+    N = ccsys_write(L, pipefd[1], buf, len);
+    assert(N == len);
+  @}
+
+  /* Read from the pipe. */
+  @{
+    size_t    len = 256;
+    char      buf[len];
+    size_t    N;
+    N = ccsys_read(L, pipefd[0], buf, len);
+    assert(N == strlen("0123456789"));
+    assert(0 == strncmp(buf, "0123456789", N));
+  @}
+
+  cce_run_cleanup_handlers(L);
+@}
+@end example
+
+@c page
+@node io pipes two
+@subsection Using @cfunc{ccsys_pipe2}
+
+
+As usage example of @cfunc{ccsys_pipe2} see the following code.
+
+@example
+cce_location_t          L[1];
+cce_cleanup_handler_t   H[1];
+
+if (cce_location(L)) @{
+  cce_run_error_handlers_raise(L, upper_L);
+@} else @{
+  ccsys_fd_t          pipefd[2];
+
+  /* Create the pipe. */
+  @{
+    ccsys_open_flags_t        flags;
+    flags.data = CCSYS_O_CLOEXEC;
+    ccsys_pipe2(L, pipefd, flags);
+    ccsys_handler_pipedes_init(L, H, pipefd);
+  @}
+
+  /* Write to the pipe. */
+  @{
+    char *    buf = "0123456789";
+    size_t    len = strlen(buf);
+    size_t    N;
+    N = ccsys_write(L, pipefd[1], buf, len);
+    assert(N == len);
+  @}
+
+  /* Read from the pipe. */
+  @{
+    size_t    len = 256;
+    char      buf[len];
+    size_t    N;
+    N = ccsys_read(L, pipefd[0], buf, len);
+    assert(N == strlen("0123456789"));
+    assert(0 == strncmp(buf, "0123456789", N));
+  @}
+
+  cce_run_cleanup_handlers(L);
+@}
+@end example
 
 @c page
 @node io fifos

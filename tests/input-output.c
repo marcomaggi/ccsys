@@ -129,8 +129,75 @@ test_3_1 (cce_destination_t upper_L)
     cce_run_error_handlers_raise(L, upper_L);
   } else {
     ccsys_fd_t    pipefd[2];
-    ccsys_pipe(L, pipefd);
-    ccsys_handler_pipedes_init(L, H, pipefd);
+
+    /* Create the pipe. */
+    {
+      ccsys_pipe(L, pipefd);
+      ccsys_handler_pipedes_init(L, H, pipefd);
+    }
+
+    /* Write to the pipe. */
+    {
+      char *	buf = "0123456789";
+      size_t	len = strlen(buf);
+      size_t	N;
+      N = ccsys_write(L, pipefd[1], buf, len);
+      cctests_assert(L, N == len);
+    }
+
+    /* Read from the pipe. */
+    {
+      size_t	len = 256;
+      char	buf[len];
+      size_t	N;
+      N = ccsys_read(L, pipefd[0], buf, len);
+      cctests_assert(L, N == strlen("0123456789"));
+      cctests_assert(L, 0 == strncmp(buf, "0123456789", N));
+    }
+
+    cce_run_cleanup_handlers(L);
+  }
+}
+
+void
+test_3_2 (cce_destination_t upper_L)
+/* Open a pipe with "ccsys_pipe2()". */
+{
+  cce_location_t	  L[1];
+  cce_cleanup_handler_t   H[1];
+
+  if (cce_location(L)) {
+    cce_run_error_handlers_raise(L, upper_L);
+  } else {
+    ccsys_fd_t		pipefd[2];
+
+    /* Create the pipe. */
+    {
+      ccsys_open_flags_t	flags;
+      flags.data = CCSYS_O_CLOEXEC;
+      ccsys_pipe2(L, pipefd, flags);
+      ccsys_handler_pipedes_init(L, H, pipefd);
+    }
+
+    /* Write to the pipe. */
+    {
+      char *	buf = "0123456789";
+      size_t	len = strlen(buf);
+      size_t	N;
+      N = ccsys_write(L, pipefd[1], buf, len);
+      cctests_assert(L, N == len);
+    }
+
+    /* Read from the pipe. */
+    {
+      size_t	len = 256;
+      char	buf[len];
+      size_t	N;
+      N = ccsys_read(L, pipefd[0], buf, len);
+      cctests_assert(L, N == strlen("0123456789"));
+      cctests_assert(L, 0 == strncmp(buf, "0123456789", N));
+    }
+
     cce_run_cleanup_handlers(L);
   }
 }
@@ -1438,6 +1505,7 @@ main (void)
     cctests_begin_group("file pipes");
     {
       cctests_run(test_3_1);
+      cctests_run(test_3_2);
     }
     cctests_end_group();
 
