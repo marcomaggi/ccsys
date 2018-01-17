@@ -57,6 +57,12 @@ AC_DEFUN([CCSYS_NETDB_HEADER],[
 #endif
 ])
 
+AC_DEFUN([CCSYS_SYS_SELECT_HEADER],[
+#ifdef HAVE_SYS_SELECT_H
+#  include <sys/select.h>
+#endif
+])
+
 AC_DEFUN([CCSYS_SYS_SOCKET_HEADER],[
 #ifdef HAVE_SYS_SOCKET_H
 #  include <sys/socket.h>

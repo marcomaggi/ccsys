@@ -189,7 +189,6 @@ struct ccsys_whence_t			{ int				data; };
 /* ------------------------------------------------------------------ */
 /* The ones below are opaque types. */
 
-typedef struct ccsys_sigset_t			ccsys_sigset_t;
 typedef struct ccsys_dir_t			ccsys_dir_t;
 
 
@@ -202,6 +201,7 @@ typedef struct ccsys_fd_set_t			ccsys_fd_set_t;
 typedef struct ccsys_hostent_t			ccsys_hostent_t;
 typedef struct ccsys_in_addr_t			ccsys_in_addr_t;
 typedef struct ccsys_iovec_t			ccsys_iovec_t;
+typedef struct ccsys_sigset_t			ccsys_sigset_t;
 typedef struct ccsys_sockaddr_in6_t		ccsys_sockaddr_in6_t;
 typedef struct ccsys_sockaddr_in_t		ccsys_sockaddr_in_t;
 typedef struct ccsys_sockaddr_t			ccsys_sockaddr_t;
@@ -214,6 +214,7 @@ struct ccsys_fd_set_t		{ uint8_t data[@SIZEOF_STRUCT_FD_SET@]; };
 struct ccsys_hostent_t		{ uint8_t data[@SIZEOF_STRUCT_HOSTENT@]; };
 struct ccsys_in_addr_t		{ uint8_t data[@SIZEOF_STRUCT_IN_ADDR@]; };
 struct ccsys_iovec_t		{ uint8_t data[@SIZEOF_STRUCT_IOVEC@]; };
+struct ccsys_sigset_t		{ uint8_t data[@SIZEOF_SIGSET_T@]; };
 struct ccsys_sockaddr_in6_t	{ uint8_t data[@SIZEOF_STRUCT_SOCKADDR_IN6@]; };
 struct ccsys_sockaddr_in_t	{ uint8_t data[@SIZEOF_STRUCT_SOCKADDR_IN@]; };
 struct ccsys_sockaddr_t		{ uint8_t data[@SIZEOF_STRUCT_SOCKADDR@]; };
@@ -583,6 +584,24 @@ ccsys_decl void ccsys_madvise (cce_location_t * L, void * address, size_t length
 
 
 /** --------------------------------------------------------------------
+ ** Input/output: file descriptor utilities.
+ ** ----------------------------------------------------------------- */
+
+static inline bool
+ccsys_fd_equal (ccsys_fd_t fd1, ccsys_fd_t fd2)
+{
+  return (fd1.data == fd2.data)? true : false;
+}
+
+static inline ccsys_fd_t
+ccsys_fd_incr (ccsys_fd_t fd)
+{
+  ccsys_fd_t	rv = { .data = 1 + fd.data };
+  return rv;
+}
+
+
+/** --------------------------------------------------------------------
  ** Input/output: opening files.
  ** ----------------------------------------------------------------- */
 
@@ -721,20 +740,20 @@ ccsys_decl ccsys_fd_t ccsys_dup3 (cce_location_t * L, ccsys_fd_t old, ccsys_fd_t
  ** Input/output: waiting for input/output.
  ** ----------------------------------------------------------------- */
 
-ccsys_decl int ccsys_select (cce_location_t * L, int nfds,
+ccsys_decl int ccsys_select (cce_location_t * L, ccsys_fd_t nfds,
 			     ccsys_fd_set_t * read_fds, ccsys_fd_set_t * write_fds, ccsys_fd_set_t * except_fds,
 			     ccsys_timeval_t * timeout)
   __attribute__((__nonnull__(1)));
 
-ccsys_decl int ccsys_pselect (cce_location_t * L, int nfds,
+ccsys_decl int ccsys_pselect (cce_location_t * L, ccsys_fd_t nfds,
 			      ccsys_fd_set_t * read_fds, ccsys_fd_set_t * write_fds, ccsys_fd_set_t * except_fds,
 			      ccsys_timespec_t * timeout, ccsys_sigset_t const * sigmask)
   __attribute__((__nonnull__(1)));
 
 /* ------------------------------------------------------------------ */
 
-ccsys_decl void ccsys_fd_clr   (ccsys_fd_set_t * fds)
-  __attribute__((__nonnull__(1)));
+ccsys_decl void ccsys_fd_clr   (ccsys_fd_t fd, ccsys_fd_set_t * fds)
+  __attribute__((__nonnull__(2)));
 
 ccsys_decl bool ccsys_fd_isset (ccsys_fd_t fd, ccsys_fd_set_t * fds)
   __attribute__((__nonnull__(2)));
@@ -1036,8 +1055,26 @@ ccsys_decl void ccsys_futimes (cce_location_t * L, ccsys_fd_t filedes, ccsys_tim
 ccsys_decl int ccsys_system (cce_location_t * L, char const * command)
   __attribute__((__nonnull__(1,2)));
 
+/* ------------------------------------------------------------------ */
+
 ccsys_decl ccsys_pid_t ccsys_fork (cce_location_t * L)
   __attribute__((__nonnull__(1)));
+
+__attribute__((__always_inline__))
+static inline bool
+ccsys_in_parent_after_fork (ccsys_pid_t pid)
+{
+  return (pid.data)? true : false;
+}
+
+__attribute__((__always_inline__))
+static inline bool
+ccsys_in_child_after_fork (ccsys_pid_t pid)
+{
+  return (pid.data)? false : true;
+}
+
+/* ------------------------------------------------------------------ */
 
 ccsys_decl void ccsys_exit (ccsys_exit_status_t status)
   __attribute__((__noreturn__));

@@ -993,6 +993,436 @@ test_8_3 (cce_destination_t upper_L)
 }
 
 
+/** --------------------------------------------------------------------
+ ** Input/output: waiting for input/output events with "ccsys_select()".
+ ** ----------------------------------------------------------------- */
+
+static void test_9_1_parent (cce_destination_t upper_L, ccsys_fd_t infd, ccsys_fd_t oufd);
+static void test_9_1_child  (ccsys_fd_t infd, ccsys_fd_t oufd);
+
+void
+test_9_1 (cce_destination_t upper_L)
+{
+  ccsys_fd_t	parent_in_fd, parent_ou_fd;
+  ccsys_fd_t	 child_in_fd,  child_ou_fd;
+
+  /* Allocate the pipes. */
+  {
+    cce_location_t		L[1];
+    ccsys_fd_t			forwards[2];
+    ccsys_fd_t			backwards[2];
+    cce_error_handler_t		forwards_H[1];
+    cce_error_handler_t		backwards_H[1];
+
+    if (cce_location(L)) {
+      cce_run_error_handlers_raise(L, upper_L);
+    } else {
+      ccsys_pipe(L, forwards);
+      ccsys_handler_pipedes_init(L, forwards_H, forwards);
+      ccsys_pipe(L, backwards);
+      ccsys_handler_pipedes_init(L, backwards_H, backwards);
+      cce_run_cleanup_handlers(L);
+    }
+
+    /* Here the  pipes have been  allocated.  Now split them  into their
+       role. */
+    parent_in_fd = forwards[0];
+    parent_ou_fd = backwards[1];
+    child_in_fd  = backwards[0];
+    child_ou_fd  = forwards[1];
+  }
+
+  /* Fork the process and call the appropriate functions. */
+  {
+    cce_location_t	L[1];
+    ccsys_pid_t		pid;
+
+    if (cce_location(L)) {
+      cce_run_error_handlers_raise(L, upper_L);
+    } else {
+      pid = ccsys_fork(L);
+      if (ccsys_in_parent_after_fork(pid)) {
+	test_9_1_parent(L, parent_in_fd, parent_ou_fd);
+
+	/* Wait for the child process. */
+	{
+	  ccsys_waitpid_options_t	options;
+	  ccsys_waitpid_status_t	wstatus;
+
+	  options.data = 0;
+	  ccsys_waitpid(L, pid, &wstatus, options);
+	}
+      } else {
+	test_9_1_child(child_in_fd, child_ou_fd);
+
+	/* Terminate the child process. */
+	{
+	  ccsys_exit_status_t	status;
+	  status.data = CCSYS_EXIT_SUCCESS;
+	  ccsys_exit(status);
+	}
+      }
+      cce_run_cleanup_handlers(L);
+    }
+  }
+}
+
+void
+test_9_1_parent (cce_destination_t upper_L, ccsys_fd_t infd, ccsys_fd_t oufd)
+{
+  cce_location_t	L[1];
+  cce_cleanup_handler_t	infd_H[1];
+  cce_cleanup_handler_t	oufd_H[1];
+
+  if (cce_location(L)) {
+    cce_run_error_handlers_raise(L, upper_L);
+  } else {
+    ccsys_handler_filedes_init(L, infd_H, infd);
+    ccsys_handler_filedes_init(L, oufd_H, oufd);
+
+    /* Wait for the output file descriptor to be writable. */
+    {
+      ccsys_fd_t	nfds;
+      ccsys_fd_set_t	write_fds;
+      ccsys_timeval_t	timeout;
+      int		rv;
+
+      ccsys_fd_zero(&write_fds);
+      ccsys_fd_set(oufd, &write_fds);
+      nfds			= ccsys_fd_incr(oufd);
+      timeout.seconds		= 1;
+      timeout.microseconds	= 0;
+      rv = ccsys_select(L, nfds, NULL, &write_fds, NULL, &timeout);
+      cctests_assert(L, 1 == rv);
+      cctests_assert(L, ccsys_fd_isset(oufd, &write_fds));
+    }
+
+    /* Write to the output file descriptor. */
+    {
+      char *	buf = "hello child";
+      size_t	len = strlen(buf);
+      size_t	N;
+      N = ccsys_write(L, oufd, buf, len);
+      cctests_assert(L, N == len);
+    }
+
+    /* Wait for the input file descriptor to be readable. */
+    {
+      ccsys_fd_t	nfds;
+      ccsys_fd_set_t	read_fds;
+      ccsys_timeval_t	timeout;
+      int		rv;
+
+      nfds			= ccsys_fd_incr(infd);
+      ccsys_fd_zero(&read_fds);
+      ccsys_fd_set(infd, &read_fds);
+      timeout.seconds		= 1;
+      timeout.microseconds	= 0;
+      rv = ccsys_select(L, nfds, &read_fds, NULL, NULL, &timeout);
+      cctests_assert(L, 1 == rv);
+      cctests_assert(L, ccsys_fd_isset(infd, &read_fds));
+    }
+
+    /* Read from the input file descriptor. */
+    {
+      size_t	len = 256;
+      char	buf[len];
+      size_t	N;
+      N = ccsys_read(L, infd, buf, len);
+      cctests_assert(L, 0 == strncmp(buf, "hello parent", N));
+    }
+
+    cce_run_cleanup_handlers(L);
+  }
+}
+
+void
+test_9_1_child (ccsys_fd_t infd, ccsys_fd_t oufd)
+{
+  cce_location_t	L[1];
+  cce_cleanup_handler_t	infd_H[1];
+  cce_cleanup_handler_t	oufd_H[1];
+
+  if (cce_location(L)) {
+    cce_run_error_handlers_final(L);
+  } else {
+    ccsys_handler_filedes_init(L, infd_H, infd);
+    ccsys_handler_filedes_init(L, oufd_H, oufd);
+
+    /* Wait for the input file descriptor to be readable. */
+    {
+      ccsys_fd_t	nfds;
+      ccsys_fd_set_t	read_fds;
+      ccsys_timeval_t	timeout;
+      int		rv;
+
+      ccsys_fd_zero(&read_fds);
+      ccsys_fd_set(infd, &read_fds);
+      nfds			= ccsys_fd_incr(infd);
+      timeout.seconds		= 1;
+      timeout.microseconds	= 0;
+      rv = ccsys_select(L, nfds, &read_fds, NULL, NULL, &timeout);
+      cctests_assert(L, 1 == rv);
+      cctests_assert(L, ccsys_fd_isset(infd, &read_fds));
+    }
+
+    /* Read from the input file descriptor. */
+    {
+      size_t	len = 256;
+      char	buf[len];
+      size_t	N;
+      N = ccsys_read(L, infd, buf, len);
+      cctests_assert(L, 0 == strncmp(buf, "hello child", N));
+    }
+
+    /* Wait for the output file descriptor to be writable. */
+    {
+      ccsys_fd_t	nfds;
+      ccsys_fd_set_t	write_fds;
+      ccsys_timeval_t	timeout;
+      int		rv;
+
+      ccsys_fd_zero(&write_fds);
+      ccsys_fd_set(oufd, &write_fds);
+      nfds			= ccsys_fd_incr(oufd);
+      timeout.seconds		= 1;
+      timeout.microseconds	= 0;
+      rv = ccsys_select(L, nfds, NULL, &write_fds, NULL, &timeout);
+      cctests_assert(L, 1 == rv);
+      cctests_assert(L, ccsys_fd_isset(oufd, &write_fds));
+    }
+
+    /* Write to the output file descriptor. */
+    {
+      char *	buf = "hello parent";
+      size_t	len = strlen(buf);
+      size_t	N;
+      N = ccsys_write(L, oufd, buf, len);
+      cctests_assert(L, N == len);
+    }
+
+    cce_run_cleanup_handlers(L);
+  }
+}
+
+
+/** --------------------------------------------------------------------
+ ** Input/output: waiting for input/output events with "ccsys_pselect()".
+ ** ----------------------------------------------------------------- */
+
+static void test_9_2_parent (cce_destination_t upper_L, ccsys_fd_t infd, ccsys_fd_t oufd);
+static void test_9_2_child  (ccsys_fd_t infd, ccsys_fd_t oufd);
+
+void
+test_9_2 (cce_destination_t upper_L)
+{
+  ccsys_fd_t	parent_in_fd, parent_ou_fd;
+  ccsys_fd_t	 child_in_fd,  child_ou_fd;
+
+  /* Allocate the pipes. */
+  {
+    cce_location_t		L[1];
+    ccsys_fd_t			forwards[2];
+    ccsys_fd_t			backwards[2];
+    cce_error_handler_t		forwards_H[1];
+    cce_error_handler_t		backwards_H[1];
+
+    if (cce_location(L)) {
+      cce_run_error_handlers_raise(L, upper_L);
+    } else {
+      ccsys_pipe(L, forwards);
+      ccsys_handler_pipedes_init(L, forwards_H, forwards);
+      ccsys_pipe(L, backwards);
+      ccsys_handler_pipedes_init(L, backwards_H, backwards);
+      cce_run_cleanup_handlers(L);
+    }
+
+    /* Here the  pipes have been  allocated.  Now split them  into their
+       role. */
+    parent_in_fd = forwards[0];
+    parent_ou_fd = backwards[1];
+    child_in_fd  = backwards[0];
+    child_ou_fd  = forwards[1];
+  }
+
+  /* Fork the process and call the appropriate functions. */
+  {
+    cce_location_t	L[1];
+    ccsys_pid_t		pid;
+
+    if (cce_location(L)) {
+      cce_run_error_handlers_raise(L, upper_L);
+    } else {
+      pid = ccsys_fork(L);
+      if (ccsys_in_parent_after_fork(pid)) {
+	test_9_2_parent(L, parent_in_fd, parent_ou_fd);
+
+	/* Wait for the child process. */
+	{
+	  ccsys_waitpid_options_t	options;
+	  ccsys_waitpid_status_t	wstatus;
+
+	  options.data = 0;
+	  ccsys_waitpid(L, pid, &wstatus, options);
+	}
+      } else {
+	test_9_2_child(child_in_fd, child_ou_fd);
+
+	/* Terminate the child process. */
+	{
+	  ccsys_exit_status_t	status;
+	  status.data = CCSYS_EXIT_SUCCESS;
+	  ccsys_exit(status);
+	}
+      }
+      cce_run_cleanup_handlers(L);
+    }
+  }
+}
+
+void
+test_9_2_parent (cce_destination_t upper_L, ccsys_fd_t infd, ccsys_fd_t oufd)
+{
+  cce_location_t	L[1];
+  cce_cleanup_handler_t	infd_H[1];
+  cce_cleanup_handler_t	oufd_H[1];
+
+  if (cce_location(L)) {
+    cce_run_error_handlers_raise(L, upper_L);
+  } else {
+    ccsys_handler_filedes_init(L, infd_H, infd);
+    ccsys_handler_filedes_init(L, oufd_H, oufd);
+
+    /* Wait for the output file descriptor to be writable. */
+    {
+      ccsys_fd_t	nfds;
+      ccsys_fd_set_t	write_fds;
+      ccsys_timespec_t	timeout;
+      ccsys_sigset_t	sigmask;
+      int		rv;
+
+      ccsys_fd_zero(&write_fds);
+      ccsys_fd_set(oufd, &write_fds);
+      nfds			= ccsys_fd_incr(oufd);
+      timeout.seconds		= 1;
+      timeout.nanoseconds	= 0;
+      rv = ccsys_pselect(L, nfds, NULL, &write_fds, NULL, &timeout, &sigmask);
+      cctests_assert(L, 1 == rv);
+      cctests_assert(L, ccsys_fd_isset(oufd, &write_fds));
+    }
+
+    /* Write to the output file descriptor. */
+    {
+      char *	buf = "hello child";
+      size_t	len = strlen(buf);
+      size_t	N;
+      N = ccsys_write(L, oufd, buf, len);
+      cctests_assert(L, N == len);
+    }
+
+    /* Wait for the input file descriptor to be readable. */
+    {
+      ccsys_fd_t	nfds;
+      ccsys_fd_set_t	read_fds;
+      ccsys_timespec_t	timeout;
+      ccsys_sigset_t	sigmask;
+      int		rv;
+
+      nfds			= ccsys_fd_incr(infd);
+      ccsys_fd_zero(&read_fds);
+      ccsys_fd_set(infd, &read_fds);
+      timeout.seconds		= 1;
+      timeout.nanoseconds	= 0;
+      rv = ccsys_pselect(L, nfds, &read_fds, NULL, NULL, &timeout, &sigmask);
+      cctests_assert(L, 1 == rv);
+      cctests_assert(L, ccsys_fd_isset(infd, &read_fds));
+    }
+
+    /* Read from the input file descriptor. */
+    {
+      size_t	len = 256;
+      char	buf[len];
+      size_t	N;
+      N = ccsys_read(L, infd, buf, len);
+      cctests_assert(L, 0 == strncmp(buf, "hello parent", N));
+    }
+
+    cce_run_cleanup_handlers(L);
+  }
+}
+
+void
+test_9_2_child (ccsys_fd_t infd, ccsys_fd_t oufd)
+{
+  cce_location_t	L[1];
+  cce_cleanup_handler_t	infd_H[1];
+  cce_cleanup_handler_t	oufd_H[1];
+
+  if (cce_location(L)) {
+    cce_run_error_handlers_final(L);
+  } else {
+    ccsys_handler_filedes_init(L, infd_H, infd);
+    ccsys_handler_filedes_init(L, oufd_H, oufd);
+
+    /* Wait for the input file descriptor to be readable. */
+    {
+      ccsys_fd_t	nfds;
+      ccsys_fd_set_t	read_fds;
+      ccsys_timespec_t	timeout;
+      ccsys_sigset_t	sigmask;
+      int		rv;
+
+      ccsys_fd_zero(&read_fds);
+      ccsys_fd_set(infd, &read_fds);
+      nfds			= ccsys_fd_incr(infd);
+      timeout.seconds		= 1;
+      timeout.nanoseconds	= 0;
+      rv = ccsys_pselect(L, nfds, &read_fds, NULL, NULL, &timeout, &sigmask);
+      cctests_assert(L, 1 == rv);
+      cctests_assert(L, ccsys_fd_isset(infd, &read_fds));
+    }
+
+    /* Read from the input file descriptor. */
+    {
+      size_t	len = 256;
+      char	buf[len];
+      size_t	N;
+      N = ccsys_read(L, infd, buf, len);
+      cctests_assert(L, 0 == strncmp(buf, "hello child", N));
+    }
+
+    /* Wait for the output file descriptor to be writable. */
+    {
+      ccsys_fd_t	nfds;
+      ccsys_fd_set_t	write_fds;
+      ccsys_timespec_t	timeout;
+      ccsys_sigset_t	sigmask;
+      int		rv;
+
+      ccsys_fd_zero(&write_fds);
+      ccsys_fd_set(oufd, &write_fds);
+      nfds			= ccsys_fd_incr(oufd);
+      timeout.seconds		= 1;
+      timeout.nanoseconds	= 0;
+      rv = ccsys_pselect(L, nfds, NULL, &write_fds, NULL, &timeout, &sigmask);
+      cctests_assert(L, 1 == rv);
+      cctests_assert(L, ccsys_fd_isset(oufd, &write_fds));
+    }
+
+    /* Write to the output file descriptor. */
+    {
+      char *	buf = "hello parent";
+      size_t	len = strlen(buf);
+      size_t	N;
+      N = ccsys_write(L, oufd, buf, len);
+      cctests_assert(L, N == len);
+    }
+
+    cce_run_cleanup_handlers(L);
+  }
+}
+
+
 int
 main (void)
 {
@@ -1043,6 +1473,13 @@ main (void)
       cctests_run(test_8_1);
       cctests_run(test_8_2);
       cctests_run(test_8_3);
+    }
+    cctests_end_group();
+
+    cctests_begin_group("waiting for input/output events");
+    {
+      cctests_run(test_9_1);
+      cctests_run(test_9_2);
     }
     cctests_end_group();
   }

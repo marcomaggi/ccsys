@@ -440,12 +440,6 @@ Enumerated constants}.
 @end deftp
 
 
-@anchor{ccsys_sigset_t}
-@deftp {Semantic Type} ccsys_sigset_t
-Alias for the opaque type @code{sigset_t}.
-@end deftp
-
-
 @anchor{ccsys_unlinkat_flags_t}
 @deftp {Semantic Type} ccsys_unlinkat_flags_t
 Exact signed integer representing an @code{at()} function flag.  It is meant to be a bitwise
@@ -1262,6 +1256,7 @@ The argument @var{advice} is meant to be a bitwise combination of the constants 
 
 @menu
 * io constants::                Global constants.
+* io fds::                      File descriptor helpers.
 * io open::                     Opening files.
 * io pipes::                    Creating pipes.
 * io fifos::                    Creating FIFOs.
@@ -1269,12 +1264,19 @@ The argument @var{advice} is meant to be a bitwise combination of the constants 
 * io read write::               Reading and writing files.
 * io scatter gather::           Scatter-gather input/output.
 * io dup::                      Duplicating file descriptors.
-* io waiting::                  Waiting for input/output.
+* io select::                   Waiting for input/output.
 @end menu
 
 @c page
 @node io constants
 @section Global constants
+
+
+@cindex Standard file descriptors
+@cindex File descriptors, standard
+
+
+The following symbols are defined in the header file @file{ccsys.h}.
 
 
 @deftypevr Constant {ccsys_fd_t const} CCSYS_FD_STDIN
@@ -1290,6 +1292,26 @@ Constant representing the standard output file descriptor.
 @deftypevr Constant {ccsys_fd_t const} CCSYS_FD_STDERR
 Constant representing the standard error file descriptor.
 @end deftypevr
+
+@c page
+@node io fds
+@section File descriptor helpers
+
+
+The following symbols are defined in the header file @file{ccsys.h}.
+
+
+@deftypefun bool ccsys_fd_equal (ccsys_fd_t @vari{fd}, ccsys_fd_t @varii{fd})
+Return @true{} if the arguments are equal, otherwise return @false{}.  We can also perform this
+operation using the @code{=} operator.
+@end deftypefun
+
+
+@deftypefun ccsys_fd_t ccsys_fd_incr (ccsys_fd_t @var{fd})
+Increment the file descriptor in @var{fd} and return the result.  This function is useful to
+generate the first argument to @cfunc{ccsys_select}; @ref{io select, ccsys_select} for details.
+@end deftypefun
+
 
 @c page
 @node io open
@@ -2409,7 +2431,7 @@ if (cce_location(L)) @{
     flags.data        = CCSYS_O_CLOEXEC;
     fdx.data          = 123;
     fdx = ccsys_dup3(L, fd, fdx, flags);
-    assert(L, 123 == fdx.data);
+    assert(123 == fdx.data);
   @}
 
   /* Write to the original file descriptor. */
@@ -2437,7 +2459,7 @@ if (cce_location(L)) @{
 @end example
 
 @c page
-@node io waiting
+@node io select
 @section Waiting for input/output
 
 
@@ -2454,7 +2476,13 @@ Wrapper for @cfunc{pselect}; @manpage{pselect, Synchronous input/output multiple
 @end deftypefun
 
 
-@deftypefun void ccsys_fd_clr (ccsys_fd_set_t * @var{fds})
+@anchor{ccsys_sigset_t}
+@deftp {Struct Typedef} ccsys_sigset_t
+Wrapper for @code{sigset_t}.
+@end deftp
+
+
+@deftypefun void ccsys_fd_clr (ccsys_fd_t @var{fd}, ccsys_fd_set_t * @var{fds})
 Wrapper for @cfunc{FD_CLR}; @manpage{FD_CLR, Synchronous input/output multiplexing}.
 @end deftypefun
 
@@ -2472,6 +2500,460 @@ Wrapper for @cfunc{FD_SET}; @manpage{FD_SET, Synchronous input/output multiplexi
 @deftypefun void ccsys_fd_zero (ccsys_fd_set_t * @var{fds})
 Wrapper for @cfunc{FD_ZERO}; @manpage{FD_ZERO, Synchronous input/output multiplexing}.
 @end deftypefun
+
+
+@menu
+* io select one::               Using @cfunc{ccsys_select}.
+* io select two::               Using @cfunc{ccsys_pselect}.
+@end menu
+
+@c page
+@node io select one
+@subsection Using @cfunc{ccsys_select}
+
+
+As example of using @cfunc{ccsys_select} see the following code which forks a child process and
+communicates with it through pipes.
+
+@smallexample
+static void doit_parent (cce_destination_t upper_L,
+                         ccsys_fd_t infd, ccsys_fd_t oufd);
+static void doit_child  (ccsys_fd_t infd, ccsys_fd_t oufd);
+
+void
+doit (cce_destination_t upper_L)
+@{
+  ccsys_fd_t    parent_in_fd, parent_ou_fd;
+  ccsys_fd_t     child_in_fd,  child_ou_fd;
+
+  /* Allocate the pipes. */
+  @{
+    cce_location_t              L[1];
+    ccsys_fd_t                  forwards[2];
+    ccsys_fd_t                  backwards[2];
+    cce_error_handler_t         forwards_H[1];
+    cce_error_handler_t         backwards_H[1];
+
+    if (cce_location(L)) @{
+      cce_run_error_handlers_raise(L, upper_L);
+    @} else @{
+      ccsys_pipe(L, forwards);
+      ccsys_handler_pipedes_init(L, forwards_H, forwards);
+      ccsys_pipe(L, backwards);
+      ccsys_handler_pipedes_init(L, backwards_H, backwards);
+      cce_run_cleanup_handlers(L);
+    @}
+
+    /* Here the pipes have been allocated.
+       Now split them into their role. */
+    parent_in_fd = forwards[0];
+    parent_ou_fd = backwards[1];
+    child_in_fd  = backwards[0];
+    child_ou_fd  = forwards[1];
+  @}
+
+  /* Fork the process and call the appropriate functions. */
+  @{
+    cce_location_t      L[1];
+    ccsys_pid_t         pid;
+
+    if (cce_location(L)) @{
+      cce_run_error_handlers_raise(L, upper_L);
+    @} else @{
+      pid = ccsys_fork(L);
+      if (ccsys_in_parent_after_fork(pid)) @{
+        doit_parent(L, parent_in_fd, parent_ou_fd);
+
+        /* Wait for the child process. */
+        @{
+          ccsys_waitpid_options_t       options;
+          ccsys_waitpid_status_t        wstatus;
+
+          options.data = 0;
+          ccsys_waitpid(L, pid, &wstatus, options);
+        @}
+      @} else @{
+        doit_child(child_in_fd, child_ou_fd);
+
+        /* Terminate the child process. */
+        @{
+          ccsys_exit_status_t   status;
+          status.data = CCSYS_EXIT_SUCCESS;
+          ccsys_exit(status);
+        @}
+      @}
+      cce_run_cleanup_handlers(L);
+    @}
+  @}
+@}
+
+void
+doit_parent (cce_destination_t upper_L,
+             ccsys_fd_t infd, ccsys_fd_t oufd)
+@{
+  cce_location_t        L[1];
+  cce_cleanup_handler_t infd_H[1];
+  cce_cleanup_handler_t oufd_H[1];
+
+  if (cce_location(L)) @{
+    cce_run_error_handlers_raise(L, upper_L);
+  @} else @{
+    ccsys_handler_filedes_init(L, infd_H, infd);
+    ccsys_handler_filedes_init(L, oufd_H, oufd);
+
+    /* Wait for the output file descriptor to be writable. */
+    @{
+      ccsys_fd_t        nfds;
+      ccsys_fd_set_t    write_fds;
+      ccsys_timeval_t   timeout;
+      int               rv;
+
+      ccsys_fd_zero(&write_fds);
+      ccsys_fd_set(oufd, &write_fds);
+      nfds                      = ccsys_fd_incr(oufd);
+      timeout.seconds           = 1;
+      timeout.microseconds      = 0;
+      rv = ccsys_select(L, nfds, NULL, &write_fds, NULL, &timeout);
+      assert(1 == rv);
+      assert(ccsys_fd_isset(oufd, &write_fds));
+    @}
+
+    /* Write to the output file descriptor. */
+    @{
+      char *    buf = "hello child";
+      size_t    len = strlen(buf);
+      size_t    N;
+      N = ccsys_write(L, oufd, buf, len);
+      assert(N == len);
+    @}
+
+    /* Wait for the input file descriptor to be readable. */
+    @{
+      ccsys_fd_t        nfds;
+      ccsys_fd_set_t    read_fds;
+      ccsys_timeval_t   timeout;
+      int               rv;
+
+      nfds                      = ccsys_fd_incr(infd);
+      ccsys_fd_zero(&read_fds);
+      ccsys_fd_set(infd, &read_fds);
+      timeout.seconds           = 1;
+      timeout.microseconds      = 0;
+      rv = ccsys_select(L, nfds, &read_fds, NULL, NULL, &timeout);
+      assert(1 == rv);
+      assert(ccsys_fd_isset(infd, &read_fds));
+    @}
+
+    /* Read from the input file descriptor. */
+    @{
+      size_t    len = 256;
+      char      buf[len];
+      size_t    N;
+      N = ccsys_read(L, infd, buf, len);
+      assert(0 == strncmp(buf, "hello parent", N));
+    @}
+
+    cce_run_cleanup_handlers(L);
+  @}
+@}
+
+void
+doit_child (ccsys_fd_t infd, ccsys_fd_t oufd)
+@{
+  cce_location_t        L[1];
+  cce_cleanup_handler_t infd_H[1];
+  cce_cleanup_handler_t oufd_H[1];
+
+  if (cce_location(L)) @{
+    cce_run_error_handlers_final(L);
+  @} else @{
+    ccsys_handler_filedes_init(L, infd_H, infd);
+    ccsys_handler_filedes_init(L, oufd_H, oufd);
+
+    /* Wait for the input file descriptor to be readable. */
+    @{
+      ccsys_fd_t        nfds;
+      ccsys_fd_set_t    read_fds;
+      ccsys_timeval_t   timeout;
+      int               rv;
+
+      ccsys_fd_zero(&read_fds);
+      ccsys_fd_set(infd, &read_fds);
+      nfds                      = ccsys_fd_incr(infd);
+      timeout.seconds           = 1;
+      timeout.microseconds      = 0;
+      rv = ccsys_select(L, nfds, &read_fds, NULL, NULL, &timeout);
+      assert(1 == rv);
+      assert(ccsys_fd_isset(infd, &read_fds));
+    @}
+
+    /* Read from the input file descriptor. */
+    @{
+      size_t    len = 256;
+      char      buf[len];
+      size_t    N;
+      N = ccsys_read(L, infd, buf, len);
+      assert(0 == strncmp(buf, "hello child", N));
+    @}
+
+    /* Wait for the output file descriptor to be writable. */
+    @{
+      ccsys_fd_t        nfds;
+      ccsys_fd_set_t    write_fds;
+      ccsys_timeval_t   timeout;
+      int               rv;
+
+      ccsys_fd_zero(&write_fds);
+      ccsys_fd_set(oufd, &write_fds);
+      nfds                      = ccsys_fd_incr(oufd);
+      timeout.seconds           = 1;
+      timeout.microseconds      = 0;
+      rv = ccsys_select(L, nfds, NULL, &write_fds, NULL, &timeout);
+      assert(1 == rv);
+      assert(ccsys_fd_isset(oufd, &write_fds));
+    @}
+
+    /* Write to the output file descriptor. */
+    @{
+      char *    buf = "hello parent";
+      size_t    len = strlen(buf);
+      size_t    N;
+      N = ccsys_write(L, oufd, buf, len);
+      assert(N == len);
+    @}
+
+    cce_run_cleanup_handlers(L);
+  @}
+@}
+@end smallexample
+
+@c page
+@node io select two
+@subsection Using @cfunc{ccsys_pselect}
+
+
+As example of using @cfunc{ccsys_pselect} see the following code which forks a child process and
+communicates with it through pipes.
+
+@smallexample
+static void doit_parent (cce_destination_t upper_L,
+                         ccsys_fd_t infd, ccsys_fd_t oufd);
+static void doit_child  (ccsys_fd_t infd, ccsys_fd_t oufd);
+
+void
+doit (cce_destination_t upper_L)
+@{
+  ccsys_fd_t    parent_in_fd, parent_ou_fd;
+  ccsys_fd_t     child_in_fd,  child_ou_fd;
+
+  /* Allocate the pipes. */
+  @{
+    cce_location_t              L[1];
+    ccsys_fd_t                  forwards[2];
+    ccsys_fd_t                  backwards[2];
+    cce_error_handler_t         forwards_H[1];
+    cce_error_handler_t         backwards_H[1];
+
+    if (cce_location(L)) @{
+      cce_run_error_handlers_raise(L, upper_L);
+    @} else @{
+      ccsys_pipe(L, forwards);
+      ccsys_handler_pipedes_init(L, forwards_H, forwards);
+      ccsys_pipe(L, backwards);
+      ccsys_handler_pipedes_init(L, backwards_H, backwards);
+      cce_run_cleanup_handlers(L);
+    @}
+
+    /* Here the pipes have been allocated.
+       Now split them into their role. */
+    parent_in_fd = forwards[0];
+    parent_ou_fd = backwards[1];
+    child_in_fd  = backwards[0];
+    child_ou_fd  = forwards[1];
+  @}
+
+  /* Fork the process and call the appropriate functions. */
+  @{
+    cce_location_t      L[1];
+    ccsys_pid_t         pid;
+
+    if (cce_location(L)) @{
+      cce_run_error_handlers_raise(L, upper_L);
+    @} else @{
+      pid = ccsys_fork(L);
+      if (ccsys_in_parent_after_fork(pid)) @{
+        doit_parent(L, parent_in_fd, parent_ou_fd);
+
+        /* Wait for the child process. */
+        @{
+          ccsys_waitpid_options_t       options;
+          ccsys_waitpid_status_t        wstatus;
+
+          options.data = 0;
+          ccsys_waitpid(L, pid, &wstatus, options);
+        @}
+      @} else @{
+        doit_child(child_in_fd, child_ou_fd);
+
+        /* Terminate the child process. */
+        @{
+          ccsys_exit_status_t   status;
+          status.data = CCSYS_EXIT_SUCCESS;
+          ccsys_exit(status);
+        @}
+      @}
+      cce_run_cleanup_handlers(L);
+    @}
+  @}
+@}
+
+void
+doit_parent (cce_destination_t upper_L,
+             ccsys_fd_t infd, ccsys_fd_t oufd)
+@{
+  cce_location_t        L[1];
+  cce_cleanup_handler_t infd_H[1];
+  cce_cleanup_handler_t oufd_H[1];
+
+  if (cce_location(L)) @{
+    cce_run_error_handlers_raise(L, upper_L);
+  @} else @{
+    ccsys_handler_filedes_init(L, infd_H, infd);
+    ccsys_handler_filedes_init(L, oufd_H, oufd);
+
+    /* Wait for the output file descriptor to be writable. */
+    @{
+      ccsys_fd_t        nfds;
+      ccsys_fd_set_t    write_fds;
+      ccsys_timespec_t  timeout;
+      ccsys_sigset_t    sigmask;
+      int               rv;
+
+      ccsys_fd_zero(&write_fds);
+      ccsys_fd_set(oufd, &write_fds);
+      nfds                      = ccsys_fd_incr(oufd);
+      timeout.seconds           = 1;
+      timeout.nanoseconds       = 0;
+      rv = ccsys_pselect(L, nfds, NULL, &write_fds, NULL,
+                         &timeout, &sigmask);
+      assert(1 == rv);
+      assert(ccsys_fd_isset(oufd, &write_fds));
+    @}
+
+    /* Write to the output file descriptor. */
+    @{
+      char *    buf = "hello child";
+      size_t    len = strlen(buf);
+      size_t    N;
+      N = ccsys_write(L, oufd, buf, len);
+      assert(N == len);
+    @}
+
+    /* Wait for the input file descriptor to be readable. */
+    @{
+      ccsys_fd_t        nfds;
+      ccsys_fd_set_t    read_fds;
+      ccsys_timespec_t  timeout;
+      ccsys_sigset_t    sigmask;
+      int               rv;
+
+      nfds                      = ccsys_fd_incr(infd);
+      ccsys_fd_zero(&read_fds);
+      ccsys_fd_set(infd, &read_fds);
+      timeout.seconds           = 1;
+      timeout.nanoseconds       = 0;
+      rv = ccsys_pselect(L, nfds, &read_fds, NULL, NULL,
+                         &timeout, &sigmask);
+      assert(1 == rv);
+      assert(ccsys_fd_isset(infd, &read_fds));
+    @}
+
+    /* Read from the input file descriptor. */
+    @{
+      size_t    len = 256;
+      char      buf[len];
+      size_t    N;
+      N = ccsys_read(L, infd, buf, len);
+      assert(0 == strncmp(buf, "hello parent", N));
+    @}
+
+    cce_run_cleanup_handlers(L);
+  @}
+@}
+
+void
+doit_child (ccsys_fd_t infd, ccsys_fd_t oufd)
+@{
+  cce_location_t        L[1];
+  cce_cleanup_handler_t infd_H[1];
+  cce_cleanup_handler_t oufd_H[1];
+
+  if (cce_location(L)) @{
+    cce_run_error_handlers_final(L);
+  @} else @{
+    ccsys_handler_filedes_init(L, infd_H, infd);
+    ccsys_handler_filedes_init(L, oufd_H, oufd);
+
+    /* Wait for the input file descriptor to be readable. */
+    @{
+      ccsys_fd_t        nfds;
+      ccsys_fd_set_t    read_fds;
+      ccsys_timespec_t  timeout;
+      ccsys_sigset_t    sigmask;
+      int               rv;
+
+      ccsys_fd_zero(&read_fds);
+      ccsys_fd_set(infd, &read_fds);
+      nfds                      = ccsys_fd_incr(infd);
+      timeout.seconds           = 1;
+      timeout.nanoseconds       = 0;
+      rv = ccsys_pselect(L, nfds, &read_fds, NULL, NULL,
+                         &timeout, &sigmask);
+      assert(1 == rv);
+      assert(ccsys_fd_isset(infd, &read_fds));
+    @}
+
+    /* Read from the input file descriptor. */
+    @{
+      size_t    len = 256;
+      char      buf[len];
+      size_t    N;
+      N = ccsys_read(L, infd, buf, len);
+      assert(0 == strncmp(buf, "hello child", N));
+    @}
+
+    /* Wait for the output file descriptor to be writable. */
+    @{
+      ccsys_fd_t        nfds;
+      ccsys_fd_set_t    write_fds;
+      ccsys_timespec_t  timeout;
+      ccsys_sigset_t    sigmask;
+      int               rv;
+
+      ccsys_fd_zero(&write_fds);
+      ccsys_fd_set(oufd, &write_fds);
+      nfds                      = ccsys_fd_incr(oufd);
+      timeout.seconds           = 1;
+      timeout.nanoseconds       = 0;
+      rv = ccsys_pselect(L, nfds, NULL, &write_fds, NULL,
+                         &timeout, &sigmask);
+      assert(1 == rv);
+      assert(ccsys_fd_isset(oufd, &write_fds));
+    @}
+
+    /* Write to the output file descriptor. */
+    @{
+      char *    buf = "hello parent";
+      size_t    len = strlen(buf);
+      size_t    N;
+      N = ccsys_write(L, oufd, buf, len);
+      assert(N == len);
+    @}
+
+    cce_run_cleanup_handlers(L);
+  @}
+@}
+@end smallexample
 
 @c page
 @node fs
@@ -3094,10 +3576,25 @@ Wrapper for @cfunc{exit}.
 @end deftypefun
 
 
-@deftypefun pid_t ccsys_fork (cce_location_t * @var{L})
+@deftypefun ccsys_pid_t ccsys_fork (cce_location_t * @var{L})
 Wrapper for @cfunc{fork}.
 @end deftypefun
 
+
+@deftypefun bool ccsys_in_parent_after_fork (ccsys_pid_t @var{pid})
+The argument @var{pid} must be the return value of a call to @cfunc{ccsys_fork}.  Return @true{} if
+the current process is the @strong{parent} after the call to @cfunc{ccsys_fork}; otherwise return
+@false{}.
+@end deftypefun
+
+
+@deftypefun bool ccsys_in_child_after_fork (ccsys_pid_t @var{pid})
+The argument @var{pid} must be the return value of a call to @cfunc{ccsys_fork}.  Return @true{} if
+the current process is the @strong{child} after the call to @cfunc{ccsys_fork}; otherwise return
+@false{}.
+@end deftypefun
+
+@c ------------------------------------------------------------------------
 
 @deftypefun void ccsys_execv (cce_location_t * @var{L}, char const * @var{filename}, char * const @var{argv} [])
 Wrapper for @cfunc{execv}.

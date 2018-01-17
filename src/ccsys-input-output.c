@@ -420,14 +420,14 @@ ccsys_dup3 (cce_location_t * L, ccsys_fd_t old, ccsys_fd_t new, ccsys_open_flags
 
 #ifdef HAVE_SELECT
 int
-ccsys_select (cce_location_t * L, int nfds,
+ccsys_select (cce_location_t * L, ccsys_fd_t nfds,
 	      ccsys_fd_set_t * read_fds, ccsys_fd_set_t * write_fds, ccsys_fd_set_t * except_fds,
 	      ccsys_timeval_t * timeout)
 {
   struct timeval	T = ccsys_timeval_to_timeval(*timeout);
   int			rv;
   errno = 0;
-  rv = select(nfds, (fd_set *)read_fds, (fd_set *)write_fds, (fd_set *)except_fds, &T);
+  rv = select(nfds.data, (fd_set *)read_fds, (fd_set *)write_fds, (fd_set *)except_fds, &T);
   if (-1 != rv) {
     return rv;
   } else {
@@ -438,14 +438,14 @@ ccsys_select (cce_location_t * L, int nfds,
 
 #ifdef HAVE_PSELECT
 int
-ccsys_pselect (cce_location_t * L, int nfds,
+ccsys_pselect (cce_location_t * L, ccsys_fd_t nfds,
 	       ccsys_fd_set_t * read_fds, ccsys_fd_set_t * write_fds, ccsys_fd_set_t * except_fds,
 	       ccsys_timespec_t * timeout, ccsys_sigset_t const * sigmask)
 {
   struct timespec	T = ccsys_timespec_to_timespec(*timeout);
   int			rv;
   errno = 0;
-  rv = pselect(nfds, (fd_set *)read_fds, (fd_set *)write_fds, (fd_set *)except_fds,
+  rv = pselect(nfds.data, (fd_set *)read_fds, (fd_set *)write_fds, (fd_set *)except_fds,
 	       &T, (sigset_t const *)sigmask);
   if (-1 != rv) {
     return rv;
@@ -457,15 +457,15 @@ ccsys_pselect (cce_location_t * L, int nfds,
 
 /* ------------------------------------------------------------------ */
 
-#ifdef HAVE_FD_SELECT
+#ifdef HAVE_SELECT
 void
-ccsys_fd_clr (ccsys_fd_set_t * fds)
+ccsys_fd_clr (ccsys_fd_t fd, ccsys_fd_set_t * fds)
 {
-  FD_CLR((fd_set *) fds->data);
+  FD_CLR(fd.data, (fd_set *) fds->data);
 }
 #endif
 
-#ifdef HAVE_FD_SELECT
+#ifdef HAVE_SELECT
 bool
 ccsys_fd_isset (ccsys_fd_t fd, ccsys_fd_set_t * fds)
 {
@@ -473,7 +473,7 @@ ccsys_fd_isset (ccsys_fd_t fd, ccsys_fd_set_t * fds)
 }
 #endif
 
-#ifdef HAVE_FD_SELECT
+#ifdef HAVE_SELECT
 void
 ccsys_fd_set (ccsys_fd_t fd, ccsys_fd_set_t * fds)
 {
@@ -481,7 +481,7 @@ ccsys_fd_set (ccsys_fd_t fd, ccsys_fd_set_t * fds)
 }
 #endif
 
-#ifdef HAVE_FD_SELECT
+#ifdef HAVE_SELECT
 void
 ccsys_fd_zero (ccsys_fd_set_t * fds)
 {
