@@ -187,12 +187,12 @@ dnl page
 dnl CCSYS_VALUEOF_NO_SUBST --
 dnl
 dnl Wrapper for AC_COMPUTE_INT which computes  and caches the value of a
-dnl constant.  For  example, to compute the value of  "ERRNO" defined in
+dnl constant.  For example, to  compute the  value of "EPERM" defined in
 dnl the header "errno.h" we do:
 dnl
 dnl    CCSYS_VALUEOF_NO_SUBST([EPERM],[EPERM],[#include <errno.h>])
 dnl
-dnl this macro expansion defines the shell variable "ccsys_cv_valueof_ERRNO"
+dnl this macro expansion defines the shell variable "ccsys_cv_valueof_EPERM"
 dnl to  cache the value;  if the value  cannot be determined:  the shell
 dnl variable is set to "-1".
 dnl
@@ -216,14 +216,14 @@ dnl page
 dnl CCSYS_VALUEOF --
 dnl
 dnl Wrapper for AC_COMPUTE_INT which computes  and caches the value of a
-dnl constant.  For example, to compute the value of "ERRNO" defined in the
+dnl constant.  For example, to compute the value of "EPERM" defined in the
 dnl header "errno.h" we do:
 dnl
 dnl    CCSYS_VALUEOF([EPERM],[EPERM],[#include <errno.h>])
 dnl
-dnl this macro expansion: defines the shell variable "VALUEOF_ERRNO";
-dnl  defines the  shell variable  "ccsys_cv_valueof_ERRNO" to  cache the
-dnl value; defines an Autoconf substitution for the symbol "VALUEOF_ERRNO".
+dnl this macro expansion: defines the shell variable "VALUEOF_EPERM";
+dnl  defines the  shell variable  "ccsys_cv_valueof_EPERM" to  cache the
+dnl value; defines an Autoconf substitution for the symbol "VALUEOF_EPERM".
 dnl
 dnl $1 - the stem  to use  to define  shell variables  representing the
 dnl      result of this test
@@ -232,8 +232,9 @@ dnl $3 - the required header files
 dnl
 AC_DEFUN([CCSYS_VALUEOF],
   [CCSYS_VALUEOF_NO_SUBST([$1],[$2],[$3])
-   AS_VAR_SET([VALUEOF_$1],[-1])
-   AS_VAR_IF(ccsys_cv_valueof_$1,[-1],[]
+   AS_VAR_SET([VALUEOF_$1])
+   AS_VAR_IF(ccsys_cv_valueof_$1,[-1],
+     [AS_VAR_SET([VALUEOF_$1],[-1])],
      [AS_VAR_SET([VALUEOF_$1],["$ccsys_cv_valueof_$1"])])
    AC_SUBST([VALUEOF_$1])])
 

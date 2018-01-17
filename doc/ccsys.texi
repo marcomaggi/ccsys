@@ -1293,6 +1293,11 @@ Constant representing the standard output file descriptor.
 Constant representing the standard error file descriptor.
 @end deftypevr
 
+
+@deftypevr Constant {ccsys_fd_t const} CCSYS_FD_SETSIZE
+Constant representing the maximum value for the argument @var{nfds} to @cfunc{ccsys_select}.
+@end deftypevr
+
 @c page
 @node io fds
 @section File descriptor helpers

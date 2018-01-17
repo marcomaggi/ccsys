@@ -459,6 +459,8 @@ static ccsys_fd_t const CCSYS_FD_STDIN  = { .data = 0 };
 static ccsys_fd_t const CCSYS_FD_STDOUT = { .data = 1 };
 static ccsys_fd_t const CCSYS_FD_STDERR = { .data = 2 };
 
+static ccsys_fd_t const CCSYS_FD_SETSIZE = { .data = @VALUEOF_CCSYS_FD_SETSIZE@ };
+
 
 /** --------------------------------------------------------------------
  ** Version functions.
