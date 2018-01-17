@@ -782,6 +782,217 @@ test_7_2 (cce_destination_t upper_L)
 }
 
 
+/** --------------------------------------------------------------------
+ ** Input/output: file descriptor duplication with "ccsys_dup()".
+ ** ----------------------------------------------------------------- */
+
+void
+test_8_1 (cce_destination_t upper_L)
+/* Open a  file, duplicate the  descriptor with "ccsys_dup()",  write to
+   file, read from file, close the file, remove the file. */
+{
+#if ((defined HAVE_DUP) && (defined HAVE_PREAD) && (defined HAVE_PWRITE))
+  cce_location_t	  L[1];
+  cce_cleanup_handler_t   filedes_H[1];
+  cce_cleanup_handler_t   file_H[1];
+
+  if (cce_location(L)) {
+    fprintf(stderr, "%s: %s\n", __func__, cce_condition_static_message(cce_condition(L)));
+    cce_run_error_handlers_raise(L, upper_L);
+  } else {
+    static char const *	filename = "name.ext";
+    ccsys_fd_t		fd, fdx;
+
+    /* Create and open the file. */
+    {
+      ccsys_open_flags_t	flags;
+      ccsys_open_mode_t		mode;
+
+      flags.data = CCSYS_O_CREAT | CCSYS_O_RDWR;
+      mode.data  = CCSYS_S_IRUSR | CCSYS_S_IWUSR;
+      fd = ccsys_open(L, filename, flags, mode);
+      ccsys_handler_filedes_init(L, filedes_H, fd);
+      ccsys_handler_remove_init(L, file_H, filename);
+    }
+
+    /* Duplicate the file descriptor. */
+    if (1) {
+      fdx = ccsys_dup(L, fd);
+    } else {
+      fdx = fd;
+    }
+
+    /* Write to the original file descriptor. */
+    if (1) {
+      size_t		len = 11;
+      char const *	buf = "0123456789";
+      ccsys_off_t	offset;
+
+      offset.data = 0;
+      ccsys_pwrite(L, fd, buf, len, offset);
+    }
+
+    /* Read from the duplicated file descriptor. */
+    if (1) {
+      static size_t const len = 11;
+      char		inbuf[len];
+      char const *	checkbuf = "0123456789";
+      ccsys_off_t	offset;
+
+      offset.data = 0;
+      ccsys_pread(L, fdx, inbuf, len, offset);
+      cctests_assert(L, 0 == strncmp(inbuf, checkbuf, len));
+    }
+
+    cce_run_cleanup_handlers(L);
+  }
+#endif
+}
+
+
+/** --------------------------------------------------------------------
+ ** Input/output: file descriptor duplication with "ccsys_dup2()".
+ ** ----------------------------------------------------------------- */
+
+void
+test_8_2 (cce_destination_t upper_L)
+/* Open a file,  duplicate the descriptor with  "ccsys_dup2()", write to
+   file, read from file, close the file, remove the file. */
+{
+#if ((defined HAVE_DUP2) && (defined HAVE_PREAD) && (defined HAVE_PWRITE))
+  cce_location_t	  L[1];
+  cce_cleanup_handler_t   filedes_H[1];
+  cce_cleanup_handler_t   file_H[1];
+
+  if (cce_location(L)) {
+    fprintf(stderr, "%s: %s\n", __func__, cce_condition_static_message(cce_condition(L)));
+    cce_run_error_handlers_raise(L, upper_L);
+  } else {
+    static char const *	filename = "name.ext";
+    ccsys_fd_t		fd, fdx;
+
+    /* Create and open the file. */
+    {
+      ccsys_open_flags_t	flags;
+      ccsys_open_mode_t		mode;
+
+      flags.data = CCSYS_O_CREAT | CCSYS_O_RDWR;
+      mode.data  = CCSYS_S_IRUSR | CCSYS_S_IWUSR;
+      fd = ccsys_open(L, filename, flags, mode);
+      ccsys_handler_filedes_init(L, filedes_H, fd);
+      ccsys_handler_remove_init(L, file_H, filename);
+    }
+
+    /* Duplicate the file descriptor. */
+    if (1) {
+      fdx.data = 123;
+      fdx = ccsys_dup2(L, fd, fdx);
+      cctests_assert(L, 123 == fdx.data);
+    } else {
+      fdx = fd;
+    }
+
+    /* Write to the original file descriptor. */
+    if (1) {
+      size_t		len = 11;
+      char const *	buf = "0123456789";
+      ccsys_off_t	offset;
+
+      offset.data = 0;
+      ccsys_pwrite(L, fd, buf, len, offset);
+    }
+
+    /* Read from the duplicated file descriptor. */
+    if (1) {
+      static size_t const len = 11;
+      char		inbuf[len];
+      char const *	checkbuf = "0123456789";
+      ccsys_off_t	offset;
+
+      offset.data = 0;
+      ccsys_pread(L, fdx, inbuf, len, offset);
+      cctests_assert(L, 0 == strncmp(inbuf, checkbuf, len));
+    }
+
+    cce_run_cleanup_handlers(L);
+  }
+#endif
+}
+
+
+/** --------------------------------------------------------------------
+ ** Input/output: file descriptor duplication with "ccsys_dup3()".
+ ** ----------------------------------------------------------------- */
+
+void
+test_8_3 (cce_destination_t upper_L)
+/* Open a file,  duplicate the descriptor with  "ccsys_dup3()", write to
+   file, read from file, close the file, remove the file. */
+{
+#if ((defined HAVE_DUP3) && (defined HAVE_PREAD) && (defined HAVE_PWRITE))
+  cce_location_t	  L[1];
+  cce_cleanup_handler_t   filedes_H[1];
+  cce_cleanup_handler_t   file_H[1];
+
+  if (cce_location(L)) {
+    fprintf(stderr, "%s: %s\n", __func__, cce_condition_static_message(cce_condition(L)));
+    cce_run_error_handlers_raise(L, upper_L);
+  } else {
+    static char const *	filename = "name.ext";
+    ccsys_fd_t		fd, fdx;
+
+    /* Create and open the file. */
+    {
+      ccsys_open_flags_t	flags;
+      ccsys_open_mode_t		mode;
+
+      flags.data = CCSYS_O_CREAT | CCSYS_O_RDWR;
+      mode.data  = CCSYS_S_IRUSR | CCSYS_S_IWUSR;
+      fd = ccsys_open(L, filename, flags, mode);
+      ccsys_handler_filedes_init(L, filedes_H, fd);
+      ccsys_handler_remove_init(L, file_H, filename);
+    }
+
+    /* Duplicate the file descriptor. */
+    if (1) {
+      ccsys_open_flags_t	flags;
+
+      flags.data	= CCSYS_O_CLOEXEC;
+      fdx.data		= 123;
+      fdx = ccsys_dup3(L, fd, fdx, flags);
+      cctests_assert(L, 123 == fdx.data);
+    } else {
+      fdx = fd;
+    }
+
+    /* Write to the original file descriptor. */
+    if (1) {
+      size_t		len = 11;
+      char const *	buf = "0123456789";
+      ccsys_off_t	offset;
+
+      offset.data = 0;
+      ccsys_pwrite(L, fd, buf, len, offset);
+    }
+
+    /* Read from the duplicated file descriptor. */
+    if (1) {
+      static size_t const len = 11;
+      char		inbuf[len];
+      char const *	checkbuf = "0123456789";
+      ccsys_off_t	offset;
+
+      offset.data = 0;
+      ccsys_pread(L, fdx, inbuf, len, offset);
+      cctests_assert(L, 0 == strncmp(inbuf, checkbuf, len));
+    }
+
+    cce_run_cleanup_handlers(L);
+  }
+#endif
+}
+
+
 int
 main (void)
 {
@@ -824,6 +1035,14 @@ main (void)
     {
       cctests_run(test_7_1);
       cctests_run(test_7_2);
+    }
+    cctests_end_group();
+
+    cctests_begin_group("file descriptor duplication");
+    {
+      cctests_run(test_8_1);
+      cctests_run(test_8_2);
+      cctests_run(test_8_3);
     }
     cctests_end_group();
   }

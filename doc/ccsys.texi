@@ -398,6 +398,14 @@ Type of offsets.  It is a signed integer.
 @end deftp
 
 
+@anchor{ccsys_fd_flags_t}
+@deftp {Semantic Type} ccsys_fd_flags_t
+Type of arguments for some file descriptor functions.  It is a signed integer.  It is meant to be a
+bitwise combination of the enumerated constants of type @objtype{ccsys_fd_flags_enum_t};
+@ref{ccsys_fd_flags_enum_t, Enumerated constants}.
+@end deftp
+
+
 @anchor{ccsys_whence_t}
 @deftp {Semantic Type} ccsys_whence_t
 Type of @var{whence} arguments for file seek functions.  It is a signed integer.  It is meant to be
@@ -629,6 +637,20 @@ CCSYS_S_ISUID   CCSYS_S_ISGID   CCSYS_S_ISVTX
 
 A bitwise combination of these constants is meant to be used as value for arguments of type
 @objtype{ccsys_open_mode_t}; @ref{ccsys_open_mode_t, Semantic type definitions}.
+@end deftp
+
+
+@EnumeratedConstant{CCSYS_FD_CLOEXEC}
+@anchor{ccsys_fd_flags_enum_t}
+@deftp {Enum Typedef} ccsys_fd_flags_enum_t
+Type of file descriptor flags constants.  It defines the following constants:
+
+@example
+CCSYS_FD_CLOEXEC
+@end example
+
+A bitwise combination of these constants is meant to be used as value for arguments of type
+@objtype{ccsys_fd_flags_t}; @ref{ccsys_fd_flags_t, Semantic type definitions}.
 @end deftp
 
 
@@ -2202,13 +2224,210 @@ The following symbols are defined in the header file @file{ccsys.h}.
 
 
 @deftypefun ccsys_fd_t ccsys_dup (cce_location_t * @var{L}, ccsys_fd_t @var{old})
-Wrapper for @cfunc{dup}.
+Wrapper for @cfunc{dup}; @manpage{dup, Duplicate a file descriptor}.
 @end deftypefun
 
 
 @deftypefun ccsys_fd_t ccsys_dup2 (cce_location_t * @var{L}, ccsys_fd_t @var{old}, ccsys_fd_t @var{new})
-Wrapper for @cfunc{dup2}.
+Wrapper for @cfunc{dup2}; @manpage{dup2, Duplicate a file descriptor}.
 @end deftypefun
+
+
+@deftypefun ccsys_fd_t ccsys_dup2 (cce_location_t * @var{L}, ccsys_fd_t @var{old}, ccsys_fd_t @var{new}, ccsys_open_flags_t @var{flags})
+Wrapper for @cfunc{dup3}; @manpage{dup3, Duplicate a file descriptor}.
+@end deftypefun
+
+
+@menu
+* io dup one::                  Using @cfunc{ccsys_dup}.
+* io dup two::                  Using @cfunc{ccsys_dup2}.
+* io dup three::                Using @cfunc{ccsys_dup3}.
+@end menu
+
+@c page
+@node io dup one
+@subsection Using @cfunc{ccsys_dup}
+
+
+As example of using @cfunc{ccsys_dup} see the following code which opens a file, duplicates the file
+descriptor, writes bytes to it, reads bytes from it, closes the file, removes the file.
+
+@example
+cce_location_t          L[1];
+cce_cleanup_handler_t   filedes_H[1];
+cce_cleanup_handler_t   file_H[1];
+
+if (cce_location(L)) @{
+  cce_run_error_handlers_raise(L, upper_L);
+ @} else @{
+  static char const * filename = "name.ext";
+  ccsys_fd_t          fd, fdx;
+
+  /* Create and open the file. */
+  @{
+    ccsys_open_flags_t        flags;
+    ccsys_open_mode_t         mode;
+
+    flags.data = CCSYS_O_CREAT | CCSYS_O_RDWR;
+    mode.data  = CCSYS_S_IRUSR | CCSYS_S_IWUSR;
+    fd = ccsys_open(L, filename, flags, mode);
+    ccsys_handler_filedes_init(L, filedes_H, fd);
+    ccsys_handler_remove_init(L, file_H, filename);
+   @}
+
+  /* Duplicate the file descriptor. */
+  fdx = ccsys_dup(L, fd);
+
+  /* Write to the original file descriptor. */
+  @{
+    size_t            len = 11;
+    char const *      buf = "0123456789";
+    ccsys_off_t       offset;
+
+    offset.data = 0;
+    ccsys_pwrite(L, fd, buf, len, offset);
+   @}
+
+  /* Read from the duplicated file descriptor. */
+  @{
+    size_t            len = 11;
+    char              inbuf[len];
+    ccsys_off_t       offset;
+
+    offset.data = 0;
+    ccsys_pread(L, fdx, inbuf, len, offset);
+   @}
+
+  cce_run_cleanup_handlers(L);
+ @}
+@end example
+
+@c page
+@node io dup two
+@subsection Using @cfunc{ccsys_dup2}
+
+
+As example of using @cfunc{ccsys_dup2} see the following code which opens a file, duplicates the
+file descriptor, writes bytes to it, reads bytes from it, closes the file, removes the file.
+
+@example
+cce_location_t          L[1];
+cce_cleanup_handler_t   filedes_H[1];
+cce_cleanup_handler_t   file_H[1];
+
+if (cce_location(L)) @{
+  cce_run_error_handlers_raise(L, upper_L);
+@} else @{
+  static char const * filename = "name.ext";
+  ccsys_fd_t          fd, fdx;
+
+  /* Create and open the file. */
+  @{
+    ccsys_open_flags_t        flags;
+    ccsys_open_mode_t         mode;
+
+    flags.data = CCSYS_O_CREAT | CCSYS_O_RDWR;
+    mode.data  = CCSYS_S_IRUSR | CCSYS_S_IWUSR;
+    fd = ccsys_open(L, filename, flags, mode);
+    ccsys_handler_filedes_init(L, filedes_H, fd);
+    ccsys_handler_remove_init(L, file_H, filename);
+  @}
+
+  /* Duplicate the file descriptor. */
+  @{
+    fdx.data = 123;
+    fdx = ccsys_dup2(L, fd, fdx);
+    assert(123 == fdx.data);
+  @}
+
+  /* Write to the original file descriptor. */
+  @{
+    size_t            len = 11;
+    char const *      buf = "0123456789";
+    ccsys_off_t       offset;
+
+    offset.data = 0;
+    ccsys_pwrite(L, fd, buf, len, offset);
+  @}
+
+  /* Read from the duplicated file descriptor. */
+  @{
+    size_t            len = 11;
+    char              inbuf[len];
+    ccsys_off_t       offset;
+
+    offset.data = 0;
+    ccsys_pread(L, fdx, inbuf, len, offset);
+  @}
+
+  cce_run_cleanup_handlers(L);
+@}
+@end example
+
+@c page
+@node io dup three
+@subsection Using @cfunc{ccsys_dup3}
+
+
+As example of using @cfunc{ccsys_dup3} see the following code which opens a file, duplicates the
+file descriptor, writes bytes to it, reads bytes from it, closes the file, removes the file.
+
+@example
+cce_location_t          L[1];
+cce_cleanup_handler_t   filedes_H[1];
+cce_cleanup_handler_t   file_H[1];
+
+if (cce_location(L)) @{
+  cce_run_error_handlers_raise(L, upper_L);
+@} else @{
+  static char const * filename = "name.ext";
+  ccsys_fd_t          fd, fdx;
+
+  /* Create and open the file. */
+  @{
+    ccsys_open_flags_t        flags;
+    ccsys_open_mode_t         mode;
+
+    flags.data = CCSYS_O_CREAT | CCSYS_O_RDWR;
+    mode.data  = CCSYS_S_IRUSR | CCSYS_S_IWUSR;
+    fd = ccsys_open(L, filename, flags, mode);
+    ccsys_handler_filedes_init(L, filedes_H, fd);
+    ccsys_handler_remove_init(L, file_H, filename);
+  @}
+
+  /* Duplicate the file descriptor. */
+  @{
+    ccsys_open_flags_t        flags;
+
+    flags.data        = CCSYS_O_CLOEXEC;
+    fdx.data          = 123;
+    fdx = ccsys_dup3(L, fd, fdx, flags);
+    assert(L, 123 == fdx.data);
+  @}
+
+  /* Write to the original file descriptor. */
+  @{
+    size_t            len = 11;
+    char const *      buf = "0123456789";
+    ccsys_off_t       offset;
+
+    offset.data = 0;
+    ccsys_pwrite(L, fd, buf, len, offset);
+  @}
+
+  /* Read from the duplicated file descriptor. */
+  @{
+    static size_t const len = 11;
+    char              inbuf[len];
+    ccsys_off_t       offset;
+
+    offset.data = 0;
+    ccsys_pread(L, fdx, inbuf, len, offset);
+  @}
+
+  cce_run_cleanup_handlers(L);
+@}
+@end example
 
 @c page
 @node io waiting

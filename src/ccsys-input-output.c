@@ -395,6 +395,21 @@ ccsys_dup2 (cce_location_t * L, ccsys_fd_t old, ccsys_fd_t new)
 }
 #endif
 
+#ifdef HAVE_DUP3
+ccsys_fd_t
+ccsys_dup3 (cce_location_t * L, ccsys_fd_t old, ccsys_fd_t new, ccsys_open_flags_t flags)
+{
+  ccsys_fd_t	rv;
+  errno = 0;
+  rv.data = dup3(old.data, new.data, flags.data);
+  if (-1 != rv.data) {
+    return rv;
+  } else {
+    cce_raise(L, cce_condition_new_errno_clear());
+  }
+}
+#endif
+
 
 /** --------------------------------------------------------------------
  ** Input/output: waiting for input/output.
