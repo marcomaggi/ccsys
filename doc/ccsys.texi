@@ -3132,6 +3132,21 @@ Wrapper for @cfunc{waitpid}.
 @section Time structures
 
 
+@deftp {Semantic Type} ccsys_seconds_t
+A signed exact integer representing a number of seconds.
+@end deftp
+
+
+@deftp {Semantic Type} ccsys_microseconds_t
+A signed exact integer representing a number of microseconds.
+@end deftp
+
+
+@deftp {Semantic Type} ccsys_nanoseconds_t
+A signed exact integer representing a number of nanoseconds.
+@end deftp
+
+
 @deftp {Struct Typedef} ccsys_timespec_t
 Replacement of @code{struct timespec}.  It has the following fields:
 
