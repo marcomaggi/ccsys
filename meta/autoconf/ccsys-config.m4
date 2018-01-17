@@ -157,12 +157,14 @@ AC_DEFUN([CCSYS_SIZEOF],
   [AS_VAR_SET([SIZEOF_$1],[0])
    AC_CACHE_CHECK([the size of '$2'],
      [ccsys_cv_sizeof_$1],
-     [AC_COMPUTE_INT([ccsys_cv_sizeof_$1],
+     [AS_VAR_SET([ccsys__value_found],[maybe])
+      AC_COMPUTE_INT([ccsys_cv_sizeof_$1],
         [sizeof($2)],
         [$3],
-        [AC_MSG_ERROR(cannot determine size of '$2')])])
-    AS_VAR_SET([SIZEOF_$1],["$ccsys_cv_sizeof_$1"])
-    AC_SUBST([SIZEOF_$1])])
+        [AS_VAR_SET([ccsys__value_found],[no])])])
+   AS_IF([test "x$ccsys__value_found" = xno],[AC_MSG_WARN(cannot determine size of '$2')])
+   AS_VAR_SET([SIZEOF_$1],["$ccsys_cv_sizeof_$1"])
+   AC_SUBST([SIZEOF_$1])])
 
 dnl page
 dnl CCSYS_VALUEOF_NO_SUBST --
@@ -185,11 +187,13 @@ dnl
 AC_DEFUN([CCSYS_VALUEOF_NO_SUBST],
   [AC_CACHE_CHECK([the size of '$2'],
      [ccsys_cv_valueof_$1],
-     [AC_COMPUTE_INT([ccsys_cv_valueof_$1],
+     [AS_VAR_SET([ccsys__value_found],[maybe])
+      AC_COMPUTE_INT([ccsys_cv_valueof_$1],
         [$2],
         [$3],
-        [AC_MSG_WARN(cannot determine value of '$2')
-         AS_VAR_SET(ccsys_cv_valueof_$1,[-1])])])])
+        [AS_VAR_SET([ccsys__value_found],[no])
+         AS_VAR_SET(ccsys_cv_valueof_$1,[-1])])])
+   AS_IF([test "x$ccsys__value_found" = xno],[AC_MSG_WARN(cannot determine value of '$2')])])
 
 dnl page
 dnl CCSYS_VALUEOF --
