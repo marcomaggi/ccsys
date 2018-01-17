@@ -40,6 +40,9 @@
 #ifdef HAVE_SYS_STAT_H
 #  include <sys/stat.h>
 #endif
+#ifdef HAVE_SYS_TIME_H
+#  include <sys/time.h>
+#endif
 #ifdef HAVE_SYS_TYPES_H
 #  include <sys/types.h>
 #endif
@@ -429,6 +432,58 @@ ccsys_select (cce_location_t * L, int nfds,
   } else {
     cce_raise(L, cce_condition_new_errno_clear());
   }
+}
+#endif
+
+#ifdef HAVE_PSELECT
+int
+ccsys_pselect (cce_location_t * L, int nfds,
+	       ccsys_fd_set_t * read_fds, ccsys_fd_set_t * write_fds, ccsys_fd_set_t * except_fds,
+	       ccsys_timespec_t * timeout, ccsys_sigset_t const * sigmask)
+{
+  int	rv;
+  errno = 0;
+  rv = pselect(nfds, (fd_set *)read_fds, (fd_set *)write_fds, (fd_set *)except_fds,
+	       (struct timespec *)timeout, (sigset_t const *)sigmask);
+  if (-1 != rv) {
+    return rv;
+  } else {
+    cce_raise(L, cce_condition_new_errno_clear());
+  }
+}
+#endif
+
+/* ------------------------------------------------------------------ */
+
+#ifdef HAVE_FD_SELECT
+void
+ccsys_fd_clr (ccsys_fd_set_t * fds)
+{
+  FD_CLR((fd_set *) fds->data);
+}
+#endif
+
+#ifdef HAVE_FD_SELECT
+bool
+ccsys_fd_isset (ccsys_fd_t fd, ccsys_fd_set_t * fds)
+{
+  return (FD_ISSET(fd.data, (fd_set *) fds->data)) ? true : false;
+}
+#endif
+
+#ifdef HAVE_FD_SELECT
+void
+ccsys_fd_set (ccsys_fd_t fd, ccsys_fd_set_t * fds)
+{
+  FD_SET(fd.data, (fd_set *) fds->data);
+}
+#endif
+
+#ifdef HAVE_FD_SELECT
+void
+ccsys_fd_zero (ccsys_fd_set_t * fds)
+{
+  FD_ZERO((fd_set *) fds->data);
 }
 #endif
 

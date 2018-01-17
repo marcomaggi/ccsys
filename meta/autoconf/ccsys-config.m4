@@ -148,6 +148,16 @@ dnl this macro expansion: defines the shell variable "SIZEOF_DIRENT";
 dnl defines the shell variable "ccsys_cv_sizeof_DIRENT" to cache the value;
 dnl defines an Autoconf substitution for the symbol "SIZEOF_DIRENT".
 dnl
+dnl If if is impossible to  determine the size: the size is artificially
+dnl set to 1, so that it is possible to compile the expansion of:
+dnl
+dnl    struct ccsys_dirent_t {
+dnl      uint8_t data[@SIZEOF_STRUCT_DIRENT@];
+dnl    };
+dnl
+dnl without errors (which would result from the definition of an array
+dnl of size zero).
+dnl
 dnl $1 - the stem  to use  to define  shell variables  representing the
 dnl      result of this test
 dnl $2 - the reference of a C language type
@@ -155,13 +165,14 @@ dnl $3 - the required header files
 dnl
 AC_DEFUN([CCSYS_SIZEOF],
   [AS_VAR_SET([SIZEOF_$1],[0])
+   AS_VAR_SET([ccsys__value_found],[maybe])
    AC_CACHE_CHECK([the size of '$2'],
      [ccsys_cv_sizeof_$1],
-     [AS_VAR_SET([ccsys__value_found],[maybe])
-      AC_COMPUTE_INT([ccsys_cv_sizeof_$1],
+     [AC_COMPUTE_INT([ccsys_cv_sizeof_$1],
         [sizeof($2)],
         [$3],
-        [AS_VAR_SET([ccsys__value_found],[no])])])
+        [AS_VAR_SET([ccsys__value_found],[no])
+         AS_VAR_SET(ccsys_cv_sizeof_$1,[1])])])
    AS_IF([test "x$ccsys__value_found" = xno],[AC_MSG_WARN(cannot determine size of '$2')])
    AS_VAR_SET([SIZEOF_$1],["$ccsys_cv_sizeof_$1"])
    AC_SUBST([SIZEOF_$1])])
@@ -185,10 +196,10 @@ dnl $2 - the expression representing the value to compute
 dnl $3 - the required header files
 dnl
 AC_DEFUN([CCSYS_VALUEOF_NO_SUBST],
-  [AC_CACHE_CHECK([the size of '$2'],
+  [AS_VAR_SET([ccsys__value_found],[maybe])
+   AC_CACHE_CHECK([the size of '$2'],
      [ccsys_cv_valueof_$1],
-     [AS_VAR_SET([ccsys__value_found],[maybe])
-      AC_COMPUTE_INT([ccsys_cv_valueof_$1],
+     [AC_COMPUTE_INT([ccsys_cv_valueof_$1],
         [$2],
         [$3],
         [AS_VAR_SET([ccsys__value_found],[no])

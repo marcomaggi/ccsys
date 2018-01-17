@@ -439,6 +439,12 @@ Enumerated constants}.
 @end deftp
 
 
+@anchor{ccsys_sigset_t}
+@deftp {Semantic Type} ccsys_sigset_t
+Alias for the opaque type @code{sigset_t}.
+@end deftp
+
+
 @anchor{ccsys_unlinkat_flags_t}
 @deftp {Semantic Type} ccsys_unlinkat_flags_t
 Exact signed integer representing an @code{at()} function flag.  It is meant to be a bitwise
@@ -2438,7 +2444,32 @@ The following symbols are defined in the header file @file{ccsys.h}.
 
 
 @deftypefun int ccsys_select (cce_location_t * @var{L}, int @var{nfds}, ccsys_fd_set_t * @var{read_fds}, ccsys_fd_set_t * @var{write_fds}, ccsys_fd_set_t * @var{except_fds}, ccsys_timeval_t * @var{timeout})
-Wrapper for @cfunc{select}.
+Wrapper for @cfunc{select}; @manpage{select, Synchronous input/output multiplexing}.
+@end deftypefun
+
+
+@deftypefun int ccsys_pselect (cce_location_t * @var{L}, int @var{nfds}, ccsys_fd_set_t * @var{read_fds}, ccsys_fd_set_t * @var{write_fds}, ccsys_fd_set_t * @var{except_fds}, ccsys_timespec_t * @var{timeout}, ccsys_sigset_t const * @var{sigmask})
+Wrapper for @cfunc{pselect}; @manpage{pselect, Synchronous input/output multiplexing}.
+@end deftypefun
+
+
+@deftypefun void ccsys_fd_clr (ccsys_fd_set_t * @var{fds})
+Wrapper for @cfunc{FD_CLR}; @manpage{FD_CLR, Synchronous input/output multiplexing}.
+@end deftypefun
+
+
+@deftypefun bool ccsys_fd_isset (ccsys_fd_t @var{fd}, ccsys_fd_set_t * @var{fds})
+Wrapper for @cfunc{FD_ISSET}; @manpage{FD_ISSET, Synchronous input/output multiplexing}.
+@end deftypefun
+
+
+@deftypefun void ccsys_fd_set (ccsys_fd_t @var{fd}, ccsys_fd_set_t * @var{fds})
+Wrapper for @cfunc{FD_SET}; @manpage{FD_SET, Synchronous input/output multiplexing}.
+@end deftypefun
+
+
+@deftypefun void ccsys_fd_zero (ccsys_fd_set_t * @var{fds})
+Wrapper for @cfunc{FD_ZERO}; @manpage{FD_ZERO, Synchronous input/output multiplexing}.
 @end deftypefun
 
 @c page
