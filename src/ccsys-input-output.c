@@ -478,7 +478,7 @@ ccsys_pselect (cce_location_t * L, ccsys_fd_t nfds,
 void
 ccsys_fd_clr (ccsys_fd_t fd, ccsys_fd_set_t * fds)
 {
-  FD_CLR(fd.data, (fd_set *) fds->data);
+  FD_CLR(fd.data, (fd_set *) fds);
 }
 #endif
 
@@ -486,7 +486,7 @@ ccsys_fd_clr (ccsys_fd_t fd, ccsys_fd_set_t * fds)
 bool
 ccsys_fd_isset (ccsys_fd_t fd, ccsys_fd_set_t * fds)
 {
-  return (FD_ISSET(fd.data, (fd_set *) fds->data)) ? true : false;
+  return (FD_ISSET(fd.data, (fd_set *) fds)) ? true : false;
 }
 #endif
 
@@ -494,7 +494,7 @@ ccsys_fd_isset (ccsys_fd_t fd, ccsys_fd_set_t * fds)
 void
 ccsys_fd_set (ccsys_fd_t fd, ccsys_fd_set_t * fds)
 {
-  FD_SET(fd.data, (fd_set *) fds->data);
+  FD_SET(fd.data, (fd_set *) fds);
 }
 #endif
 
@@ -502,7 +502,7 @@ ccsys_fd_set (ccsys_fd_t fd, ccsys_fd_set_t * fds)
 void
 ccsys_fd_zero (ccsys_fd_set_t * fds)
 {
-  FD_ZERO((fd_set *) fds->data);
+  FD_ZERO((fd_set *) fds);
 }
 #endif
 
