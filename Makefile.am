@@ -108,7 +108,7 @@ EXTRA_DIST	+= \
 noinst_PROGRAMS	= \
 	demos/listdir
 
-ccsys_demos_cppflags		= -I$(srcdir)/src $(CCSYS_FLAGS) $(CCEXCEPTIONS_FLAGS)
+ccsys_demos_cppflags		= -I$(srcdir)/src $(CCSYS_FLAGS) $(CCEXCEPTIONS_CFLAGS)
 ccsys_demos_ldadd		= libccsys.la $(CCEXCEPTIONS_LIBS)
 
 demos_listdir_CPPFLAGS		= $(ccsys_demos_cppflags)
