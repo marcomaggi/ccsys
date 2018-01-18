@@ -101,11 +101,11 @@ env:
 # "coverity_scan" branch.
 #
 
-env:
-  global:
+#env:
+#  global:
     # The next declaration is the encrypted COVERITY_SCAN_TOKEN, created
     #   via the "travis encrypt" command using the project repo's public key
-    - secure: "HJKbTO2k2RtpQ+JhXSwQhubjuDaXhCq7FPOTshi0EQUggowIHPR/B8EazePNU1e6+RJgalbYaO6HsCuHX0Xws+Tsq1FtAvL2C3uMs6G6zsllTXJ1D19INrRLFNN42+sltpo40qHUzYFy70x4SNH91X1WBoADPwjNx7XVD8ar/NvfUVUMMnmglvfWv9HTHhr+WFUkjGIKRdmZn8gHbFQ60WUtkQs8rDRQlPoD7Aqor7KLxg1SPFiHW6JhvxxRAjRTdwgLAP4H9BfHk1sf+jTPkPTaUsjrnuHi3wSK18AsG1uPJViCzBkD0B8Zq9/ex9q2b3EeSOSePF+oGV8fv9Kb85X8uFW7B5t4HQWnPsGYKUkMt1ToOjJtblKXCFxRLLj47HdtDjQxJoul80yUPpq4sYTJNn6QQslhnUjs7srGiGcFp+CjkZ8I616+KQK1bNEQPE5P3I0mEascY59KTM3vwLyMloeQTbiu54AhAeHcYBBsn7Mx+QG/MSRIVzLSw4QcgtXnTd3ZYxMhx1IiV2eOHc8XLMUwkGvWl1623RGjDUy2q9c6kaP3dgHQSqC8YxgDIgNEcWuBAblROYQ3X6T6oTzzpG0mBog635WxUzjoXJDhTVkAeTblhl4FCflzgmxDtdT3OFEaeY8OPliKt+XvagH4ImUQrfgw+aZRQsvvECw="
+#    - secure: "HJKbTO2k2RtpQ+JhXSwQhubjuDaXhCq7FPOTshi0EQUggowIHPR/B8EazePNU1e6+RJgalbYaO6HsCuHX0Xws+Tsq1FtAvL2C3uMs6G6zsllTXJ1D19INrRLFNN42+sltpo40qHUzYFy70x4SNH91X1WBoADPwjNx7XVD8ar/NvfUVUMMnmglvfWv9HTHhr+WFUkjGIKRdmZn8gHbFQ60WUtkQs8rDRQlPoD7Aqor7KLxg1SPFiHW6JhvxxRAjRTdwgLAP4H9BfHk1sf+jTPkPTaUsjrnuHi3wSK18AsG1uPJViCzBkD0B8Zq9/ex9q2b3EeSOSePF+oGV8fv9Kb85X8uFW7B5t4HQWnPsGYKUkMt1ToOjJtblKXCFxRLLj47HdtDjQxJoul80yUPpq4sYTJNn6QQslhnUjs7srGiGcFp+CjkZ8I616+KQK1bNEQPE5P3I0mEascY59KTM3vwLyMloeQTbiu54AhAeHcYBBsn7Mx+QG/MSRIVzLSw4QcgtXnTd3ZYxMhx1IiV2eOHc8XLMUwkGvWl1623RGjDUy2q9c6kaP3dgHQSqC8YxgDIgNEcWuBAblROYQ3X6T6oTzzpG0mBog635WxUzjoXJDhTVkAeTblhl4FCflzgmxDtdT3OFEaeY8OPliKt+XvagH4ImUQrfgw+aZRQsvvECw="
 
 before_install:
   - if test "$TRAVIS_OS_NAME" != osx ; then echo -n | openssl s_client -connect scan.coverity.com:443 | sed -ne '/-BEGIN CERTIFICATE-/,/-END CERTIFICATE-/p' | sudo tee -a /etc/ssl/certs/ca-; else true; fi
