@@ -2,36 +2,73 @@
 #
 # Travis CI configuration for CCSys.
 
-# About compiler  packages.  We  select build by  build the  packages to
-# install; it should speed up preparation.  By putting a single "addons"
-# key at the top level: we would cause all the compilers to be installed
-# for all the builds in the matrix; we do not want this.
-
-# About compiler  selection.  We  select the compiler  we want  with the
-# "compiler" key.   This should set  the environment variable CC  to the
-# associated compiler executable; I have  verified that it actually does
-# so when  the language is C.   I am not  sure that it actually  does it
-# when the language is C++.  (Marco Maggi; May 27, 2017)
-
-# About  dependency  packages.   We install  dependency  packages  under
-# "/tmp/mine".   So we  need the  following in  every script  that needs
-# custom dependencies:
+#page
+#### about compiler packages
 #
-#   export PATH=/tmp/mine/bin:$PATH;
-#   export LD_LIBRARY_PATH=/tmp/mine/lib:$LD_LIBRARY_PATH;
-#   export PKG_CONFIG_PATH=/tmp/mine/lib/pkgconfig:$PKG_CONFIG_PATH;
-#
-# otherwise the installed packages will not be found and used correctly.
+# We select build  by build the packages to install;  it should speed up
+# preparation.  By  putting a single "addons"  key at the top  level: we
+# would cause  all the compilers to  be installed for all  the builds in
+# the matrix; we do not want this.
 
-sudo: false
+#page
+#### about compiler selection
+#
+# We select the  compiler we want with the "compiler"  key.  This should
+# set the environment variable CC to the associated compiler executable;
+# I have verified that it actually does so when the language is C.  I am
+# not sure that it actually does it when the language is C++.
+#
+# To check which C or C++ compiler  is actually selected, we can put the
+# following  in  every "script:"  key,  before  running the  "configure"
+# script as follows:
+#
+#    script: |
+#      echo CC=$CC; $CC --version;
+#      echo CXX=$CXX; $CXX --version;
+#      ./configure
+#
+
+#page
+#### about dependency packages
+#
+# We  install  dependency  packages under  "/tmp/mine",  so  appropriate
+# directories must  be added to  the global path  environment variables,
+# otherwise the installed packages will  not be found and used correctly
+# by the "configure" script.
+#
+#
+# We need the following in the global environment:
+#
+#   env:
+#     global:
+#       - PATH=/tmp/mine/bin:$PATH;
+#       - LD_LIBRARY_PATH=/tmp/mine/lib:$LD_LIBRARY_PATH;
+#       - PKG_CONFIG_PATH=/tmp/mine/lib/pkgconfig:$PKG_CONFIG_PATH;
+#
+# Alternatively, we can put the following in every "script:" key, before
+# running the "configure" script as follows:
+#
+#   script: |
+#     export PATH=/tmp/mine/bin:$PATH;
+#     export LD_LIBRARY_PATH=/tmp/mine/lib:$LD_LIBRARY_PATH;
+#     export PKG_CONFIG_PATH=/tmp/mine/lib/pkgconfig:$PKG_CONFIG_PATH;
+#     ./configure
+#
+
+#page
+#### global configuration
+
 language: c
+
+# We need sudo for Coverity Scan.
+sudo: true
 
 # Let's just look at the project's dashboard at Travis CI's site.
 #
 notifications:
   email: false
 
-# We do no git operations, so set this to the minimum.
+# We do no git operations, so set the "git clone" depth to the minimum.
 #
 git:
   depth: 1
@@ -39,16 +76,75 @@ git:
 branches:
   only:
     - master
+    - coverity_scan
 
 env:
   global:
     - MAKEFLAGS="-j 2"
+    - PATH=/tmp/mine/bin:$PATH;
+    - LD_LIBRARY_PATH=/tmp/mine/lib:$LD_LIBRARY_PATH;
+    - PKG_CONFIG_PATH=/tmp/mine/lib/pkgconfig:$PKG_CONFIG_PATH;
+
+#page
+#### Coverity Scan integration
+#
+# This is still in  development (why it is so hard to  set it up?!?).  I
+# would like to:
+#
+# - Run a single scan job when commits are pushed on the "coverity_scan"
+# branch.
+#
+# - Do  not run the scan  when commits are pushed  to branches different
+# from "coverity_scan".
+#
+# - Do not run the full matrix of scripts when commits are pushed on the
+# "coverity_scan" branch.
+#
+
+env:
+  global:
+    # The next declaration is the encrypted COVERITY_SCAN_TOKEN, created
+    #   via the "travis encrypt" command using the project repo's public key
+    - secure: "HJKbTO2k2RtpQ+JhXSwQhubjuDaXhCq7FPOTshi0EQUggowIHPR/B8EazePNU1e6+RJgalbYaO6HsCuHX0Xws+Tsq1FtAvL2C3uMs6G6zsllTXJ1D19INrRLFNN42+sltpo40qHUzYFy70x4SNH91X1WBoADPwjNx7XVD8ar/NvfUVUMMnmglvfWv9HTHhr+WFUkjGIKRdmZn8gHbFQ60WUtkQs8rDRQlPoD7Aqor7KLxg1SPFiHW6JhvxxRAjRTdwgLAP4H9BfHk1sf+jTPkPTaUsjrnuHi3wSK18AsG1uPJViCzBkD0B8Zq9/ex9q2b3EeSOSePF+oGV8fv9Kb85X8uFW7B5t4HQWnPsGYKUkMt1ToOjJtblKXCFxRLLj47HdtDjQxJoul80yUPpq4sYTJNn6QQslhnUjs7srGiGcFp+CjkZ8I616+KQK1bNEQPE5P3I0mEascY59KTM3vwLyMloeQTbiu54AhAeHcYBBsn7Mx+QG/MSRIVzLSw4QcgtXnTd3ZYxMhx1IiV2eOHc8XLMUwkGvWl1623RGjDUy2q9c6kaP3dgHQSqC8YxgDIgNEcWuBAblROYQ3X6T6oTzzpG0mBog635WxUzjoXJDhTVkAeTblhl4FCflzgmxDtdT3OFEaeY8OPliKt+XvagH4ImUQrfgw+aZRQsvvECw="
+
+before_install:
+  - if test "$TRAVIS_OS_NAME" != osx ; then echo -n | openssl s_client -connect scan.coverity.com:443 | sed -ne '/-BEGIN CERTIFICATE-/,/-END CERTIFICATE-/p' | sudo tee -a /etc/ssl/certs/ca-; else true; fi
+
+addons:
+  coverity_scan:
+    project:
+      name: "marcomaggi/ccsys"
+      description: "Build submitted via Travis CI"
+    notification_email: marco.maggi-ipsu@poste.it
+    # To run the scan we want to execute the following commands:
+    #
+    #   sh ./autogen.sh
+    #   ./configure --enable-maintainer-mode
+    #   make clean
+    #   cov-build make all
+    #
+    # so we put the preparation in "build_command_prepend:" and the
+    # making in "build_command:".
+    build_command_prepend: "sh ./autogen.sh; ./configure --enable-maintainer-mode; make clean"
+    build_command: "make all"
+    branch_pattern: coverity_scan
+
+#page
+#### dependencies management
+
+install:
+   - ./meta/travis-ci/install-ccexceptions.sh
+
+#page
+#### build scripts
+
+before_script:
+  # On Linux the GNU Libtool  preparation script is called "libtoolize",
+  # while on OS X it is called "glibtoolize".
+  - if test "$TRAVIS_OS_NAME" = osx ; then export LIBTOOLIZE=glibtoolize; else true; fi
+  - sh ./autogen.sh;
 
 matrix:
-  #allow_failures:
-  #  - os: linux
-  #    compiler: clang
-
   fast_finish: true
 
   include:
@@ -63,17 +159,7 @@ matrix:
           packages:
             - texinfo
             - gcc-5
-      install:
-        - ./meta/travis-ci/install-ccexceptions.sh
-      script: |
-        #echo CC=$CC; $CC --version;
-        export PATH=/tmp/mine/bin:$PATH;
-        export LD_LIBRARY_PATH=/tmp/mine/lib:$LD_LIBRARY_PATH;
-        export PKG_CONFIG_PATH=/tmp/mine/lib/pkgconfig:$PKG_CONFIG_PATH;
-        sh ./autogen.sh;
-        ./configure --disable-static --enable-shared --enable-maintainer-mode CPPFLAGS="-I/tmp/mine/include";
-        make all;
-        make check;
+      script: "./configure --enable-maintainer-mode; make all; make check;"
 
     # Plain build under Ubuntu GNU+Linux "trusty", GCC 6.
     - os: linux
@@ -86,17 +172,7 @@ matrix:
           packages:
             - texinfo
             - gcc-6
-      install:
-        - ./meta/travis-ci/install-ccexceptions.sh
-      script: |
-        #echo CC=$CC; $CC --version;
-        export PATH=/tmp/mine/bin:$PATH;
-        export LD_LIBRARY_PATH=/tmp/mine/lib:$LD_LIBRARY_PATH;
-        export PKG_CONFIG_PATH=/tmp/mine/lib/pkgconfig:$PKG_CONFIG_PATH;
-        sh ./autogen.sh;
-        ./configure --disable-static --enable-shared --enable-maintainer-mode CPPFLAGS="-I/tmp/mine/include";
-        make all;
-        make check;
+      script: "./configure --enable-maintainer-mode; make all; make check;"
 
     # Plain build under Ubuntu GNU+Linux "trusty", GCC 7.
     - os: linux
@@ -109,17 +185,7 @@ matrix:
           packages:
             - texinfo
             - gcc-7
-      install:
-        - ./meta/travis-ci/install-ccexceptions.sh
-      script: |
-        #echo CC=$CC; $CC --version;
-        export PATH=/tmp/mine/bin:$PATH;
-        export LD_LIBRARY_PATH=/tmp/mine/lib:$LD_LIBRARY_PATH;
-        export PKG_CONFIG_PATH=/tmp/mine/lib/pkgconfig:$PKG_CONFIG_PATH;
-        sh ./autogen.sh;
-        ./configure --disable-static --enable-shared --enable-maintainer-mode CPPFLAGS="-I/tmp/mine/include";
-        make all;
-        make check;
+      script: "./configure --enable-maintainer-mode; make all; make check;"
 
     # Plain build  under Ubuntu GNU+Linux "trusty",  CLang automatically
     # selected by Travis CI.
@@ -132,53 +198,21 @@ matrix:
           packages:
             - texinfo
       compiler: clang
-      install:
-        - ./meta/travis-ci/install-ccexceptions.sh
-      script: |
-        #echo CC=$CC; $CC --version;
-        export PATH=/tmp/mine/bin:$PATH;
-        export LD_LIBRARY_PATH=/tmp/mine/lib:$LD_LIBRARY_PATH;
-        export PKG_CONFIG_PATH=/tmp/mine/lib/pkgconfig:$PKG_CONFIG_PATH;
-        sh ./autogen.sh;
-        ./configure --disable-static --enable-shared --enable-maintainer-mode CFLAGS='-Wno-unknown-attributes' CPPFLAGS="-I/tmp/mine/include";
-        make all;
-        make check;
+      script: "./configure --enable-maintainer-mode; make all; make check;"
 
     # Plain build under OS X, XCode 7.3, CLang automatically selected by
     # Travis CI.
     - os: osx
       osx_image: xcode7.3
       compiler: clang
-      install:
-        - ./meta/travis-ci/install-ccexceptions.sh
-      script: |
-        #echo CC=$CC; $CC --version;
-        export PATH=/tmp/mine/bin:$PATH;
-        export LD_LIBRARY_PATH=/tmp/mine/lib:$LD_LIBRARY_PATH;
-        export PKG_CONFIG_PATH=/tmp/mine/lib/pkgconfig:$PKG_CONFIG_PATH;
-        LIBTOOLIZE=glibtoolize sh ./autogen.sh;
-        ./configure --disable-static --enable-shared --enable-maintainer-mode CFLAGS='-Wno-unknown-attributes' CPPFLAGS="-I/tmp/mine/include";
-        make all;
-        #(RV=0; if ! make check ; then RV=$?; cat test-suite.log ; fi; exit $RV;)
-        make check;
+      script: "./configure --enable-maintainer-mode; make all; make check;"
 
     # Plain build under OS X, XCode 8.3, CLang automatically selected by
     # Travis CI.
     - os: osx
       osx_image: xcode8.3
       compiler: clang
-      install:
-        - ./meta/travis-ci/install-ccexceptions.sh
-      script: |
-        #echo CC=$CC; $CC --version;
-        export PATH=/tmp/mine/bin:$PATH;
-        export LD_LIBRARY_PATH=/tmp/mine/lib:$LD_LIBRARY_PATH;
-        export PKG_CONFIG_PATH=/tmp/mine/lib/pkgconfig:$PKG_CONFIG_PATH;
-        LIBTOOLIZE=glibtoolize sh ./autogen.sh;
-        ./configure --disable-static --enable-shared --enable-maintainer-mode CFLAGS='-Wno-unknown-attributes' CPPFLAGS="-I/tmp/mine/include";
-        make all;
-        #(RV=0; if ! make check ; then RV=$?; cat test-suite.log ; fi; exit $RV;)
-        make check;
+      script: "./configure --enable-maintainer-mode; make all; make check;"
 
     # Codecov support under Ubuntu GNU+Linux "trusty", GCC 7.
     - os: linux
@@ -191,18 +225,17 @@ matrix:
           packages:
             - texinfo
             - gcc-7
-      install:
-        - ./meta/travis-ci/install-ccexceptions.sh
-      script: |
-        #echo CC=$CC; $CC --version;
-        export PATH=/tmp/mine/bin:$PATH;
-        export LD_LIBRARY_PATH=/tmp/mine/lib:$LD_LIBRARY_PATH;
-        export PKG_CONFIG_PATH=/tmp/mine/lib/pkgconfig:$PKG_CONFIG_PATH;
-        sh ./autogen.sh;
-        ./configure --disable-static --enable-shared --enable-maintainer-mode CFLAGS='-O0 --coverage' CPPFLAGS="-I/tmp/mine/include";
-        make all;
-        make check;
+      script: "./configure --enable-maintainer-mode CFLAGS='-O0 --coverage'; make all; make check;"
       after_success:
         bash <(curl -s https://codecov.io/bash) -xgcov-7
 
+#page
+#### done
+
 ### end of file
+# Local Variables:
+# paragraph-start: "#[ \t].+\\|$"
+# paragraph-separate: "#[ \t]*$"
+# fill-prefix: "# "
+# page-delimiter: "^#page"
+# End:
