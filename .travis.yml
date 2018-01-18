@@ -159,7 +159,7 @@ matrix:
           packages:
             - texinfo
             - gcc-5
-      script: "./configure --enable-maintainer-mode; make all; make check;"
+      script: "echo $PKG_CONFIG_PATH; pkg-config ccexceptions --cflags; ./configure --enable-maintainer-mode; make all; make check;"
 
     # Plain build under Ubuntu GNU+Linux "trusty", GCC 6.
     - os: linux
