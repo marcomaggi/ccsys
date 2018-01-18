@@ -508,6 +508,58 @@ ccsys_fd_zero (ccsys_fd_set_t * fds)
 
 
 /** --------------------------------------------------------------------
+ ** Input/output: committing file system caches to disk.
+ ** ----------------------------------------------------------------- */
+
+#ifdef HAVE_SYNC
+void
+ccsys_sync (void)
+{
+  sync();
+}
+#endif
+
+#ifdef HAVE_SYNCFS
+void
+ccsys_syncfs (cce_destination_t L, ccsys_fd_t fd)
+{
+  int			rv;
+  errno = 0;
+  rv = syncfs(fd.data);
+  if (-1 == rv) {
+    cce_raise(L, cce_condition_new_errno_clear());
+  }
+}
+#endif
+
+#ifdef HAVE_FSYNC
+void
+ccsys_fsync (cce_destination_t L, ccsys_fd_t fd)
+{
+  int		rv;
+  errno = 0;
+  rv = fsync(fd.data);
+  if (-1 == rv) {
+    cce_raise(L, cce_condition_new_errno_clear());
+  }
+}
+#endif
+
+#ifdef HAVE_FDATASYNC
+void
+ccsys_fdatasync (cce_destination_t L, ccsys_fd_t fd)
+{
+  int		rv;
+  errno = 0;
+  rv = fdatasync(fd.data);
+  if (-1 == rv) {
+    cce_raise(L, cce_condition_new_errno_clear());
+  }
+}
+#endif
+
+
+/** --------------------------------------------------------------------
  ** Input/output: file descriptor handler.
  ** ----------------------------------------------------------------- */
 

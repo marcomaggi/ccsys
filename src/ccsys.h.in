@@ -771,6 +771,22 @@ ccsys_decl void ccsys_fd_zero  (ccsys_fd_set_t * fds)
 
 
 /** --------------------------------------------------------------------
+ ** Input/output: committing file system caches to disk.
+ ** ----------------------------------------------------------------- */
+
+ccsys_decl void ccsys_sync (void);
+
+ccsys_decl void ccsys_syncfs (cce_destination_t L, ccsys_fd_t fd)
+  __attribute__((__nonnull__(1)));
+
+ccsys_decl void ccsys_fsync (cce_destination_t L, ccsys_fd_t fd)
+  __attribute__((__nonnull__(1)));
+
+ccsys_decl void ccsys_fdatasync (cce_destination_t L, ccsys_fd_t fd)
+  __attribute__((__nonnull__(1)));
+
+
+/** --------------------------------------------------------------------
  ** File system: reading directory entries.
  ** ----------------------------------------------------------------- */
 

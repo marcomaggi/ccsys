@@ -1265,6 +1265,7 @@ The argument @var{advice} is meant to be a bitwise combination of the constants 
 * io scatter gather::           Scatter-gather input/output.
 * io dup::                      Duplicating file descriptors.
 * io select::                   Waiting for input/output.
+* io sync::                     Committing file system caches to disk.
 @end menu
 
 @c page
@@ -3063,6 +3064,33 @@ doit_child (ccsys_fd_t infd, ccsys_fd_t oufd)
   @}
 @}
 @end smallexample
+
+@c page
+@node io sync
+@section Committing file system caches to disk
+
+
+The following symbols are defined in the header file @file{ccsys.h}.
+
+
+@deftypefun void ccsys_sync (void)
+Wrapper for @cfunc{sync}; @manpage{sync, Committing file system caches to disk}.
+@end deftypefun
+
+
+@deftypefun void ccsys_syncfs (cce_destination_t L, ccsys_fd_t fd)
+Wrapper for @cfunc{syncfs}; @manpage{syncfs, Committing file system caches to disk}.
+@end deftypefun
+
+
+@deftypefun void ccsys_fsync (cce_destination_t L, ccsys_fd_t fd)
+Wrapper for @cfunc{fsync}; @manpage{fsync, Committing file system caches to disk}.
+@end deftypefun
+
+
+@deftypefun void ccsys_fdatasync (cce_destination_t L, ccsys_fd_t fd)
+Wrapper for @cfunc{fdatasync}; @manpage{fdatasync, Committing file system caches to disk}.
+@end deftypefun
 
 @c page
 @node fs
