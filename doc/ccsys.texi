@@ -1313,6 +1313,21 @@ operation using the @code{=} operator.
 @end deftypefun
 
 
+@deftypefun bool ccsys_fd_less_than (ccsys_fd_t @vari{fd}, ccsys_fd_t @varii{fd})
+@deftypefunx bool ccsys_fd_less_than_or_equal_to (ccsys_fd_t @vari{fd}, ccsys_fd_t @varii{fd})
+@deftypefunx bool ccsys_fd_greater_than (ccsys_fd_t @vari{fd}, ccsys_fd_t @varii{fd})
+@deftypefunx bool ccsys_fd_greater_than_or_equal_to (ccsys_fd_t @vari{fd}, ccsys_fd_t @varii{fd})
+Return @true{} if the @vari{fd} with respect to @varii{fd} is: less than, less than or equal to,
+greater than, greater than or equal to; otherwise return @false{}.
+@end deftypefun
+
+
+@deftypefun ccsys_fd_t ccsys_fd_min (ccsys_fd_t @vari{fd}, ccsys_fd_t @varii{fd})
+@deftypefunx ccsys_fd_t ccsys_fd_max (ccsys_fd_t @vari{fd}, ccsys_fd_t @varii{fd})
+Return the minimum or maximum between the arguments.
+@end deftypefun
+
+
 @deftypefun ccsys_fd_t ccsys_fd_incr (ccsys_fd_t @var{fd})
 Increment the file descriptor in @var{fd} and return the result.  This function is useful to
 generate the first argument to @cfunc{ccsys_select}; @ref{io select, ccsys_select} for details.

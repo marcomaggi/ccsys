@@ -589,12 +589,62 @@ ccsys_decl void ccsys_madvise (cce_location_t * L, void * address, size_t length
  ** Input/output: file descriptor utilities.
  ** ----------------------------------------------------------------- */
 
+__attribute__((__always_inline__))
 static inline bool
 ccsys_fd_equal (ccsys_fd_t fd1, ccsys_fd_t fd2)
 {
   return (fd1.data == fd2.data)? true : false;
 }
 
+__attribute__((__always_inline__))
+static inline bool
+ccsys_fd_less_than (ccsys_fd_t fd1, ccsys_fd_t fd2)
+{
+  return (fd1.data < fd2.data)? true : false;
+}
+
+__attribute__((__always_inline__))
+static inline bool
+ccsys_fd_less_than_or_equal_to (ccsys_fd_t fd1, ccsys_fd_t fd2)
+{
+  return (fd1.data <= fd2.data)? true : false;
+}
+
+__attribute__((__always_inline__))
+static inline bool
+ccsys_fd_greater_than (ccsys_fd_t fd1, ccsys_fd_t fd2)
+{
+  return (fd1.data > fd2.data)? true : false;
+}
+
+__attribute__((__always_inline__))
+static inline bool
+ccsys_fd_greater_than_or_equal_to (ccsys_fd_t fd1, ccsys_fd_t fd2)
+{
+  return (fd1.data >= fd2.data)? true : false;
+}
+
+/* ------------------------------------------------------------------ */
+
+__attribute__((__always_inline__))
+static inline ccsys_fd_t
+ccsys_fd_min (ccsys_fd_t fd1, ccsys_fd_t fd2)
+{
+  ccsys_fd_t	rv = (ccsys_fd_less_than(fd1, fd2))? fd1 : fd2;
+  return rv;
+}
+
+__attribute__((__always_inline__))
+static inline ccsys_fd_t
+ccsys_fd_max (ccsys_fd_t fd1, ccsys_fd_t fd2)
+{
+  ccsys_fd_t	rv = (ccsys_fd_greater_than(fd1, fd2))? fd1 : fd2;
+  return rv;
+}
+
+/* ------------------------------------------------------------------ */
+
+__attribute__((__always_inline__))
 static inline ccsys_fd_t
 ccsys_fd_incr (ccsys_fd_t fd)
 {
