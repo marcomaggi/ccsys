@@ -229,10 +229,52 @@ ccsys_lstat (cce_location_t * L, char const * pathname, ccsys_stat_t * _buf)
 void
 ccsys_getcwd (cce_location_t * L, char * buffer, size_t size)
 {
+  if (buffer) {
+    char *	rv;
+    errno = 0;
+    rv = getcwd(buffer, size);
+    if (NULL == rv) {
+      cce_raise(L, cce_condition_new_errno_clear());
+    }
+  } else {
+    cce_raise(L, cce_condition_new_errno(EINVAL));
+  }
+}
+#endif
+
+#ifdef HAVE_GETCWD
+bool
+ccsys_custom_getcwd (cce_location_t * L, char * buffer, size_t size)
+{
+  if (buffer) {
+    char *	rv;
+    errno = 0;
+    rv = getcwd(buffer, size);
+    if (NULL != rv) {
+      return true;
+    } else {
+      if (ERANGE == errno) {
+	return false;
+      } else {
+	cce_raise(L, cce_condition_new_errno_clear());
+      }
+    }
+  } else {
+    cce_raise(L, cce_condition_new_errno(EINVAL));
+  }
+}
+#endif
+
+#ifdef HAVE_GET_CURRENT_DIR_NAME
+char *
+ccsys_get_current_dir_name (cce_destination_t L)
+{
   char *	rv;
   errno = 0;
-  rv = getcwd(buffer, size);
-  if (NULL == rv) {
+  rv = get_current_dir_name();
+  if (NULL != rv) {
+    return rv;
+  } else {
     cce_raise(L, cce_condition_new_errno_clear());
   }
 }

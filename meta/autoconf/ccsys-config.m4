@@ -39,9 +39,21 @@ AC_DEFUN([CCSYS_DIRENT_HEADER],[
 #endif
 ])
 
+AC_DEFUN([CCSYS_ERRNO_HEADER],[
+#ifdef HAVE_ERRNO_H
+#  include <errno.h>
+#endif
+])
+
 AC_DEFUN([CCSYS_FCNTL_HEADER],[
 #ifdef HAVE_FCNTL_H
 #  include <fcntl.h>
+#endif
+])
+
+AC_DEFUN([CCSYS_LIMITS_HEADER],[
+#ifdef HAVE_LIMITS_H
+#  include <limits.h>
 #endif
 ])
 
