@@ -837,6 +837,20 @@ ccsys_decl void ccsys_fdatasync (cce_destination_t L, ccsys_fd_t fd)
 
 
 /** --------------------------------------------------------------------
+ ** File system: working directory.
+ ** ----------------------------------------------------------------- */
+
+ccsys_decl void ccsys_getcwd (cce_location_t * L, char * buffer, size_t size)
+  __attribute__((__nonnull__(1)));
+
+ccsys_decl void ccsys_chdir (cce_location_t * L, char const * pathname)
+  __attribute__((__nonnull__(1,2)));
+
+ccsys_decl void ccsys_fchdir (cce_location_t * L, ccsys_dirfd_t dirfd)
+  __attribute__((__nonnull__(1)));
+
+
+/** --------------------------------------------------------------------
  ** File system: reading directory entries.
  ** ----------------------------------------------------------------- */
 
@@ -911,20 +925,6 @@ ccsys_stat_st_dev (const ccsys_stat_t * S)
 /* CCSYS_STRUCT_ACCESSOR(ccsys_stat_st_atime,   ccsys_stat_t, ccsys_timespec_t,@OFFSETOF_STRUCT_STAT_ST_ATIME@) */
 /* CCSYS_STRUCT_ACCESSOR(ccsys_stat_st_mtime,   ccsys_stat_t, ccsys_timespec_t,@OFFSETOF_STRUCT_STAT_ST_MTIME@) */
 /* CCSYS_STRUCT_ACCESSOR(ccsys_stat_st_ctime,   ccsys_stat_t, ccsys_timespec_t,@OFFSETOF_STRUCT_STAT_ST_CTIME@) */
-
-
-/** --------------------------------------------------------------------
- ** File system: working directory.
- ** ----------------------------------------------------------------- */
-
-ccsys_decl void ccsys_getcwd (cce_location_t * L, char * buffer, size_t size)
-  __attribute__((__nonnull__(1)));
-
-ccsys_decl void ccsys_chdir (cce_location_t * L, char const * pathname)
-  __attribute__((__nonnull__(1,2)));
-
-ccsys_decl void ccsys_fchdir (cce_location_t * L, ccsys_dirfd_t dirfd)
-  __attribute__((__nonnull__(1)));
 
 
 /** --------------------------------------------------------------------
