@@ -111,7 +111,7 @@ test_1_2 (cce_destination_t upper_L)
 
 
 /** --------------------------------------------------------------------
- ** File system: changing the current working directory.
+ ** File system: changing the current working directory, "chdir()".
  ** ----------------------------------------------------------------- */
 
 static void
@@ -151,6 +151,63 @@ test_1_3 (cce_destination_t upper_L)
 }
 
 
+/** --------------------------------------------------------------------
+ ** File system: changing the current working directory, "fchdir()".
+ ** ----------------------------------------------------------------- */
+
+static void
+test_1_4_child (cce_destination_t upper_L)
+{
+#if (defined HAVE_FCHDIR)
+  cce_location_t	L[1];
+  cce_cleanup_handler_t	dirstream_H[1];
+
+  if (cce_location(L)) {
+    cce_run_error_handlers_raise(L, upper_L);
+  } else {
+    static char const *	dirname  = "..";
+    ccsys_dir_t *	dirstream;
+    ccsys_dirfd_t	dirfd;
+
+    dirstream = ccsys_opendir(L, dirname);
+    ccsys_handler_dirstream_init(L, dirstream_H, dirstream);
+    dirfd = ccsys_dirfd(L, dirstream);
+
+    ccsys_fchdir(L, dirfd);
+
+#if (defined HAVE_GETCWD)
+    {
+      size_t	len = CCSYS_PATH_MAX;
+      char	buf[len];
+      ccsys_getcwd(L, buf, len);
+      if (0) { fprintf(stderr, "%s: current working directory: %s\n", __func__, buf); }
+    }
+#endif
+    cce_run_cleanup_handlers(L);
+  }
+#endif
+}
+
+void
+test_1_4 (cce_destination_t upper_L)
+/* Fork a process.   In the child process: change  the current directory
+   to the  parent of the current  one; if successful exit  with success,
+   otherwise exit  with failure.   In the parent  process: wait  for the
+   child, check its exit status. */
+{
+#if (defined HAVE_FCHDIR)
+  cce_location_t	L[1];
+
+  if (cce_location(L)) {
+    cce_run_error_handlers_raise(L, upper_L);
+  } else {
+    cctests_call_in_forked_process(L, test_1_4_child);
+    cce_run_cleanup_handlers(L);
+  }
+#endif
+}
+
+
 int
 main (void)
 {
@@ -163,6 +220,7 @@ main (void)
       cctests_run(test_1_1_3);
       cctests_run(test_1_2);
       cctests_run(test_1_3);
+      cctests_run(test_1_4);
     }
     cctests_end_group();
   }
