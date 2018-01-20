@@ -7,7 +7,7 @@
 
 
 
-  Copyright (C) 2017 Marco Maggi <marco.maggi-ipsu@poste.it>
+  Copyright (C) 2017, 2018 Marco Maggi <marco.maggi-ipsu@poste.it>
 
   This program is  free software: you can redistribute  it and/or modify
   it  under the  terms  of  the GNU  Lesser  General  Public License  as
@@ -574,6 +574,15 @@ cctests_decl cce_destination_t	cctests_location;
 
 cctests_decl void cctests_p_assert (cce_destination_t L, char const * const expr, bool result,
 				    char const * const filename, char const * const funcname, int const linenum);
+
+
+/** --------------------------------------------------------------------
+ ** Calling a function in a subprocess.
+ ** ----------------------------------------------------------------- */
+
+typedef void cctests_child_process_function_t (cce_destination_t L);
+
+cctests_decl void cctests_call_in_forked_process (cce_destination_t L, cctests_child_process_function_t * child_function);
 
 
 /** --------------------------------------------------------------------

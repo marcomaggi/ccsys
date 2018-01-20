@@ -329,7 +329,7 @@ test_4_1_child  (char const * fifoname)
   {
     ccsys_exit_status_t	status;
     status.data = CCSYS_EXIT_SUCCESS;
-    ccsys_exit(status);
+    ccsys__exit(status);
   }
 }
 
@@ -484,7 +484,7 @@ test_4_2_child (ccsys_dirfd_t dirfd, char const * fifoname)
   {
     ccsys_exit_status_t	status;
     status.data = CCSYS_EXIT_SUCCESS;
-    ccsys_exit(status);
+    ccsys__exit(status);
   }
 }
 
@@ -1126,7 +1126,7 @@ test_9_1 (cce_destination_t upper_L)
 	{
 	  ccsys_exit_status_t	status;
 	  status.data = CCSYS_EXIT_SUCCESS;
-	  ccsys_exit(status);
+	  ccsys__exit(status);
 	}
       }
       cce_run_cleanup_handlers(L);
@@ -1339,7 +1339,7 @@ test_9_2 (cce_destination_t upper_L)
 	{
 	  ccsys_exit_status_t	status;
 	  status.data = CCSYS_EXIT_SUCCESS;
-	  ccsys_exit(status);
+	  ccsys__exit(status);
 	}
       }
       cce_run_cleanup_handlers(L);

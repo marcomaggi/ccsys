@@ -26,7 +26,7 @@
 
 
 /** --------------------------------------------------------------------
- ** File system: current working directory.
+ ** File system: retrieving the current working directory.
  ** ----------------------------------------------------------------- */
 
 void
@@ -109,6 +109,28 @@ test_1_2 (cce_destination_t upper_L)
 #endif
 }
 
+
+/** --------------------------------------------------------------------
+ ** File system: changing the current working directory.
+ ** ----------------------------------------------------------------- */
+
+static void
+test_1_3_child (cce_destination_t L)
+{
+#if (defined HAVE_CHDIR)
+  ccsys_chdir(L, "..");
+
+#if (defined HAVE_GETCWD)
+  {
+    size_t	len = CCSYS_PATH_MAX;
+    char	buf[len];
+    ccsys_getcwd(L, buf, len);
+    if (0) { fprintf(stderr, "%s: current working directory: %s\n", __func__, buf); }
+  }
+#endif
+#endif
+}
+
 void
 test_1_3 (cce_destination_t upper_L)
 /* Fork a process.   In the child process: change  the current directory
@@ -122,43 +144,7 @@ test_1_3 (cce_destination_t upper_L)
   if (cce_location(L)) {
     cce_run_error_handlers_raise(L, upper_L);
   } else {
-    ccsys_pid_t		pid;
-
-    pid = ccsys_fork(L);
-    if (ccsys_in_parent_after_fork(pid)) {
-      /* Wait for the child process. */
-      ccsys_waitpid_options_t	options;
-      ccsys_waitpid_status_t	wstatus;
-
-      options.data = 0;
-      ccsys_waitpid(L, pid, &wstatus, options);
-      cctests_assert(L, ccsys_wifexited(wstatus));
-      cctests_assert(L, 0 == ccsys_wexitstatus(wstatus));
-    } else {
-      cce_location_t		inner_L[1];
-      ccsys_exit_status_t	status;
-
-      if (cce_location(inner_L)) {
-	status.data = CCSYS_EXIT_FAILURE;
-	cce_run_error_handlers_final(inner_L);
-      } else {
-	ccsys_chdir(inner_L, "..");
-	status.data = CCSYS_EXIT_SUCCESS;
-	cce_run_cleanup_handlers(inner_L);
-      }
-
-#if (defined HAVE_GETCWD)
-      {
-	size_t	len = CCSYS_PATH_MAX;
-	char	buf[len];
-	ccsys_getcwd(upper_L, buf, len);
-	if (0) { fprintf(stderr, "%s: current working directory: %s\n", __func__, buf); }
-      }
-#endif
-
-      /* Terminate the child process. */
-      ccsys_exit(status);
-    }
+    cctests_call_in_forked_process(L, test_1_3_child);
     cce_run_cleanup_handlers(L);
   }
 #endif

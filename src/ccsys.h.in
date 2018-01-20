@@ -1359,6 +1359,9 @@ ccsys_in_child_after_fork (ccsys_pid_t pid)
 ccsys_decl void ccsys_exit (ccsys_exit_status_t status)
   __attribute__((__noreturn__));
 
+ccsys_decl void ccsys__exit (ccsys_exit_status_t status)
+  __attribute__((__noreturn__));
+
 /* ------------------------------------------------------------------ */
 
 ccsys_decl void ccsys_execv (cce_destination_t L, char const * filename, char * const argv [])

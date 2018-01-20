@@ -65,8 +65,8 @@ libcctests_la_SOURCES	= \
 	cctests/cctests-exception-handlers.c	\
 	cctests/cctests-system.c		\
 	cctests/cctests-driver.c		\
-	cctests/cctests-assertions.c
-
+	cctests/cctests-assertions.c		\
+	cctests/cctests-process.c
 
 #page
 #### tests

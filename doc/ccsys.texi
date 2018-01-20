@@ -4139,7 +4139,12 @@ The following symbols are defined in the header file @file{ccsys.h}.
 
 
 @deftypefun void ccsys_exit (ccsys_exit_status_t @var{status})
-Wrapper for @cfunc{exit}.
+Wrapper for @cfunc{exit}; @manpage{exit, Cause normal process termination}.
+@end deftypefun
+
+
+@deftypefun void ccsys__exit (ccsys_exit_status_t @var{status})
+Wrapper for @cfunc{_exit}; @manpage{_exit, Terminate the calling process}.
 @end deftypefun
 
 @c page

@@ -35,6 +35,30 @@
 #ifdef HAVE_SYS_WAIT_H
 #  include <sys/wait.h>
 #endif
+#ifdef HAVE_UNISTD_H
+#  include <unistd.h>
+#endif
+
+
+/** --------------------------------------------------------------------
+ ** Headers.
+ ** ----------------------------------------------------------------- */
+
+#ifdef HAVE_EXIT
+void
+ccsys_exit (ccsys_exit_status_t status)
+{
+  exit(status.data);
+}
+#endif
+
+#ifdef HAVE__EXIT
+void
+ccsys__exit (ccsys_exit_status_t status)
+{
+  _exit(status.data);
+}
+#endif
 
 
 /** --------------------------------------------------------------------
@@ -73,14 +97,6 @@ ccsys_fork (cce_location_t * L)
   } else {
     return rv;
   }
-}
-#endif
-
-#ifdef HAVE_EXIT
-void
-ccsys_exit (ccsys_exit_status_t status)
-{
-  exit(status.data);
 }
 #endif
 
