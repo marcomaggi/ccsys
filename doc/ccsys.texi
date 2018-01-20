@@ -3562,6 +3562,40 @@ if (cce_location(L)) @{
 @section Reading directory entries
 
 
+@menu
+* fs dirs reading types::       Directory stream and entry types.
+* fs dirs reading api::         Actually reading directory entries.
+* fs dirs reading handler::     Directory stream handler.
+@end menu
+
+@c page
+@node fs dirs reading types
+@subsection Directory stream and entry types
+
+
+The following symbols are defined in the header file @file{ccsys.h}.
+
+
+@deftp {Opaque Type} ccsys_dir_t
+Opaque type for a directory stream; replaces @objtype{DIR}.
+@end deftp
+
+
+@deftp {Struct Typedef} ccsys_dirent_t
+Type of directory entries; replaces @objtype{struct dirent}.
+@end deftp
+
+
+@deftypefun {char const *} ccsys_dirent_d_name (ccsys_dirent_t * @var{entry})
+Return a pointer to the field @code{d_name} of a @objtype{struct dirent}.
+@end deftypefun
+
+
+@c page
+@node fs dirs reading api
+@subsection Actually reading directory entries
+
+
 The following symbols are defined in the header file @file{ccsys.h}.
 
 
@@ -3589,9 +3623,9 @@ Wrapper for @cfunc{closedir}.
 Wrapper for @cfunc{dirfd}.
 @end deftypefun
 
-@c ------------------------------------------------------------------------
-
-@subsubheading Handler for directory streams
+@c page
+@node fs dirs reading handler
+@subsection Directory stream handler
 
 
 We can read the contents of a directory opening a directory stream with @cfunc{ccsys_opendir} and
@@ -3613,7 +3647,7 @@ if (cce_location(L)) @{
   for (direntry = ccsys_readdir(L, dirstream);
        direntry;
        direntry = ccsys_readdir(L, dirstream)) @{
-    printf("%s\n", direntry->d_name);
+    printf("%s\n", ccsys_dirent_d_name(direntry));
     fflush(stdout);
   @}
   cce_run_cleanup_handlers(L);

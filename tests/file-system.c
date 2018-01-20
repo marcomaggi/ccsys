@@ -208,6 +208,36 @@ test_1_4 (cce_destination_t upper_L)
 }
 
 
+/** --------------------------------------------------------------------
+ ** File system: reading directory contents.
+ ** ----------------------------------------------------------------- */
+
+void
+test_2_1 (cce_destination_t upper_L)
+{
+  cce_location_t          L[1];
+  cce_cleanup_handler_t   dirstream_H[1];
+  char const *            pathname = "./";
+
+  if (cce_location(L)) {
+    cce_run_error_handlers_raise(L, upper_L);
+  } else {
+    ccsys_dir_t *         dirstream;
+    ccsys_dirent_t *      direntry;
+
+    dirstream = ccsys_opendir(L, pathname);
+    ccsys_handler_dirstream_init(L, dirstream_H, dirstream);
+    for (direntry = ccsys_readdir(L, dirstream);
+	 direntry;
+	 direntry = ccsys_readdir(L, dirstream)) {
+      if (0) { printf("%s\n", ccsys_dirent_d_name(direntry)); }
+      fflush(stdout);
+    }
+    cce_run_cleanup_handlers(L);
+  }
+}
+
+
 int
 main (void)
 {
@@ -221,6 +251,12 @@ main (void)
       cctests_run(test_1_2);
       cctests_run(test_1_3);
       cctests_run(test_1_4);
+    }
+    cctests_end_group();
+
+    cctests_begin_group("reading directory contents");
+    {
+      cctests_run(test_2_1);
     }
     cctests_end_group();
   }
