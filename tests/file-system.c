@@ -109,6 +109,61 @@ test_1_2 (cce_destination_t upper_L)
 #endif
 }
 
+void
+test_1_3 (cce_destination_t upper_L)
+/* Fork a process.   In the child process: change  the current directory
+   to the  parent of the current  one; if successful exit  with success,
+   otherwise exit  with failure.   In the parent  process: wait  for the
+   child, check its exit status. */
+{
+#if (defined HAVE_CHDIR)
+  cce_location_t	L[1];
+
+  if (cce_location(L)) {
+    cce_run_error_handlers_raise(L, upper_L);
+  } else {
+    ccsys_pid_t		pid;
+
+    pid = ccsys_fork(L);
+    if (ccsys_in_parent_after_fork(pid)) {
+      /* Wait for the child process. */
+      ccsys_waitpid_options_t	options;
+      ccsys_waitpid_status_t	wstatus;
+
+      options.data = 0;
+      ccsys_waitpid(L, pid, &wstatus, options);
+      cctests_assert(L, ccsys_wifexited(wstatus));
+      cctests_assert(L, 0 == ccsys_wexitstatus(wstatus));
+    } else {
+      cce_location_t		inner_L[1];
+      ccsys_exit_status_t	status;
+
+      if (cce_location(inner_L)) {
+	status.data = CCSYS_EXIT_FAILURE;
+	cce_run_error_handlers_final(inner_L);
+      } else {
+	ccsys_chdir(inner_L, "..");
+	status.data = CCSYS_EXIT_SUCCESS;
+	cce_run_cleanup_handlers(inner_L);
+      }
+
+#if (defined HAVE_GETCWD)
+      {
+	size_t	len = CCSYS_PATH_MAX;
+	char	buf[len];
+	ccsys_getcwd(upper_L, buf, len);
+	if (0) { fprintf(stderr, "%s: current working directory: %s\n", __func__, buf); }
+      }
+#endif
+
+      /* Terminate the child process. */
+      ccsys_exit(status);
+    }
+    cce_run_cleanup_handlers(L);
+  }
+#endif
+}
+
 
 int
 main (void)
@@ -121,6 +176,7 @@ main (void)
       cctests_run(test_1_1_2);
       cctests_run(test_1_1_3);
       cctests_run(test_1_2);
+      cctests_run(test_1_3);
     }
     cctests_end_group();
   }

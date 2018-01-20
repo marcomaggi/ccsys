@@ -540,6 +540,13 @@ combination of the constants of type @objtype{ccsys_waitpid_options_enum_t};
 @ref{ccsys_waitpid_options_enum_t, Enumerated constants}.
 @end deftp
 
+
+@anchor{ccsys_sygnum_t}
+@deftp {Semantic Type} ccsys_signum_t
+Type of exact integers representing interprocess signal numbers.  It is meant to be one of the
+constants of type @objtype{ccsys_signum_enum_t}; @ref{ccsys_signum_enum_t, Enumerated constants}.
+@end deftp
+
 @c page
 @node enums
 @chapter Enumerated constants
@@ -1156,6 +1163,64 @@ CCSYS_EPROGMISMATCH     CCSYS_EPROCUNAVAIL      CCSYS_EFTYPE
 CCSYS_EAUTH             CCSYS_ENEEDAUTH         CCSYS_ENOTSUP
 CCSYS_EBACKGROUND       CCSYS_EDIED             CCSYS_ERFKILL
 CCSYS_EHWPOISON
+@end example
+@end deftp
+
+
+@EnumeratedConstant{CCSYS_SIGABRT}
+@EnumeratedConstant{CCSYS_SIGALRM}
+@EnumeratedConstant{CCSYS_SIGBUS}
+@EnumeratedConstant{CCSYS_SIGCHLD}
+@EnumeratedConstant{CCSYS_SIGCLD}
+@EnumeratedConstant{CCSYS_SIGCONT}
+@EnumeratedConstant{CCSYS_SIGEMT}
+@EnumeratedConstant{CCSYS_SIGFPE}
+@EnumeratedConstant{CCSYS_SIGHUP}
+@EnumeratedConstant{CCSYS_SIGILL}
+@EnumeratedConstant{CCSYS_SIGINFO}
+@EnumeratedConstant{CCSYS_SIGINT}
+@EnumeratedConstant{CCSYS_SIGIO}
+@EnumeratedConstant{CCSYS_SIGIOT}
+@EnumeratedConstant{CCSYS_SIGKILL}
+@EnumeratedConstant{CCSYS_SIGLOST}
+@EnumeratedConstant{CCSYS_SIGPIPE}
+@EnumeratedConstant{CCSYS_SIGPOLL}
+@EnumeratedConstant{CCSYS_SIGPROF}
+@EnumeratedConstant{CCSYS_SIGQUIT}
+@EnumeratedConstant{CCSYS_SIGSEGV}
+@EnumeratedConstant{CCSYS_SIGSTOP}
+@EnumeratedConstant{CCSYS_SIGSYS}
+@EnumeratedConstant{CCSYS_SIGTERM}
+@EnumeratedConstant{CCSYS_SIGTRAP}
+@EnumeratedConstant{CCSYS_SIGTSTP}
+@EnumeratedConstant{CCSYS_SIGTTIN}
+@EnumeratedConstant{CCSYS_SIGTTOU}
+@EnumeratedConstant{CCSYS_SIGURG}
+@EnumeratedConstant{CCSYS_SIGUSR1}
+@EnumeratedConstant{CCSYS_SIGUSR2}
+@EnumeratedConstant{CCSYS_SIGVRALRM}
+@EnumeratedConstant{CCSYS_SIGWINCH}
+@EnumeratedConstant{CCSYS_SIGXCPU}
+@EnumeratedConstant{CCSYS_SIGXSFZ}
+@EnumeratedConstant{CCSYS_NSIG}
+@anchor{ccsys_signum_enum_t}
+@deftp {Enum Typedef} ccsys_signum_enum_t
+Interprocess signal numbers.  It defines the following constants:
+
+@example
+CCSYS_SIGABRT           CCSYS_SIGALRM           CCSYS_SIGBUS
+CCSYS_SIGCHLD           CCSYS_SIGCLD            CCSYS_SIGCONT
+CCSYS_SIGEMT            CCSYS_SIGFPE            CCSYS_SIGHUP
+CCSYS_SIGILL            CCSYS_SIGINFO           CCSYS_SIGINT
+CCSYS_SIGIO             CCSYS_SIGIOT            CCSYS_SIGKILL
+CCSYS_SIGLOST           CCSYS_SIGPIPE           CCSYS_SIGPOLL
+CCSYS_SIGPROF           CCSYS_SIGQUIT           CCSYS_SIGSEGV
+CCSYS_SIGSTOP           CCSYS_SIGSYS            CCSYS_SIGTERM
+CCSYS_SIGTRAP           CCSYS_SIGTSTP           CCSYS_SIGTTIN
+CCSYS_SIGTTOU           CCSYS_SIGURG            CCSYS_SIGUSR1
+CCSYS_SIGUSR2           CCSYS_SIGVRALRM         CCSYS_SIGWINCH
+CCSYS_SIGXCPU           CCSYS_SIGXSFZ
+CCSYS_NSIG
 @end example
 @end deftp
 
@@ -4057,6 +4122,31 @@ Wrapper for @cfunc{setsockopt}.
 @chapter Process system calls
 
 
+@menu
+* process exiting::             Exiting the current process.
+* process system::              Executing subprocesses through the shell.
+* process forking::             Forking the current process.
+* process executing::           Executing a subprocess.
+* process waiting::             Waiting for a subprocess.
+@end menu
+
+@c page
+@node process exiting
+@section Exiting the current process
+
+
+The following symbols are defined in the header file @file{ccsys.h}.
+
+
+@deftypefun void ccsys_exit (ccsys_exit_status_t @var{status})
+Wrapper for @cfunc{exit}.
+@end deftypefun
+
+@c page
+@node process system
+@section Executing subprocesses through the shell
+
+
 The following symbols are defined in the header file @file{ccsys.h}.
 
 
@@ -4064,10 +4154,12 @@ The following symbols are defined in the header file @file{ccsys.h}.
 Wrapper for @cfunc{system}.
 @end deftypefun
 
+@c page
+@node process forking
+@section Forking the current process
 
-@deftypefun void ccsys_exit (ccsys_exit_status_t @var{status})
-Wrapper for @cfunc{exit}.
-@end deftypefun
+
+The following symbols are defined in the header file @file{ccsys.h}.
 
 
 @deftypefun ccsys_pid_t ccsys_fork (cce_location_t * @var{L})
@@ -4088,7 +4180,13 @@ the current process is the @strong{child} after the call to @cfunc{ccsys_fork}; 
 @false{}.
 @end deftypefun
 
-@c ------------------------------------------------------------------------
+@c page
+@node process executing
+@section Executing a subprocess
+
+
+The following symbols are defined in the header file @file{ccsys.h}.
+
 
 @deftypefun void ccsys_execv (cce_destination_t @var{L}, char const * @var{filename}, char * const @var{argv} [])
 Wrapper for @cfunc{execv}.
@@ -4104,9 +4202,67 @@ Wrapper for @cfunc{execve}.
 Wrapper for @cfunc{execvp}.
 @end deftypefun
 
+@c page
+@node process waiting
+@section Waiting for a subprocess
+
+
+The following symbols are defined in the header file @file{ccsys.h}.
+
 
 @deftypefun void ccsys_waitpid (cce_destination_t @var{L}, pid_t @var{pid}, ccsys_waitpid_status_t * @var{wstatus}, ccsys_waitpid_options_t @var{options})
 Wrapper for @cfunc{waitpid}.
+@end deftypefun
+
+@c ------------------------------------------------------------------------
+
+@subsubheading Testing for exit status
+
+
+@deftypefun bool ccsys_wifexited (ccsys_waitpid_status_t @var{wstatus})
+Wrapper for @cfunc{WIFEXITED}.
+@end deftypefun
+
+
+@deftypefun uint8_t ccsys_wexitstatus (ccsys_waitpid_status_t @var{wstatus})
+Wrapper for @cfunc{WEXITSTATUS}.
+@end deftypefun
+
+@c ------------------------------------------------------------------------
+
+@subsubheading Testing for signals
+
+
+@deftypefun bool ccsys_wifsignaled (ccsys_waitpid_status_t @var{wstatus})
+Wrapper for @cfunc{WIFSIGNALED}.
+@end deftypefun
+
+
+@deftypefun ccsys_signum_t ccsys_wtermsig (ccsys_waitpid_status_t @var{wstatus})
+Wrapper for @cfunc{WTERMSIG}.
+@end deftypefun
+
+@c ------------------------------------------------------------------------
+
+@subsubheading Testing core dumps
+
+
+@deftypefun bool ccsys_wcoredump (ccsys_waitpid_status_t @var{wstatus})
+Wrapper for @cfunc{WCOREDUMP}.
+@end deftypefun
+
+@c ------------------------------------------------------------------------
+
+@subsubheading Testing for stops
+
+
+@deftypefun bool ccsys_wifstopped (ccsys_waitpid_status_t @var{wstatus})
+Wrapper for @cfunc{WIFSTOPPED}.
+@end deftypefun
+
+
+@deftypefun ccsys_signum_t ccsys_wstopsig (ccsys_waitpid_status_t @var{wstatus})
+Wrapper for @cfunc{WSTOPSIG}.
 @end deftypefun
 
 @c page

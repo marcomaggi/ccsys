@@ -146,4 +146,70 @@ ccsys_waitpid (cce_location_t * L, ccsys_pid_t pid, ccsys_waitpid_status_t * wst
 }
 #endif
 
+/* ------------------------------------------------------------------ */
+
+#if (defined HAVE_WAITPID)
+bool
+ccsys_wifexited	(ccsys_waitpid_status_t  wstatus)
+{
+  return (WIFEXITED(wstatus))? true : false;
+}
+#endif
+
+#if (defined HAVE_WAITPID)
+uint8_t
+ccsys_wexitstatus (ccsys_waitpid_status_t wstatus)
+{
+  return (uint8_t) WEXITSTATUS(wstatus);
+}
+#endif
+
+/* ------------------------------------------------------------------ */
+
+#if (defined HAVE_WAITPID)
+bool
+ccsys_wifsignaled (ccsys_waitpid_status_t  wstatus)
+{
+  return (WIFSIGNALED(wstatus))? true : false;
+}
+#endif
+
+#if (defined HAVE_WAITPID)
+ccsys_signum_t
+ccsys_wtermsig (ccsys_waitpid_status_t  wstatus)
+{
+  ccsys_signum_t	signum = { .data = WTERMSIG(wstatus) };
+  return signum;
+}
+#endif
+
+/* ------------------------------------------------------------------ */
+
+#if (defined HAVE_WAITPID)
+bool
+ccsys_wcoredump (ccsys_waitpid_status_t wstatus)
+{
+  return (WCOREDUMP(wstatus))? true : false;
+}
+#endif
+
+/* ------------------------------------------------------------------ */
+
+#if (defined HAVE_WAITPID)
+bool
+ccsys_wifstopped (ccsys_waitpid_status_t wstatus)
+{
+  return (WIFSTOPPED(wstatus))? true : false;
+}
+#endif
+
+#if (defined HAVE_WAITPID)
+ccsys_signum_t
+ccsys_wstopsig (ccsys_waitpid_status_t wstatus)
+{
+  ccsys_signum_t	signum = { .data = WSTOPSIG(wstatus) };
+  return signum;
+}
+#endif
+
 /* end of file */
