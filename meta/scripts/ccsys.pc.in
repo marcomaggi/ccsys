@@ -21,8 +21,8 @@ sysconfdir=@sysconfdir@
 Name: @PACKAGE_NAME@
 Description: system function adapters for CCExceptions
 Version: @CCSYS_PKG_CONFIG_VERSION@
-Libs: -L${libdir} -lccsys
-Cflags: -I${includedir}
+Libs: -L${libdir} -lccsys @CCEXCEPTIONS_LIBS@
+Cflags: -I${includedir} @CCEXCEPTIONS_CFLAGS@
 
 ### end of file
 # Local Variables:
