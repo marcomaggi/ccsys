@@ -3600,27 +3600,27 @@ The following symbols are defined in the header file @file{ccsys.h}.
 
 
 @deftypefun {ccsys_dir_t *} ccsys_opendir (cce_destination_t @var{L}, char const * @var{pathname})
-Wrapper for @cfunc{opendir}.
+Wrapper for @cfunc{opendir}; @manpage{opendir, Open a directory}.
 @end deftypefun
 
 
 @deftypefun {ccsys_dir_t *} ccsys_fdopendir (cce_destination_t @var{L}, ccsys_dirfd_t @var{dirfd})
-Wrapper for @cfunc{fdopendir}.
+Wrapper for @cfunc{fdopendir}; @manpage{fopendir, Open a directory}.
 @end deftypefun
 
 
 @deftypefun {ccsys_dirent_t *} ccsys_readdir (cce_destination_t @var{L}, ccsys_dir_t * @var{dirstream})
-Wrapper for @cfunc{readdir}.
+Wrapper for @cfunc{readdir}; @manpage{readdir, Read directory entries}.
 @end deftypefun
 
 
 @deftypefun void ccsys_closedir (cce_destination_t @var{L}, ccsys_dir_t * @var{dirstream})
-Wrapper for @cfunc{closedir}.
+Wrapper for @cfunc{closedir}; @manpage{opendir, Close a directory}.
 @end deftypefun
 
 
 @deftypefun ccsys_dirfd_t ccsys_dirfd (cce_destination_t @var{L}, ccsys_dir_t * @var{dirstream})
-Wrapper for @cfunc{dirfd}.
+Wrapper for @cfunc{dirfd}; @manpage{dirfd, Get a directory stream file descriptor}.
 @end deftypefun
 
 @c page
@@ -3687,21 +3687,37 @@ The macro expands into a call to @cfunc{ccsys_error_handler_dirstream_init}.
 @section Creating and deleting directories
 
 
+@menu
+* io dirs creating api::        Actually creating directories.
+* io dirs creating handlers::   Handler for directories removal
+* io dirs creating one::        Using @cfunc{ccsys_mkdirat}.
+@end menu
+
+@c page
+@node io dirs creating api
+@subsection Actually creating directories
+
+
 The following symbols are defined in the header file @file{ccsys.h}.
 
 
 @deftypefun void ccsys_mkdir (cce_destination_t @var{L}, char const * @var{pathname}, ccsys_open_mode_t @var{mode})
-Wrapper for @cfunc{mkdir}.
+Wrapper for @cfunc{mkdir}; @manpage{mkdir, Create a directory}.
+@end deftypefun
+
+
+@deftypefun void ccsys_mkdirat (cce_destination_t @var{L}, ccsys_fd_t @var{fd}, char const * @var{pathname}, ccsys_open_mode_t @var{mode})
+Wrapper for @cfunc{mkdirat}; @manpage{mkdirat, Create a directory}.
 @end deftypefun
 
 
 @deftypefun void ccsys_rmdir (cce_destination_t @var{L}, char const * @var{pathname})
-Wrapper for @cfunc{rmdir}.
+Wrapper for @cfunc{rmdir}; @manpage{rmdir, Delete a directory}.
 @end deftypefun
 
-@c ------------------------------------------------------------------------
-
-@subsubheading Handler for directories removal
+@c page
+@node io dirs creating handlers
+@subsection Handler for directories removal
 
 
 We can remove @strong{empty} temporary directories with the standard function @cfunc{rmdir} as
@@ -3709,7 +3725,7 @@ follows:
 
 @example
 cce_location_t          L[1];
-cce_cleanup_handler_t   dir_H[1];
+cce_cleanup_handler_t   dirname_H[1];
 
 if (cce_location(L)) @{
   cce_run_error_handlers_final(L);
@@ -3718,7 +3734,7 @@ if (cce_location(L)) @{
 
   mode.data = CCSYS_S_IRWXU;
   ccsys_mkdir(L, "name.d", mode);
-  ccsys_handler_rmdir_init(L, dir_H, "name.d");
+  ccsys_handler_rmdir_init(L, dirname_H, "name.d");
   cce_run_cleanup_handlers(L);
 @}
 @end example
@@ -3756,6 +3772,61 @@ The macro expands into a call to @cfunc{ccsys_cleanup_handler_rmdir_init}.
 The macro expands into a call to @cfunc{ccsys_error_handler_rmdir_init}.
 @end table
 @end deftypefn
+
+@c page
+@node io dirs creating one
+@subsection Using @cfunc{ccsys_mkdirat}
+
+
+As usage example of @cfunc{ccsys_mkdirat}, see the following code.
+
+@smallexample
+cce_location_t        L[1];
+cce_handler_t         dirname1_H[1];
+cce_handler_t         dirstream1_H[1];
+
+if (cce_location(L)) @{
+  cce_run_error_handlers_raise(L, upper_L);
+@} else @{
+  static char const * dirname1 = "name.d";
+  static char const * dirname2 = "subname.d";
+  ccsys_dirfd_t       dirfd1;
+
+  /* Create the parent directory. */
+  @{
+    ccsys_open_mode_t mode;
+    mode.data = CCSYS_S_IRWXU;
+    ccsys_mkdir(L, dirname1, mode);
+    ccsys_cleanup_handler_rmdir_init(L, dirname1_H, dirname1);
+  @}
+
+  /* Open the parent directory.  The descriptor in "dirfd1"
+     is released automatically when "dirstream" is released. */
+  @{
+    ccsys_dir_t *     dir;
+
+    dir = ccsys_opendir(L, dirname1);
+    ccsys_cleanup_handler_dirstream_init(L, dir_H, dir);
+    dirfd1 = ccsys_dirfd(L, dir);
+  @}
+
+  /* Create the subdirectory. */
+  @{
+    ccsys_open_mode_t mode;
+    mode.data = CCSYS_S_IRWXU;
+    ccsys_mkdirat(L, dirfd1, dirname2, mode);
+  @}
+
+  /* Remove the subdirectory. */
+  @{
+    ccsys_unlinkat_flags_t      flags;
+    flags.data = CCSYS_AT_REMOVEDIR;
+    ccsys_unlinkat(L, dirfd1, dirname2, flags);
+  @}
+
+  cce_run_cleanup_handlers(L);
+@}
+@end smallexample
 
 @c page
 @node fs links
@@ -3910,17 +3981,17 @@ Wrapper for @cfunc{rename}.
 The following symbols are defined in the header file @file{ccsys.h}.
 
 
-@deftypefun void ccsys_stat (cce_destination_t @var{L}, char const * @var{pathname}, struct stat * @var{buf})
+@deftypefun void ccsys_stat (cce_destination_t @var{L}, char const * @var{pathname}, ccsys_stat_t * @var{buf})
 Wrapper for @cfunc{stat}.
 @end deftypefun
 
 
-@deftypefun void ccsys_fstat (cce_destination_t @var{L}, int @var{fd}, struct stat * @var{buf})
+@deftypefun void ccsys_fstat (cce_destination_t @var{L}, ccsys_fd_t @var{fd}, ccsys_stat_t * @var{buf})
 Wrapper for @cfunc{fstat}.
 @end deftypefun
 
 
-@deftypefun void ccsys_lstat (cce_destination_t @var{L}, char const * @var{pathname}, struct stat * @var{buf})
+@deftypefun void ccsys_lstat (cce_destination_t @var{L}, char const * @var{pathname}, ccsys_stat_t * @var{buf})
 Wrapper for @cfunc{lstat}.
 @end deftypefun
 

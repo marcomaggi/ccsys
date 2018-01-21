@@ -279,6 +279,57 @@ test_3_2 (cce_destination_t upper_L)
   }
 }
 
+void
+test_3_3 (cce_destination_t upper_L)
+/* Create a diirectory with "ccsys_mkdirat()". */
+{
+  cce_location_t	L[1];
+  cce_handler_t		dirname1_H[1];
+  cce_handler_t		dir_H[1];
+
+  if (cce_location(L)) {
+    if (0) { fprintf(stderr, "%s: %s\n", __func__, cce_condition_static_message(cce_condition(L))); }
+    cce_run_error_handlers_raise(L, upper_L);
+  } else {
+    static char const *	dirname1 = "name.d";
+    static char const * dirname2 = "subname.d";
+    ccsys_dirfd_t	dirfd1;
+
+    /* Create the parent directory. */
+    {
+      ccsys_open_mode_t	mode  = { .data = CCSYS_S_IRWXU };
+      ccsys_mkdir(L, dirname1, mode);
+      ccsys_cleanup_handler_rmdir_init(L, dirname1_H, dirname1);
+    }
+
+    /* Open the parent directory.  The descriptor in "dirfd1" is released
+       automatically when "dirstream" is released. */
+    {
+      ccsys_dir_t *	dir;
+
+      dir = ccsys_opendir(L, dirname1);
+      ccsys_cleanup_handler_dirstream_init(L, dir_H, dir);
+      dirfd1 = ccsys_dirfd(L, dir);
+    }
+
+    /* Create the subdirectory. */
+    {
+      ccsys_open_mode_t	mode  = { .data = CCSYS_S_IRWXU };
+
+      ccsys_mkdirat(L, dirfd1, dirname2, mode);
+    }
+
+    /* Remove the subdirectory. */
+    {
+      ccsys_unlinkat_flags_t      flags;
+      flags.data = CCSYS_AT_REMOVEDIR;
+      ccsys_unlinkat(L, dirfd1, dirname2, flags);
+    }
+
+    cce_run_cleanup_handlers(L);
+  }
+}
+
 
 int
 main (void)
@@ -306,6 +357,7 @@ main (void)
     {
       cctests_run(test_3_1);
       cctests_run(test_3_2);
+      cctests_run(test_3_3);
     }
     cctests_end_group();
   }

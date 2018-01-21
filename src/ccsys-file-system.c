@@ -324,6 +324,19 @@ ccsys_mkdir (cce_location_t * L, char const * pathname, ccsys_open_mode_t mode)
 }
 #endif
 
+#ifdef HAVE_MKDIRAT
+void
+ccsys_mkdirat (cce_location_t * L, ccsys_dirfd_t fd, char const * pathname, ccsys_open_mode_t mode)
+{
+  int	rv;
+  errno = 0;
+  rv = mkdirat(fd.data, pathname, mode.data);
+  if (-1 == rv) {
+    cce_raise(L, cce_condition_new_errno_clear());
+  }
+}
+#endif
+
 #ifdef HAVE_RMDIR
 void
 ccsys_rmdir (cce_location_t * L, char const * pathname)
@@ -344,32 +357,24 @@ __attribute__((nonnull(1,2)))
 static void
 cce_handler_rmdir_function (const cce_condition_t * C CCE_UNUSED, cce_handler_t * H)
 {
+  if (0) { fprintf(stderr, "%s: removing '%s'\n", __func__, H->pathname); }
   rmdir(H->pathname);
-  free(H->pathname);
   if (0) { fprintf(stderr, "%s: done\n", __func__); }
 }
 
 void
 ccsys_cleanup_handler_rmdir_init (cce_location_t * L, cce_handler_t * H, char const * pathname)
 {
-  size_t	len = 1+strlen(pathname);
-  char *	ptr = ccsys_malloc(L, len);
-  strncpy(ptr, pathname, len);
-  ptr[len] = '\n';
   H->function	= cce_handler_rmdir_function;
-  H->pathname	= ptr;
+  H->pathname	= (char *)pathname;
   cce_register_cleanup_handler(L, H);
 }
 
 void
 ccsys_error_handler_rmdir_init (cce_location_t * L, cce_handler_t * H, char const * pathname)
 {
-  size_t	len = 1+strlen(pathname);
-  char *	ptr = ccsys_malloc(L, len);
-  strncpy(ptr, pathname, len);
-  ptr[len] = '\n';
   H->function	= cce_handler_rmdir_function;
-  H->pathname	= ptr;
+  H->pathname	= (char *)pathname;
   cce_register_error_handler(L, H);
 }
 #endif

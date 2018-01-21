@@ -1143,6 +1143,9 @@ ccsys_stat_st_dev (const ccsys_stat_t * S)
 ccsys_decl void ccsys_mkdir (cce_destination_t L, char const * pathname, ccsys_open_mode_t mode)
   __attribute__((__nonnull__(1,2)));
 
+ccsys_decl void ccsys_mkdirat (cce_destination_t L, ccsys_dirfd_t fd, char const * pathname, ccsys_open_mode_t mode)
+  __attribute__((__nonnull__(1,3)));
+
 ccsys_decl void ccsys_rmdir (cce_destination_t L, char const * pathname)
   __attribute__((__nonnull__(1,2)));
 
