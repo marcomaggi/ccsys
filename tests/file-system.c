@@ -238,6 +238,48 @@ test_2_1 (cce_destination_t upper_L)
 }
 
 
+/** --------------------------------------------------------------------
+ ** File system: creating and removing directories.
+ ** ----------------------------------------------------------------- */
+
+void
+test_3_1 (cce_destination_t upper_L)
+{
+  cce_location_t          L[1];
+  cce_cleanup_handler_t   dirname_H[1];
+  char const *            dirname = "name.d";
+
+  if (cce_location(L)) {
+    cce_run_error_handlers_raise(L, upper_L);
+  } else {
+    ccsys_open_mode_t     mode;
+
+    mode.data = CCSYS_S_IRWXU;
+    ccsys_mkdir(L, dirname, mode);
+    ccsys_handler_rmdir_init(L, dirname_H, dirname);
+    cce_run_cleanup_handlers(L);
+  }
+}
+
+void
+test_3_2 (cce_destination_t upper_L)
+{
+  cce_location_t	L[1];
+  char const *		dirname = "name.d";
+
+  if (cce_location(L)) {
+    cce_run_error_handlers_raise(L, upper_L);
+  } else {
+    ccsys_open_mode_t	mode;
+
+    mode.data = CCSYS_S_IRWXU;
+    ccsys_mkdir(L, dirname, mode);
+    ccsys_rmdir(L, dirname);
+    cce_run_cleanup_handlers(L);
+  }
+}
+
+
 int
 main (void)
 {
@@ -257,6 +299,13 @@ main (void)
     cctests_begin_group("reading directory contents");
     {
       cctests_run(test_2_1);
+    }
+    cctests_end_group();
+
+    cctests_begin_group("creating and removing directories");
+    {
+      cctests_run(test_3_1);
+      cctests_run(test_3_2);
     }
     cctests_end_group();
   }
