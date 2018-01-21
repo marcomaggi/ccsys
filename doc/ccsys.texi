@@ -1774,8 +1774,8 @@ release the file descriptors in @var{pipedes} using the standard function @cfunc
 @end deftypefun
 
 
-@deftypefn {Preprocessor Macro} void ccsys_handler_pipedes_init (cce_destination_t @var{L}, cce_cleanup_handler_t * @var{H}, ccsys_fd_t @var{fd})
-@deftypefnx {Preprocessor Macro} void ccsys_handler_pipedes_init (cce_destination_t @var{L}, cce_error_handler_t * @var{H}, ccsys_fd_t @var{fd})
+@deftypefn {Preprocessor Macro} void ccsys_handler_pipedes_init (cce_destination_t @var{L}, cce_cleanup_handler_t * @var{H}, ccsys_fd_t @var{pipedes}[2])
+@deftypefnx {Preprocessor Macro} void ccsys_handler_pipedes_init (cce_destination_t @var{L}, cce_error_handler_t * @var{H}, ccsys_fd_t @var{pipedes}[2])
 This preprocessor macro uses @code{_Generic} to dispatch the call according to the type of the
 pointer @var{H}; if the type is:
 
@@ -3751,8 +3751,9 @@ Register @var{H} as cleanup or error handler in the context of @var{L}.  The han
 remove the directory whose pathname is @var{pathname} using the standard function @cfunc{rmdir};
 errors in @cfunc{rmdir} are @strong{ignored}.  The directory is removed only if it is empty.
 
-The string referenced by @var{pathname} is duplicated and stored in the structure referenced by
-@var{H}.
+The string referenced by @var{pathname} must be an @asciiz{} representation of the directory
+pathname; it is @strong{not} duplicated by this function and it must exist for the whole extent of
+the usage of @var{H}.
 
 If an error occurs while configuring the handler: an exception is raised by performing a non--local
 exit to @var{L}.
@@ -3939,7 +3940,8 @@ Register @var{H} as cleanup or error handler in the context of @var{L}.  The han
 remove the file whose pathname is @var{pathname} using the standard function @cfunc{remove}; errors
 in @cfunc{remove} are @strong{ignored}.
 
-The string referenced by @var{pathname} is duplicated and stored in the structure referenced by
+The string referenced by @var{pathname} must be an @asciiz{} representation of the file pathname; it
+is @strong{not} duplicated by this function and it must exist for the whole extent of the usage of
 @var{H}.
 
 If an error occurs while configuring the handler: an exception is raised by performing a non--local

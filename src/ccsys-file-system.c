@@ -605,34 +605,24 @@ static void
 cce_handler_remove_function (const cce_condition_t * C CCE_UNUSED, cce_handler_t * H)
 {
 #ifdef HAVE_REMOVE
-  if (0) { fprintf(stderr, "%s: removing %s\n", __func__, H->pathname); }
   remove(H->pathname);
-  free(H->pathname);
-  if (0) { fprintf(stderr, "%s: done\n", __func__); }
+  if (0) { fprintf(stderr, "%s: done removing '%s'\n", __func__, H->pathname); }
 #endif
 }
 
 void
 ccsys_cleanup_handler_remove_init (cce_location_t * L, cce_handler_t * H, char const * pathname)
 {
-  size_t	len = 1+strlen(pathname);
-  char *	ptr = ccsys_malloc(L, len);
-  strncpy(ptr, pathname, len);
-  ptr[len] = '\n';
   H->function	= cce_handler_remove_function;
-  H->pathname	= ptr;
+  H->pathname	= (char *)pathname;
   cce_register_cleanup_handler(L, H);
 }
 
 void
 ccsys_error_handler_remove_init (cce_location_t * L, cce_handler_t * H, char const * pathname)
 {
-  size_t	len = 1+strlen(pathname);
-  char *	ptr = ccsys_malloc(L, len);
-  strncpy(ptr, pathname, len);
-  ptr[len] = '\n';
   H->function	= cce_handler_remove_function;
-  H->pathname	= ptr;
+  H->pathname	= (char *)pathname;
   cce_register_error_handler(L, H);
 }
 
