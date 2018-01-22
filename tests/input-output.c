@@ -708,8 +708,8 @@ test_7_1 (cce_destination_t upper_L)
 
       /* Initialise the vector of buffers. */
       for (size_t i=0; i<buf_count; ++i) {
-	*ccsys_iovec_iov_base(&vec[i])	= bufs[i];
-	*ccsys_iovec_iov_len(&vec[i])	= buf_len;
+	ccsys_set_iovec_iov_base (&vec[i], bufs[i]);
+	ccsys_set_iovec_iov_len  (&vec[i], buf_len);
       }
 
       N = ccsys_writev(L, fd, vec, buf_count);
@@ -736,8 +736,8 @@ test_7_1 (cce_destination_t upper_L)
 
       /* Initialise the vector of buffers. */
       for (size_t i=0; i<buf_count; ++i) {
-	*ccsys_iovec_iov_base(&vec[i])	= bufs[i];
-	*ccsys_iovec_iov_len(&vec[i])	= buf_len;
+	ccsys_set_iovec_iov_base(&vec[i], bufs[i]);
+	ccsys_set_iovec_iov_len (&vec[i], buf_len);
       }
 
       N = ccsys_readv(L, fd, vec, buf_count);
@@ -807,8 +807,8 @@ test_7_2 (cce_destination_t upper_L)
 
       /* Initialise the vector of buffers. */
       for (size_t i=0; i<buf_count; ++i) {
-	*ccsys_iovec_iov_base(&vec[i])	= bufs[i];
-	*ccsys_iovec_iov_len(&vec[i])	= buf_len;
+	ccsys_set_iovec_iov_base(&vec[i], bufs[i]);
+	ccsys_set_iovec_iov_len(&vec[i], buf_len);
       }
 
       offset.data = 0;
@@ -827,8 +827,8 @@ test_7_2 (cce_destination_t upper_L)
 
       /* Initialise the vector of buffers. */
       for (size_t i=0; i<buf_count; ++i) {
-	*ccsys_iovec_iov_base(&vec[i])	= bufs[i];
-	*ccsys_iovec_iov_len(&vec[i])	= buf_len;
+	ccsys_set_iovec_iov_base(&vec[i], bufs[i]);
+	ccsys_set_iovec_iov_len(&vec[i], buf_len);
       }
 
       offset.data = 0;

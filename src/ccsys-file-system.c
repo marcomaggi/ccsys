@@ -173,6 +173,17 @@ ccsys_error_handler_dirstream_init (cce_location_t * L, cce_handler_t * H, ccsys
 }
 #endif
 
+/* ------------------------------------------------------------------ */
+
+#ifdef CCSYS_HAVE_STRUCT_DIRENT_D_NAME
+char const *
+ccsys_ref_dirent_d_name (ccsys_dirent_t const * S)
+{
+  CCSYS_PC(struct dirent const, D, S);
+  return D->d_name;
+}
+#endif
+
 
 /** --------------------------------------------------------------------
  ** File system: reading attributes.

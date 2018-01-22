@@ -94,23 +94,17 @@ extern "C" {
 /* Pointer cast macro helper. */
 #define CCSYS_PC(TYPE,X,Y)		TYPE * X = (TYPE *) (Y)
 
-/* CCSYS_STRUCT_ACCESSOR
- *
- * Define  an inline  function as  accessor for  a struct's  field.  For
- * example, to  define the  accessor for the  field "d_name"  of "struct
- * dirent" we do:
- *
- *   CCSYS_STRUCT_ACCESSOR(ccsys_dirent_d_name, ccsys_dirent_t,
- *      char const *, @OFFSETOF_STRUCT_DIRENT_D_NAME@)
- *
- */
-#define CCSYS_STRUCT_ACCESSOR(FUNCNAME,STRUCT_TYPE,FIELD_TYPE,FIELD_OFFSET) \
-  __attribute__((__always_inline__,__nonnull__(1),__returns_nonnull__,__pure__))	\
-  static inline FIELD_TYPE * FUNCNAME (STRUCT_TYPE const * S) { return (FIELD_TYPE *) &(S->data[FIELD_OFFSET]); }
+#define CCSYS_STRUCT_GETTER(STEM,STRUCT_TYPE,FIELD_TYPE)		\
+  ccsys_decl FIELD_TYPE ccsys_ref_ ## STEM (STRUCT_TYPE const * S)	\
+    __attribute__((__nonnull__(1),__pure__));
 
-#define CCSYS_STRUCT_ACCESSORS(STEM,STRUCT_TYPE,FIELD_TYPE) \
-  ccsys_decl FIELD_TYPE ccsys_ref_ ## STEM (STRUCT_TYPE const * S) __attribute__((__nonnull__(1),__pure__)); \
-  ccsys_decl void ccsys_set_ ## STEM (STRUCT_TYPE * S, FIELD_TYPE F) __attribute__((__nonnull__(1)));
+#define CCSYS_STRUCT_SETTER(STEM,STRUCT_TYPE,FIELD_TYPE)		\
+  ccsys_decl void ccsys_set_ ## STEM (STRUCT_TYPE * S, FIELD_TYPE F)	\
+    __attribute__((__nonnull__(1)));
+
+#define CCSYS_STRUCT_ACCESSORS(STEM,STRUCT_TYPE,FIELD_TYPE)	\
+  CCSYS_STRUCT_GETTER(STEM,STRUCT_TYPE,FIELD_TYPE)		\
+  CCSYS_STRUCT_SETTER(STEM,STRUCT_TYPE,FIELD_TYPE)
 
 
 /** --------------------------------------------------------------------
@@ -1021,8 +1015,8 @@ ccsys_decl size_t ccsys_pwritev2 (cce_destination_t L, ccsys_fd_t filedes, ccsys
 /* ------------------------------------------------------------------ */
 
 /* Accessors for "struct iovect". */
-CCSYS_STRUCT_ACCESSOR(ccsys_iovec_iov_base, ccsys_iovec_t, void *, @OFFSETOF_STRUCT_IOVEC_IOV_BASE@)
-CCSYS_STRUCT_ACCESSOR(ccsys_iovec_iov_len,  ccsys_iovec_t, size_t, @OFFSETOF_STRUCT_IOVEC_IOV_LEN@)
+CCSYS_STRUCT_ACCESSORS(iovec_iov_base, ccsys_iovec_t, void *)
+CCSYS_STRUCT_ACCESSORS(iovec_iov_len,  ccsys_iovec_t, size_t)
 
 
 /** --------------------------------------------------------------------
@@ -1108,7 +1102,7 @@ ccsys_decl void ccsys_fchdir (cce_destination_t L, ccsys_dirfd_t dirfd)
  ** File system: reading directory entries.
  ** ----------------------------------------------------------------- */
 
-CCSYS_STRUCT_ACCESSOR(ccsys_dirent_d_name, ccsys_dirent_t, char const, @OFFSETOF_STRUCT_DIRENT_D_NAME@)
+CCSYS_STRUCT_GETTER(dirent_d_name, ccsys_dirent_t, char const *)
 
 /* ------------------------------------------------------------------ */
 

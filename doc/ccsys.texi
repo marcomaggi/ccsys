@@ -2456,13 +2456,15 @@ Wrapper type for @objtype{struct iovec}.
 @end deftp
 
 
-@deftypefun {void **} ccsys_iovec_iov_base (ccsys_iovect_t const * @var{S})
-Return a pointer to the field @code{iov_base} in the structure referenced by @var{S}.
+@deftypefun void ccsys_set_iovec_iov_base (ccsys_iovect_t const * @var{S}, void * @var{F})
+@deftypefunx void * ccsys_ref_iovec_iov_base (ccsys_iovect_t const * @var{S})
+Setter and getter for the field @code{iov_base} in the structure referenced by @var{S}.
 @end deftypefun
 
 
-@deftypefun {size_t *} ccsys_iovec_iov_len (ccsys_iovect_t const * @var{S})
-Return a pointer to the field @code{iov_len} in the structure referenced by @var{S}.
+@deftypefun void ccsys_set_iovec_iov_len (ccsys_iovect_t const * @var{S}, size_t @var{F})
+@deftypefunx size_t ccsys_ref_iovec_iov_len (ccsys_iovect_t const * @var{S})
+Setter and getter for the field @code{iov_len} in the structure referenced by @var{S}.
 @end deftypefun
 
 
@@ -3586,10 +3588,9 @@ Type of directory entries; replaces @objtype{struct dirent}.
 @end deftp
 
 
-@deftypefun {char const *} ccsys_dirent_d_name (ccsys_dirent_t * @var{entry})
+@deftypefun {char const *} ccsys_ref_dirent_d_name (ccsys_dirent_t * @var{entry})
 Return a pointer to the field @code{d_name} of a @objtype{struct dirent}.
 @end deftypefun
-
 
 @c page
 @node fs dirs reading api
@@ -3647,7 +3648,7 @@ if (cce_location(L)) @{
   for (direntry = ccsys_readdir(L, dirstream);
        direntry;
        direntry = ccsys_readdir(L, dirstream)) @{
-    printf("%s\n", ccsys_dirent_d_name(direntry));
+    printf("%s\n", ccsys_ref_dirent_d_name(direntry));
     fflush(stdout);
   @}
   cce_run_cleanup_handlers(L);

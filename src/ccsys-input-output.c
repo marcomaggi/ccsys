@@ -380,6 +380,40 @@ ccsys_pwritev2 (cce_location_t * L, ccsys_fd_t filedes, ccsys_iovec_t const * _v
 }
 #endif
 
+/* ------------------------------------------------------------------ */
+
+#ifdef CCSYS_HAVE_STRUCT_IOVEC_IOV_BASE
+void *
+ccsys_ref_iovec_iov_base (ccsys_iovec_t const * S)
+{
+  CCSYS_PC(struct iovec const, D, S);
+  return D->iov_base;
+}
+
+void
+ccsys_set_iovec_iov_base (ccsys_iovec_t * S, void * F)
+{
+  CCSYS_PC(struct iovec, D, S);
+  D->iov_base = F;
+}
+#endif
+
+#ifdef CCSYS_HAVE_STRUCT_IOVEC_IOV_LEN
+size_t
+ccsys_ref_iovec_iov_len (ccsys_iovec_t const * S)
+{
+  CCSYS_PC(struct iovec const, D, S);
+  return D->iov_len;
+}
+
+void
+ccsys_set_iovec_iov_len (ccsys_iovec_t * S, size_t F)
+{
+  CCSYS_PC(struct iovec, D, S);
+  D->iov_len = F;
+}
+#endif
+
 
 /** --------------------------------------------------------------------
  ** Input/output: duplicating file descriptors.

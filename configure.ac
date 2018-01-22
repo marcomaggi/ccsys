@@ -180,11 +180,11 @@ dnl page
 #### inspection of data structures
 
 CCSYS_SIZEOF([STRUCT_DIRENT],[struct dirent],[CCSYS_DIRENT_HEADER])
-CCSYS_OFFSETOF([STRUCT_DIRENT_D_NAME],[struct dirent],[d_name],[CCSYS_DIRENT_HEADER])
+CCSYS_STRUCT_FIELD([STRUCT_DIRENT_D_NAME],[struct dirent],[d_name],[CCSYS_DIRENT_HEADER])
 
 CCSYS_SIZEOF([STRUCT_IOVEC],[struct iovec],[CCSYS_SYS_UIO_HEADER])
-CCSYS_OFFSETOF([STRUCT_IOVEC_IOV_BASE],[struct iovec],[iov_base],[CCSYS_SYS_UIO_HEADER])
-CCSYS_OFFSETOF([STRUCT_IOVEC_IOV_LEN], [struct iovec],[iov_len],[CCSYS_SYS_UIO_HEADER])
+CCSYS_STRUCT_FIELD([STRUCT_IOVEC_IOV_BASE],[struct iovec],[iov_base],[CCSYS_SYS_UIO_HEADER])
+CCSYS_STRUCT_FIELD([STRUCT_IOVEC_IOV_LEN], [struct iovec],[iov_len], [CCSYS_SYS_UIO_HEADER])
 
 # Inspection of: "struct stat".
 #

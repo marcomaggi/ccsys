@@ -68,7 +68,7 @@ list_dirs (const char * pathname)
     dirstream = ccsys_opendir(L, pathname);
     ccsys_cleanup_handler_dirstream_init(L, dirstream_H, dirstream);
     while ((direntry = ccsys_readdir(L, dirstream))) {
-      printf("%s\n", ccsys_dirent_d_name(direntry));
+      printf("%s\n", ccsys_ref_dirent_d_name(direntry));
       fflush(stdout);
     }
     cce_run_cleanup_handlers(L);

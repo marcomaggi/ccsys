@@ -230,7 +230,7 @@ test_2_1 (cce_destination_t upper_L)
     for (direntry = ccsys_readdir(L, dirstream);
 	 direntry;
 	 direntry = ccsys_readdir(L, dirstream)) {
-      if (0) { printf("%s\n", ccsys_dirent_d_name(direntry)); }
+      if (0) { printf("%s\n", ccsys_ref_dirent_d_name(direntry)); }
       fflush(stdout);
     }
     cce_run_cleanup_handlers(L);
