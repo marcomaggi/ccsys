@@ -1014,7 +1014,10 @@ ccsys_decl size_t ccsys_pwritev2 (cce_destination_t L, ccsys_fd_t filedes, ccsys
 
 /* ------------------------------------------------------------------ */
 
-/* Accessors for "struct iovect". */
+#define CCSYS_HAVE_STRUCT_IOVEC_IOV_BASE	@CCSYS_HAVE_STRUCT_IOVEC_IOV_BASE@
+#define CCSYS_HAVE_STRUCT_IOVEC_IOV_LEN		@CCSYS_HAVE_STRUCT_IOVEC_IOV_LEN@
+
+/* Accessors for "struct iovec". */
 CCSYS_STRUCT_ACCESSORS(iovec_iov_base, ccsys_iovec_t, void *)
 CCSYS_STRUCT_ACCESSORS(iovec_iov_len,  ccsys_iovec_t, size_t)
 
@@ -1102,6 +1105,8 @@ ccsys_decl void ccsys_fchdir (cce_destination_t L, ccsys_dirfd_t dirfd)
  ** File system: reading directory entries.
  ** ----------------------------------------------------------------- */
 
+#define CCSYS_HAVE_STRUCT_DIRENT_D_NAME		@CCSYS_HAVE_STRUCT_DIRENT_D_NAME@
+
 CCSYS_STRUCT_GETTER(dirent_d_name, ccsys_dirent_t, char const *)
 
 /* ------------------------------------------------------------------ */
@@ -1149,6 +1154,20 @@ ccsys_decl void ccsys_lstat (cce_destination_t L, char const * pathname, ccsys_s
   __attribute__((__nonnull__(1,2,3)));
 
 /* ------------------------------------------------------------------ */
+
+#define CCSYS_HAVE_STRUCT_STAT_ST_DEV		@CCSYS_HAVE_STRUCT_STAT_ST_DEV@
+#define CCSYS_HAVE_STRUCT_STAT_ST_INO		@CCSYS_HAVE_STRUCT_STAT_ST_INO@
+#define CCSYS_HAVE_STRUCT_STAT_ST_MODE		@CCSYS_HAVE_STRUCT_STAT_ST_MODE@
+#define CCSYS_HAVE_STRUCT_STAT_ST_NLINK		@CCSYS_HAVE_STRUCT_STAT_ST_NLINK@
+#define CCSYS_HAVE_STRUCT_STAT_ST_UID		@CCSYS_HAVE_STRUCT_STAT_ST_UID@
+#define CCSYS_HAVE_STRUCT_STAT_ST_GID		@CCSYS_HAVE_STRUCT_STAT_ST_GID@
+#define CCSYS_HAVE_STRUCT_STAT_ST_RDEV		@CCSYS_HAVE_STRUCT_STAT_ST_RDEV@
+#define CCSYS_HAVE_STRUCT_STAT_ST_SIZE		@CCSYS_HAVE_STRUCT_STAT_ST_SIZE@
+#define CCSYS_HAVE_STRUCT_STAT_ST_BLKSIZE	@CCSYS_HAVE_STRUCT_STAT_ST_BLKSIZE@
+#define CCSYS_HAVE_STRUCT_STAT_ST_BLOCKS	@CCSYS_HAVE_STRUCT_STAT_ST_BLOCKS@
+#define CCSYS_HAVE_STRUCT_STAT_ST_ATIME		@CCSYS_HAVE_STRUCT_STAT_ST_ATIME@
+#define CCSYS_HAVE_STRUCT_STAT_ST_MTIME		@CCSYS_HAVE_STRUCT_STAT_ST_MTIME@
+#define CCSYS_HAVE_STRUCT_STAT_ST_CTIME		@CCSYS_HAVE_STRUCT_STAT_ST_CTIME@
 
 CCSYS_STRUCT_ACCESSORS(stat_st_dev,	ccsys_stat_t, ccsys_dev_t)
 CCSYS_STRUCT_ACCESSORS(stat_st_ino,	ccsys_stat_t, ccsys_ino_t)

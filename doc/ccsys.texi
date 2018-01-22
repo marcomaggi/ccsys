@@ -2444,6 +2444,17 @@ if (cce_location(L)) @{
 @section Scatter--gather input/output
 
 
+@menu
+* io scatter gather api::       Scatter--gather input/output @api{}.
+* io scatter gather one::       Using @cfunc{ccsys_readv} and @cfunc{ccsys_writev}.
+* io scatter gather two::       Using @cfunc{ccsys_preadv} and @cfunc{ccsys_pwritev}.
+@end menu
+
+@c page
+@node io scatter gather api
+@subsection Scatter--gather input/output @api{}
+
+
 For all the functions: notice the return value of type @objtype{size_t}: the negative values
 returned by the system function is consumed by the wrapper function, so either the return value is
 an unsigned integer or an exception is raised.
@@ -2454,18 +2465,6 @@ The following symbols are defined in the header file @file{ccsys.h}.
 @deftp {Struct Typedef} ccsys_iovec_t
 Wrapper type for @objtype{struct iovec}.
 @end deftp
-
-
-@deftypefun void ccsys_set_iovec_iov_base (ccsys_iovect_t const * @var{S}, void * @var{F})
-@deftypefunx void * ccsys_ref_iovec_iov_base (ccsys_iovect_t const * @var{S})
-Setter and getter for the field @code{iov_base} in the structure referenced by @var{S}.
-@end deftypefun
-
-
-@deftypefun void ccsys_set_iovec_iov_len (ccsys_iovect_t const * @var{S}, size_t @var{F})
-@deftypefunx size_t ccsys_ref_iovec_iov_len (ccsys_iovect_t const * @var{S})
-Setter and getter for the field @code{iov_len} in the structure referenced by @var{S}.
-@end deftypefun
 
 
 @deftypefun size_t ccsys_readv (cce_destination_t @var{L}, ccsys_fd_t @var{filedes}, ccsys_iovec_t const * @var{vector}, int @var{count})
@@ -2497,10 +2496,40 @@ Wrapper for @cfunc{preadv2}; @manpage{preadv2, Read from a file descriptor using
 Wrapper for @cfunc{pwritev2}; @manpage{pwritev2, Write to a file descriptor using multiple buffers}.
 @end deftypefun
 
-@menu
-* io scatter gather one::       Using @cfunc{ccsys_readv} and @cfunc{ccsys_writev}.
-* io scatter gather two::       Using @cfunc{ccsys_preadv} and @cfunc{ccsys_pwritev}.
-@end menu
+@c ------------------------------------------------------------------------
+
+@subsubheading Feature macros
+
+
+@defmac CCSYS_HAVE_STRUCT_IOVEC_IOV_BASE
+Defined to @code{1} if @objtype{struct iovec} has the field @code{iov_base}; otherwise it is defined
+to @code{0}.
+@end defmac
+
+
+@defmac CCSYS_HAVE_STRUCT_IOVEC_IOV_LEN
+Defined to @code{1} if @objtype{struct iovec} has the field @code{iov_len}; otherwise it is defined
+to @code{0}.
+@end defmac
+
+@c ------------------------------------------------------------------------
+
+@subsubheading Structure field accessors
+
+
+The following accessors are defined only if the corresponding structure field is defined.
+
+
+@deftypefun void ccsys_set_iovec_iov_base (ccsys_iovect_t const * @var{S}, void * @var{F})
+@deftypefunx void * ccsys_ref_iovec_iov_base (ccsys_iovect_t const * @var{S})
+Setter and getter for the field @code{iov_base} in the structure referenced by @var{S}.
+@end deftypefun
+
+
+@deftypefun void ccsys_set_iovec_iov_len (ccsys_iovect_t const * @var{S}, size_t @var{F})
+@deftypefunx size_t ccsys_ref_iovec_iov_len (ccsys_iovect_t const * @var{S})
+Setter and getter for the field @code{iov_len} in the structure referenced by @var{S}.
+@end deftypefun
 
 @c page
 @node io scatter gather one
@@ -3588,6 +3617,24 @@ Type of directory entries; replaces @objtype{struct dirent}.
 @end deftp
 
 
+@c ------------------------------------------------------------------------
+
+@subsubheading Feature macros
+
+
+@defmac CCSYS_HAVE_STRUCT_DIRENT_D_NAME
+Defined to @code{1} if @objtype{struct dirent} has the field @code{d_name}; otherwise it is defined
+to @code{0}.
+@end defmac
+
+@c ------------------------------------------------------------------------
+
+@subsubheading Structure field accessors
+
+
+The following accessors are defined only if the corresponding structure field is defined.
+
+
 @deftypefun {char const *} ccsys_ref_dirent_d_name (ccsys_dirent_t * @var{entry})
 Return a pointer to the field @code{d_name} of a @objtype{struct dirent}.
 @end deftypefun
@@ -4000,7 +4047,93 @@ Wrapper for @cfunc{lstat}.
 
 @c ------------------------------------------------------------------------
 
+@subsubheading Feature macros
+
+
+@defmac CCSYS_HAVE_STRUCT_STAT_ST_DEV
+Defined to @samp{1} if @objtype{struct stat} has the field @code{st_dev}; otherwise it is defined to
+@code{0}.
+@end defmac
+
+
+@defmac CCSYS_HAVE_STRUCT_STAT_ST_INO
+Defined to @samp{1} if @objtype{struct stat} has the field @code{st_ino}; otherwise it is defined to
+@code{0}.
+@end defmac
+
+
+@defmac CCSYS_HAVE_STRUCT_STAT_ST_MODE
+Defined to @samp{1} if @objtype{struct stat} has the field @code{st_mode}; otherwise it is defined
+to @code{0}.
+@end defmac
+
+
+@defmac CCSYS_HAVE_STRUCT_STAT_ST_NLINK
+Defined to @samp{1} if @objtype{struct stat} has the field @code{st_nlink}; otherwise it is defined
+to @code{0}.
+@end defmac
+
+
+@defmac CCSYS_HAVE_STRUCT_STAT_ST_UID
+Defined to @samp{1} if @objtype{struct stat} has the field @code{st_uid}; otherwise it is defined to
+@code{0}.
+@end defmac
+
+
+@defmac CCSYS_HAVE_STRUCT_STAT_ST_GID
+Defined to @samp{1} if @objtype{struct stat} has the field @code{st_gida}; otherwise it is defined to
+@code{0}.
+@end defmac
+
+
+@defmac CCSYS_HAVE_STRUCT_STAT_ST_RDEV
+Defined to @samp{1} if @objtype{struct stat} has the field @code{st_rdev}; otherwise it is defined
+to @code{0}.
+@end defmac
+
+
+@defmac CCSYS_HAVE_STRUCT_STAT_ST_SIZE
+Defined to @samp{1} if @objtype{struct stat} has the field @code{st_size}; otherwise it is defined
+to @code{0}.
+@end defmac
+
+
+@defmac CCSYS_HAVE_STRUCT_STAT_ST_BLKSIZE
+Defined to @samp{1} if @objtype{struct stat} has the field @code{st_blksize}; otherwise it is
+defined to @code{0}.
+@end defmac
+
+
+@defmac CCSYS_HAVE_STRUCT_STAT_ST_BLOCKS
+Defined to @samp{1} if @objtype{struct stat} has the field @code{st_blocks}; otherwise it is defined
+to @code{0}.
+@end defmac
+
+
+@defmac CCSYS_HAVE_STRUCT_STAT_ST_ATIME
+Defined to @samp{1} if @objtype{struct stat} has the field @code{st_atime}; otherwise it is defined
+to @code{0}.
+@end defmac
+
+
+@defmac CCSYS_HAVE_STRUCT_STAT_ST_MTIME
+Defined to @samp{1} if @objtype{struct stat} has the field @code{st_mtime}; otherwise it is defined
+to @code{0}.
+@end defmac
+
+
+@defmac CCSYS_HAVE_STRUCT_STAT_ST_CTIME
+Defined to @samp{1} if @objtype{struct stat} has the field @code{st_ctime}; otherwise it is defined
+to @code{0}.
+@end defmac
+
+@c ------------------------------------------------------------------------
+
 @subsubheading Setters and getters for @objtype{ccsys_stat_t}
+
+
+The following field accessors are defined only if @objtype{struct stat} has the associated field;
+otherwise they are not implemented.
 
 
 @deftypefun ccsys_dev_t ccsys_ref_stat_st_dev (ccsys_stat_t const * @var{S})

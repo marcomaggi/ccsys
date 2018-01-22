@@ -175,7 +175,7 @@ ccsys_error_handler_dirstream_init (cce_location_t * L, cce_handler_t * H, ccsys
 
 /* ------------------------------------------------------------------ */
 
-#ifdef CCSYS_HAVE_STRUCT_DIRENT_D_NAME
+#if (1 == CCSYS_HAVE_STRUCT_DIRENT_D_NAME)
 char const *
 ccsys_ref_dirent_d_name (ccsys_dirent_t const * S)
 {
@@ -233,7 +233,7 @@ ccsys_lstat (cce_location_t * L, char const * pathname, ccsys_stat_t * _buf)
 
 /* ------------------------------------------------------------------ */
 
-#ifdef CCSYS_HAVE_STRUCT_STAT_ST_DEV
+#if (1 == CCSYS_HAVE_STRUCT_STAT_ST_DEV)
 ccsys_dev_t
 ccsys_ref_stat_st_dev (ccsys_stat_t const * S)
 {
@@ -252,7 +252,7 @@ ccsys_set_stat_st_dev (ccsys_stat_t * S, ccsys_dev_t F)
 
 /* ------------------------------------------------------------------ */
 
-#ifdef CCSYS_HAVE_STAT_ST_INO
+#if (1 == CCSYS_HAVE_STAT_ST_INO)
 ccsys_ino_t
 ccsys_ref_stat_st_ino (ccsys_stat_t const * S)
 {
@@ -271,7 +271,7 @@ ccsys_set_stat_st_ino (ccsys_stat_t * S, ccsys_ino_t F)
 
 /* ------------------------------------------------------------------ */
 
-#ifdef CCSYS_HAVE_STAT_ST_MODE
+#if (1 == CCSYS_HAVE_STAT_ST_MODE)
 ccsys_open_mode_t
 ccsys_ref_stat_st_mode (ccsys_stat_t const * S)
 {
@@ -290,7 +290,7 @@ ccsys_set_stat_st_mode (ccsys_stat_t * S, ccsys_open_mode_t F)
 
 /* ------------------------------------------------------------------ */
 
-#ifdef CCSYS_HAVE_STAT_ST_NLINK
+#if (1 == CCSYS_HAVE_STAT_ST_NLINK)
 ccsys_nlink_t
 ccsys_ref_stat_st_nlink (ccsys_stat_t const * S)
 {
@@ -309,7 +309,7 @@ ccsys_set_stat_st_nlink (ccsys_stat_t * S, ccsys_nlink_t F)
 
 /* ------------------------------------------------------------------ */
 
-#ifdef CCSYS_HAVE_STAT_ST_UID
+#if (1 == CCSYS_HAVE_STAT_ST_UID)
 ccsys_uid_t
 ccsys_ref_stat_st_uid (ccsys_stat_t const * S)
 {
@@ -328,7 +328,7 @@ ccsys_set_stat_st_uid (ccsys_stat_t * S, ccsys_uid_t F)
 
 /* ------------------------------------------------------------------ */
 
-#ifdef CCSYS_HAVE_STAT_ST_GID
+#if (1 == CCSYS_HAVE_STAT_ST_GID)
 ccsys_gid_t
 ccsys_ref_stat_st_gid (ccsys_stat_t const * S)
 {
@@ -347,7 +347,7 @@ ccsys_set_stat_st_gid (ccsys_stat_t * S, ccsys_gid_t F)
 
 /* ------------------------------------------------------------------ */
 
-#ifdef CCSYS_HAVE_STAT_ST_RDEV
+#if (1 == CCSYS_HAVE_STAT_ST_RDEV)
 ccsys_dev_t
 ccsys_ref_stat_st_rdev (ccsys_stat_t const * S)
 {
@@ -366,7 +366,7 @@ ccsys_set_stat_st_rdev (ccsys_stat_t * S, ccsys_dev_t F)
 
 /* ------------------------------------------------------------------ */
 
-#ifdef CCSYS_HAVE_STAT_ST_SIZE
+#if (1 == CCSYS_HAVE_STAT_ST_SIZE)
 ccsys_off_t
 ccsys_ref_stat_st_size (ccsys_stat_t const * S)
 {
@@ -385,7 +385,7 @@ ccsys_set_stat_st_size (ccsys_stat_t * S, ccsys_off_t F)
 
 /* ------------------------------------------------------------------ */
 
-#ifdef CCSYS_HAVE_STAT_ST_BLKSIZE
+#if (1 == CCSYS_HAVE_STAT_ST_BLKSIZE)
 ccsys_blksize_t
 ccsys_ref_stat_st_blksize (ccsys_stat_t const * S)
 {
@@ -404,7 +404,7 @@ ccsys_set_stat_st_blksize (ccsys_stat_t * S, ccsys_blksize_t F)
 
 /* ------------------------------------------------------------------ */
 
-#ifdef CCSYS_HAVE_STAT_ST_BLOCKS
+#if (1 == CCSYS_HAVE_STAT_ST_BLOCKS)
 ccsys_blkcnt_t
 ccsys_ref_stat_st_blocks (ccsys_stat_t const * S)
 {
@@ -423,7 +423,7 @@ ccsys_set_stat_st_blocks (ccsys_stat_t * S, ccsys_blkcnt_t F)
 
 /* ------------------------------------------------------------------ */
 
-#ifdef CCSYS_HAVE_STAT_ST_ATIME
+#if (1 == CCSYS_HAVE_STAT_ST_ATIME)
 ccsys_timespec_t
 ccsys_ref_stat_st_atime (ccsys_stat_t const * S)
 {
@@ -446,7 +446,7 @@ ccsys_set_stat_st_atime (ccsys_stat_t * S, ccsys_timespec_t F)
 
 /* ------------------------------------------------------------------ */
 
-#ifdef CCSYS_HAVE_STAT_ST_MTIME
+#if (1 == CCSYS_HAVE_STAT_ST_MTIME)
 ccsys_timespec_t
 ccsys_ref_stat_st_mtime (ccsys_stat_t const * S)
 {
@@ -469,7 +469,7 @@ ccsys_set_stat_st_mtime (ccsys_stat_t * S, ccsys_timespec_t F)
 
 /* ------------------------------------------------------------------ */
 
-#ifdef CCSYS_HAVE_STAT_ST_CTIME
+#if (1 == CCSYS_HAVE_STAT_ST_CTIME)
 ccsys_timespec_t
 ccsys_ref_stat_st_ctime (ccsys_stat_t const * S)
 {

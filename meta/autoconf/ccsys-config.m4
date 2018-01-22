@@ -378,17 +378,11 @@ dnl    CCSYS_STRUCT_FIELD([STRUCT_STAT_ST_DEV],
 dnl                       [struct stat], [st_dev],
 dnl                       [CCSYS_SYS_STAT_HEADER])
 dnl
-dnl If the field exists, it defines the preprocessor symbol:
+dnl If the field exists, it defines the substitution for the symbol:
 dnl
 dnl    CCSYS_HAVE_STRUCT_STAT_ST_DEV
 dnl
-dnl otherwise such symbol is undefined.
-dnl
-dnl If the field exists, it defines a substitution for:
-dnl
-dnl    OFFSETOF_STRUCT_STAT_ST_DEV
-dnl
-dnl otherwise such substitution is undefined.
+dnl to 1; otherwise the substitution is to 0.
 dnl
 dnl $1 - stem for generated symbols
 dnl $2 - original struct type
@@ -402,8 +396,7 @@ AC_DEFUN([CCSYS_STRUCT_FIELD],
      [AS_VAR_SET(CCSYS_HAVE_$1,0)],
      [$4])
    AS_IF([test $CCSYS_HAVE_$1 = 1],
-     [AC_DEFINE([CCSYS_HAVE_$1],1,[true if the struct has the field])
-      CCSYS_OFFSETOF([$1],[$2],[$3],[$4])])])
+     [AC_SUBST([CCSYS_HAVE_$1],$CCSYS_HAVE_$1)])])
 
 dnl end of file
 dnl Local Variables:

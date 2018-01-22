@@ -331,6 +331,49 @@ test_3_3 (cce_destination_t upper_L)
 }
 
 
+/** --------------------------------------------------------------------
+ ** File system: inspecting attributes with stat.
+ ** ----------------------------------------------------------------- */
+
+void
+test_4_1 (cce_destination_t upper_L)
+{
+  cce_location_t	  L[1];
+  cce_cleanup_handler_t   filename_H[1];
+  cce_cleanup_handler_t   filedes_H[1];
+
+  if (cce_location(L)) {
+    cce_run_error_handlers_raise(L, upper_L);
+  } else {
+    static char const *	filename = "name.ext";
+
+    /* Create and open the file. */
+    {
+      ccsys_open_flags_t	flags;
+      ccsys_open_mode_t		mode;
+      ccsys_fd_t		fd;
+
+      flags.data = CCSYS_O_CREAT;
+      mode.data  = CCSYS_S_IRUSR | CCSYS_S_IWUSR;
+      fd = ccsys_open(L, filename, flags, mode);
+      ccsys_handler_filedes_init(L, filedes_H, fd);
+      ccsys_handler_remove_init(L, filename_H, filename);
+    }
+
+    /* Inspect the file by pathname. */
+    {
+      ccsys_stat_t	S;
+
+      ccsys_stat(L, filename, &S);
+#ifdef CCSYS_HAVE_STRUCT_STAT_ST_DEV
+#endif
+    }
+
+    cce_run_cleanup_handlers(L);
+  }
+}
+
+
 int
 main (void)
 {
@@ -358,6 +401,12 @@ main (void)
       cctests_run(test_3_1);
       cctests_run(test_3_2);
       cctests_run(test_3_3);
+    }
+    cctests_end_group();
+
+    cctests_begin_group("inspecting attributes with stat");
+    {
+      cctests_run(test_4_1);
     }
     cctests_end_group();
   }

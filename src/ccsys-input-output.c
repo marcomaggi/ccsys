@@ -382,7 +382,7 @@ ccsys_pwritev2 (cce_location_t * L, ccsys_fd_t filedes, ccsys_iovec_t const * _v
 
 /* ------------------------------------------------------------------ */
 
-#ifdef CCSYS_HAVE_STRUCT_IOVEC_IOV_BASE
+#if (1 == CCSYS_HAVE_STRUCT_IOVEC_IOV_BASE)
 void *
 ccsys_ref_iovec_iov_base (ccsys_iovec_t const * S)
 {
@@ -398,7 +398,7 @@ ccsys_set_iovec_iov_base (ccsys_iovec_t * S, void * F)
 }
 #endif
 
-#ifdef CCSYS_HAVE_STRUCT_IOVEC_IOV_LEN
+#if (1 == CCSYS_HAVE_STRUCT_IOVEC_IOV_LEN)
 size_t
 ccsys_ref_iovec_iov_len (ccsys_iovec_t const * S)
 {
