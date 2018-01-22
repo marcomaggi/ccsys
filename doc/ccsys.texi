@@ -338,13 +338,13 @@ struct ccsys_stat_t @{ uint8_t data[144]; @};
 @end example
 
 @noindent
-for each public field in the structure, there is an accessor in the form of an @code{inline}
-function, for example for the @code{st_dev} field:
+for each public field in the structure, there may be a getter and a setter functions, for example
+for the @code{st_dev} field:
 
 @example
-ccsys_dev_t ccsys_stat_st_dev (ccsys_stat_t const * S)
+ccsys_dev_t ccsys_ref_stat_st_dev (ccsys_stat_t const * S)
+void ccsys_set_stat_st_dev (ccsys_stat_t const * S, ccsys_dev_t F)
 @end example
-
 
 @c page
 @node version
@@ -4031,6 +4031,11 @@ Wrapper for @cfunc{rename}.
 The following symbols are defined in the header file @file{ccsys.h}.
 
 
+@deftp {Struct Typedef} ccsys_stat_t
+Wrapper type for @objtype{struct stat}.
+@end deftp
+
+
 @deftypefun void ccsys_stat (cce_destination_t @var{L}, char const * @var{pathname}, ccsys_stat_t * @var{buf})
 Wrapper for @cfunc{stat}.
 @end deftypefun
@@ -4127,6 +4132,24 @@ Defined to @samp{1} if @objtype{struct stat} has the field @code{st_ctime}; othe
 to @code{0}.
 @end defmac
 
+
+@defmac CCSYS_HAVE_STRUCT_STAT_ST_ATIME_USEC
+Defined to @samp{1} if @objtype{struct stat} has the field @code{st_atime_usec}; otherwise it is
+defined to @code{0}.
+@end defmac
+
+
+@defmac CCSYS_HAVE_STRUCT_STAT_ST_MTIME_USEC
+Defined to @samp{1} if @objtype{struct stat} has the field @code{st_mtime_usec}; otherwise it is
+defined to @code{0}.
+@end defmac
+
+
+@defmac CCSYS_HAVE_STRUCT_STAT_ST_CTIME_USEC
+Defined to @samp{1} if @objtype{struct stat} has the field @code{st_ctime_usec}; otherwise it is
+defined to @code{0}.
+@end defmac
+
 @c ------------------------------------------------------------------------
 
 @subsubheading Setters and getters for @objtype{ccsys_stat_t}
@@ -4198,19 +4221,19 @@ Getter and setter for the field @code{st_blocks}.
 
 @deftypefun ccsys_timeval_t ccsys_ref_stat_st_atime (ccsys_stat_t const * @var{S})
 @deftypefunx void ccsys_set_stat_st_atime (ccsys_stat_t * @var{S}, ccsys_timeval_t @var{F})
-Getter and setter for the field @code{st_atime}.
+Getter and setter for the fields @code{st_atime} and @code{st_atime_usec}.
 @end deftypefun
 
 
 @deftypefun ccsys_timeval_t ccsys_ref_stat_st_mtime (ccsys_stat_t const * @var{S})
 @deftypefunx void ccsys_set_stat_st_mtime (ccsys_stat_t * @var{S}, ccsys_timeval_t @var{F})
-Getter and setter for the field @code{st_mtime}.
+Getter and setter for the fields @code{st_mtime} and @code{st_mtime_usec}.
 @end deftypefun
 
 
 @deftypefun ccsys_timeval_t ccsys_ref_stat_st_ctime (ccsys_stat_t const * @var{S})
 @deftypefunx void ccsys_set_stat_st_ctime (ccsys_stat_t * @var{S}, ccsys_timeval_t @var{F})
-Getter and setter for the field @code{st_ctime}.
+Getter and setter for the fields @code{st_ctime} and @code{st_ctime_usec}.
 @end deftypefun
 
 @c page

@@ -371,6 +371,51 @@ test_4_1 (cce_destination_t upper_L)
 #if (1 == CCSYS_HAVE_STRUCT_STAT_ST_INO)
       fprintf(stderr, "%s: st_ino=%lu\n", __func__, (unsigned long)ccsys_ref_stat_st_ino(&S).data);
 #endif
+#if (1 == CCSYS_HAVE_STRUCT_STAT_ST_MODE)
+      fprintf(stderr, "%s: st_mode=%lu\n", __func__, (unsigned long)ccsys_ref_stat_st_mode(&S).data);
+#endif
+#if (1 == CCSYS_HAVE_STRUCT_STAT_ST_NLINK)
+      fprintf(stderr, "%s: st_nlink=%lu\n", __func__, (unsigned long)ccsys_ref_stat_st_nlink(&S).data);
+#endif
+#if (1 == CCSYS_HAVE_STRUCT_STAT_ST_UID)
+      fprintf(stderr, "%s: st_uid=%lu\n", __func__, (unsigned long)ccsys_ref_stat_st_uid(&S).data);
+#endif
+#if (1 == CCSYS_HAVE_STRUCT_STAT_ST_GID)
+      fprintf(stderr, "%s: st_gid=%lu\n", __func__, (unsigned long)ccsys_ref_stat_st_gid(&S).data);
+#endif
+#if (1 == CCSYS_HAVE_STRUCT_STAT_ST_RDEV)
+      fprintf(stderr, "%s: st_rdev=%lu\n", __func__, (unsigned long)ccsys_ref_stat_st_rdev(&S).data);
+#endif
+#if (1 == CCSYS_HAVE_STRUCT_STAT_ST_SIZE)
+      fprintf(stderr, "%s: st_size=%lu\n", __func__, (unsigned long)ccsys_ref_stat_st_size(&S).data);
+#endif
+#if (1 == CCSYS_HAVE_STRUCT_STAT_ST_BLKSIZE)
+      fprintf(stderr, "%s: st_blksize=%lu\n", __func__, (unsigned long)ccsys_ref_stat_st_blksize(&S).data);
+#endif
+#if (1 == CCSYS_HAVE_STRUCT_STAT_ST_BLOCKS)
+      fprintf(stderr, "%s: st_blocks=%lu\n", __func__, (unsigned long)ccsys_ref_stat_st_blocks(&S).data);
+#endif
+#if (1 == CCSYS_HAVE_STRUCT_STAT_ST_ATIME)
+      {
+	ccsys_timeval_t	T = ccsys_ref_stat_st_atime(&S);
+	fprintf(stderr, "%s: st_atime=%ld\n", __func__, T.seconds.data);
+	fprintf(stderr, "%s: st_atime_usec=%ld\n", __func__, T.microseconds.data);
+      }
+#endif
+#if (1 == CCSYS_HAVE_STRUCT_STAT_ST_MTIME)
+      {
+	ccsys_timeval_t	T = ccsys_ref_stat_st_mtime(&S);
+	fprintf(stderr, "%s: st_mtime=%ld\n", __func__, T.seconds.data);
+	fprintf(stderr, "%s: st_mtime_usec=%ld\n", __func__, T.microseconds.data);
+      }
+#endif
+#if (1 == CCSYS_HAVE_STRUCT_STAT_ST_CTIME)
+      {
+	ccsys_timeval_t	T = ccsys_ref_stat_st_ctime(&S);
+	fprintf(stderr, "%s: st_ctime=%ld\n", __func__, T.seconds.data);
+	fprintf(stderr, "%s: st_ctime_usec=%ld\n", __func__, T.microseconds.data);
+      }
+#endif
     }
 
     cce_run_cleanup_handlers(L);
