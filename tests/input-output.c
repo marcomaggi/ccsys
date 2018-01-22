@@ -1157,8 +1157,8 @@ test_9_1_parent (cce_destination_t upper_L, ccsys_fd_t infd, ccsys_fd_t oufd)
       ccsys_fd_zero(&write_fds);
       ccsys_fd_set(oufd, &write_fds);
       nfds			= ccsys_fd_incr(oufd);
-      timeout.seconds		= 1;
-      timeout.microseconds	= 0;
+      ccsys_set_seconds(timeout.seconds, 1);
+      ccsys_set_microseconds(timeout.microseconds, 0);
       rv = ccsys_select(L, nfds, NULL, &write_fds, NULL, &timeout);
       cctests_assert(L, 1 == rv);
       cctests_assert(L, ccsys_fd_isset(oufd, &write_fds));
@@ -1183,8 +1183,8 @@ test_9_1_parent (cce_destination_t upper_L, ccsys_fd_t infd, ccsys_fd_t oufd)
       nfds			= ccsys_fd_incr(infd);
       ccsys_fd_zero(&read_fds);
       ccsys_fd_set(infd, &read_fds);
-      timeout.seconds		= 1;
-      timeout.microseconds	= 0;
+      ccsys_set_seconds(timeout.seconds, 1);
+      ccsys_set_microseconds(timeout.microseconds, 0);
       rv = ccsys_select(L, nfds, &read_fds, NULL, NULL, &timeout);
       cctests_assert(L, 1 == rv);
       cctests_assert(L, ccsys_fd_isset(infd, &read_fds));
@@ -1226,8 +1226,8 @@ test_9_1_child (ccsys_fd_t infd, ccsys_fd_t oufd)
       ccsys_fd_zero(&read_fds);
       ccsys_fd_set(infd, &read_fds);
       nfds			= ccsys_fd_incr(infd);
-      timeout.seconds		= 1;
-      timeout.microseconds	= 0;
+      ccsys_set_seconds(timeout.seconds, 1);
+      ccsys_set_microseconds(timeout.microseconds, 0);
       rv = ccsys_select(L, nfds, &read_fds, NULL, NULL, &timeout);
       cctests_assert(L, 1 == rv);
       cctests_assert(L, ccsys_fd_isset(infd, &read_fds));
@@ -1252,8 +1252,8 @@ test_9_1_child (ccsys_fd_t infd, ccsys_fd_t oufd)
       ccsys_fd_zero(&write_fds);
       ccsys_fd_set(oufd, &write_fds);
       nfds			= ccsys_fd_incr(oufd);
-      timeout.seconds		= 1;
-      timeout.microseconds	= 0;
+      ccsys_set_seconds(timeout.seconds, 1);
+      ccsys_set_microseconds(timeout.microseconds, 0);
       rv = ccsys_select(L, nfds, NULL, &write_fds, NULL, &timeout);
       cctests_assert(L, 1 == rv);
       cctests_assert(L, ccsys_fd_isset(oufd, &write_fds));
@@ -1371,8 +1371,8 @@ test_9_2_parent (cce_destination_t upper_L, ccsys_fd_t infd, ccsys_fd_t oufd)
       ccsys_fd_zero(&write_fds);
       ccsys_fd_set(oufd, &write_fds);
       nfds			= ccsys_fd_incr(oufd);
-      timeout.seconds		= 1;
-      timeout.nanoseconds	= 0;
+      ccsys_set_seconds(timeout.seconds, 1);
+      ccsys_set_nanoseconds(timeout.nanoseconds, 0);
       rv = ccsys_pselect(L, nfds, NULL, &write_fds, NULL, &timeout, &sigmask);
       cctests_assert(L, 1 == rv);
       cctests_assert(L, ccsys_fd_isset(oufd, &write_fds));
@@ -1398,8 +1398,8 @@ test_9_2_parent (cce_destination_t upper_L, ccsys_fd_t infd, ccsys_fd_t oufd)
       nfds			= ccsys_fd_incr(infd);
       ccsys_fd_zero(&read_fds);
       ccsys_fd_set(infd, &read_fds);
-      timeout.seconds		= 1;
-      timeout.nanoseconds	= 0;
+      ccsys_set_seconds(timeout.seconds, 1);
+      ccsys_set_nanoseconds(timeout.nanoseconds, 0);
       rv = ccsys_pselect(L, nfds, &read_fds, NULL, NULL, &timeout, &sigmask);
       cctests_assert(L, 1 == rv);
       cctests_assert(L, ccsys_fd_isset(infd, &read_fds));
@@ -1442,8 +1442,8 @@ test_9_2_child (ccsys_fd_t infd, ccsys_fd_t oufd)
       ccsys_fd_zero(&read_fds);
       ccsys_fd_set(infd, &read_fds);
       nfds			= ccsys_fd_incr(infd);
-      timeout.seconds		= 1;
-      timeout.nanoseconds	= 0;
+      ccsys_set_seconds(timeout.seconds, 1);
+      ccsys_set_nanoseconds(timeout.nanoseconds, 0);
       rv = ccsys_pselect(L, nfds, &read_fds, NULL, NULL, &timeout, &sigmask);
       cctests_assert(L, 1 == rv);
       cctests_assert(L, ccsys_fd_isset(infd, &read_fds));
@@ -1469,8 +1469,8 @@ test_9_2_child (ccsys_fd_t infd, ccsys_fd_t oufd)
       ccsys_fd_zero(&write_fds);
       ccsys_fd_set(oufd, &write_fds);
       nfds			= ccsys_fd_incr(oufd);
-      timeout.seconds		= 1;
-      timeout.nanoseconds	= 0;
+      ccsys_set_seconds(timeout.seconds, 1);
+      ccsys_set_nanoseconds(timeout.nanoseconds, 0);
       rv = ccsys_pselect(L, nfds, NULL, &write_fds, NULL, &timeout, &sigmask);
       cctests_assert(L, 1 == rv);
       cctests_assert(L, ccsys_fd_isset(oufd, &write_fds));

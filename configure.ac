@@ -140,7 +140,7 @@ AC_CHECK_FUNCS([truncate ftruncate])
 AC_CHECK_FUNCS([mkstemp])
 AC_CHECK_FUNCS([bind getsockname inet_network socket shutdown socketpair connect listen accept getpeername])
 AC_CHECK_FUNCS([send recv sendto recvfrom getsockopt setsockopt])
-AC_CHECK_FUNCS([system exit _exit _Exit fork execv execve execvp waitpid])
+AC_CHECK_FUNCS([system exit _exit fork execv execve execvp waitpid])
 
 dnl GNU C library stuff
 
@@ -186,29 +186,22 @@ CCSYS_SIZEOF([STRUCT_IOVEC],[struct iovec],[CCSYS_SYS_UIO_HEADER])
 CCSYS_OFFSETOF([STRUCT_IOVEC_IOV_BASE],[struct iovec],[iov_base],[CCSYS_SYS_UIO_HEADER])
 CCSYS_OFFSETOF([STRUCT_IOVEC_IOV_LEN], [struct iovec],[iov_len],[CCSYS_SYS_UIO_HEADER])
 
+# Inspection of: "struct stat".
+#
 CCSYS_SIZEOF([STRUCT_STAT],[struct stat],[CCSYS_SYS_STAT_HEADER])
-
-AC_CHECK_MEMBER(struct stat.st_dev,
-  [AS_VAR_SET(CCSYS_STRUCT_STAT_HAS_ST_DEV,1)],
-  [AS_VAR_SET(CCSYS_STRUCT_STAT_HAS_ST_DEV,0)],
-  [CCSYS_SYS_STAT_HEADER])
-
-dnl CCSYS_OFFSETOF([STRUCT_STAT_ST_DEV],[struct stat],[st_dev],[CCSYS_SYS_STAT_HEADER])
-dnl CCSYS_OFFSETOF([STRUCT_STAT_ST_MODE],[struct stat],[st_mode],[CCSYS_SYS_STAT_HEADER])
-dnl CCSYS_OFFSETOF([STRUCT_STAT_ST_INO],[struct stat],[st_ino],[CCSYS_SYS_STAT_HEADER])
-dnl CCSYS_OFFSETOF([STRUCT_STAT_ST_NLINK],[struct stat],[st_nlink],[CCSYS_SYS_STAT_HEADER])
-dnl CCSYS_OFFSETOF([STRUCT_STAT_ST_UID],[struct stat],[st_uid],[CCSYS_SYS_STAT_HEADER])
-dnl CCSYS_OFFSETOF([STRUCT_STAT_ST_GID],[struct stat],[st_gid],[CCSYS_SYS_STAT_HEADER])
-dnl CCSYS_OFFSETOF([STRUCT_STAT_ST_SIZE],[struct stat],[st_size],[CCSYS_SYS_STAT_HEADER])
-dnl CCSYS_OFFSETOF([STRUCT_STAT_ST_INO],[struct stat],[st_ino],[CCSYS_SYS_STAT_HEADER])
-dnl CCSYS_OFFSETOF([STRUCT_STAT_ST_ATIM_TV_SEC],[struct stat],[st_atim.tv_sec],[CCSYS_SYS_STAT_HEADER])
-dnl CCSYS_OFFSETOF([STRUCT_STAT_ST_MTIM_TV_SEC],[struct stat],[st_mtim.tv_sec],[CCSYS_SYS_STAT_HEADER])
-dnl CCSYS_OFFSETOF([STRUCT_STAT_ST_CTIM_TV_SEC],[struct stat],[st_ctim.tv_sec],[CCSYS_SYS_STAT_HEADER])
-dnl CCSYS_OFFSETOF([STRUCT_STAT_ST_ATIM_TV_NSEC],[struct stat],[st_atim.tv_nsec],[CCSYS_SYS_STAT_HEADER])
-dnl CCSYS_OFFSETOF([STRUCT_STAT_ST_MTIM_TV_NSEC],[struct stat],[st_mtim.tv_nsec],[CCSYS_SYS_STAT_HEADER])
-dnl CCSYS_OFFSETOF([STRUCT_STAT_ST_CTIM_TV_NSEC],[struct stat],[st_ctim.tv_nsec],[CCSYS_SYS_STAT_HEADER])
-dnl CCSYS_OFFSETOF([STRUCT_STAT_ST_BLOCKS],[struct stat],[st_blocks],[CCSYS_SYS_STAT_HEADER])
-dnl CCSYS_OFFSETOF([STRUCT_STAT_ST_BLKSIZE],[struct stat],[st_blksize],[CCSYS_SYS_STAT_HEADER])
+CCSYS_STRUCT_FIELD([STRUCT_STAT_ST_DEV],    [struct stat],[st_dev],     [CCSYS_SYS_STAT_HEADER])
+CCSYS_STRUCT_FIELD([STRUCT_STAT_ST_INO],    [struct stat],[st_ino],     [CCSYS_SYS_STAT_HEADER])
+CCSYS_STRUCT_FIELD([STRUCT_STAT_ST_MODE],   [struct stat],[st_mode],    [CCSYS_SYS_STAT_HEADER])
+CCSYS_STRUCT_FIELD([STRUCT_STAT_ST_NLINK],  [struct stat],[st_nlink],   [CCSYS_SYS_STAT_HEADER])
+CCSYS_STRUCT_FIELD([STRUCT_STAT_ST_UID],    [struct stat],[st_uid],     [CCSYS_SYS_STAT_HEADER])
+CCSYS_STRUCT_FIELD([STRUCT_STAT_ST_GID],    [struct stat],[st_gid],     [CCSYS_SYS_STAT_HEADER])
+CCSYS_STRUCT_FIELD([STRUCT_STAT_ST_RDEV],   [struct stat],[st_rdev],    [CCSYS_SYS_STAT_HEADER])
+CCSYS_STRUCT_FIELD([STRUCT_STAT_ST_SIZE],   [struct stat],[st_size],    [CCSYS_SYS_STAT_HEADER])
+CCSYS_STRUCT_FIELD([STRUCT_STAT_ST_BLKSIZE],[struct stat],[st_blksize], [CCSYS_SYS_STAT_HEADER])
+CCSYS_STRUCT_FIELD([STRUCT_STAT_ST_BLOCKS], [struct stat],[st_blocks],  [CCSYS_SYS_STAT_HEADER])
+CCSYS_STRUCT_FIELD([STRUCT_STAT_ST_ATIME],  [struct stat],[st_atime],   [CCSYS_SYS_STAT_HEADER])
+CCSYS_STRUCT_FIELD([STRUCT_STAT_ST_MTIME],  [struct stat],[st_mtime],   [CCSYS_SYS_STAT_HEADER])
+CCSYS_STRUCT_FIELD([STRUCT_STAT_ST_CTIME],  [struct stat],[st_ctime],   [CCSYS_SYS_STAT_HEADER])
 
 CCSYS_SIZEOF([STRUCT_UTIMBUF],[struct utimbuf],[CCSYS_UTIME_HEADER])
 

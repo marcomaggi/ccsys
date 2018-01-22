@@ -3997,6 +3997,88 @@ Wrapper for @cfunc{fstat}.
 Wrapper for @cfunc{lstat}.
 @end deftypefun
 
+@c ------------------------------------------------------------------------
+
+@subsubheading Setters and getters for @objtype{ccsys_stat_t}
+
+
+@deftypefun ccsys_dev_t ccsys_ref_stat_st_dev (ccsys_stat_t const * @var{S})
+@deftypefunx void ccsys_set_stat_st_dev (ccsys_stat_t * @var{S}, ccsys_dev_t @var{F})
+Getter and setter for the field @code{st_dev}.
+@end deftypefun
+
+
+@deftypefun ccsys_ino_t ccsys_ref_stat_st_ino (ccsys_stat_t const * @var{S})
+@deftypefunx void ccsys_set_stat_st_ino (ccsys_stat_t * @var{S}, ccsys_ino_t @var{F})
+Getter and setter for the field @code{st_ino}.
+@end deftypefun
+
+
+@deftypefun ccsys_open_mode_t ccsys_ref_stat_st_mode (ccsys_stat_t const * @var{S})
+@deftypefunx void ccsys_set_stat_st_mode (ccsys_stat_t * @var{S}, ccsys_open_mode_t @var{F})
+Getter and setter for the field @code{st_mode}.
+@end deftypefun
+
+
+@deftypefun ccsys_nlink_t ccsys_ref_stat_st_nlink (ccsys_stat_t const * @var{S})
+@deftypefunx void ccsys_set_stat_st_nlink (ccsys_stat_t * @var{S}, ccsys_nlink_t @var{F})
+Getter and setter for the field @code{st_nlink}.
+@end deftypefun
+
+
+@deftypefun ccsys_uid_t ccsys_ref_stat_st_uid (ccsys_stat_t const * @var{S})
+@deftypefunx void ccsys_set_stat_st_uid (ccsys_stat_t * @var{S}, ccsys_uid_t @var{F})
+Getter and setter for the field @code{st_uid}.
+@end deftypefun
+
+
+@deftypefun ccsys_gid_t ccsys_ref_stat_st_gid (ccsys_stat_t const * @var{S})
+@deftypefunx void ccsys_set_stat_st_gid (ccsys_stat_t * @var{S}, ccsys_gid_t @var{F})
+Getter and setter for the field @code{st_gid}.
+@end deftypefun
+
+
+@deftypefun ccsys_dev_t ccsys_ref_stat_st_rdev (ccsys_stat_t const * @var{S})
+@deftypefunx void ccsys_set_stat_st_rdev (ccsys_stat_t * @var{S}, ccsys_dev_t @var{F})
+Getter and setter for the field @code{st_rdev}.
+@end deftypefun
+
+
+@deftypefun ccsys_off_t ccsys_ref_stat_st_size (ccsys_stat_t const * @var{S})
+@deftypefunx void ccsys_set_stat_st_size (ccsys_stat_t * @var{S}, ccsys_off_t @var{F})
+Getter and setter for the field @code{st_size}.
+@end deftypefun
+
+
+@deftypefun ccsys_blksize_t ccsys_ref_stat_st_blksize (ccsys_stat_t const * @var{S})
+@deftypefunx void ccsys_set_stat_st_blksize (ccsys_stat_t * @var{S}, ccsys_blksize_t @var{F})
+Getter and setter for the field @code{st_blksize}.
+@end deftypefun
+
+
+@deftypefun ccsys_blkcnt_t ccsys_ref_stat_st_blocks (ccsys_stat_t const * @var{S})
+@deftypefunx void ccsys_set_stat_st_blocks (ccsys_stat_t * @var{S}, ccsys_blkcnt_t @var{F})
+Getter and setter for the field @code{st_blocks}.
+@end deftypefun
+
+
+@deftypefun ccsys_timespec_t ccsys_ref_stat_st_atime (ccsys_stat_t const * @var{S})
+@deftypefunx void ccsys_set_stat_st_atime (ccsys_stat_t * @var{S}, ccsys_timespec_t @var{F})
+Getter and setter for the field @code{st_atime}.
+@end deftypefun
+
+
+@deftypefun ccsys_timespec_t ccsys_ref_stat_st_mtime (ccsys_stat_t const * @var{S})
+@deftypefunx void ccsys_set_stat_st_mtime (ccsys_stat_t * @var{S}, ccsys_timespec_t @var{F})
+Getter and setter for the field @code{st_mtime}.
+@end deftypefun
+
+
+@deftypefun ccsys_timespec_t ccsys_ref_stat_st_ctime (ccsys_stat_t const * @var{S})
+@deftypefunx void ccsys_set_stat_st_ctime (ccsys_stat_t * @var{S}, ccsys_timespec_t @var{F})
+Getter and setter for the field @code{st_ctime}.
+@end deftypefun
+
 @c page
 @node fs owner
 @section Changing owner
@@ -4383,16 +4465,40 @@ Wrapper for @cfunc{WSTOPSIG}.
 
 
 @menu
+* time units::                  Units of time.
 * time structs::                Time structures.
 @end menu
 
 @c page
-@node time structs
-@section Time structures
+@node time units
+@section Units of time
+
+
+The following symbols are defined in the header file @file{ccsys.h}.
+
+
+@deftp {Integer Typedef} ccsys_time_unit_t
+The type of time units in the semantic types:
+
+@example
+ccsys_seconds_t
+ccsys_milliseconds_t
+ccsys_microseconds_t
+ccsys_nanoseconds_t
+@end example
+
+@noindent
+it is defined as @code{long int}.
+@end deftp
 
 
 @deftp {Semantic Type} ccsys_seconds_t
 A signed exact integer representing a number of seconds.
+@end deftp
+
+
+@deftp {Semantic Type} ccsys_milliseconds_t
+A signed exact integer representing a number of milliseconds.
 @end deftp
 
 
@@ -4406,8 +4512,35 @@ A signed exact integer representing a number of nanoseconds.
 @end deftp
 
 
-@deftp {Struct Typedef} ccsys_timespec_t
-Replacement of @code{struct timespec}.  It has the following fields:
+@deftypefn {Preprocessor Macro} void ccsys_set_seconds (ccsys_seconds_t @var{S}, ccsys_time_unit_t @var{N})
+Set the number of seconds in @var{S} to @var{N}.
+@end deftypefn
+
+
+@deftypefn {Preprocessor Macro} void ccsys_set_milliseconds (ccsys_milliseconds_t @var{S}, ccsys_time_unit_t @var{N})
+Set the number of milliseconds in @var{S} to @var{N}.
+@end deftypefn
+
+
+@deftypefn {Preprocessor Macro} void ccsys_set_microseconds (ccsys_microseconds_t @var{S}, ccsys_time_unit_t @var{N})
+Set the number of microseconds in @var{S} to @var{N}.
+@end deftypefn
+
+
+@deftypefn {Preprocessor Macro} void ccsys_set_nanoseconds (ccsys_nanoseconds_t @var{S}, ccsys_time_unit_t @var{N})
+Set the number of nanoseconds in @var{S} to @var{N}.
+@end deftypefn
+
+@c page
+@node time structs
+@section Time structures
+
+
+The following symbols are defined in the header file @file{ccsys.h}.
+
+
+@deftp {Struct Typedef} ccsys_timeval_t
+Replacement of @code{struct timeval}.  It has the following fields:
 
 @table @code
 @item ccsys_seconds_t seconds

@@ -221,7 +221,7 @@ dnl $3 - the required header files
 dnl
 AC_DEFUN([CCSYS_VALUEOF_NO_SUBST],
   [AS_VAR_SET([ccsys__value_found],[maybe])
-   AC_CACHE_CHECK([the size of '$2'],
+   AC_CACHE_CHECK([the value of '$2'],
      [ccsys_cv_valueof_$1],
      [AC_COMPUTE_INT([ccsys_cv_valueof_$1],
         [$2],
@@ -321,7 +321,7 @@ $4],
     AC_SUBST([OFFSETOF_$1])])
 
 dnl page
-dnl CCSYS_INT_TYPE_ALIAS
+dnl CCSYS_INT_TYPE_ALIAS --
 dnl
 dnl Inspect  a signed integer  type definition to determine  which among
 dnl "int32_t" and "int64_t" is a suitable alias.  For example, to determine
@@ -345,7 +345,7 @@ AC_DEFUN([CCSYS_INT_TYPE_ALIAS],
    AC_SUBST([CCSYS_TYPE_$1],[$CCSYS_TYPE_$1])])
 
 dnl page
-dnl CCSYS_UINT_TYPE_ALIAS
+dnl CCSYS_UINT_TYPE_ALIAS --
 dnl
 dnl Inspect an unsigned integer  type definition to determine  which among
 dnl "uint32_t" and "uint64_t" is a suitable alias.  For example, to determine
@@ -367,6 +367,43 @@ AC_DEFUN([CCSYS_UINT_TYPE_ALIAS],
       [8],[AS_VAR_SET([CCSYS_TYPE_$1],[uint64_t])],
       [AC_MSG_ERROR([cannot determine size of '$2'])])
    AC_SUBST([CCSYS_TYPE_$1],[$CCSYS_TYPE_$1])])
+
+dnl page
+dnl CCSYS_STRUCT_FIELD --
+dnl
+dnl Inspect  the availability of  a member in  a struct.  For  the field
+dnl "st_dev" in "struct stat" we do:
+dnl
+dnl    CCSYS_STRUCT_FIELD([STRUCT_STAT_ST_DEV],
+dnl                       [struct stat], [st_dev],
+dnl                       [CCSYS_SYS_STAT_HEADER])
+dnl
+dnl If the field exists, it defines the preprocessor symbol:
+dnl
+dnl    CCSYS_HAVE_STRUCT_STAT_ST_DEV
+dnl
+dnl otherwise such symbol is undefined.
+dnl
+dnl If the field exists, it defines a substitution for:
+dnl
+dnl    OFFSETOF_STRUCT_STAT_ST_DEV
+dnl
+dnl otherwise such substitution is undefined.
+dnl
+dnl $1 - stem for generated symbols
+dnl $2 - original struct type
+dnl $3 - original field name
+dnl $4 - header file
+dnl
+AC_DEFUN([CCSYS_STRUCT_FIELD],
+  [AS_VAR_SET(CCSYS_HAVE_$1,0)
+   AC_CHECK_MEMBER([$2.$3],
+     [AS_VAR_SET(CCSYS_HAVE_$1,1)],
+     [AS_VAR_SET(CCSYS_HAVE_$1,0)],
+     [$4])
+   AS_IF([test $CCSYS_HAVE_$1 = 1],
+     [AC_DEFINE([CCSYS_HAVE_$1],1,[true if the struct has the field])
+      CCSYS_OFFSETOF([$1],[$2],[$3],[$4])])])
 
 dnl end of file
 dnl Local Variables:

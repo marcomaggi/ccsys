@@ -48,8 +48,8 @@ struct timeval
 ccsys_timeval_to_timeval (ccsys_timeval_t in)
 {
   struct timeval	ou = {
-    ou.tv_sec	= (time_t)in.seconds,
-    ou.tv_usec	= in.microseconds
+    .tv_sec	= (time_t)in.seconds.data,
+    .tv_usec	= in.microseconds.data
   };
   return ou;
 }
@@ -58,8 +58,8 @@ ccsys_timeval_t
 ccsys_timeval_from_timeval (struct timeval in)
 {
   ccsys_timeval_t	ou = {
-    ou.seconds		= (ccsys_seconds_t)      in.tv_sec,
-    ou.microseconds	= (ccsys_microseconds_t) in.tv_usec
+    .seconds.data	= (ccsys_time_unit_t) in.tv_sec,
+    .microseconds.data= (ccsys_time_unit_t) in.tv_usec
   };
   return ou;
 }
@@ -70,8 +70,8 @@ struct timespec
 ccsys_timespec_to_timespec (ccsys_timespec_t in)
 {
   struct timespec	ou = {
-    ou.tv_sec	= (time_t)in.seconds,
-    ou.tv_nsec	= in.nanoseconds
+    .tv_sec	= (time_t)in.seconds.data,
+    .tv_nsec	= in.nanoseconds.data
   };
   return ou;
 }
@@ -80,8 +80,8 @@ ccsys_timespec_t
 ccsys_timespec_from_timespec (struct timespec in)
 {
   ccsys_timespec_t	ou = {
-    ou.seconds		= (ccsys_seconds_t)      in.tv_sec,
-    ou.nanoseconds	= (ccsys_nanoseconds_t)  in.tv_nsec
+    .seconds.data	= (ccsys_time_unit_t) in.tv_sec,
+    .nanoseconds.data	= (ccsys_time_unit_t) in.tv_nsec
   };
   return ou;
 }

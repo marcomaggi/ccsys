@@ -220,6 +220,265 @@ ccsys_lstat (cce_location_t * L, char const * pathname, ccsys_stat_t * _buf)
 }
 #endif
 
+/* ------------------------------------------------------------------ */
+
+#ifdef CCSYS_HAVE_STRUCT_STAT_ST_DEV
+ccsys_dev_t
+ccsys_ref_stat_st_dev (ccsys_stat_t const * S)
+{
+  CCSYS_PC(struct stat const, D, S);
+  ccsys_dev_t	F = { .data = D->st_dev };
+  return F;
+}
+
+void
+ccsys_set_stat_st_dev (ccsys_stat_t * S, ccsys_dev_t F)
+{
+  CCSYS_PC(struct stat, D, S);
+  D->st_dev = F.data;
+}
+#endif
+
+/* ------------------------------------------------------------------ */
+
+#ifdef CCSYS_HAVE_STAT_ST_INO
+ccsys_ino_t
+ccsys_ref_stat_st_ino (ccsys_stat_t const * S)
+{
+  CCSYS_PC(struct stat const, D, S);
+  ccsys_ino_t	F = { .data = D->st_ino };
+  return F;
+}
+
+void
+ccsys_set_stat_st_ino (ccsys_stat_t * S, ccsys_ino_t F)
+{
+  CCSYS_PC(struct stat, D, S);
+  D->st_ino = F.data;
+}
+#endif
+
+/* ------------------------------------------------------------------ */
+
+#ifdef CCSYS_HAVE_STAT_ST_MODE
+ccsys_open_mode_t
+ccsys_ref_stat_st_mode (ccsys_stat_t const * S)
+{
+  CCSYS_PC(struct stat const, D, S);
+  ccsys_open_mode_t	F = { .data = D->st_mode };
+  return F;
+}
+
+void
+ccsys_set_stat_st_mode (ccsys_stat_t * S, ccsys_open_mode_t F)
+{
+  CCSYS_PC(struct stat, D, S);
+  D->st_mode = F.data;
+}
+#endif
+
+/* ------------------------------------------------------------------ */
+
+#ifdef CCSYS_HAVE_STAT_ST_NLINK
+ccsys_nlink_t
+ccsys_ref_stat_st_nlink (ccsys_stat_t const * S)
+{
+  CCSYS_PC(struct stat const, D, S);
+  ccsys_nlink_t	F = { .data = D->st_nlink };
+  return F;
+}
+
+void
+ccsys_set_stat_st_nlink (ccsys_stat_t * S, ccsys_nlink_t F)
+{
+  CCSYS_PC(struct stat, D, S);
+  D->st_nlink = F.data;
+}
+#endif
+
+/* ------------------------------------------------------------------ */
+
+#ifdef CCSYS_HAVE_STAT_ST_UID
+ccsys_uid_t
+ccsys_ref_stat_st_uid (ccsys_stat_t const * S)
+{
+  CCSYS_PC(struct stat const, D, S);
+  ccsys_uid_t	F = { .data = D->st_uid };
+  return F;
+}
+
+void
+ccsys_set_stat_st_uid (ccsys_stat_t * S, ccsys_uid_t F)
+{
+  CCSYS_PC(struct stat, D, S);
+  D->st_uid = F.data;
+}
+#endif
+
+/* ------------------------------------------------------------------ */
+
+#ifdef CCSYS_HAVE_STAT_ST_GID
+ccsys_gid_t
+ccsys_ref_stat_st_gid (ccsys_stat_t const * S)
+{
+  CCSYS_PC(struct stat const, D, S);
+  ccsys_gid_t	F = { .data = D->st_gid };
+  return F;
+}
+
+void
+ccsys_set_stat_st_gid (ccsys_stat_t * S, ccsys_gid_t F)
+{
+  CCSYS_PC(struct stat, D, S);
+  D->st_gid = F.data;
+}
+#endif
+
+/* ------------------------------------------------------------------ */
+
+#ifdef CCSYS_HAVE_STAT_ST_RDEV
+ccsys_dev_t
+ccsys_ref_stat_st_rdev (ccsys_stat_t const * S)
+{
+  CCSYS_PC(struct stat const, D, S);
+  ccsys_dev_t	F = { .data = D->st_rdev };
+  return F;
+}
+
+void
+ccsys_set_stat_st_rdev (ccsys_stat_t * S, ccsys_dev_t F)
+{
+  CCSYS_PC(struct stat, D, S);
+  D->st_rdev = F.data;
+}
+#endif
+
+/* ------------------------------------------------------------------ */
+
+#ifdef CCSYS_HAVE_STAT_ST_SIZE
+ccsys_off_t
+ccsys_ref_stat_st_size (ccsys_stat_t const * S)
+{
+  CCSYS_PC(struct stat const, D, S);
+  ccsys_off_t	F = { .data = D->st_size };
+  return F;
+}
+
+void
+ccsys_set_stat_st_size (ccsys_stat_t * S, ccsys_off_t F)
+{
+  CCSYS_PC(struct stat, D, S);
+  D->st_size = F.data;
+}
+#endif
+
+/* ------------------------------------------------------------------ */
+
+#ifdef CCSYS_HAVE_STAT_ST_BLKSIZE
+ccsys_blksize_t
+ccsys_ref_stat_st_blksize (ccsys_stat_t const * S)
+{
+  CCSYS_PC(struct stat const, D, S);
+  ccsys_blksize_t	F = { .data = D->st_blksize };
+  return F;
+}
+
+void
+ccsys_set_stat_st_blksize (ccsys_stat_t * S, ccsys_blksize_t F)
+{
+  CCSYS_PC(struct stat, D, S);
+  D->st_blksize = F.data;
+}
+#endif
+
+/* ------------------------------------------------------------------ */
+
+#ifdef CCSYS_HAVE_STAT_ST_BLOCKS
+ccsys_blkcnt_t
+ccsys_ref_stat_st_blocks (ccsys_stat_t const * S)
+{
+  CCSYS_PC(struct stat const, D, S);
+  ccsys_blkcnt_t	F = { .data = D->st_blocks };
+  return F;
+}
+
+void
+ccsys_set_stat_st_blocks (ccsys_stat_t * S, ccsys_blkcnt_t F)
+{
+  CCSYS_PC(struct stat, D, S);
+  D->st_blocks = F.data;
+}
+#endif
+
+/* ------------------------------------------------------------------ */
+
+#ifdef CCSYS_HAVE_STAT_ST_ATIME
+ccsys_timespec_t
+ccsys_ref_stat_st_atime (ccsys_stat_t const * S)
+{
+  CCSYS_PC(struct stat const, D, S);
+  ccsys_timespec_t	F = {
+    .seconds.data	= (ccsys_time_unit_t) D->st_atime.tv_sec,
+    .nanoseconds.data	= (ccsys_time_unit_t) D->st_atime.tv_nsec
+  };
+  return F;
+}
+
+void
+ccsys_set_stat_st_atime (ccsys_stat_t * S, ccsys_timespec_t F)
+{
+  CCSYS_PC(struct stat, D, S);
+  D->st_atime.tv_sec	= F.seconds.data;
+  D->st_atime.tv_nsec	= F.nanoseconds.data;
+}
+#endif
+
+/* ------------------------------------------------------------------ */
+
+#ifdef CCSYS_HAVE_STAT_ST_MTIME
+ccsys_timespec_t
+ccsys_ref_stat_st_mtime (ccsys_stat_t const * S)
+{
+  CCSYS_PC(struct stat const, D, S);
+  ccsys_timespec_t	F = {
+    .seconds.data	= (ccsys_time_unit_t) D->st_mtime.tv_sec,
+    .nanoseconds.data	= (ccsys_time_unit_t) D->st_mtime.tv_nsec
+  };
+  return F;
+}
+
+void
+ccsys_set_stat_st_mtime (ccsys_stat_t * S, ccsys_timespec_t F)
+{
+  CCSYS_PC(struct stat, D, S);
+  D->st_mtime.tv_sec	= F.seconds.data;
+  D->st_mtime.tv_nsec	= F.nanoseconds.data;
+}
+#endif
+
+/* ------------------------------------------------------------------ */
+
+#ifdef CCSYS_HAVE_STAT_ST_CTIME
+ccsys_timespec_t
+ccsys_ref_stat_st_ctime (ccsys_stat_t const * S)
+{
+  CCSYS_PC(struct stat const, D, S);
+  ccsys_timespec_t	F = {
+    .seconds.data	= (ccsys_time_unit_t) D->st_ctime.tv_sec,
+    .nanoseconds.data	= (ccsys_time_unit_t) D->st_ctime.tv_nsec
+  };
+  return F;
+}
+
+void
+ccsys_set_stat_st_ctime (ccsys_stat_t * S, ccsys_timespec_t F)
+{
+  CCSYS_PC(struct stat, D, S);
+  D->st_ctime.tv_sec	= F.seconds.data;
+  D->st_ctime.tv_nsec	= F.nanoseconds.data;
+}
+#endif
+
 
 /** --------------------------------------------------------------------
  ** File system: working directory.

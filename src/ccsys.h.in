@@ -108,6 +108,10 @@ extern "C" {
   __attribute__((__always_inline__,__nonnull__(1),__returns_nonnull__,__pure__))	\
   static inline FIELD_TYPE * FUNCNAME (STRUCT_TYPE const * S) { return (FIELD_TYPE *) &(S->data[FIELD_OFFSET]); }
 
+#define CCSYS_STRUCT_ACCESSORS(STEM,STRUCT_TYPE,FIELD_TYPE) \
+  ccsys_decl FIELD_TYPE ccsys_ref_ ## STEM (STRUCT_TYPE const * S) __attribute__((__nonnull__(1),__pure__)); \
+  ccsys_decl void ccsys_set_ ## STEM (STRUCT_TYPE * S, FIELD_TYPE F) __attribute__((__nonnull__(1)));
+
 
 /** --------------------------------------------------------------------
  ** Headers.
@@ -229,12 +233,18 @@ struct ccsys_utimbuf_t		{ uint8_t data[@SIZEOF_STRUCT_UTIMBUF@]; };
  ** Type definisions: time handling.
  ** ----------------------------------------------------------------- */
 
-typedef long int			ccsys_seconds_t;
-typedef long int			ccsys_microseconds_t;
-typedef long int			ccsys_nanoseconds_t;
-
+typedef long int			ccsys_time_unit_t;
+typedef struct ccsys_seconds_t		ccsys_seconds_t;
+typedef struct ccsys_milliseconds_t	ccsys_milliseconds_t;
+typedef struct ccsys_microseconds_t	ccsys_microseconds_t;
+typedef struct ccsys_nanoseconds_t	ccsys_nanoseconds_t;
 typedef struct ccsys_timeval_t		ccsys_timeval_t;
 typedef struct ccsys_timespec_t		ccsys_timespec_t;
+
+struct ccsys_seconds_t		{ ccsys_time_unit_t data; };
+struct ccsys_milliseconds_t	{ ccsys_time_unit_t data; };
+struct ccsys_microseconds_t	{ ccsys_time_unit_t data; };
+struct ccsys_nanoseconds_t	{ ccsys_time_unit_t data; };
 
 struct ccsys_timeval_t {
   ccsys_seconds_t	seconds;
@@ -245,6 +255,41 @@ struct ccsys_timespec_t {
   ccsys_seconds_t	seconds;
   ccsys_nanoseconds_t	nanoseconds;
 };
+
+/* ------------------------------------------------------------------ */
+
+#define ccsys_set_seconds(S,N)		ccsys_p_set_seconds(&(S),(N))
+#define ccsys_set_milliseconds(S,N)	ccsys_p_set_milliseconds(&(S),(N))
+#define ccsys_set_microseconds(S,N)	ccsys_p_set_microseconds(&(S),(N))
+#define ccsys_set_nanoseconds(S,N)	ccsys_p_set_nanoseconds(&(S),(N))
+
+__attribute__((__always_inline__,__nonnull__(1)))
+static inline void
+ccsys_p_set_seconds (ccsys_seconds_t * S, ccsys_time_unit_t N)
+{
+  S->data = N;
+}
+
+__attribute__((__always_inline__,__nonnull__(1)))
+static inline void
+ccsys_p_set_milliseconds (ccsys_milliseconds_t * S, ccsys_time_unit_t N)
+{
+  S->data = N;
+}
+
+__attribute__((__always_inline__,__nonnull__(1)))
+static inline void
+ccsys_p_set_microseconds (ccsys_microseconds_t * S, ccsys_time_unit_t N)
+{
+  S->data = N;
+}
+
+__attribute__((__always_inline__,__nonnull__(1)))
+static inline void
+ccsys_p_set_nanoseconds (ccsys_nanoseconds_t * S, ccsys_time_unit_t N)
+{
+  S->data = N;
+}
 
 
 /** --------------------------------------------------------------------
@@ -1111,29 +1156,19 @@ ccsys_decl void ccsys_lstat (cce_destination_t L, char const * pathname, ccsys_s
 
 /* ------------------------------------------------------------------ */
 
-/* Struct accessors. */
-#if (1 == CCSYS_STRUCT_STAT_HAS_ST_DEV)
-__attribute__((__always_inline__,__nonnull__(1),__pure__))
-static inline int64_t
-ccsys_stat_st_dev (const ccsys_stat_t * S)
-{
-  return (int64_t) &(S->data[@OFFSETOF_STRUCT_STAT_ST_RDEV@]);
-}
-#endif
-
-/* CCSYS_STRUCT_ACCESSOR(ccsys_stat_st_ino,     ccsys_stat_t, ccsys_ino_t,     @OFFSETOF_STRUCT_STAT_ST_INO@) */
-/* CCSYS_STRUCT_ACCESSOR(ccsys_stat_st_mode,    ccsys_stat_t, ccsys_open_mode_t,    @OFFSETOF_STRUCT_STAT_ST_MODE@) */
-/* CCSYS_STRUCT_ACCESSOR(ccsys_stat_st_nlink,   ccsys_stat_t, ccsys_nlink_t,   @OFFSETOF_STRUCT_STAT_ST_NLINK@) */
-/* CCSYS_STRUCT_ACCESSOR(ccsys_stat_st_uid,     ccsys_stat_t, ccsys_uid_t,     @OFFSETOF_STRUCT_STAT_ST_UID@) */
-/* CCSYS_STRUCT_ACCESSOR(ccsys_stat_st_gid,     ccsys_stat_t, ccsys_gid_t,     @OFFSETOF_STRUCT_STAT_ST_GID@) */
-
-/* CCSYS_STRUCT_ACCESSOR(ccsys_stat_st_rdev,    ccsys_stat_t, ccsys_dev_t,     @OFFSETOF_STRUCT_STAT_ST_RDEV@) */
-/* CCSYS_STRUCT_ACCESSOR(ccsys_stat_st_size,    ccsys_stat_t, ccsys_off_t,     @OFFSETOF_STRUCT_STAT_ST_SIZE@) */
-/* CCSYS_STRUCT_ACCESSOR(ccsys_stat_st_blksize, ccsys_stat_t, ccsys_blksize_t, @OFFSETOF_STRUCT_STAT_ST_BLKSIZE@) */
-/* CCSYS_STRUCT_ACCESSOR(ccsys_stat_st_blocks,  ccsys_stat_t, ccsys_blkcnt_t,  @OFFSETOF_STRUCT_STAT_ST_BLOCKS@) */
-/* CCSYS_STRUCT_ACCESSOR(ccsys_stat_st_atime,   ccsys_stat_t, ccsys_timespec_t,@OFFSETOF_STRUCT_STAT_ST_ATIME@) */
-/* CCSYS_STRUCT_ACCESSOR(ccsys_stat_st_mtime,   ccsys_stat_t, ccsys_timespec_t,@OFFSETOF_STRUCT_STAT_ST_MTIME@) */
-/* CCSYS_STRUCT_ACCESSOR(ccsys_stat_st_ctime,   ccsys_stat_t, ccsys_timespec_t,@OFFSETOF_STRUCT_STAT_ST_CTIME@) */
+CCSYS_STRUCT_ACCESSORS(stat_st_dev,	ccsys_stat_t, ccsys_dev_t)
+CCSYS_STRUCT_ACCESSORS(stat_st_ino,	ccsys_stat_t, ccsys_ino_t)
+CCSYS_STRUCT_ACCESSORS(stat_st_mode,	ccsys_stat_t, ccsys_open_mode_t)
+CCSYS_STRUCT_ACCESSORS(stat_st_nlink,	ccsys_stat_t, ccsys_nlink_t)
+CCSYS_STRUCT_ACCESSORS(stat_st_uid,	ccsys_stat_t, ccsys_uid_t)
+CCSYS_STRUCT_ACCESSORS(stat_st_gid,	ccsys_stat_t, ccsys_gid_t)
+CCSYS_STRUCT_ACCESSORS(stat_st_rdev,	ccsys_stat_t, ccsys_dev_t)
+CCSYS_STRUCT_ACCESSORS(stat_st_size,	ccsys_stat_t, ccsys_off_t)
+CCSYS_STRUCT_ACCESSORS(stat_st_blksize, ccsys_stat_t, ccsys_blksize_t)
+CCSYS_STRUCT_ACCESSORS(stat_st_blocks,	ccsys_stat_t, ccsys_blkcnt_t)
+CCSYS_STRUCT_ACCESSORS(stat_st_atime,	ccsys_stat_t, ccsys_timespec_t)
+CCSYS_STRUCT_ACCESSORS(stat_st_mtime,	ccsys_stat_t, ccsys_timespec_t)
+CCSYS_STRUCT_ACCESSORS(stat_st_ctime,	ccsys_stat_t, ccsys_timespec_t)
 
 
 /** --------------------------------------------------------------------
