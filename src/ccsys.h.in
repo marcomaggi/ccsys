@@ -1179,9 +1179,9 @@ CCSYS_STRUCT_ACCESSORS(stat_st_rdev,	ccsys_stat_t, ccsys_dev_t)
 CCSYS_STRUCT_ACCESSORS(stat_st_size,	ccsys_stat_t, ccsys_off_t)
 CCSYS_STRUCT_ACCESSORS(stat_st_blksize, ccsys_stat_t, ccsys_blksize_t)
 CCSYS_STRUCT_ACCESSORS(stat_st_blocks,	ccsys_stat_t, ccsys_blkcnt_t)
-CCSYS_STRUCT_ACCESSORS(stat_st_atime,	ccsys_stat_t, ccsys_timespec_t)
-CCSYS_STRUCT_ACCESSORS(stat_st_mtime,	ccsys_stat_t, ccsys_timespec_t)
-CCSYS_STRUCT_ACCESSORS(stat_st_ctime,	ccsys_stat_t, ccsys_timespec_t)
+CCSYS_STRUCT_ACCESSORS(stat_st_atime,	ccsys_stat_t, ccsys_timeval_t)
+CCSYS_STRUCT_ACCESSORS(stat_st_mtime,	ccsys_stat_t, ccsys_timeval_t)
+CCSYS_STRUCT_ACCESSORS(stat_st_ctime,	ccsys_stat_t, ccsys_timeval_t)
 
 
 /** --------------------------------------------------------------------

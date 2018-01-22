@@ -252,7 +252,7 @@ ccsys_set_stat_st_dev (ccsys_stat_t * S, ccsys_dev_t F)
 
 /* ------------------------------------------------------------------ */
 
-#if (1 == CCSYS_HAVE_STAT_ST_INO)
+#if (1 == CCSYS_HAVE_STRUCT_STAT_ST_INO)
 ccsys_ino_t
 ccsys_ref_stat_st_ino (ccsys_stat_t const * S)
 {
@@ -271,7 +271,7 @@ ccsys_set_stat_st_ino (ccsys_stat_t * S, ccsys_ino_t F)
 
 /* ------------------------------------------------------------------ */
 
-#if (1 == CCSYS_HAVE_STAT_ST_MODE)
+#if (1 == CCSYS_HAVE_STRUCT_STAT_ST_MODE)
 ccsys_open_mode_t
 ccsys_ref_stat_st_mode (ccsys_stat_t const * S)
 {
@@ -290,7 +290,7 @@ ccsys_set_stat_st_mode (ccsys_stat_t * S, ccsys_open_mode_t F)
 
 /* ------------------------------------------------------------------ */
 
-#if (1 == CCSYS_HAVE_STAT_ST_NLINK)
+#if (1 == CCSYS_HAVE_STRUCT_STAT_ST_NLINK)
 ccsys_nlink_t
 ccsys_ref_stat_st_nlink (ccsys_stat_t const * S)
 {
@@ -309,7 +309,7 @@ ccsys_set_stat_st_nlink (ccsys_stat_t * S, ccsys_nlink_t F)
 
 /* ------------------------------------------------------------------ */
 
-#if (1 == CCSYS_HAVE_STAT_ST_UID)
+#if (1 == CCSYS_HAVE_STRUCT_STAT_ST_UID)
 ccsys_uid_t
 ccsys_ref_stat_st_uid (ccsys_stat_t const * S)
 {
@@ -328,7 +328,7 @@ ccsys_set_stat_st_uid (ccsys_stat_t * S, ccsys_uid_t F)
 
 /* ------------------------------------------------------------------ */
 
-#if (1 == CCSYS_HAVE_STAT_ST_GID)
+#if (1 == CCSYS_HAVE_STRUCT_STAT_ST_GID)
 ccsys_gid_t
 ccsys_ref_stat_st_gid (ccsys_stat_t const * S)
 {
@@ -347,7 +347,7 @@ ccsys_set_stat_st_gid (ccsys_stat_t * S, ccsys_gid_t F)
 
 /* ------------------------------------------------------------------ */
 
-#if (1 == CCSYS_HAVE_STAT_ST_RDEV)
+#if (1 == CCSYS_HAVE_STRUCT_STAT_ST_RDEV)
 ccsys_dev_t
 ccsys_ref_stat_st_rdev (ccsys_stat_t const * S)
 {
@@ -366,7 +366,7 @@ ccsys_set_stat_st_rdev (ccsys_stat_t * S, ccsys_dev_t F)
 
 /* ------------------------------------------------------------------ */
 
-#if (1 == CCSYS_HAVE_STAT_ST_SIZE)
+#if (1 == CCSYS_HAVE_STRUCT_STAT_ST_SIZE)
 ccsys_off_t
 ccsys_ref_stat_st_size (ccsys_stat_t const * S)
 {
@@ -385,7 +385,7 @@ ccsys_set_stat_st_size (ccsys_stat_t * S, ccsys_off_t F)
 
 /* ------------------------------------------------------------------ */
 
-#if (1 == CCSYS_HAVE_STAT_ST_BLKSIZE)
+#if (1 == CCSYS_HAVE_STRUCT_STAT_ST_BLKSIZE)
 ccsys_blksize_t
 ccsys_ref_stat_st_blksize (ccsys_stat_t const * S)
 {
@@ -404,7 +404,7 @@ ccsys_set_stat_st_blksize (ccsys_stat_t * S, ccsys_blksize_t F)
 
 /* ------------------------------------------------------------------ */
 
-#if (1 == CCSYS_HAVE_STAT_ST_BLOCKS)
+#if (1 == CCSYS_HAVE_STRUCT_STAT_ST_BLOCKS)
 ccsys_blkcnt_t
 ccsys_ref_stat_st_blocks (ccsys_stat_t const * S)
 {
@@ -423,70 +423,88 @@ ccsys_set_stat_st_blocks (ccsys_stat_t * S, ccsys_blkcnt_t F)
 
 /* ------------------------------------------------------------------ */
 
-#if (1 == CCSYS_HAVE_STAT_ST_ATIME)
-ccsys_timespec_t
+#if (1 == CCSYS_HAVE_STRUCT_STAT_ST_ATIME)
+ccsys_timeval_t
 ccsys_ref_stat_st_atime (ccsys_stat_t const * S)
 {
   CCSYS_PC(struct stat const, D, S);
-  ccsys_timespec_t	F = {
-    .seconds.data	= (ccsys_time_unit_t) D->st_atime.tv_sec,
-    .nanoseconds.data	= (ccsys_time_unit_t) D->st_atime.tv_nsec
+  ccsys_timeval_t	F = {
+    .seconds.data	= (ccsys_time_unit_t) D->st_atime,
+#if (1 == CCSYS_HAVE_STRUCT_STAT_ST_ATIME_USEC)
+    .microseconds.data	= (ccsys_time_unit_t) D->st_atime_usec
+#else
+    .microseconds.data	= 0
+#endif
   };
   return F;
 }
 
 void
-ccsys_set_stat_st_atime (ccsys_stat_t * S, ccsys_timespec_t F)
+ccsys_set_stat_st_atime (ccsys_stat_t * S, ccsys_timeval_t F)
 {
   CCSYS_PC(struct stat, D, S);
-  D->st_atime.tv_sec	= F.seconds.data;
-  D->st_atime.tv_nsec	= F.nanoseconds.data;
+  D->st_atime		= (time_t) F.seconds.data;
+#if (1 == CCSYS_HAVE_STRUCT_STAT_ST_ATIME_USEC)
+  D->st_atime_usec	= F.microseconds.data;
+#endif
 }
 #endif
 
 /* ------------------------------------------------------------------ */
 
-#if (1 == CCSYS_HAVE_STAT_ST_MTIME)
-ccsys_timespec_t
+#if (1 == CCSYS_HAVE_STRUCT_STAT_ST_MTIME)
+ccsys_timeval_t
 ccsys_ref_stat_st_mtime (ccsys_stat_t const * S)
 {
   CCSYS_PC(struct stat const, D, S);
-  ccsys_timespec_t	F = {
-    .seconds.data	= (ccsys_time_unit_t) D->st_mtime.tv_sec,
-    .nanoseconds.data	= (ccsys_time_unit_t) D->st_mtime.tv_nsec
+  ccsys_timeval_t	F = {
+    .seconds.data	= (ccsys_time_unit_t) D->st_mtime,
+#if (1 == CCSYS_HAVE_STRUCT_STAT_ST_MTIME_USEC)
+    .microseconds.data	= (ccsys_time_unit_t) D->st_mtime_usec
+#else
+    .microseconds.data	= 0
+#endif
   };
   return F;
 }
 
 void
-ccsys_set_stat_st_mtime (ccsys_stat_t * S, ccsys_timespec_t F)
+ccsys_set_stat_st_mtime (ccsys_stat_t * S, ccsys_timeval_t F)
 {
   CCSYS_PC(struct stat, D, S);
-  D->st_mtime.tv_sec	= F.seconds.data;
-  D->st_mtime.tv_nsec	= F.nanoseconds.data;
+  D->st_mtime		= (time_t) F.seconds.data;
+#if (1 == CCSYS_HAVE_STRUCT_STAT_ST_MTIME_USEC)
+  D->st_mtime_usec	= F.microseconds.data;
+#endif
 }
 #endif
 
 /* ------------------------------------------------------------------ */
 
-#if (1 == CCSYS_HAVE_STAT_ST_CTIME)
-ccsys_timespec_t
+#if (1 == CCSYS_HAVE_STRUCT_STAT_ST_CTIME)
+ccsys_timeval_t
 ccsys_ref_stat_st_ctime (ccsys_stat_t const * S)
 {
   CCSYS_PC(struct stat const, D, S);
-  ccsys_timespec_t	F = {
-    .seconds.data	= (ccsys_time_unit_t) D->st_ctime.tv_sec,
-    .nanoseconds.data	= (ccsys_time_unit_t) D->st_ctime.tv_nsec
+  ccsys_timeval_t	F = {
+    .seconds.data	= (ccsys_time_unit_t) D->st_ctime,
+#if (1 == CCSYS_HAVE_STRUCT_STAT_ST_CTIME_USEC)
+    .microseconds.data	= (ccsys_time_unit_t) D->st_ctime_usec
+#else
+    .microseconds.data	= 0
+#endif
   };
   return F;
 }
 
 void
-ccsys_set_stat_st_ctime (ccsys_stat_t * S, ccsys_timespec_t F)
+ccsys_set_stat_st_ctime (ccsys_stat_t * S, ccsys_timeval_t F)
 {
   CCSYS_PC(struct stat, D, S);
-  D->st_ctime.tv_sec	= F.seconds.data;
-  D->st_ctime.tv_nsec	= F.nanoseconds.data;
+  D->st_ctime		= (time_t) F.seconds.data;
+#if (1 == CCSYS_HAVE_STRUCT_STAT_ST_CTIME_USEC)
+  D->st_ctime_usec	= F.microseconds.data;
+#endif
 }
 #endif
 

@@ -365,7 +365,11 @@ test_4_1 (cce_destination_t upper_L)
       ccsys_stat_t	S;
 
       ccsys_stat(L, filename, &S);
-#ifdef CCSYS_HAVE_STRUCT_STAT_ST_DEV
+#if (1 == CCSYS_HAVE_STRUCT_STAT_ST_DEV)
+      fprintf(stderr, "%s: st_dev=%lu\n", __func__, (unsigned long)ccsys_ref_stat_st_dev(&S).data);
+#endif
+#if (1 == CCSYS_HAVE_STRUCT_STAT_ST_INO)
+      fprintf(stderr, "%s: st_ino=%lu\n", __func__, (unsigned long)ccsys_ref_stat_st_ino(&S).data);
 #endif
     }
 

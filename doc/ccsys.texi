@@ -4196,20 +4196,20 @@ Getter and setter for the field @code{st_blocks}.
 @end deftypefun
 
 
-@deftypefun ccsys_timespec_t ccsys_ref_stat_st_atime (ccsys_stat_t const * @var{S})
-@deftypefunx void ccsys_set_stat_st_atime (ccsys_stat_t * @var{S}, ccsys_timespec_t @var{F})
+@deftypefun ccsys_timeval_t ccsys_ref_stat_st_atime (ccsys_stat_t const * @var{S})
+@deftypefunx void ccsys_set_stat_st_atime (ccsys_stat_t * @var{S}, ccsys_timeval_t @var{F})
 Getter and setter for the field @code{st_atime}.
 @end deftypefun
 
 
-@deftypefun ccsys_timespec_t ccsys_ref_stat_st_mtime (ccsys_stat_t const * @var{S})
-@deftypefunx void ccsys_set_stat_st_mtime (ccsys_stat_t * @var{S}, ccsys_timespec_t @var{F})
+@deftypefun ccsys_timeval_t ccsys_ref_stat_st_mtime (ccsys_stat_t const * @var{S})
+@deftypefunx void ccsys_set_stat_st_mtime (ccsys_stat_t * @var{S}, ccsys_timeval_t @var{F})
 Getter and setter for the field @code{st_mtime}.
 @end deftypefun
 
 
-@deftypefun ccsys_timespec_t ccsys_ref_stat_st_ctime (ccsys_stat_t const * @var{S})
-@deftypefunx void ccsys_set_stat_st_ctime (ccsys_stat_t * @var{S}, ccsys_timespec_t @var{F})
+@deftypefun ccsys_timeval_t ccsys_ref_stat_st_ctime (ccsys_stat_t const * @var{S})
+@deftypefunx void ccsys_set_stat_st_ctime (ccsys_stat_t * @var{S}, ccsys_timeval_t @var{F})
 Getter and setter for the field @code{st_ctime}.
 @end deftypefun
 
