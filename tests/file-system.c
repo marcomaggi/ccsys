@@ -332,11 +332,160 @@ test_3_3 (cce_destination_t upper_L)
 
 
 /** --------------------------------------------------------------------
- ** File system: inspecting attributes with stat.
+ ** File system: getters and setters for "ccsys_stat_t".
  ** ----------------------------------------------------------------- */
 
 void
 test_4_1 (cce_destination_t upper_L)
+{
+  ccsys_stat_t	S;
+  long		i = 0;
+
+#if (1 == CCSYS_HAVE_STRUCT_STAT_ST_DEV)
+  {
+    ccsys_dev_t	F = { .data = ++i };
+    ccsys_set_stat_st_dev(&S, F);
+    cctests_assert(upper_L, i == ccsys_lref(ccsys_ref_stat_st_dev(&S)));
+  }
+#endif
+
+#if (1 == CCSYS_HAVE_STRUCT_STAT_ST_INO)
+  {
+    ccsys_ino_t	F = { .data = ++i };
+    ccsys_set_stat_st_ino(&S, F);
+    cctests_assert(upper_L, i == ccsys_lref(ccsys_ref_stat_st_ino(&S)));
+  }
+#endif
+
+#if (1 == CCSYS_HAVE_STRUCT_STAT_ST_MODE)
+  {
+    ccsys_open_mode_t	F = { .data = ++i };
+    ccsys_set_stat_st_mode(&S, F);
+    cctests_assert(upper_L, i == ccsys_lref(ccsys_ref_stat_st_mode(&S)));
+  }
+#endif
+
+#if (1 == CCSYS_HAVE_STRUCT_STAT_ST_NLINK)
+  {
+    ccsys_nlink_t	F = { .data = ++i };
+    ccsys_set_stat_st_nlink(&S, F);
+    cctests_assert(upper_L, i == ccsys_lref(ccsys_ref_stat_st_nlink(&S)));
+  }
+#endif
+
+#if (1 == CCSYS_HAVE_STRUCT_STAT_ST_UID)
+  {
+    ccsys_uid_t	F = { .data = ++i };
+    ccsys_set_stat_st_uid(&S, F);
+    cctests_assert(upper_L, i == ccsys_lref(ccsys_ref_stat_st_uid(&S)));
+  }
+#endif
+
+#if (1 == CCSYS_HAVE_STRUCT_STAT_ST_GID)
+  {
+    ccsys_gid_t	F = { .data = ++i };
+    ccsys_set_stat_st_gid(&S, F);
+    cctests_assert(upper_L, i == ccsys_lref(ccsys_ref_stat_st_gid(&S)));
+  }
+#endif
+
+#if (1 == CCSYS_HAVE_STRUCT_STAT_ST_RDEV)
+  {
+    ccsys_dev_t	F = { .data = ++i };
+    ccsys_set_stat_st_rdev(&S, F);
+    cctests_assert(upper_L, i == ccsys_lref(ccsys_ref_stat_st_rdev(&S)));
+  }
+#endif
+
+#if (1 == CCSYS_HAVE_STRUCT_STAT_ST_SIZE)
+  {
+    ccsys_off_t	F = { .data = ++i };
+    ccsys_set_stat_st_size(&S, F);
+    cctests_assert(upper_L, i == ccsys_lref(ccsys_ref_stat_st_size(&S)));
+  }
+#endif
+
+#if (1 == CCSYS_HAVE_STRUCT_STAT_ST_BLKSIZE)
+  {
+    ccsys_blksize_t	F = { .data = ++i };
+    ccsys_set_stat_st_blksize(&S, F);
+    cctests_assert(upper_L, i == ccsys_lref(ccsys_ref_stat_st_blksize(&S)));
+  }
+#endif
+
+#if (1 == CCSYS_HAVE_STRUCT_STAT_ST_BLOCKS)
+  {
+    ccsys_blkcnt_t	F = { .data = ++i };
+    ccsys_set_stat_st_blocks(&S, F);
+    cctests_assert(upper_L, i == ccsys_lref(ccsys_ref_stat_st_blocks(&S)));
+  }
+#endif
+
+#if (1 == CCSYS_HAVE_STRUCT_STAT_ST_ATIME)
+  {
+    ccsys_timeval_t	T1, T2;
+    T1.seconds.data		= ++i;
+    T1.microseconds.data	= 1+i;
+
+    ccsys_set_stat_st_atime(&S, T1);
+    T2 = ccsys_ref_stat_st_atime(&S);
+    if (0) {
+      fprintf(stderr, "%s: st_atime=%ld\n", __func__, T2.seconds.data);
+      fprintf(stderr, "%s: st_atime_usec=%ld\n", __func__, T2.microseconds.data);
+    }
+    cctests_assert(upper_L,   i == ccsys_lref(T2.seconds));
+#if (1 == CCSYS_HAVE_STRUCT_STAT_ST_ATIME_USEC)
+    cctests_assert(upper_L, 1+i == ccsys_lref(T2.microseconds));
+#endif
+  }
+#endif
+
+#if (1 == CCSYS_HAVE_STRUCT_STAT_ST_MTIME)
+  {
+    ccsys_timeval_t	T1, T2;
+    T1.seconds.data		= ++i;
+    T1.microseconds.data	= 1+i;
+
+    ccsys_set_stat_st_mtime(&S, T1);
+    T2 = ccsys_ref_stat_st_mtime(&S);
+    if (0) {
+      fprintf(stderr, "%s: st_mtime=%ld\n", __func__, T2.seconds.data);
+      fprintf(stderr, "%s: st_mtime_usec=%ld\n", __func__, T2.microseconds.data);
+    }
+    cctests_assert(upper_L,   i == ccsys_lref(T2.seconds));
+#if (1 == CCSYS_HAVE_STRUCT_STAT_ST_MTIME_USEC)
+    cctests_assert(upper_L, 1+i == ccsys_lref(T2.microseconds));
+#endif
+  }
+#endif
+
+#if (1 == CCSYS_HAVE_STRUCT_STAT_ST_CTIME)
+  {
+    ccsys_timeval_t	T1, T2;
+    T1.seconds.data		= ++i;
+    T1.microseconds.data	= 1+i;
+
+    ccsys_set_stat_st_ctime(&S, T1);
+    T2 = ccsys_ref_stat_st_ctime(&S);
+    if (0) {
+      fprintf(stderr, "%s: st_ctime=%ld\n", __func__, T2.seconds.data);
+      fprintf(stderr, "%s: st_ctime_usec=%ld\n", __func__, T2.microseconds.data);
+    }
+    cctests_assert(upper_L,   i == ccsys_lref(T2.seconds));
+#if (1 == CCSYS_HAVE_STRUCT_STAT_ST_CTIME_USEC)
+    cctests_assert(upper_L, 1+i == ccsys_lref(T2.microseconds));
+#endif
+  }
+#endif
+}
+
+
+/** --------------------------------------------------------------------
+ ** File system: inspecting attributes with stat.
+ ** ----------------------------------------------------------------- */
+
+void
+test_4_2 (cce_destination_t upper_L)
 {
   cce_location_t	  L[1];
   cce_cleanup_handler_t   filename_H[1];
@@ -456,6 +605,7 @@ main (void)
     cctests_begin_group("inspecting attributes with stat");
     {
       cctests_run(test_4_1);
+      cctests_run(test_4_2);
     }
     cctests_end_group();
   }
