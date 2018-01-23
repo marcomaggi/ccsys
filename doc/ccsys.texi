@@ -456,9 +456,17 @@ Enumerated constants}.
 
 @anchor{ccsys_unlinkat_flags_t}
 @deftp {Semantic Type} ccsys_unlinkat_flags_t
-Exact signed integer representing an @code{at()} function flag.  It is meant to be a bitwise
+Exact signed integer representing the flags for @cfunc{ccsys_unlinkat}.  It is meant to be a bitwise
 combination of the enumerated constants of type @objtype{ccsys_unlinkat_flags_enum_t}.
 @ref{ccsys_unlinkat_flags_enum_t, Enumerated constants}.
+@end deftp
+
+
+@anchor{ccsys_fstatat_flags_t}
+@deftp {Semantic Type} ccsys_fstatat_flags_t
+Exact signed integer representing the flags for @cfunc{ccsys_fstatat}.  It is meant to be a bitwise
+combination of the enumerated constants of type @objtype{ccsys_fstatat_flags_enum_t}.
+@ref{ccsys_fstatat_flags_enum_t, Enumerated constants}.
 @end deftp
 
 
@@ -777,6 +785,25 @@ CCSYS_AT_REMOVEDIR
 
 A bitwise combination of these constants is meant to be used as value for arguments of type
 @objtype{ccsys_unlinkat_flags_t}; @ref{ccsys_unlinkat_flags_t, Semantic type definitions}.
+@end deftp
+
+
+@EnumeratedConstant{CCSYS_AT_EMPTY_PATH}
+@EnumeratedConstant{CCSYS_AT_NO_AUTOMOUNT}
+@EnumeratedConstant{CCSYS_AT_SYMLINK_NOFOLLOW}
+@anchor{ccsys_fstatat_flags_enum_t}
+@deftp {Enum Typedef} ccsys_fstatat_flags_enum_t
+Type of flags for @code{at()} functions.  These constants are meant to be used, for example, as
+value for the argument @var{flags} of @cfunc{ccsys_fstatat}.  It defines the following constants:
+
+@example
+CCSYS_AT_EMPTY_PATH
+CCSYS_AT_NO_AUTOMOUNT
+CCSYS_AT_SYMLINK_NOFOLLOW
+@end example
+
+A bitwise combination of these constants is meant to be used as value for arguments of type
+@objtype{ccsys_fstatat_flags_t}; @ref{ccsys_fstatat_flags_t, Semantic type definitions}.
 @end deftp
 
 
@@ -4092,18 +4119,23 @@ Wrapper type for @objtype{struct stat}.
 @end deftp
 
 
-@deftypefun void ccsys_stat (cce_destination_t @var{L}, char const * @var{pathname}, ccsys_stat_t * @var{buf})
-Wrapper for @cfunc{stat}.
+@deftypefun void ccsys_stat (cce_destination_t @var{L}, char const * @var{pathname}, ccsys_stat_t * @var{S})
+Wrapper for @cfunc{stat}; @manpage{stat, Get file status}.
 @end deftypefun
 
 
-@deftypefun void ccsys_fstat (cce_destination_t @var{L}, ccsys_fd_t @var{fd}, ccsys_stat_t * @var{buf})
-Wrapper for @cfunc{fstat}.
+@deftypefun void ccsys_fstat (cce_destination_t @var{L}, ccsys_fd_t @var{fd}, ccsys_stat_t * @var{S})
+Wrapper for @cfunc{fstat}; @manpage{fstat, Get file status}.
 @end deftypefun
 
 
-@deftypefun void ccsys_lstat (cce_destination_t @var{L}, char const * @var{pathname}, ccsys_stat_t * @var{buf})
-Wrapper for @cfunc{lstat}.
+@deftypefun void ccsys_fstatat (cce_destination_t @var{L}, ccsys_fd_t @var{fd}, char const * @var{pathname}, ccsys_stat_t * @var{S})
+Wrapper for @cfunc{fstatat}; @manpage{fstatat, Get file status}.
+@end deftypefun
+
+
+@deftypefun void ccsys_lstat (cce_destination_t @var{L}, char const * @var{pathname}, ccsys_stat_t * @var{S})
+Wrapper for @cfunc{lstat}; @manpage{lstat, Get file status}.
 @end deftypefun
 
 @c ------------------------------------------------------------------------

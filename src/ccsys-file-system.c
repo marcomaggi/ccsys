@@ -217,6 +217,20 @@ ccsys_fstat (cce_location_t * L, ccsys_fd_t fd, ccsys_stat_t * _buf)
 }
 #endif
 
+#ifdef HAVE_FSTATAT
+void
+ccsys_fstatat (cce_destination_t L, ccsys_dirfd_t dirfd, char const * pathname, ccsys_stat_t * _buf, ccsys_fstatat_flags_t flags)
+{
+  CCSYS_PC(struct stat, buf, _buf);
+  int		rv;
+  errno = 0;
+  rv = fstatat(dirfd.data, pathname, buf, flags.data);
+  if (-1 == rv) {
+    cce_raise(L, cce_condition_new_errno_clear());
+  }
+}
+#endif
+
 #ifdef HAVE_LSTAT
 void
 ccsys_lstat (cce_location_t * L, char const * pathname, ccsys_stat_t * _buf)

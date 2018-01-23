@@ -136,6 +136,7 @@ typedef struct ccsys_dirfd_t			ccsys_dirfd_t;
 typedef struct ccsys_exit_status_t		ccsys_exit_status_t;
 typedef struct ccsys_fd_flags_t			ccsys_fd_flags_t;
 typedef struct ccsys_fd_t			ccsys_fd_t;
+typedef struct ccsys_fstatat_flags_t		ccsys_fstatat_flags_t;
 typedef struct ccsys_gid_t			ccsys_gid_t;
 typedef struct ccsys_ino_t			ccsys_ino_t;
 typedef struct ccsys_madvise_advice_t		ccsys_madvise_advice_t;
@@ -168,6 +169,7 @@ struct ccsys_dirfd_t			{ int				data; };
 struct ccsys_exit_status_t		{ int				data; };
 struct ccsys_fd_flags_t			{ int				data; };
 struct ccsys_fd_t			{ int				data; };
+struct ccsys_fstatat_flags_t		{ int				data; };
 struct ccsys_gid_t			{ @CCSYS_TYPE_GID_T@		data; };
 struct ccsys_ino_t			{ @CCSYS_TYPE_INO_T@		data; };
 struct ccsys_madvise_advice_t		{ int				data; };
@@ -377,6 +379,12 @@ enum ccsys_scatter_gather_flags_enum_t {
 
 enum ccsys_unlinkat_flags_enum_t {
   @CCSYS_ENUM_DEF_CCSYS_AT_REMOVEDIR@
+};
+
+enum ccsys_fstatat_flags_enum_t {
+  @CCSYS_ENUM_DEF_CCSYS_AT_EMPTY_PATH@
+  @CCSYS_ENUM_DEF_CCSYS_AT_NO_AUTOMOUNT@
+  @CCSYS_ENUM_DEF_CCSYS_AT_SYMLINK_NOFOLLOW@
 };
 
 enum ccsys_socket_namespace_enum_t {
@@ -676,6 +684,7 @@ enum ccsys_signum_enum_t {
 typedef enum ccsys_errno_enum_t			ccsys_errno_enum_t;
 typedef enum ccsys_exit_status_enum_t		ccsys_exit_status_enum_t;
 typedef enum ccsys_fd_flags_enum_t		ccsys_fd_flags_enum_t;
+typedef enum ccsys_fstatat_flags_enum_t		ccsys_fstatat_flags_enum_t;
 typedef enum ccsys_limits_enum_t		ccsys_limits_enum_t;
 typedef enum ccsys_memory_advice_enum_t		ccsys_memory_advice_enum_t;
 typedef enum ccsys_memory_locking_enum_t	ccsys_memory_locking_enum_t;
@@ -1156,6 +1165,10 @@ ccsys_decl void ccsys_stat (cce_destination_t L, char const * pathname, ccsys_st
 
 ccsys_decl void ccsys_fstat (cce_destination_t L, ccsys_fd_t fd, ccsys_stat_t * buf)
   __attribute__((__nonnull__(1,3)));
+
+ccsys_decl void ccsys_fstatat (cce_destination_t L, ccsys_dirfd_t fd, char const * pathname, ccsys_stat_t * buf,
+			       ccsys_fstatat_flags_t flags)
+  __attribute__((__nonnull__(1,3,4)));
 
 ccsys_decl void ccsys_lstat (cce_destination_t L, char const * pathname, ccsys_stat_t * buf)
   __attribute__((__nonnull__(1,2,3)));

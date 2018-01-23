@@ -130,7 +130,7 @@ AC_CHECK_FUNCS([select pselect])
 AC_CHECK_FUNCS([sync syncfs fsync fdatasync])
 AC_CHECK_FUNCS([getcwd chdir fchdir get_current_dir_name])
 AC_CHECK_FUNCS([opendir fdopendir readdir closedir dirfd])
-AC_CHECK_FUNCS([stat fstat lstat])
+AC_CHECK_FUNCS([stat fstat fstatat lstat])
 AC_CHECK_FUNCS([mkdir mkdirat rmdir])
 AC_CHECK_FUNCS([link linkat symlink symlinkat readlink readlinkat realpath unlink unlinkat remove rename])
 AC_CHECK_FUNCS([chown fchown lchown fchownat])
@@ -510,6 +510,10 @@ CCSYS_MAYBE_ENUM_DEF([CCSYS_RWF_NOWAIT],[RWF_NOWAIT],[CCSYS_SYS_UIO_HEADER])
 # Flags for "unlinkat(2)".
 #
 CCSYS_MAYBE_ENUM_DEF([CCSYS_AT_REMOVEDIR],[AT_REMOVEDIR],[CCSYS_FCNTL_HEADER])
+
+CCSYS_MAYBE_ENUM_DEF([CCSYS_AT_EMPTY_PATH],[AT_EMPTY_PATH],[CCSYS_FCNTL_HEADER])
+CCSYS_MAYBE_ENUM_DEF([CCSYS_AT_NO_AUTOMOUNT],[AT_NO_AUTOMOUNT],[CCSYS_FCNTL_HEADER])
+CCSYS_MAYBE_ENUM_DEF([CCSYS_AT_SYMLINK_NOFOLLOW],[AT_SYMLINK_NOFOLLOW],[CCSYS_FCNTL_HEADER])
 
 # Socket  namespaces.   On  GNU+Linux   systems,  see  the  manual  page
 # "socket(2)" for the full list.
