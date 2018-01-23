@@ -121,7 +121,7 @@ included in the section entitled ``@gnu{} Free Documentation License''.
 @menu
 * overview::                    Overview of the package.
 * version::                     Version functions.
-* types::                       Semantic type definitions.
+* semantic::                    Semantic types.
 * enums::                       Enumerated constants.
 * memory::                      Memory allocation, locking, mapping.
 * io::                          Input/output system calls.
@@ -377,8 +377,22 @@ Return an integer representing the library interface current age.
 @end deftypefun
 
 @c page
-@node types
-@chapter Semantic type definitions
+@node semantic
+@chapter Semantic types
+
+
+Semantic types are data structure type definitions; the @code{struct} has a single field named
+@code{data}.  They are used by @value{PACKAGE} to enforce strong typing on function arguments and
+return values.
+
+@menu
+* semantic typedefs::           Semantic type definitions.
+* semantic macros::             Semantic type macros.
+@end menu
+
+@c page
+@node semantic typedefs
+@section Semantic type definitions
 
 
 @anchor{ccsys_fd_t}
@@ -546,6 +560,48 @@ combination of the constants of type @objtype{ccsys_waitpid_options_enum_t};
 Type of exact integers representing interprocess signal numbers.  It is meant to be one of the
 constants of type @objtype{ccsys_signum_enum_t}; @ref{ccsys_signum_enum_t, Enumerated constants}.
 @end deftp
+
+@c page
+@node semantic macros
+@section Semantic type macros
+
+
+@deftypefn {Preprocessor Macro} {int} ccsys_dref (struct @var{D})
+Helper macro that extracts a value from a semantic type and casts it to an @code{int}.  Expand into:
+
+@example
+((int)((@var{D}).data))
+@end example
+@end deftypefn
+
+
+@deftypefn {Preprocessor Macro} {unsigned int} ccsys_udref (struct @var{D})
+Helper macro that extracts a value from a semantic type and casts it to an @code{unsigned int}.
+Expand into:
+
+@example
+((unsigned int)((@var{D}).data))
+@end example
+@end deftypefn
+
+
+@deftypefn {Preprocessor Macro} {long} ccsys_dref (struct @var{D})
+Helper macro that extracts a value from a semantic type and casts it to an @code{long}.  Expand into:
+
+@example
+((long)((@var{D}).data))
+@end example
+@end deftypefn
+
+
+@deftypefn {Preprocessor Macro} {unsigned long} ccsys_udref (struct @var{D})
+Helper macro that extracts a value from a semantic type and casts it to an @code{unsigned long}.
+Expand into:
+
+@example
+((unsigned long) ((@var{D}).data))
+@end example
+@end deftypefn
 
 @c page
 @node enums

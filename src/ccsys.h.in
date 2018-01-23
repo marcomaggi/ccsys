@@ -121,6 +121,13 @@ extern "C" {
  ** Semantic type definitions.
  ** ----------------------------------------------------------------- */
 
+#define ccsys_dref(D)		((int)		((D).data))
+#define ccsys_udref(D)		((unsigned int)	((D).data))
+#define ccsys_lref(D)		((long)		((D).data))
+#define ccsys_ulref(D)		((unsigned long)((D).data))
+
+/* ------------------------------------------------------------------ */
+
 typedef struct ccsys_blkcnt_t			ccsys_blkcnt_t;
 typedef struct ccsys_blkcnt_t			ccsys_blkcnt_t;
 typedef struct ccsys_blksize_t			ccsys_blksize_t;
