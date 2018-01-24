@@ -25,6 +25,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 AC_CONFIG_SRCDIR([src/])
 AC_CONFIG_MACRO_DIR([meta/autotools])
 AC_CONFIG_AUX_DIR([meta/autotools])
+
+# Define these before any use of the C compiler!
+AC_DEFINE([_POSIX_C_SOURCE],[200809L],[Request enabling latest POSIX features.])
+AC_USE_SYSTEM_EXTENSIONS
+
 AC_CANONICAL_BUILD
 AC_CANONICAL_HOST
 AC_CANONICAL_TARGET
@@ -114,9 +119,6 @@ AC_CACHE_SAVE
 
 dnl page
 #### checks for library functions
-
-AC_DEFINE([_POSIX_C_SOURCE],[200809L],[Request enabling latest POSIX features.])
-AC_DEFINE([_GNU_SOURCE],[1],[enable everything GNU])
 
 AC_FUNC_MALLOC
 
