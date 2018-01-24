@@ -481,7 +481,7 @@ test_4_1 (cce_destination_t upper_L)
 
 
 /** --------------------------------------------------------------------
- ** File system: inspecting attributes with stat.
+ ** File system: inspecting attributes with "ccsys_stat()".
  ** ----------------------------------------------------------------- */
 
 void
@@ -514,6 +514,98 @@ test_4_2 (cce_destination_t upper_L)
       ccsys_stat_t	S;
 
       ccsys_stat(L, filename, &S);
+#if (1 == CCSYS_HAVE_STRUCT_STAT_ST_DEV)
+      fprintf(stderr, "%s: st_dev=%lu\n", __func__, (unsigned long)ccsys_ref_stat_st_dev(&S).data);
+#endif
+#if (1 == CCSYS_HAVE_STRUCT_STAT_ST_INO)
+      fprintf(stderr, "%s: st_ino=%lu\n", __func__, (unsigned long)ccsys_ref_stat_st_ino(&S).data);
+#endif
+#if (1 == CCSYS_HAVE_STRUCT_STAT_ST_MODE)
+      fprintf(stderr, "%s: st_mode=%lu\n", __func__, (unsigned long)ccsys_ref_stat_st_mode(&S).data);
+#endif
+#if (1 == CCSYS_HAVE_STRUCT_STAT_ST_NLINK)
+      fprintf(stderr, "%s: st_nlink=%lu\n", __func__, (unsigned long)ccsys_ref_stat_st_nlink(&S).data);
+#endif
+#if (1 == CCSYS_HAVE_STRUCT_STAT_ST_UID)
+      fprintf(stderr, "%s: st_uid=%lu\n", __func__, (unsigned long)ccsys_ref_stat_st_uid(&S).data);
+#endif
+#if (1 == CCSYS_HAVE_STRUCT_STAT_ST_GID)
+      fprintf(stderr, "%s: st_gid=%lu\n", __func__, (unsigned long)ccsys_ref_stat_st_gid(&S).data);
+#endif
+#if (1 == CCSYS_HAVE_STRUCT_STAT_ST_RDEV)
+      fprintf(stderr, "%s: st_rdev=%lu\n", __func__, (unsigned long)ccsys_ref_stat_st_rdev(&S).data);
+#endif
+#if (1 == CCSYS_HAVE_STRUCT_STAT_ST_SIZE)
+      fprintf(stderr, "%s: st_size=%lu\n", __func__, (unsigned long)ccsys_ref_stat_st_size(&S).data);
+#endif
+#if (1 == CCSYS_HAVE_STRUCT_STAT_ST_BLKSIZE)
+      fprintf(stderr, "%s: st_blksize=%lu\n", __func__, (unsigned long)ccsys_ref_stat_st_blksize(&S).data);
+#endif
+#if (1 == CCSYS_HAVE_STRUCT_STAT_ST_BLOCKS)
+      fprintf(stderr, "%s: st_blocks=%lu\n", __func__, (unsigned long)ccsys_ref_stat_st_blocks(&S).data);
+#endif
+#if (1 == CCSYS_HAVE_STRUCT_STAT_ST_ATIME)
+      {
+	ccsys_timeval_t	T = ccsys_ref_stat_st_atime(&S);
+	fprintf(stderr, "%s: st_atime=%ld\n", __func__, T.seconds.data);
+	fprintf(stderr, "%s: st_atime_usec=%ld\n", __func__, T.microseconds.data);
+      }
+#endif
+#if (1 == CCSYS_HAVE_STRUCT_STAT_ST_MTIME)
+      {
+	ccsys_timeval_t	T = ccsys_ref_stat_st_mtime(&S);
+	fprintf(stderr, "%s: st_mtime=%ld\n", __func__, T.seconds.data);
+	fprintf(stderr, "%s: st_mtime_usec=%ld\n", __func__, T.microseconds.data);
+      }
+#endif
+#if (1 == CCSYS_HAVE_STRUCT_STAT_ST_CTIME)
+      {
+	ccsys_timeval_t	T = ccsys_ref_stat_st_ctime(&S);
+	fprintf(stderr, "%s: st_ctime=%ld\n", __func__, T.seconds.data);
+	fprintf(stderr, "%s: st_ctime_usec=%ld\n", __func__, T.microseconds.data);
+      }
+#endif
+    }
+
+    cce_run_cleanup_handlers(L);
+  }
+}
+
+
+/** --------------------------------------------------------------------
+ ** File system: inspecting attributes with "ccsys_fstat()".
+ ** ----------------------------------------------------------------- */
+
+void
+test_4_3 (cce_destination_t upper_L)
+{
+  cce_location_t	  L[1];
+  cce_cleanup_handler_t   filename_H[1];
+  cce_cleanup_handler_t   filedes_H[1];
+
+  if (cce_location(L)) {
+    cce_run_error_handlers_raise(L, upper_L);
+  } else {
+    static char const *	filename = "name.ext";
+    ccsys_fd_t		fd;
+
+    /* Create and open the file. */
+    {
+      ccsys_open_flags_t	flags;
+      ccsys_open_mode_t		mode;
+
+      flags.data = CCSYS_O_CREAT;
+      mode.data  = CCSYS_S_IRUSR | CCSYS_S_IWUSR;
+      fd = ccsys_open(L, filename, flags, mode);
+      ccsys_handler_filedes_init(L, filedes_H, fd);
+      ccsys_handler_remove_init(L, filename_H, filename);
+    }
+
+    /* Inspect the file by pathname. */
+    {
+      ccsys_stat_t	S;
+
+      ccsys_fstat(L, fd, &S);
 #if (1 == CCSYS_HAVE_STRUCT_STAT_ST_DEV)
       fprintf(stderr, "%s: st_dev=%lu\n", __func__, (unsigned long)ccsys_ref_stat_st_dev(&S).data);
 #endif
@@ -606,6 +698,7 @@ main (void)
     {
       cctests_run(test_4_1);
       cctests_run(test_4_2);
+      cctests_run(test_4_3);
     }
     cctests_end_group();
   }

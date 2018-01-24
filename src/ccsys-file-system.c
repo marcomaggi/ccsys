@@ -205,12 +205,12 @@ ccsys_stat (cce_location_t * L, char const * pathname, ccsys_stat_t * _buf)
 
 #ifdef HAVE_FSTAT
 void
-ccsys_fstat (cce_location_t * L, ccsys_fd_t fd, ccsys_stat_t * _buf)
+ccsys_rawfd_fstat (cce_location_t * L, int rawfd, ccsys_stat_t * _buf)
 {
   struct stat *	buf = (struct stat *)_buf;
   int		rv;
   errno = 0;
-  rv = fstat(fd.data, buf);
+  rv = fstat(rawfd, buf);
   if (-1 == rv) {
     cce_raise(L, cce_condition_new_errno_clear());
   }
