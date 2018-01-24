@@ -387,6 +387,17 @@ enum ccsys_fstatat_flags_enum_t {
   @CCSYS_ENUM_DEF_CCSYS_AT_SYMLINK_NOFOLLOW@
 };
 
+enum ccsys_stat_mode_enum_t {
+  @CCSYS_ENUM_DEF_CCSYS_S_IFMT@
+  @CCSYS_ENUM_DEF_CCSYS_S_IFSOCK@
+  @CCSYS_ENUM_DEF_CCSYS_S_IFLNK@
+  @CCSYS_ENUM_DEF_CCSYS_S_IFREG@
+  @CCSYS_ENUM_DEF_CCSYS_S_IFBLK@
+  @CCSYS_ENUM_DEF_CCSYS_S_IFDIR@
+  @CCSYS_ENUM_DEF_CCSYS_S_IFCHR@
+  @CCSYS_ENUM_DEF_CCSYS_S_IFIFO@
+};
+
 enum ccsys_socket_namespace_enum_t {
   @CCSYS_ENUM_DEF_CCSYS_SOCK_DGRAM@
   @CCSYS_ENUM_DEF_CCSYS_SOCK_PACKET@
@@ -699,6 +710,7 @@ typedef enum ccsys_signum_enum_t		ccsys_signum_enum_t;
 typedef enum ccsys_socket_namespace_enum_t	ccsys_socket_namespace_enum_t;
 typedef enum ccsys_socket_protocol_enum_t	ccsys_socket_protocol_enum_t;
 typedef enum ccsys_socket_style_enum_t		ccsys_socket_style_enum_t;
+typedef enum ccsys_stat_mode_enum_t		ccsys_stat_mode_enum_t;
 typedef enum ccsys_unlinkat_flags_enum_t	ccsys_unlinkat_flags_enum_t;
 typedef enum ccsys_waitpid_options_enum_t	ccsys_waitpid_options_enum_t;
 typedef enum ccsys_whence_enum_t		ccsys_whence_enum_t;

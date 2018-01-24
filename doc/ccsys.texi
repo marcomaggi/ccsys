@@ -807,6 +807,32 @@ A bitwise combination of these constants is meant to be used as value for argume
 @end deftp
 
 
+@EnumeratedConstant{CCSYS_S_IFMT}
+@EnumeratedConstant{CCSYS_S_IFSOCK}
+@EnumeratedConstant{CCSYS_S_IFLNK}
+@EnumeratedConstant{CCSYS_S_IFREG}
+@EnumeratedConstant{CCSYS_S_IFBLK}
+@EnumeratedConstant{CCSYS_S_IFDIR}
+@EnumeratedConstant{CCSYS_S_IFCHR}
+@EnumeratedConstant{CCSYS_S_IFIFO}
+@anchor{ccsys_stat_mode_enum_t}
+@deftp {Enum Typedef} ccsys_stat_mode_enum_t
+Type of flags for the interpretation of the field @code{st_mode} in @objtype{struct stat}.  It
+defines the following constants:
+
+@example
+CCSYS_S_IFMT
+CCSYS_S_IFSOCK
+CCSYS_S_IFLNK
+CCSYS_S_IFREG
+CCSYS_S_IFBLK
+CCSYS_S_IFDIR
+CCSYS_S_IFCHR
+CCSYS_S_IFIFO
+@end example
+@end deftp
+
+
 @EnumeratedConstant{CCSYS_SOCK_STREAM}
 @EnumeratedConstant{CCSYS_SOCK_DGRAM}
 @EnumeratedConstant{CCSYS_SOCK_SEQPACKET}
