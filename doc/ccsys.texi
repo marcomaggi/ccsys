@@ -4111,6 +4111,18 @@ Wrapper for @cfunc{rename}.
 @section Reading file attributes
 
 
+@menu
+* fs attributes api::           Reading file attributes @api{}.
+* fs attributes fields::        Accessing @objtype{ccsys_stat_t} fields.
+* fs attributes one::           Using @cfunc{ccsys_stat}.
+* fs attributes two::           Using @cfunc{ccsys_fstatat}.
+@end menu
+
+@c page
+@node fs attributes api
+@subsection Reading file attributes @api{}
+
+
 The following symbols are defined in the header file @file{ccsys.h}.
 
 
@@ -4139,7 +4151,10 @@ Wrapper for @cfunc{fstatat}; @manpage{fstatat, Get file status}.
 Wrapper for @cfunc{lstat}; @manpage{lstat, Get file status}.
 @end deftypefun
 
-@c ------------------------------------------------------------------------
+@c page
+@node fs attributes fields
+@subsection Accessing @objtype{ccsys_stat_t} fields
+
 
 @subsubheading Feature macros
 
@@ -4324,6 +4339,216 @@ Getter and setter for the fields @code{st_mtime} and @code{st_mtime_usec}.
 @deftypefunx void ccsys_set_stat_st_ctime (ccsys_stat_t * @var{S}, ccsys_timeval_t @var{F})
 Getter and setter for the fields @code{st_ctime} and @code{st_ctime_usec}.
 @end deftypefun
+
+@c page
+@node fs attributes one
+@subsection Using @cfunc{ccsys_stat}
+
+
+As usage example of @cfunc{ccsys_stat} see the following code.
+
+@smallexample
+cce_location_t          L[1];
+cce_cleanup_handler_t   filename_H[1];
+cce_cleanup_handler_t   filedes_H[1];
+
+if (cce_location(L)) @{
+  cce_run_error_handlers_raise(L, upper_L);
+@} else @{
+  static char const * filename = "name.ext";
+
+  /* Create and open the file. */
+  @{
+    ccsys_open_flags_t        flags;
+    ccsys_open_mode_t         mode;
+    ccsys_fd_t                fd;
+
+    flags.data = CCSYS_O_CREAT;
+    mode.data  = CCSYS_S_IRUSR | CCSYS_S_IWUSR;
+    fd = ccsys_open(L, filename, flags, mode);
+    ccsys_handler_filedes_init(L, filedes_H, fd);
+    ccsys_handler_remove_init(L, filename_H, filename);
+  @}
+
+  /* Inspect the file by pathname. */
+  @{
+    ccsys_stat_t      S;
+
+    ccsys_stat(L, filename, &S);
+#if (1 == CCSYS_HAVE_STRUCT_STAT_ST_DEV)
+    printf("st_dev=%lu\n", ccsys_lref(ccsys_ref_stat_st_dev(&S)));
+#endif
+#if (1 == CCSYS_HAVE_STRUCT_STAT_ST_INO)
+    printf("st_ino=%lu\n", ccsys_lref(ccsys_ref_stat_st_ino(&S)));
+#endif
+#if (1 == CCSYS_HAVE_STRUCT_STAT_ST_MODE)
+    printf("st_mode=%lu\n", ccsys_lref(ccsys_ref_stat_st_mode(&S)));
+#endif
+#if (1 == CCSYS_HAVE_STRUCT_STAT_ST_NLINK)
+    printf("st_nlink=%lu\n", ccsys_lref(ccsys_ref_stat_st_nlink(&S)));
+#endif
+#if (1 == CCSYS_HAVE_STRUCT_STAT_ST_UID)
+    printf("st_uid=%lu\n", ccsys_lref(ccsys_ref_stat_st_uid(&S)));
+#endif
+#if (1 == CCSYS_HAVE_STRUCT_STAT_ST_GID)
+    printf("st_gid=%lu\n", ccsys_lref(ccsys_ref_stat_st_gid(&S)));
+#endif
+#if (1 == CCSYS_HAVE_STRUCT_STAT_ST_RDEV)
+    printf("st_rdev=%lu\n", ccsys_lref(ccsys_ref_stat_st_rdev(&S)));
+#endif
+#if (1 == CCSYS_HAVE_STRUCT_STAT_ST_SIZE)
+    printf("st_size=%lu\n", ccsys_lref(ccsys_ref_stat_st_size(&S)));
+#endif
+#if (1 == CCSYS_HAVE_STRUCT_STAT_ST_BLKSIZE)
+    printf("st_blksize=%lu\n", ccsys_lref(ccsys_ref_stat_st_blksize(&S)));
+#endif
+#if (1 == CCSYS_HAVE_STRUCT_STAT_ST_BLOCKS)
+    printf("st_blocks=%lu\n", ccsys_lref(ccsys_ref_stat_st_blocks(&S)));
+#endif
+#if (1 == CCSYS_HAVE_STRUCT_STAT_ST_ATIME)
+    @{
+      ccsys_timeval_t T = ccsys_ref_stat_st_atime(&S);
+      printf("st_atime=%ld\n", T.seconds.data);
+      printf("st_atime_usec=%ld\n", T.microseconds.data);
+    @}
+#endif
+#if (1 == CCSYS_HAVE_STRUCT_STAT_ST_MTIME)
+    @{
+      ccsys_timeval_t T = ccsys_ref_stat_st_mtime(&S);
+      printf("st_mtime=%ld\n", T.seconds.data);
+      printf("st_mtime_usec=%ld\n", T.microseconds.data);
+    @}
+#endif
+#if (1 == CCSYS_HAVE_STRUCT_STAT_ST_CTIME)
+    @{
+      ccsys_timeval_t T = ccsys_ref_stat_st_ctime(&S);
+      printf("st_ctime=%ld\n", T.seconds.data);
+      printf("st_ctime_usec=%ld\n", T.microseconds.data);
+    @}
+#endif
+  @}
+
+  cce_run_cleanup_handlers(L);
+@}
+@end smallexample
+
+@c page
+@node fs attributes two
+@subsection Using @cfunc{ccsys_fstatat}
+
+
+As usage example of @cfunc{ccsys_fstatat} see the following code.
+
+@smallexample
+cce_location_t        L[1];
+cce_handler_t         dirname_H[1];
+cce_handler_t         dir_H[1];
+cce_cleanup_handler_t filename_H[1];
+cce_cleanup_handler_t filedes_H[1];
+ccsys_at_link_t       lnk;
+
+if (cce_location(L)) @{
+  cce_run_error_handlers_raise(L, upper_L);
+@} else @{
+  static char const * dirname= "name.d";
+  ccsys_dirfd_t       dirfd;
+  static char const * filename = "name.ext";
+  ccsys_fd_t          fd;
+
+  /* Create the parent directory. */
+  @{
+    ccsys_open_mode_t mode  = @{ .data = CCSYS_S_IRWXU @};
+    ccsys_mkdir(L, dirname, mode);
+    ccsys_cleanup_handler_rmdir_init(L, dirname_H, dirname);
+  @}
+
+  /* Open the parent directory. */
+  @{
+    ccsys_dir_t *     dir;
+
+    dir = ccsys_opendir(L, dirname);
+    ccsys_cleanup_handler_dirstream_init(L, dir_H, dir);
+    dirfd = ccsys_dirfd(L, dir);
+  @}
+
+  /* Create and open the file. */
+  @{
+    ccsys_open_flags_t        flags;
+    ccsys_open_mode_t         mode;
+
+    flags.data = CCSYS_O_CREAT;
+    mode.data  = CCSYS_S_IRUSR | CCSYS_S_IWUSR;
+    fd = ccsys_openat(L, dirfd, filename, flags, mode);
+    ccsys_handler_filedes_init(L, filedes_H, fd);
+    lnk.dirfd         = dirfd;
+    lnk.pathname      = filename;
+    ccsys_handler_unlinkat_init(L, filename_H, &lnk);
+  @}
+
+  /* Inspect the file by pathname. */
+  @{
+    ccsys_stat_t              S;
+    ccsys_fstatat_flags_t     flags;
+
+    flags.data = 0;
+    ccsys_fstatat(L, dirfd, filename, &S, flags);
+
+#if (1 == CCSYS_HAVE_STRUCT_STAT_ST_DEV)
+    printf("st_dev=%lu\n", ccsys_lref(ccsys_ref_stat_st_dev(&S)));
+#endif
+#if (1 == CCSYS_HAVE_STRUCT_STAT_ST_INO)
+    printf("st_ino=%lu\n", ccsys_lref(ccsys_ref_stat_st_ino(&S)));
+#endif
+#if (1 == CCSYS_HAVE_STRUCT_STAT_ST_MODE)
+    printf("st_mode=%lu\n", ccsys_lref(ccsys_ref_stat_st_mode(&S)));
+#endif
+#if (1 == CCSYS_HAVE_STRUCT_STAT_ST_NLINK)
+    printf("st_nlink=%lu\n", ccsys_lref(ccsys_ref_stat_st_nlink(&S)));
+#endif
+#if (1 == CCSYS_HAVE_STRUCT_STAT_ST_UID)
+    printf("st_uid=%lu\n", ccsys_lref(ccsys_ref_stat_st_uid(&S)));
+#endif
+#if (1 == CCSYS_HAVE_STRUCT_STAT_ST_GID)
+    printf("st_gid=%lu\n", ccsys_lref(ccsys_ref_stat_st_gid(&S)));
+#endif
+#if (1 == CCSYS_HAVE_STRUCT_STAT_ST_RDEV)
+    printf("st_rdev=%lu\n", ccsys_lref(ccsys_ref_stat_st_rdev(&S)));
+#endif
+#if (1 == CCSYS_HAVE_STRUCT_STAT_ST_SIZE)
+    printf("st_size=%lu\n", ccsys_lref(ccsys_ref_stat_st_size(&S)));
+#endif
+#if (1 == CCSYS_HAVE_STRUCT_STAT_ST_BLKSIZE)
+    printf("st_blksize=%lu\n", ccsys_lref(ccsys_ref_stat_st_blksize(&S)));
+#endif
+#if (1 == CCSYS_HAVE_STRUCT_STAT_ST_BLOCKS)
+    printf("st_blocks=%lu\n", ccsys_lref(ccsys_ref_stat_st_blocks(&S)));
+#endif
+#if (1 == CCSYS_HAVE_STRUCT_STAT_ST_ATIME)
+    @{
+      ccsys_timeval_t T = ccsys_ref_stat_st_atime(&S);
+      printf("st_atime=%ld\n", T.seconds.data);
+      printf("st_atime_usec=%ld\n", T.microseconds.data);
+      @}
+#endif
+#if (1 == CCSYS_HAVE_STRUCT_STAT_ST_MTIME)
+    @{
+      ccsys_timeval_t T = ccsys_ref_stat_st_mtime(&S);
+      printf("st_mtime=%ld\n", T.seconds.data);
+      printf("st_mtime_usec=%ld\n", T.microseconds.data);
+    @}
+#endif
+#if (1 == CCSYS_HAVE_STRUCT_STAT_ST_CTIME)
+    @{
+      ccsys_timeval_t T = ccsys_ref_stat_st_ctime(&S);
+      printf("st_ctime=%ld\n", T.seconds.data);
+      printf("st_ctime_usec=%ld\n", T.microseconds.data);
+    @}
+#endif
+  @}
+
+  cce_run_cleanup_handlers(L);
+@}
+@end smallexample
 
 @c page
 @node fs owner

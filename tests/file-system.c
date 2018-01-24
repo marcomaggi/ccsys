@@ -515,34 +515,34 @@ test_4_2 (cce_destination_t upper_L)
 
       ccsys_stat(L, filename, &S);
 #if (1 == CCSYS_HAVE_STRUCT_STAT_ST_DEV)
-      fprintf(stderr, "%s: st_dev=%lu\n", __func__, (unsigned long)ccsys_ref_stat_st_dev(&S).data);
+      fprintf(stderr, "%s: st_dev=%lu\n", __func__, ccsys_lref(ccsys_ref_stat_st_dev(&S)));
 #endif
 #if (1 == CCSYS_HAVE_STRUCT_STAT_ST_INO)
-      fprintf(stderr, "%s: st_ino=%lu\n", __func__, (unsigned long)ccsys_ref_stat_st_ino(&S).data);
+      fprintf(stderr, "%s: st_ino=%lu\n", __func__, ccsys_lref(ccsys_ref_stat_st_ino(&S)));
 #endif
 #if (1 == CCSYS_HAVE_STRUCT_STAT_ST_MODE)
-      fprintf(stderr, "%s: st_mode=%lu\n", __func__, (unsigned long)ccsys_ref_stat_st_mode(&S).data);
+      fprintf(stderr, "%s: st_mode=%lu\n", __func__, ccsys_lref(ccsys_ref_stat_st_mode(&S)));
 #endif
 #if (1 == CCSYS_HAVE_STRUCT_STAT_ST_NLINK)
-      fprintf(stderr, "%s: st_nlink=%lu\n", __func__, (unsigned long)ccsys_ref_stat_st_nlink(&S).data);
+      fprintf(stderr, "%s: st_nlink=%lu\n", __func__, ccsys_lref(ccsys_ref_stat_st_nlink(&S)));
 #endif
 #if (1 == CCSYS_HAVE_STRUCT_STAT_ST_UID)
-      fprintf(stderr, "%s: st_uid=%lu\n", __func__, (unsigned long)ccsys_ref_stat_st_uid(&S).data);
+      fprintf(stderr, "%s: st_uid=%lu\n", __func__, ccsys_lref(ccsys_ref_stat_st_uid(&S)));
 #endif
 #if (1 == CCSYS_HAVE_STRUCT_STAT_ST_GID)
-      fprintf(stderr, "%s: st_gid=%lu\n", __func__, (unsigned long)ccsys_ref_stat_st_gid(&S).data);
+      fprintf(stderr, "%s: st_gid=%lu\n", __func__, ccsys_lref(ccsys_ref_stat_st_gid(&S)));
 #endif
 #if (1 == CCSYS_HAVE_STRUCT_STAT_ST_RDEV)
-      fprintf(stderr, "%s: st_rdev=%lu\n", __func__, (unsigned long)ccsys_ref_stat_st_rdev(&S).data);
+      fprintf(stderr, "%s: st_rdev=%lu\n", __func__, ccsys_lref(ccsys_ref_stat_st_rdev(&S)));
 #endif
 #if (1 == CCSYS_HAVE_STRUCT_STAT_ST_SIZE)
-      fprintf(stderr, "%s: st_size=%lu\n", __func__, (unsigned long)ccsys_ref_stat_st_size(&S).data);
+      fprintf(stderr, "%s: st_size=%lu\n", __func__, ccsys_lref(ccsys_ref_stat_st_size(&S)));
 #endif
 #if (1 == CCSYS_HAVE_STRUCT_STAT_ST_BLKSIZE)
-      fprintf(stderr, "%s: st_blksize=%lu\n", __func__, (unsigned long)ccsys_ref_stat_st_blksize(&S).data);
+      fprintf(stderr, "%s: st_blksize=%lu\n", __func__, ccsys_lref(ccsys_ref_stat_st_blksize(&S)));
 #endif
 #if (1 == CCSYS_HAVE_STRUCT_STAT_ST_BLOCKS)
-      fprintf(stderr, "%s: st_blocks=%lu\n", __func__, (unsigned long)ccsys_ref_stat_st_blocks(&S).data);
+      fprintf(stderr, "%s: st_blocks=%lu\n", __func__, ccsys_lref(ccsys_ref_stat_st_blocks(&S)));
 #endif
 #if (1 == CCSYS_HAVE_STRUCT_STAT_ST_ATIME)
       {
@@ -693,7 +693,7 @@ test_4_4 (cce_destination_t upper_L)
       ccsys_cleanup_handler_rmdir_init(L, dirname_H, dirname);
     }
 
-    /* Open the parent directory.  The descriptor in "dirfd1" is released
+    /* Open the parent directory.  The descriptor in "dirfd" is released
        automatically when "dirstream" is released. */
     {
       ccsys_dir_t *	dir;
@@ -726,34 +726,34 @@ test_4_4 (cce_destination_t upper_L)
       ccsys_fstatat(L, dirfd, filename, &S, flags);
 
 #if (1 == CCSYS_HAVE_STRUCT_STAT_ST_DEV)
-      fprintf(stderr, "%s: st_dev=%lu\n", __func__, (unsigned long)ccsys_ref_stat_st_dev(&S).data);
+      fprintf(stderr, "%s: st_dev=%lu\n", __func__, ccsys_lref(ccsys_ref_stat_st_dev(&S)));
 #endif
 #if (1 == CCSYS_HAVE_STRUCT_STAT_ST_INO)
-      fprintf(stderr, "%s: st_ino=%lu\n", __func__, (unsigned long)ccsys_ref_stat_st_ino(&S).data);
+      fprintf(stderr, "%s: st_ino=%lu\n", __func__, ccsys_lref(ccsys_ref_stat_st_ino(&S)));
 #endif
 #if (1 == CCSYS_HAVE_STRUCT_STAT_ST_MODE)
-      fprintf(stderr, "%s: st_mode=%lu\n", __func__, (unsigned long)ccsys_ref_stat_st_mode(&S).data);
+      fprintf(stderr, "%s: st_mode=%lu\n", __func__, ccsys_lref(ccsys_ref_stat_st_mode(&S)));
 #endif
 #if (1 == CCSYS_HAVE_STRUCT_STAT_ST_NLINK)
-      fprintf(stderr, "%s: st_nlink=%lu\n", __func__, (unsigned long)ccsys_ref_stat_st_nlink(&S).data);
+      fprintf(stderr, "%s: st_nlink=%lu\n", __func__, ccsys_lref(ccsys_ref_stat_st_nlink(&S)));
 #endif
 #if (1 == CCSYS_HAVE_STRUCT_STAT_ST_UID)
-      fprintf(stderr, "%s: st_uid=%lu\n", __func__, (unsigned long)ccsys_ref_stat_st_uid(&S).data);
+      fprintf(stderr, "%s: st_uid=%lu\n", __func__, ccsys_lref(ccsys_ref_stat_st_uid(&S)));
 #endif
 #if (1 == CCSYS_HAVE_STRUCT_STAT_ST_GID)
-      fprintf(stderr, "%s: st_gid=%lu\n", __func__, (unsigned long)ccsys_ref_stat_st_gid(&S).data);
+      fprintf(stderr, "%s: st_gid=%lu\n", __func__, ccsys_lref(ccsys_ref_stat_st_gid(&S)));
 #endif
 #if (1 == CCSYS_HAVE_STRUCT_STAT_ST_RDEV)
-      fprintf(stderr, "%s: st_rdev=%lu\n", __func__, (unsigned long)ccsys_ref_stat_st_rdev(&S).data);
+      fprintf(stderr, "%s: st_rdev=%lu\n", __func__, ccsys_lref(ccsys_ref_stat_st_rdev(&S)));
 #endif
 #if (1 == CCSYS_HAVE_STRUCT_STAT_ST_SIZE)
-      fprintf(stderr, "%s: st_size=%lu\n", __func__, (unsigned long)ccsys_ref_stat_st_size(&S).data);
+      fprintf(stderr, "%s: st_size=%lu\n", __func__, ccsys_lref(ccsys_ref_stat_st_size(&S)));
 #endif
 #if (1 == CCSYS_HAVE_STRUCT_STAT_ST_BLKSIZE)
-      fprintf(stderr, "%s: st_blksize=%lu\n", __func__, (unsigned long)ccsys_ref_stat_st_blksize(&S).data);
+      fprintf(stderr, "%s: st_blksize=%lu\n", __func__, ccsys_lref(ccsys_ref_stat_st_blksize(&S)));
 #endif
 #if (1 == CCSYS_HAVE_STRUCT_STAT_ST_BLOCKS)
-      fprintf(stderr, "%s: st_blocks=%lu\n", __func__, (unsigned long)ccsys_ref_stat_st_blocks(&S).data);
+      fprintf(stderr, "%s: st_blocks=%lu\n", __func__, ccsys_lref(ccsys_ref_stat_st_blocks(&S)));
 #endif
 #if (1 == CCSYS_HAVE_STRUCT_STAT_ST_ATIME)
       {
