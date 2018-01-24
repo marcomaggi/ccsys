@@ -4125,11 +4125,12 @@ Wrapper for @cfunc{stat}; @manpage{stat, Get file status}.
 
 
 @deftypefun void ccsys_fstat (cce_destination_t @var{L}, ccsys_fd_t @var{fd}, ccsys_stat_t * @var{S})
+@deftypefunx void ccsys_fstat (cce_destination_t @var{L}, ccsys_dirfd_t @var{fd}, ccsys_stat_t * @var{S})
 Wrapper for @cfunc{fstat}; @manpage{fstat, Get file status}.
 @end deftypefun
 
 
-@deftypefun void ccsys_fstatat (cce_destination_t @var{L}, ccsys_fd_t @var{fd}, char const * @var{pathname}, ccsys_stat_t * @var{S})
+@deftypefun void ccsys_fstatat (cce_destination_t @var{L}, ccsys_dirfd_t @var{fd}, char const * @var{pathname}, ccsys_stat_t * @var{S}, ccsys_fstatat_flags_t @var{flags})
 Wrapper for @cfunc{fstatat}; @manpage{fstatat, Get file status}.
 @end deftypefun
 
