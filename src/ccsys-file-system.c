@@ -286,16 +286,16 @@ ccsys_set_stat_st_ino (ccsys_stat_t * S, ccsys_ino_t F)
 /* ------------------------------------------------------------------ */
 
 #if (1 == CCSYS_HAVE_STRUCT_STAT_ST_MODE)
-ccsys_open_mode_t
+ccsys_stat_mode_t
 ccsys_ref_stat_st_mode (ccsys_stat_t const * S)
 {
   CCSYS_PC(struct stat const, D, S);
-  ccsys_open_mode_t	F = { .data = D->st_mode };
+  ccsys_stat_mode_t	F = { .data = D->st_mode };
   return F;
 }
 
 void
-ccsys_set_stat_st_mode (ccsys_stat_t * S, ccsys_open_mode_t F)
+ccsys_set_stat_st_mode (ccsys_stat_t * S, ccsys_stat_mode_t F)
 {
   CCSYS_PC(struct stat, D, S);
   D->st_mode = F.data;
@@ -520,6 +520,54 @@ ccsys_set_stat_st_ctime (ccsys_stat_t * S, ccsys_timeval_t F)
   D->st_ctime_usec	= F.microseconds.data;
 #endif
 }
+#endif
+
+/* ------------------------------------------------------------------ */
+
+#if (1 == CCSYS_HAVE_STRUCT_STAT_ST_MODE)
+
+bool
+ccsys_s_isreg (ccsys_stat_mode_t F)
+{
+  return ((S_ISREG(F.data))? true : false);
+}
+
+bool
+ccsys_s_isdir (ccsys_stat_mode_t F)
+{
+  return ((S_ISDIR(F.data))? true : false);
+}
+
+bool
+ccsys_s_ischr (ccsys_stat_mode_t F)
+{
+  return ((S_ISCHR(F.data))? true : false);
+}
+
+bool
+ccsys_s_isblk (ccsys_stat_mode_t F)
+{
+  return ((S_ISBLK(F.data))? true : false);
+}
+
+bool
+ccsys_s_isfifo (ccsys_stat_mode_t F)
+{
+  return ((S_ISFIFO(F.data))? true : false);
+}
+
+bool
+ccsys_s_islnk (ccsys_stat_mode_t F)
+{
+  return ((S_ISLNK(F.data))? true : false);
+}
+
+bool
+ccsys_s_issock (ccsys_stat_mode_t F)
+{
+  return ((S_ISSOCK(F.data))? true : false);
+}
+
 #endif
 
 

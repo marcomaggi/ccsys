@@ -156,6 +156,7 @@ typedef struct ccsys_socket_namespace_t		ccsys_socket_namespace_t;
 typedef struct ccsys_socket_protocol_t		ccsys_socket_protocol_t;
 typedef struct ccsys_socket_style_t		ccsys_socket_style_t;
 typedef struct ccsys_socklen_t			ccsys_socklen_t;
+typedef struct ccsys_stat_mode_t		ccsys_stat_mode_t;
 typedef struct ccsys_uid_t			ccsys_uid_t;
 typedef struct ccsys_unlinkat_flags_t		ccsys_unlinkat_flags_t;
 typedef struct ccsys_waitpid_options_t		ccsys_waitpid_options_t;
@@ -189,6 +190,7 @@ struct ccsys_socket_namespace_t		{ int				data; };
 struct ccsys_socket_protocol_t		{ int				data; };
 struct ccsys_socket_style_t		{ int				data; };
 struct ccsys_socklen_t			{ @CCSYS_TYPE_SOCKLEN_T@	data; };
+struct ccsys_stat_mode_t		{ @CCSYS_TYPE_MODE_T@		data; };
 struct ccsys_uid_t			{ @CCSYS_TYPE_UID_T@		data; };
 struct ccsys_unlinkat_flags_t		{ int				data; };
 struct ccsys_waitpid_options_t		{ int				data; };
@@ -1225,7 +1227,7 @@ ccsys_decl void ccsys_lstat (cce_destination_t L, char const * pathname, ccsys_s
 
 CCSYS_STRUCT_ACCESSORS(stat_st_dev,	ccsys_stat_t, ccsys_dev_t)
 CCSYS_STRUCT_ACCESSORS(stat_st_ino,	ccsys_stat_t, ccsys_ino_t)
-CCSYS_STRUCT_ACCESSORS(stat_st_mode,	ccsys_stat_t, ccsys_open_mode_t)
+CCSYS_STRUCT_ACCESSORS(stat_st_mode,	ccsys_stat_t, ccsys_stat_mode_t)
 CCSYS_STRUCT_ACCESSORS(stat_st_nlink,	ccsys_stat_t, ccsys_nlink_t)
 CCSYS_STRUCT_ACCESSORS(stat_st_uid,	ccsys_stat_t, ccsys_uid_t)
 CCSYS_STRUCT_ACCESSORS(stat_st_gid,	ccsys_stat_t, ccsys_gid_t)
@@ -1236,6 +1238,33 @@ CCSYS_STRUCT_ACCESSORS(stat_st_blocks,	ccsys_stat_t, ccsys_blkcnt_t)
 CCSYS_STRUCT_ACCESSORS(stat_st_atime,	ccsys_stat_t, ccsys_timeval_t)
 CCSYS_STRUCT_ACCESSORS(stat_st_mtime,	ccsys_stat_t, ccsys_timeval_t)
 CCSYS_STRUCT_ACCESSORS(stat_st_ctime,	ccsys_stat_t, ccsys_timeval_t)
+
+/* ------------------------------------------------------------------ */
+
+#if (1 == CCSYS_HAVE_STRUCT_STAT_ST_MODE)
+
+ccsys_decl bool ccsys_s_isreg (ccsys_stat_mode_t F)
+  __attribute__((__const__));
+
+ccsys_decl bool ccsys_s_isdir (ccsys_stat_mode_t F)
+  __attribute__((__const__));
+
+ccsys_decl bool ccsys_s_ischr (ccsys_stat_mode_t F)
+  __attribute__((__const__));
+
+ccsys_decl bool ccsys_s_isblk (ccsys_stat_mode_t F)
+  __attribute__((__const__));
+
+ccsys_decl bool ccsys_s_isfifo (ccsys_stat_mode_t F)
+  __attribute__((__const__));
+
+ccsys_decl bool ccsys_s_islnk (ccsys_stat_mode_t F)
+  __attribute__((__const__));
+
+ccsys_decl bool ccsys_s_issock (ccsys_stat_mode_t F)
+  __attribute__((__const__));
+
+#endif
 
 
 /** --------------------------------------------------------------------

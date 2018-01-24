@@ -454,6 +454,14 @@ Enumerated constants}.
 @end deftp
 
 
+@anchor{ccsys_stat_mode_t}
+@deftp {Semantic Type} ccsys_stat_mode_t
+Exact signed integer representing file modes used in @objtype{ccsys_stat_t}.  It is meant to be a
+bitwise combination of the enumerated constants of type @objtype{ccsys_stat_mode_enum_t};
+@ref{ccsys_stat_mode_enum_t, Enumerated constants}.
+@end deftp
+
+
 @anchor{ccsys_unlinkat_flags_t}
 @deftp {Semantic Type} ccsys_unlinkat_flags_t
 Exact signed integer representing the flags for @cfunc{ccsys_unlinkat}.  It is meant to be a bitwise
@@ -3553,7 +3561,7 @@ Wrapper for @cfunc{fdatasync}; @manpage{fdatasync, Committing file system caches
 * fs links::                    Operating on links.
 * fs removing::                 Removing files.
 * fs renaming::                 Renaming files and directories.
-* fs attributes::               Reading file attributes.
+* fs stat::               Reading file attributes.
 * fs owner::                    Changing owner.
 * fs access perms::             Changing access permissions.
 * fs access tests::             Testing access permissions.
@@ -4133,20 +4141,22 @@ Wrapper for @cfunc{rename}.
 @end deftypefun
 
 @c page
-@node fs attributes
+@node fs stat
 @section Reading file attributes
 
 
 @menu
-* fs attributes api::           Reading file attributes @api{}.
-* fs attributes fields::        Accessing @objtype{ccsys_stat_t} fields.
-* fs attributes one::           Using @cfunc{ccsys_stat}.
-* fs attributes two::           Using @cfunc{ccsys_fstatat}.
+* fs stat funcs::               File attributes functions.
+* fs stat macros::              Feature macros.
+* fs stat setget::              Setters and getters for @objtype{ccsys_stat_t}.
+* fs stat mode::                Inspecting file mode.
+* fs stat one::                 Using @cfunc{ccsys_stat}.
+* fs stat two::                 Using @cfunc{ccsys_fstatat}.
 @end menu
 
 @c page
-@node fs attributes api
-@subsection Reading file attributes @api{}
+@node fs stat funcs
+@subsection File attributes functions
 
 
 The following symbols are defined in the header file @file{ccsys.h}.
@@ -4178,11 +4188,11 @@ Wrapper for @cfunc{lstat}; @manpage{lstat, Get file status}.
 @end deftypefun
 
 @c page
-@node fs attributes fields
-@subsection Accessing @objtype{ccsys_stat_t} fields
+@node fs stat macros
+@subsection Feature macros
 
 
-@subsubheading Feature macros
+The following symbols are defined in the header file @file{ccsys.h}.
 
 
 @defmac CCSYS_HAVE_STRUCT_STAT_ST_DEV
@@ -4280,13 +4290,15 @@ Defined to @samp{1} if @objtype{struct stat} has the field @code{st_ctime_usec};
 defined to @code{0}.
 @end defmac
 
-@c ------------------------------------------------------------------------
-
-@subsubheading Setters and getters for @objtype{ccsys_stat_t}
+@c page
+@node fs stat setget
+@subsection Setters and getters for @objtype{ccsys_stat_t}
 
 
 The following field accessors are defined only if @objtype{struct stat} has the associated field;
 otherwise they are not implemented.
+
+The following symbols are defined in the header file @file{ccsys.h}.
 
 
 @deftypefun ccsys_dev_t ccsys_ref_stat_st_dev (ccsys_stat_t const * @var{S})
@@ -4301,8 +4313,8 @@ Getter and setter for the field @code{st_ino}.
 @end deftypefun
 
 
-@deftypefun ccsys_open_mode_t ccsys_ref_stat_st_mode (ccsys_stat_t const * @var{S})
-@deftypefunx void ccsys_set_stat_st_mode (ccsys_stat_t * @var{S}, ccsys_open_mode_t @var{F})
+@deftypefun ccsys_stat_mode_t ccsys_ref_stat_st_mode (ccsys_stat_t const * @var{S})
+@deftypefunx void ccsys_set_stat_st_mode (ccsys_stat_t * @var{S}, ccsys_stat_mode_t @var{F})
 Getter and setter for the field @code{st_mode}.
 @end deftypefun
 
@@ -4367,7 +4379,49 @@ Getter and setter for the fields @code{st_ctime} and @code{st_ctime_usec}.
 @end deftypefun
 
 @c page
-@node fs attributes one
+@node fs stat mode
+@subsection Inspecting file mode
+
+
+The following symbols are defined in the header file @file{ccsys.h}.
+
+
+@deftypefun bool ccsys_s_isreg (ccsys_stat_mode_t @var{F})
+Return @true{} if @var{F} describes a regular file.
+@end deftypefun
+
+
+@deftypefun bool ccsys_s_isdir (ccsys_stat_mode_t @var{F})
+Return @true{} if @var{F} describes a directory.
+@end deftypefun
+
+
+@deftypefun bool ccsys_s_ischr (ccsys_stat_mode_t @var{F})
+Return @true{} if @var{F} describes a character device.
+@end deftypefun
+
+
+@deftypefun bool ccsys_s_isblk (ccsys_stat_mode_t @var{F})
+Return @true{} if @var{F} describes a block device.
+@end deftypefun
+
+
+@deftypefun bool ccsys_s_isfifo (ccsys_stat_mode_t @var{F})
+Return @true{} if @var{F} describes a @fifo{}.
+@end deftypefun
+
+
+@deftypefun bool ccsys_s_islnk (ccsys_stat_mode_t @var{F})
+Return @true{} if @var{F} describes a symbolic link.
+@end deftypefun
+
+
+@deftypefun bool ccsys_s_issock (ccsys_stat_mode_t @var{F})
+Return @true{} if @var{F} describes a socket.
+@end deftypefun
+
+@c page
+@node fs stat one
 @subsection Using @cfunc{ccsys_stat}
 
 
@@ -4459,7 +4513,7 @@ if (cce_location(L)) @{
 @end smallexample
 
 @c page
-@node fs attributes two
+@node fs stat two
 @subsection Using @cfunc{ccsys_fstatat}
 
 

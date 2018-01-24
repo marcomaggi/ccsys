@@ -359,7 +359,7 @@ test_4_1 (cce_destination_t upper_L)
 
 #if (1 == CCSYS_HAVE_STRUCT_STAT_ST_MODE)
   {
-    ccsys_open_mode_t	F = { .data = ++i };
+    ccsys_stat_mode_t	F = { .data = ++i };
     ccsys_set_stat_st_mode(&S, F);
     cctests_assert(upper_L, i == ccsys_lref(ccsys_ref_stat_st_mode(&S)));
   }
