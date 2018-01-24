@@ -531,15 +531,11 @@ ccsys_set_stat_st_ctime (ccsys_stat_t * S, ccsys_timeval_t F)
 void
 ccsys_getcwd (cce_location_t * L, char * buffer, size_t size)
 {
-  if (buffer) {
-    char *	rv;
-    errno = 0;
-    rv = getcwd(buffer, size);
-    if (NULL == rv) {
-      cce_raise(L, cce_condition_new_errno_clear());
-    }
-  } else {
-    cce_raise(L, cce_condition_new_errno(EINVAL));
+  char *	rv;
+  errno = 0;
+  rv = getcwd(buffer, size);
+  if (NULL == rv) {
+    cce_raise(L, cce_condition_new_errno_clear());
   }
 }
 #endif
@@ -548,21 +544,17 @@ ccsys_getcwd (cce_location_t * L, char * buffer, size_t size)
 bool
 ccsys_custom_getcwd (cce_location_t * L, char * buffer, size_t size)
 {
-  if (buffer) {
-    char *	rv;
-    errno = 0;
-    rv = getcwd(buffer, size);
-    if (NULL != rv) {
-      return true;
-    } else {
-      if (ERANGE == errno) {
-	return false;
-      } else {
-	cce_raise(L, cce_condition_new_errno_clear());
-      }
-    }
+  char *	rv;
+  errno = 0;
+  rv = getcwd(buffer, size);
+  if (NULL != rv) {
+    return true;
   } else {
-    cce_raise(L, cce_condition_new_errno(EINVAL));
+    if (ERANGE == errno) {
+      return false;
+    } else {
+      cce_raise(L, cce_condition_new_errno_clear());
+    }
   }
 }
 #endif
