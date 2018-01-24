@@ -3562,7 +3562,7 @@ Wrapper for @cfunc{fdatasync}; @manpage{fdatasync, Committing file system caches
 * fs links::                    Operating on links.
 * fs removing::                 Removing files.
 * fs renaming::                 Renaming files and directories.
-* fs stat::               Reading file attributes.
+* fs stat::                     Reading file attributes.
 * fs owner::                    Changing owner.
 * fs access perms::             Changing access permissions.
 * fs access tests::             Testing access permissions.
