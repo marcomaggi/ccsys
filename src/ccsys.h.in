@@ -1224,6 +1224,9 @@ ccsys_decl void ccsys_lstat (cce_destination_t L, char const * pathname, ccsys_s
 #define CCSYS_HAVE_STRUCT_STAT_ST_ATIME_USEC	@CCSYS_HAVE_STRUCT_STAT_ST_ATIME_USEC@
 #define CCSYS_HAVE_STRUCT_STAT_ST_MTIME_USEC	@CCSYS_HAVE_STRUCT_STAT_ST_MTIME_USEC@
 #define CCSYS_HAVE_STRUCT_STAT_ST_CTIME_USEC	@CCSYS_HAVE_STRUCT_STAT_ST_CTIME_USEC@
+#define CCSYS_HAVE_STRUCT_STAT_ST_ATIM		@CCSYS_HAVE_STRUCT_STAT_ST_ATIME@
+#define CCSYS_HAVE_STRUCT_STAT_ST_MTIM		@CCSYS_HAVE_STRUCT_STAT_ST_MTIME@
+#define CCSYS_HAVE_STRUCT_STAT_ST_CTIM		@CCSYS_HAVE_STRUCT_STAT_ST_CTIME@
 
 CCSYS_STRUCT_ACCESSORS(stat_st_dev,	ccsys_stat_t, ccsys_dev_t)
 CCSYS_STRUCT_ACCESSORS(stat_st_ino,	ccsys_stat_t, ccsys_ino_t)
@@ -1238,6 +1241,9 @@ CCSYS_STRUCT_ACCESSORS(stat_st_blocks,	ccsys_stat_t, ccsys_blkcnt_t)
 CCSYS_STRUCT_ACCESSORS(stat_st_atime,	ccsys_stat_t, ccsys_timeval_t)
 CCSYS_STRUCT_ACCESSORS(stat_st_mtime,	ccsys_stat_t, ccsys_timeval_t)
 CCSYS_STRUCT_ACCESSORS(stat_st_ctime,	ccsys_stat_t, ccsys_timeval_t)
+CCSYS_STRUCT_ACCESSORS(stat_st_atim,	ccsys_stat_t, ccsys_timespec_t)
+CCSYS_STRUCT_ACCESSORS(stat_st_mtim,	ccsys_stat_t, ccsys_timespec_t)
+CCSYS_STRUCT_ACCESSORS(stat_st_ctim,	ccsys_stat_t, ccsys_timespec_t)
 
 /* ------------------------------------------------------------------ */
 
