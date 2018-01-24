@@ -457,8 +457,9 @@ Enumerated constants}.
 @anchor{ccsys_stat_mode_t}
 @deftp {Semantic Type} ccsys_stat_mode_t
 Exact signed integer representing file modes used in @objtype{ccsys_stat_t}.  It is meant to be a
-bitwise combination of the enumerated constants of type @objtype{ccsys_stat_mode_enum_t};
-@ref{ccsys_stat_mode_enum_t, Enumerated constants}.
+bitwise combination of the enumerated constants of type @objtype{ccsys_stat_mode_enum_t} and the
+enumerated constants of type @objtype{ccsys_open_mode_enum_t}.  @ref{ccsys_stat_mode_enum_t,
+Enumerated constants}.  @ref{ccsys_open_mode_enum_t, Enumerated constants}.
 @end deftp
 
 
