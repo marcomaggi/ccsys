@@ -4149,7 +4149,7 @@ Wrapper for @cfunc{rename}.
 * fs stat funcs::               File attributes functions.
 * fs stat macros::              Feature macros.
 * fs stat setget::              Setters and getters for @objtype{ccsys_stat_t}.
-* fs stat mode::                Inspecting file mode.
+* fs stat mode::                Inspecting the file mode.
 * fs stat one::                 Using @cfunc{ccsys_stat}.
 * fs stat two::                 Using @cfunc{ccsys_fstatat}.
 @end menu
@@ -4380,7 +4380,7 @@ Getter and setter for the fields @code{st_ctime} and @code{st_ctime_usec}.
 
 @c page
 @node fs stat mode
-@subsection Inspecting file mode
+@subsection Inspecting the file mode
 
 
 The following symbols are defined in the header file @file{ccsys.h}.
