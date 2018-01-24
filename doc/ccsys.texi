@@ -4177,6 +4177,156 @@ conditions cause a non--local exit.
 Wrapper for @cfunc{realpath}.  Notice that this function never returns @cnull{}.
 @end deftypefun
 
+@menu
+* fs links reading one::        Using @cfunc{ccsys_readlink}.
+* fs links reading two::        Using @cfunc{ccsys_readlinkat}.
+* fs links reading three::      Using @cfunc{ccsys_realpath}.
+@end menu
+
+@c page
+@node fs links reading one
+@subsubsection Using @cfunc{ccsys_readlink}
+
+
+As usage example of @cfunc{ccsys_readlink} see the following code.
+
+@smallexample
+cce_location_t        L[1];
+cce_cleanup_handler_t filename_H[1];
+cce_cleanup_handler_t linkname_H[1];
+
+if (cce_location(L)) @{
+  cce_run_error_handlers_raise(L, upper_L);
+@} else @{
+  char const *        filename = "name.ext";
+  char const *        linkname = "link.ext";
+
+  /* Create and open the file. */
+  @{
+    ccsys_open_flags_t        flags;
+    ccsys_open_mode_t         mode;
+    ccsys_fd_t                fd;
+
+    flags.data = CCSYS_O_CREAT;
+    mode.data  = CCSYS_S_IRUSR | CCSYS_S_IWUSR;
+    fd = ccsys_open(L, filename, flags, mode);
+    ccsys_close(L, fd);
+    ccsys_handler_remove_init(L, filename_H, filename);
+  @}
+
+  /* Create the link. */
+  @{
+    ccsys_symlink(L, filename, linkname);
+    ccsys_handler_remove_init(L, linkname_H, linkname);
+  @}
+
+  /* Read the link. */
+  @{
+    size_t    len = 1 + CCSYS_PATH_MAX;
+    char      realname[len];
+
+    len = ccsys_readlink(L, linkname, realname, len);
+    realname[len] = '\0';
+    /* Do something with "realname". */
+  @}
+
+  cce_run_cleanup_handlers(L);
+@}
+@end smallexample
+
+@c page
+@node fs links reading two
+@subsubsection Using @cfunc{ccsys_readlinkat}
+
+
+As usage example of @cfunc{ccsys_readlinkat} see the following code.
+
+@smallexample
+cce_location_t        L[1];
+cce_cleanup_handler_t filename_H[1];
+cce_cleanup_handler_t linkname_H[1];
+
+if (cce_location(L)) @{
+  cce_run_error_handlers_raise(L, upper_L);
+@} else @{
+  char const *        filename = "name.ext";
+  char const *        linkname = "link.ext";
+
+  /* Create and open the file. */
+  @{
+    ccsys_open_flags_t        flags;
+    ccsys_open_mode_t         mode;
+    ccsys_fd_t                fd;
+
+    flags.data = CCSYS_O_CREAT;
+    mode.data  = CCSYS_S_IRUSR | CCSYS_S_IWUSR;
+    fd = ccsys_open(L, filename, flags, mode);
+    ccsys_close(L, fd);
+    ccsys_handler_remove_init(L, filename_H, filename);
+  @}
+
+  /* Create the link. */
+  @{
+    ccsys_symlink(L, filename, linkname);
+    ccsys_handler_remove_init(L, linkname_H, linkname);
+  @}
+
+  /* Read the link. */
+  @{
+    size_t    len = 1 + CCSYS_PATH_MAX;
+    char      realname[len];
+
+    len = ccsys_readlinkat(L, CCSYS_AT_FDCWD, linkname, realname, len);
+    realname[len] = '\0';
+    /* Do something with "realname". */
+  @}
+
+  cce_run_cleanup_handlers(L);
+@}
+@end smallexample
+
+@c page
+@node fs links reading three
+@subsubsection Using @cfunc{ccsys_realpath}
+
+
+As usage example of @cfunc{ccsys_realpath} see the following code.
+
+@smallexample
+cce_location_t        L[1];
+cce_cleanup_handler_t filename_H[1];
+
+if (cce_location(L)) @{
+  cce_run_error_handlers_raise(L, upper_L);
+@} else @{
+  char const *        filename = "name.ext";
+
+  /* Create and open the file. */
+  @{
+    ccsys_open_flags_t        flags;
+    ccsys_open_mode_t         mode;
+    ccsys_fd_t                fd;
+
+    flags.data = CCSYS_O_CREAT;
+    mode.data  = CCSYS_S_IRUSR | CCSYS_S_IWUSR;
+    fd = ccsys_open(L, filename, flags, mode);
+    ccsys_close(L, fd);
+    ccsys_handler_remove_init(L, filename_H, filename);
+  @}
+
+  /* Read the pathname. */
+  @{
+    size_t    len = 1 + CCSYS_PATH_MAX;
+    char      realname[len];
+
+    ccsys_realpath(L, filename, realname);
+    /* Do something with "realname". */
+  @}
+
+  cce_run_cleanup_handlers(L);
+@}
+@end smallexample
+
 @c page
 @node fs links removing
 @subsection Removing links links

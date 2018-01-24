@@ -1212,6 +1212,196 @@ test_5_4_2 (cce_destination_t upper_L)
 }
 
 
+/** --------------------------------------------------------------------
+ ** File system: reading symbolic links with "ccsys_readlink()".
+ ** ----------------------------------------------------------------- */
+
+void
+test_6_1 (cce_destination_t upper_L)
+{
+  cce_location_t	L[1];
+  cce_cleanup_handler_t	filename_H[1];
+  cce_cleanup_handler_t	linkname_H[1];
+
+  if (cce_location(L)) {
+    if (1) { fprintf(stderr, "%s: %s\n", __func__, cce_condition_static_message(cce_condition(L))); }
+    cce_run_error_handlers_raise(L, upper_L);
+  } else {
+    char const *	filename = "name.ext";
+    char const *	linkname = "link.ext";
+
+    /* Create and open the file. */
+    {
+      ccsys_open_flags_t	flags;
+      ccsys_open_mode_t		mode;
+      ccsys_fd_t		fd;
+
+      flags.data = CCSYS_O_CREAT;
+      mode.data  = CCSYS_S_IRUSR | CCSYS_S_IWUSR;
+      fd = ccsys_open(L, filename, flags, mode);
+      ccsys_close(L, fd);
+      ccsys_handler_remove_init(L, filename_H, filename);
+    }
+
+    /* Create the link. */
+    {
+      ccsys_symlink(L, filename, linkname);
+      ccsys_handler_remove_init(L, linkname_H, linkname);
+    }
+
+    /* Read the link. */
+    {
+      size_t	len = 1 + CCSYS_PATH_MAX;
+      char	realname[len];
+
+      len = ccsys_readlink(L, linkname, realname, len);
+      realname[len] = '\0';
+      if (1) { fprintf(stderr, "%s: %s\n", __func__, realname); }
+    }
+
+    cce_run_cleanup_handlers(L);
+  }
+}
+
+
+/** --------------------------------------------------------------------
+ ** File system: reading symbolic links with "ccsys_readlinkat()".
+ ** ----------------------------------------------------------------- */
+
+void
+test_6_2 (cce_destination_t upper_L)
+{
+  cce_location_t	L[1];
+  cce_cleanup_handler_t	filename_H[1];
+  cce_cleanup_handler_t	linkname_H[1];
+
+  if (cce_location(L)) {
+    if (1) { fprintf(stderr, "%s: %s\n", __func__, cce_condition_static_message(cce_condition(L))); }
+    cce_run_error_handlers_raise(L, upper_L);
+  } else {
+    char const *	filename = "name.ext";
+    char const *	linkname = "link.ext";
+
+    /* Create and open the file. */
+    {
+      ccsys_open_flags_t	flags;
+      ccsys_open_mode_t		mode;
+      ccsys_fd_t		fd;
+
+      flags.data = CCSYS_O_CREAT;
+      mode.data  = CCSYS_S_IRUSR | CCSYS_S_IWUSR;
+      fd = ccsys_open(L, filename, flags, mode);
+      ccsys_close(L, fd);
+      ccsys_handler_remove_init(L, filename_H, filename);
+    }
+
+    /* Create the link. */
+    {
+      ccsys_symlink(L, filename, linkname);
+      ccsys_handler_remove_init(L, linkname_H, linkname);
+    }
+
+    /* Read the link. */
+    {
+      size_t	len = 1 + CCSYS_PATH_MAX;
+      char	realname[len];
+
+      len = ccsys_readlinkat(L, CCSYS_AT_FDCWD, linkname, realname, len);
+      realname[len] = '\0';
+      if (1) { fprintf(stderr, "%s: %s\n", __func__, realname); }
+    }
+
+    cce_run_cleanup_handlers(L);
+  }
+}
+
+
+/** --------------------------------------------------------------------
+ ** File system: canonicalise names with "ccsys_realpath()".
+ ** ----------------------------------------------------------------- */
+
+void
+test_6_3_1 (cce_destination_t upper_L)
+{
+  cce_location_t	L[1];
+  cce_cleanup_handler_t	filename_H[1];
+
+  if (cce_location(L)) {
+    if (1) { fprintf(stderr, "%s: %s\n", __func__, cce_condition_static_message(cce_condition(L))); }
+    cce_run_error_handlers_raise(L, upper_L);
+  } else {
+    char const *	filename = "name.ext";
+
+    /* Create and open the file. */
+    {
+      ccsys_open_flags_t	flags;
+      ccsys_open_mode_t		mode;
+      ccsys_fd_t		fd;
+
+      flags.data = CCSYS_O_CREAT;
+      mode.data  = CCSYS_S_IRUSR | CCSYS_S_IWUSR;
+      fd = ccsys_open(L, filename, flags, mode);
+      ccsys_close(L, fd);
+      ccsys_handler_remove_init(L, filename_H, filename);
+    }
+
+    /* Read the pathname. */
+    {
+      char	realname[1 + CCSYS_PATH_MAX];
+
+      ccsys_realpath(L, filename, realname);
+      if (1) { fprintf(stderr, "%s: %s\n", __func__, realname); }
+    }
+
+    cce_run_cleanup_handlers(L);
+  }
+}
+
+
+/** --------------------------------------------------------------------
+ ** File system: canonicalise names with "ccsys_realpath()", alloc memory.
+ ** ----------------------------------------------------------------- */
+
+void
+test_6_3_2 (cce_destination_t upper_L)
+{
+  cce_location_t	L[1];
+  cce_cleanup_handler_t	filename_H[1];
+  cce_cleanup_handler_t	realname_H[1];
+
+  if (cce_location(L)) {
+    if (1) { fprintf(stderr, "%s: %s\n", __func__, cce_condition_static_message(cce_condition(L))); }
+    cce_run_error_handlers_raise(L, upper_L);
+  } else {
+    char const *	filename = "name.ext";
+
+    /* Create and open the file. */
+    {
+      ccsys_open_flags_t	flags;
+      ccsys_open_mode_t		mode;
+      ccsys_fd_t		fd;
+
+      flags.data = CCSYS_O_CREAT;
+      mode.data  = CCSYS_S_IRUSR | CCSYS_S_IWUSR;
+      fd = ccsys_open(L, filename, flags, mode);
+      ccsys_close(L, fd);
+      ccsys_handler_remove_init(L, filename_H, filename);
+    }
+
+    /* Read the pathname. */
+    {
+      char *	realname;
+
+      realname = ccsys_realpath(L, filename, NULL);
+      ccsys_handler_malloc_init(L, realname_H, realname);
+      if (1) { fprintf(stderr, "%s: %s\n", __func__, realname); }
+    }
+
+    cce_run_cleanup_handlers(L);
+  }
+}
+
+
 int
 main (void)
 {
@@ -1260,6 +1450,15 @@ main (void)
       cctests_run(test_5_3_2);
       cctests_run(test_5_4_1);
       cctests_run(test_5_4_2);
+    }
+    cctests_end_group();
+
+    cctests_begin_group("reading links");
+    {
+      cctests_run(test_6_1);
+      cctests_run(test_6_2);
+      cctests_run(test_6_3_1);
+      cctests_run(test_6_3_2);
     }
     cctests_end_group();
   }
