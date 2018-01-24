@@ -848,13 +848,13 @@ ccsys_link (cce_location_t * L, const char * oldname, const char * newname)
 #ifdef HAVE_LINKAT
 void
 ccsys_linkat (cce_location_t * L,
-	      int oldfd, const char * oldname,
-	      int newfd, const char * newname,
-	      int flags)
+	      ccsys_dirfd_t oldfd, const char * oldname,
+	      ccsys_dirfd_t newfd, const char * newname,
+	      ccsys_linkat_flags_t flags)
 {
   int	rv;
   errno = 0;
-  rv = linkat(oldfd, oldname, newfd, newname, flags);
+  rv = linkat(oldfd.data, oldname, newfd.data, newname, flags.data);
   if (-1 == rv) {
     cce_raise(L, cce_condition_new_errno_clear());
   }
@@ -970,7 +970,7 @@ static void
 cce_handler_unlinkat_function (const cce_condition_t * C CCE_UNUSED, cce_handler_t * H)
 {
   ccsys_at_link_t *	lnk	= H->pointer;
-  unlinkat(lnk->dirfd.data, lnk->pathname, 0);
+  unlinkat(lnk->dirfd.data, lnk->pathname, lnk->flags.data);
   if (0) { fprintf(stderr, "%s: done unlinking '%s'\n", __func__, lnk->pathname); }
 }
 

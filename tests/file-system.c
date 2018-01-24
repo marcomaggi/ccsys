@@ -714,6 +714,7 @@ test_4_4 (cce_destination_t upper_L)
       ccsys_handler_filedes_init(L, filedes_H, fd);
       lnk.dirfd		= dirfd;
       lnk.pathname	= filename;
+      lnk.flags.data	= 0;
       ccsys_handler_unlinkat_init(L, filename_H, &lnk);
     }
 
@@ -876,6 +877,341 @@ test_4_5 (cce_destination_t upper_L)
 }
 
 
+/** --------------------------------------------------------------------
+ ** File system: creating links with "ccsys_link()".
+ ** ----------------------------------------------------------------- */
+
+void
+test_5_1 (cce_destination_t upper_L)
+{
+  cce_location_t	L[1];
+  cce_cleanup_handler_t	filename_H[1];
+  cce_cleanup_handler_t	filedes_H[1];
+  cce_cleanup_handler_t	linkname_H[1];
+
+  if (cce_location(L)) {
+    cce_run_error_handlers_raise(L, upper_L);
+  } else {
+    char const *	filename = "name.ext";
+    char const *	linkname = "link.ext";
+
+    /* Create and open the file. */
+    {
+      ccsys_open_flags_t	flags;
+      ccsys_open_mode_t		mode;
+      ccsys_fd_t		fd;
+
+      flags.data = CCSYS_O_CREAT;
+      mode.data  = CCSYS_S_IRUSR | CCSYS_S_IWUSR;
+      fd = ccsys_open(L, filename, flags, mode);
+      ccsys_handler_filedes_init(L, filedes_H, fd);
+      ccsys_handler_remove_init(L, filename_H, filename);
+    }
+
+    /* Create the link. */
+    {
+      ccsys_link(L, filename, linkname);
+      ccsys_handler_remove_init(L, linkname_H, linkname);
+    }
+
+    /* Verify the link existence. */
+    {
+      ccsys_stat_t	S[1];
+
+      ccsys_stat(L, linkname, S);
+      cctests_assert(L, ccsys_s_isreg(ccsys_ref_stat_st_mode(S)));
+    }
+
+    cce_run_cleanup_handlers(L);
+  }
+}
+
+
+/** --------------------------------------------------------------------
+ ** File system: creating links with "ccsys_symlink()".
+ ** ----------------------------------------------------------------- */
+
+void
+test_5_2 (cce_destination_t upper_L)
+{
+  cce_location_t	L[1];
+  cce_cleanup_handler_t	filename_H[1];
+  cce_cleanup_handler_t	filedes_H[1];
+  cce_cleanup_handler_t	linkname_H[1];
+
+  if (cce_location(L)) {
+    cce_run_error_handlers_raise(L, upper_L);
+  } else {
+    char const *	filename = "name.ext";
+    char const *	linkname = "link.ext";
+
+    /* Create and open the file. */
+    {
+      ccsys_open_flags_t	flags;
+      ccsys_open_mode_t		mode;
+      ccsys_fd_t		fd;
+
+      flags.data = CCSYS_O_CREAT;
+      mode.data  = CCSYS_S_IRUSR | CCSYS_S_IWUSR;
+      fd = ccsys_open(L, filename, flags, mode);
+      ccsys_handler_filedes_init(L, filedes_H, fd);
+      ccsys_handler_remove_init(L, filename_H, filename);
+    }
+
+    /* Create the link. */
+    {
+      ccsys_symlink(L, filename, linkname);
+      ccsys_handler_remove_init(L, linkname_H, linkname);
+    }
+
+    /* Verify the link existence. */
+    {
+      ccsys_stat_t	S[1];
+
+      ccsys_lstat(L, linkname, S);
+      cctests_assert(L, ccsys_s_islnk(ccsys_ref_stat_st_mode(S)));
+    }
+
+    cce_run_cleanup_handlers(L);
+  }
+}
+
+
+/** --------------------------------------------------------------------
+ ** File system: creating links with "ccsys_linkat()".
+ ** ----------------------------------------------------------------- */
+
+void
+test_5_3_1 (cce_destination_t upper_L)
+{
+  cce_location_t	L[1];
+  cce_handler_t		dir_H[1];
+  cce_cleanup_handler_t	filename_H[1];
+  cce_cleanup_handler_t	filedes_H[1];
+  cce_cleanup_handler_t	linkname_H[1];
+
+  if (cce_location(L)) {
+    cce_run_error_handlers_raise(L, upper_L);
+  } else {
+    char		dirname[CCSYS_PATH_MAX];
+    char const *	filename = "name.ext";
+    char const *	linkname = "link.ext";
+    ccsys_dirfd_t	dirfd;
+
+    /* Acquire  the current  working directory  name.  Open  the current
+       working  directory.   The  descriptor   in  "dirfd"  is  released
+       automatically when "dirstream" is released. */
+    {
+      ccsys_dir_t *	dir;
+
+      ccsys_getcwd(L, dirname, CCSYS_PATH_MAX);
+      dir = ccsys_opendir(L, dirname);
+      ccsys_cleanup_handler_dirstream_init(L, dir_H, dir);
+      dirfd = ccsys_dirfd(L, dir);
+    }
+
+    /* Create and open the file. */
+    {
+      ccsys_open_flags_t	flags;
+      ccsys_open_mode_t		mode;
+      ccsys_fd_t		fd;
+
+      flags.data = CCSYS_O_CREAT;
+      mode.data  = CCSYS_S_IRUSR | CCSYS_S_IWUSR;
+      fd = ccsys_openat(L, dirfd, filename, flags, mode);
+      ccsys_handler_filedes_init(L, filedes_H, fd);
+      ccsys_handler_remove_init(L, filename_H, filename);
+    }
+
+    /* Create the link. */
+    {
+      ccsys_linkat_flags_t	flags;
+
+      flags.data = 0;
+      ccsys_linkat(L, dirfd, filename, dirfd, linkname, flags);
+      ccsys_handler_remove_init(L, linkname_H, linkname);
+    }
+
+    /* Verify the link existence. */
+    {
+      ccsys_stat_t	S[1];
+
+      ccsys_stat(L, linkname, S);
+      cctests_assert(L, ccsys_s_isreg(ccsys_ref_stat_st_mode(S)));
+    }
+
+    cce_run_cleanup_handlers(L);
+  }
+}
+
+
+/** --------------------------------------------------------------------
+ ** File system: creating links with "ccsys_linkat()" and CCSYS_AT_FDCWD.
+ ** ----------------------------------------------------------------- */
+
+void
+test_5_3_2 (cce_destination_t upper_L)
+{
+  cce_location_t	L[1];
+  cce_cleanup_handler_t	filename_H[1];
+  cce_cleanup_handler_t	linkname_H[1];
+
+  if (cce_location(L)) {
+    if (0) { fprintf(stderr, "%s: %s\n", __func__, cce_condition_static_message(cce_condition(L))); }
+    cce_run_error_handlers_raise(L, upper_L);
+  } else {
+    char const *	filename = "name.ext";
+    char const *	linkname = "link.ext";
+
+    /* Create the file. */
+    {
+      ccsys_open_flags_t	flags;
+      ccsys_open_mode_t		mode;
+      ccsys_fd_t		fd;
+
+      flags.data = CCSYS_O_CREAT;
+      mode.data  = CCSYS_S_IRUSR | CCSYS_S_IWUSR;
+      fd = ccsys_openat(L, CCSYS_AT_FDCWD, filename, flags, mode);
+      ccsys_close(L, fd);
+      ccsys_handler_remove_init(L, filename_H, filename);
+    }
+
+    /* Create the link. */
+    {
+      ccsys_linkat_flags_t	flags;
+
+      flags.data = 0;
+      ccsys_linkat(L, CCSYS_AT_FDCWD, filename, CCSYS_AT_FDCWD, linkname, flags);
+      ccsys_handler_remove_init(L, linkname_H, linkname);
+    }
+
+    /* Verify the link existence. */
+    {
+      ccsys_stat_t	S[1];
+
+      ccsys_stat(L, linkname, S);
+      cctests_assert(L, ccsys_s_isreg(ccsys_ref_stat_st_mode(S)));
+    }
+
+    cce_run_cleanup_handlers(L);
+  }
+}
+
+
+/** --------------------------------------------------------------------
+ ** File system: creating links with "ccsys_symlinkat()".
+ ** ----------------------------------------------------------------- */
+
+void
+test_5_4_1 (cce_destination_t upper_L)
+{
+  cce_location_t	L[1];
+  cce_handler_t		dir_H[1];
+  cce_cleanup_handler_t	filename_H[1];
+  cce_cleanup_handler_t	filedes_H[1];
+  cce_cleanup_handler_t	linkname_H[1];
+
+  if (cce_location(L)) {
+    cce_run_error_handlers_raise(L, upper_L);
+  } else {
+    char		dirname[CCSYS_PATH_MAX];
+    char const *	filename = "name.ext";
+    char const *	linkname = "link.ext";
+    ccsys_dirfd_t	dirfd;
+
+    /* Acquire  the current  working directory  name.  Open  the current
+       working  directory.   The  descriptor   in  "dirfd"  is  released
+       automatically when "dirstream" is released. */
+    {
+      ccsys_dir_t *	dir;
+
+      ccsys_getcwd(L, dirname, CCSYS_PATH_MAX);
+      dir = ccsys_opendir(L, dirname);
+      ccsys_cleanup_handler_dirstream_init(L, dir_H, dir);
+      dirfd = ccsys_dirfd(L, dir);
+    }
+
+    /* Create and open the file. */
+    {
+      ccsys_open_flags_t	flags;
+      ccsys_open_mode_t		mode;
+      ccsys_fd_t		fd;
+
+      flags.data = CCSYS_O_CREAT;
+      mode.data  = CCSYS_S_IRUSR | CCSYS_S_IWUSR;
+      fd = ccsys_openat(L, dirfd, filename, flags, mode);
+      ccsys_handler_filedes_init(L, filedes_H, fd);
+      ccsys_handler_remove_init(L, filename_H, filename);
+    }
+
+    /* Create the link. */
+    {
+      ccsys_symlinkat(L, filename, dirfd, linkname);
+      ccsys_handler_remove_init(L, linkname_H, linkname);
+    }
+
+    /* Verify the link existence. */
+    {
+      ccsys_stat_t	S[1];
+
+      ccsys_lstat(L, linkname, S);
+      cctests_assert(L, ccsys_s_islnk(ccsys_ref_stat_st_mode(S)));
+    }
+
+    cce_run_cleanup_handlers(L);
+  }
+}
+
+
+/** --------------------------------------------------------------------
+ ** File system: creating links with "ccsys_symlinkat()" and CCSYS_AT_FDCWD.
+ ** ----------------------------------------------------------------- */
+
+void
+test_5_4_2 (cce_destination_t upper_L)
+{
+  cce_location_t	L[1];
+  cce_cleanup_handler_t	filename_H[1];
+  cce_cleanup_handler_t	linkname_H[1];
+
+  if (cce_location(L)) {
+    cce_run_error_handlers_raise(L, upper_L);
+  } else {
+    char const *	filename = "name.ext";
+    char const *	linkname = "link.ext";
+
+    /* Create and open the file. */
+    {
+      ccsys_open_flags_t	flags;
+      ccsys_open_mode_t		mode;
+      ccsys_fd_t		fd;
+
+      flags.data = CCSYS_O_CREAT;
+      mode.data  = CCSYS_S_IRUSR | CCSYS_S_IWUSR;
+      fd = ccsys_openat(L, CCSYS_AT_FDCWD, filename, flags, mode);
+      ccsys_close(L, fd);
+      ccsys_handler_remove_init(L, filename_H, filename);
+    }
+
+    /* Create the link. */
+    {
+      ccsys_symlinkat(L, filename, CCSYS_AT_FDCWD, linkname);
+      ccsys_handler_remove_init(L, linkname_H, linkname);
+    }
+
+    /* Verify the link existence. */
+    {
+      ccsys_stat_t	S[1];
+
+      ccsys_lstat(L, linkname, S);
+      cctests_assert(L, ccsys_s_islnk(ccsys_ref_stat_st_mode(S)));
+    }
+
+    cce_run_cleanup_handlers(L);
+  }
+}
+
+
 int
 main (void)
 {
@@ -913,6 +1249,17 @@ main (void)
       cctests_run(test_4_3);
       cctests_run(test_4_4);
       cctests_run(test_4_5);
+    }
+    cctests_end_group();
+
+    cctests_begin_group("creating links");
+    {
+      cctests_run(test_5_1);
+      cctests_run(test_5_2);
+      cctests_run(test_5_3_1);
+      cctests_run(test_5_3_2);
+      cctests_run(test_5_4_1);
+      cctests_run(test_5_4_2);
     }
     cctests_end_group();
   }

@@ -474,8 +474,16 @@ combination of the enumerated constants of type @objtype{ccsys_unlinkat_flags_en
 @anchor{ccsys_fstatat_flags_t}
 @deftp {Semantic Type} ccsys_fstatat_flags_t
 Exact signed integer representing the flags for @cfunc{ccsys_fstatat}.  It is meant to be a bitwise
-combination of the enumerated constants of type @objtype{ccsys_fstatat_flags_enum_t}.
-@ref{ccsys_fstatat_flags_enum_t, Enumerated constants}.
+combination of the enumerated constants of type @objtype{ccsys_at_flags_enum_t}.
+@ref{ccsys_at_flags_enum_t, Enumerated constants}.
+@end deftp
+
+
+@anchor{ccsys_linkat_flags_t}
+@deftp {Semantic Type} ccsys_linkat_flags_t
+Exact signed integer representing the flags for @cfunc{ccsys_linkat}.  It is meant to be a bitwise
+combination of the enumerated constants of type @objtype{ccsys_at_flags_enum_t}.
+@ref{ccsys_at_flags_enum_t, Enumerated constants}.
 @end deftp
 
 
@@ -799,20 +807,23 @@ A bitwise combination of these constants is meant to be used as value for argume
 
 @EnumeratedConstant{CCSYS_AT_EMPTY_PATH}
 @EnumeratedConstant{CCSYS_AT_NO_AUTOMOUNT}
+@EnumeratedConstant{CCSYS_AT_SYMLINK_FOLLOW}
 @EnumeratedConstant{CCSYS_AT_SYMLINK_NOFOLLOW}
-@anchor{ccsys_fstatat_flags_enum_t}
-@deftp {Enum Typedef} ccsys_fstatat_flags_enum_t
-Type of flags for @code{at()} functions.  These constants are meant to be used, for example, as
-value for the argument @var{flags} of @cfunc{ccsys_fstatat}.  It defines the following constants:
+@anchor{ccsys_at_flags_enum_t}
+@deftp {Enum Typedef} ccsys_at_flags_enum_t
+Type of flags for some ``at'' functions like @cfunc{ccsys_fstatat} and @cfunc{ccsys_linkat}.  It
+defines the following constants:
 
 @example
 CCSYS_AT_EMPTY_PATH
 CCSYS_AT_NO_AUTOMOUNT
+CCSYS_AT_SYMLINK_FOLLOW
 CCSYS_AT_SYMLINK_NOFOLLOW
 @end example
 
 A bitwise combination of these constants is meant to be used as value for arguments of type
-@objtype{ccsys_fstatat_flags_t}; @ref{ccsys_fstatat_flags_t, Semantic type definitions}.
+@objtype{ccsys_fstatat_flags_t} and @objtype{ccsys_linkat_flags_t}.  @ref{ccsys_fstatat_flags_t,
+Semantic type definitions}.  @ref{ccsys_linkat_flags_t, Semantic type definitions}.
 @end deftp
 
 
@@ -830,14 +841,9 @@ Type of flags for the interpretation of the field @code{st_mode} in @objtype{str
 defines the following constants:
 
 @example
-CCSYS_S_IFMT
-CCSYS_S_IFSOCK
-CCSYS_S_IFLNK
-CCSYS_S_IFREG
-CCSYS_S_IFBLK
-CCSYS_S_IFDIR
-CCSYS_S_IFCHR
-CCSYS_S_IFIFO
+CCSYS_S_IFMT    CCSYS_S_IFSOCK  CCSYS_S_IFLNK
+CCSYS_S_IFREG   CCSYS_S_IFBLK   CCSYS_S_IFDIR
+CCSYS_S_IFCHR   CCSYS_S_IFIFO
 @end example
 @end deftp
 
@@ -1709,6 +1715,12 @@ Constant representing the standard error file descriptor.
 
 @deftypevr Constant {ccsys_fd_t const} CCSYS_FD_SETSIZE
 Constant representing the maximum value for the argument @var{nfds} to @cfunc{ccsys_select}.
+@end deftypevr
+
+
+@deftypevr Constant {ccsys_dirfd_t const} CCSYS_AT_FDCWD
+Constant representing the current directory for the argument @var{dirfd} to @cfunc{ccsys_openat} and
+@cfunc{ccsys_linkat}.
 @end deftypevr
 
 @c page
@@ -4000,6 +4012,17 @@ if (cce_location(L)) @{
 @section Operating on links
 
 
+@menu
+* fs links creating::           Creating links and symbolic links.
+* fs links reading::            Reading links and symbolic links.
+* fs links removing::           Removing links links.
+@end menu
+
+@c page
+@node fs links creating
+@subsection Creating links and symbolic links
+
+
 The following symbols are defined in the header file @file{ccsys.h}.
 
 
@@ -4008,7 +4031,7 @@ Wrapper for @cfunc{link}.
 @end deftypefun
 
 
-@deftypefun void ccsys_linkat (cce_destination_t @var{L}, int @var{olddirfd}, char const * @var{oldname}, int @var{newdirfd}, char const * @var{newname}, int @var{flags})
+@deftypefun void ccsys_linkat (cce_destination_t @var{L}, ccsys_dirfd_t @var{old_dirfd}, char const * @var{oldname}, ccsys_dirfd_t @var{new_dirfd}, char const * @var{newname}, ccsys_linkat_flags_t @var{flags})
 Wrapper for @cfunc{linkat}.
 @end deftypefun
 
@@ -4018,9 +4041,122 @@ Wrapper for @cfunc{symlink}.
 @end deftypefun
 
 
-@deftypefun void ccsys_symlinkat (cce_destination_t @var{L}, char const * @var{oldname}, int @var{newdirfd}, char const * @var{newname})
+@deftypefun void ccsys_symlinkat (cce_destination_t @var{L}, char const * @var{oldname}, ccsys_dirfd_t @var{newdirfd}, char const * @var{newname})
 Wrapper for @cfunc{symlinkat}.
 @end deftypefun
+
+@menu
+* fs links creating one::       Using @cfunc{ccsys_linkat}.
+* fs links creating two::       Using @cfunc{ccsys_symlinkat}.
+@end menu
+
+@c page
+@node fs links creating one
+@subsubsection Using @cfunc{ccsys_linkat}
+
+
+As usage example of @cfunc{ccsys_linkat} see the following code:
+
+@smallexample
+cce_location_t        L[1];
+cce_cleanup_handler_t filename_H[1];
+cce_cleanup_handler_t linkname_H[1];
+
+if (cce_location(L)) @{
+  cce_run_error_handlers_raise(L, upper_L);
+@} else @{
+  char const *        filename = "name.ext";
+  char const *        linkname = "link.ext";
+
+  /* Create the file. */
+  @{
+    ccsys_open_flags_t        flags;
+    ccsys_open_mode_t         mode;
+    ccsys_fd_t                fd;
+
+    flags.data = CCSYS_O_CREAT;
+    mode.data  = CCSYS_S_IRUSR | CCSYS_S_IWUSR;
+    fd = ccsys_openat(L, CCSYS_AT_FDCWD, filename, flags, mode);
+    ccsys_close(L, fd);
+    ccsys_handler_remove_init(L, filename_H, filename);
+  @}
+
+  /* Create the link. */
+  @{
+    ccsys_linkat_flags_t      flags;
+
+    flags.data = 0;
+    ccsys_linkat(L, CCSYS_AT_FDCWD, filename, CCSYS_AT_FDCWD, linkname, flags);
+    ccsys_handler_remove_init(L, linkname_H, linkname);
+  @}
+
+  /* Verify the link existence. */
+  @{
+    ccsys_stat_t      S[1];
+
+    ccsys_stat(L, linkname, S);
+    assert(ccsys_s_isreg(ccsys_ref_stat_st_mode(S)));
+  @}
+
+  cce_run_cleanup_handlers(L);
+@}
+@end smallexample
+
+@c page
+@node fs links creating two
+@subsubsection Using @cfunc{ccsys_symlinkat}
+
+
+As usage example of @cfunc{ccsys_symlinkat} see the following code:
+
+@smallexample
+cce_location_t        L[1];
+cce_cleanup_handler_t filename_H[1];
+cce_cleanup_handler_t linkname_H[1];
+
+if (cce_location(L)) @{
+  cce_run_error_handlers_raise(L, upper_L);
+@} else @{
+  char const *        filename = "name.ext";
+  char const *        linkname = "link.ext";
+
+  /* Create and open the file. */
+  @{
+    ccsys_open_flags_t        flags;
+    ccsys_open_mode_t         mode;
+    ccsys_fd_t                fd;
+
+    flags.data = CCSYS_O_CREAT;
+    mode.data  = CCSYS_S_IRUSR | CCSYS_S_IWUSR;
+    fd = ccsys_openat(L, CCSYS_AT_FDCWD, filename, flags, mode);
+    ccsys_close(L, fd);
+    ccsys_handler_remove_init(L, filename_H, filename);
+  @}
+
+  /* Create the link. */
+  @{
+    ccsys_symlinkat(L, filename, CCSYS_AT_FDCWD, linkname);
+    ccsys_handler_remove_init(L, linkname_H, linkname);
+  @}
+
+  /* Verify the link existence. */
+  @{
+    ccsys_stat_t      S[1];
+
+    ccsys_lstat(L, linkname, S);
+    assert(ccsys_s_islnk(ccsys_ref_stat_st_mode(S)));
+  @}
+
+  cce_run_cleanup_handlers(L);
+@}
+@end smallexample
+
+@c page
+@node fs links reading
+@subsection Reading links and symbolic links
+
+
+The following symbols are defined in the header file @file{ccsys.h}.
 
 
 @deftypefun size_t ccsys_readlink (cce_destination_t @var{L}, char const * @var{filename}, char * @var{buffer}, size_t @var{size})
@@ -4041,7 +4177,13 @@ conditions cause a non--local exit.
 Wrapper for @cfunc{realpath}.  Notice that this function never returns @cnull{}.
 @end deftypefun
 
-@c ------------------------------------------------------------------------
+@c page
+@node fs links removing
+@subsection Removing links links
+
+
+The following symbols are defined in the header file @file{ccsys.h}.
+
 
 @deftypefun void ccsys_unlink (cce_destination_t @var{L}, char const * @var{filename})
 Wrapper for @cfunc{unlink}.
@@ -4051,6 +4193,69 @@ Wrapper for @cfunc{unlink}.
 @deftypefun void ccsys_unlinkat (cce_destination_t @var{L}, ccsys_dirfd_t @var{dirfd}, char const * @var{filename}, ccsys_unlinkat_flags_t @var{flags})
 Wrapper for @cfunc{unlinkat}.
 @end deftypefun
+
+@c ------------------------------------------------------------------------
+
+@subsubheading Handler for at--links removal
+
+
+We can remove temporary files with the standard function @cfunc{unlink} as follows:
+
+@example
+cce_location_t          L[1];
+cce_cleanup_handler_t   fd_H[1];
+cce_cleanup_handler_t   file_H[1];
+
+if (cce_location(L)) @{
+  cce_run_error_handlers_final(L);
+@} else @{
+  ccsys_open_flags_t    flags;
+  ccsys_open_mode_t     mode;
+  ccsys_fd_t            fd;
+
+  flags.data    = CCSYS_O_CREAT;
+  mode.data     = CCSYS_S_IRUSR | CCSYS_S_IWUSR;
+  fd            = ccsys_open(L, "name.ext", flags, mode);
+  ccsys_cleanup_handler_filedes_init(L, fd_H, fd);
+  ccsys_cleanup_handler_remove_init(L, file_H, "name.ext");
+  cce_run_cleanup_handlers(L);
+@}
+@end example
+
+The handler documented here will ignore errors returned by @cfunc{unlinkat}, which is generally bad;
+we can use the source code of this handler as template to implement a more complete procedure.
+
+The following symbols are defined in the header file @file{ccsys.h}.
+
+
+@deftypefun void ccsys_cleanup_handler_unlinkat_init (cce_destination_t @var{L}, cce_handler_t * @var{H}, char const * @var{pathname})
+@deftypefunx void ccsys_error_handler_unlinkat_init (cce_destination_t @var{L}, cce_handler_t * @var{H}, char const * @var{pathname})
+Register @var{H} as cleanup or error handler in the context of @var{L}.  The handler function will
+unlinkat the file whose pathname is @var{pathname} using the standard function @cfunc{unlinkat};
+errors in @cfunc{unlinkat} are @strong{ignored}.
+
+The string referenced by @var{pathname} must be an @asciiz{} representation of the file pathname; it
+is @strong{not} duplicated by this function and it must exist for the whole extent of the usage of
+@var{H}.
+
+If an error occurs while configuring the handler: an exception is raised by performing a non--local
+exit to @var{L}.
+@end deftypefun
+
+
+@deftypefn {Preprocessor Macro} void ccsys_handler_unlinkat_init (cce_destination_t @var{L}, cce_cleanup_handler_t * @var{H}, char const * @var{pathname})
+@deftypefnx {Preprocessor Macro} void ccsys_handler_unlinkat_init (cce_destination_t @var{L}, cce_error_handler_t * @var{H}, char const * @var{pathname})
+This preprocessor macro uses @code{_Generic} to dispatch the call according to the type of the
+pointer @var{H}; if the type is:
+
+@table @code
+@item cce_cleanup_handler_t
+The macro expands into a call to @cfunc{ccsys_cleanup_handler_unlinkat_init}.
+
+@item cce_error_handler_t
+The macro expands into a call to @cfunc{ccsys_error_handler_unlinkat_init}.
+@end table
+@end deftypefn
 
 @c page
 @node fs removing
