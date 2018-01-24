@@ -190,57 +190,101 @@ ccsys_ref_dirent_d_name (ccsys_dirent_t const * S)
  ** ----------------------------------------------------------------- */
 
 #ifdef HAVE_STAT
-void
+bool
 ccsys_stat (cce_location_t * L, char const * pathname, ccsys_stat_t * _buf)
 {
   struct stat *	buf = (struct stat *)_buf;
   int		rv;
   errno = 0;
   rv = stat(pathname, buf);
-  if (-1 == rv) {
-    cce_raise(L, cce_condition_new_errno_clear());
+  if (0 == rv) {
+    return true;
+  } else {
+    if (-1 == rv) {
+      if ((ENOENT == errno) || (ENOTDIR == errno)) {
+	/* The pathname does not exist. */
+	return false;
+      } else {
+	cce_raise(L, cce_condition_new_errno_clear());
+      }
+    } else {
+      cce_raise(L, cce_condition_new_logic_error());
+    }
   }
 }
 #endif
 
 #ifdef HAVE_FSTAT
-void
+bool
 ccsys_rawfd_fstat (cce_location_t * L, int rawfd, ccsys_stat_t * _buf)
 {
   struct stat *	buf = (struct stat *)_buf;
   int		rv;
   errno = 0;
   rv = fstat(rawfd, buf);
-  if (-1 == rv) {
-    cce_raise(L, cce_condition_new_errno_clear());
+  if (0 == rv) {
+    return true;
+  } else {
+    if (-1 == rv) {
+      if ((ENOENT == errno) || (ENOTDIR == errno)) {
+	/* The pathname does not exist. */
+	return false;
+      } else {
+	cce_raise(L, cce_condition_new_errno_clear());
+      }
+    } else {
+      cce_raise(L, cce_condition_new_logic_error());
+    }
   }
 }
 #endif
 
 #ifdef HAVE_FSTATAT
-void
+bool
 ccsys_fstatat (cce_destination_t L, ccsys_dirfd_t dirfd, char const * pathname, ccsys_stat_t * _buf, ccsys_fstatat_flags_t flags)
 {
   CCSYS_PC(struct stat, buf, _buf);
   int		rv;
   errno = 0;
   rv = fstatat(dirfd.data, pathname, buf, flags.data);
-  if (-1 == rv) {
-    cce_raise(L, cce_condition_new_errno_clear());
+  if (0 == rv) {
+    return true;
+  } else {
+    if (-1 == rv) {
+      if ((ENOENT == errno) || (ENOTDIR == errno)) {
+	/* The pathname does not exist. */
+	return false;
+      } else {
+	cce_raise(L, cce_condition_new_errno_clear());
+      }
+    } else {
+      cce_raise(L, cce_condition_new_logic_error());
+    }
   }
 }
 #endif
 
 #ifdef HAVE_LSTAT
-void
+bool
 ccsys_lstat (cce_location_t * L, char const * pathname, ccsys_stat_t * _buf)
 {
   struct stat *	buf = (struct stat *)_buf;
   int		rv;
   errno = 0;
   rv = lstat(pathname, buf);
-  if (-1 == rv) {
-    cce_raise(L, cce_condition_new_errno_clear());
+  if (0 == rv) {
+    return true;
+  } else {
+    if (-1 == rv) {
+      if ((ENOENT == errno) || (ENOTDIR == errno)) {
+	/* The pathname does not exist. */
+	return false;
+      } else {
+	cce_raise(L, cce_condition_new_errno_clear());
+      }
+    } else {
+      cce_raise(L, cce_condition_new_logic_error());
+    }
   }
 }
 #endif

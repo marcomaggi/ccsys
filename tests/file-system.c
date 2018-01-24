@@ -513,7 +513,7 @@ test_4_2 (cce_destination_t upper_L)
     {
       ccsys_stat_t	S;
 
-      ccsys_stat(L, filename, &S);
+      cctests_assert(L, true == ccsys_stat(L, filename, &S));
 #if (1 == CCSYS_HAVE_STRUCT_STAT_ST_DEV)
       fprintf(stderr, "%s: st_dev=%lu\n", __func__, ccsys_lref(ccsys_ref_stat_st_dev(&S)));
 #endif
@@ -605,7 +605,7 @@ test_4_3 (cce_destination_t upper_L)
     {
       ccsys_stat_t	S;
 
-      ccsys_fstat(L, fd, &S);
+      cctests_assert(L, true == ccsys_fstat(L, fd, &S));
 #if (1 == CCSYS_HAVE_STRUCT_STAT_ST_DEV)
       fprintf(stderr, "%s: st_dev=%lu\n", __func__, (unsigned long)ccsys_ref_stat_st_dev(&S).data);
 #endif
@@ -724,7 +724,7 @@ test_4_4 (cce_destination_t upper_L)
       ccsys_fstatat_flags_t	flags;
 
       flags.data = 0;
-      ccsys_fstatat(L, dirfd, filename, &S, flags);
+      cctests_assert(L, true == ccsys_fstatat(L, dirfd, filename, &S, flags));
 
 #if (1 == CCSYS_HAVE_STRUCT_STAT_ST_DEV)
       fprintf(stderr, "%s: st_dev=%lu\n", __func__, ccsys_lref(ccsys_ref_stat_st_dev(&S)));
@@ -817,7 +817,7 @@ test_4_5 (cce_destination_t upper_L)
     {
       ccsys_stat_t	S;
 
-      ccsys_lstat(L, filename, &S);
+      cctests_assert(L, true == ccsys_lstat(L, filename, &S));
 
 #if (1 == CCSYS_HAVE_STRUCT_STAT_ST_DEV)
       fprintf(stderr, "%s: st_dev=%lu\n", __func__, (unsigned long)ccsys_ref_stat_st_dev(&S).data);

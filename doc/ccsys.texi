@@ -4515,6 +4515,22 @@ Wrapper for @cfunc{rename}.
 @subsection File attributes functions
 
 
+For all the functions: notice the return value of type @objtype{bool}:
+
+@itemize
+@item
+If the system functions @cfunc{stat} and similar return @samp{0}: the return value of the wrapper
+function is @true{}.  It means that the file system item exists.
+
+@item
+If the system functions @cfunc{stat} and similar return @samp{-1} and @code{errno} is set to
+@code{ENOENT} or @code{ENOTDIR}: the return value of the wrapper function is @false{}.  It means
+that the file system item does not exists.
+
+@item
+Otherwise the wrapper function raises an exception.
+@end itemize
+
 The following symbols are defined in the header file @file{ccsys.h}.
 
 
@@ -4523,23 +4539,23 @@ Wrapper type for @objtype{struct stat}.
 @end deftp
 
 
-@deftypefun void ccsys_stat (cce_destination_t @var{L}, char const * @var{pathname}, ccsys_stat_t * @var{S})
+@deftypefun bool ccsys_stat (cce_destination_t @var{L}, char const * @var{pathname}, ccsys_stat_t * @var{S})
 Wrapper for @cfunc{stat}; @manpage{stat, Get file status}.
 @end deftypefun
 
 
-@deftypefun void ccsys_fstat (cce_destination_t @var{L}, ccsys_fd_t @var{fd}, ccsys_stat_t * @var{S})
-@deftypefunx void ccsys_fstat (cce_destination_t @var{L}, ccsys_dirfd_t @var{fd}, ccsys_stat_t * @var{S})
+@deftypefun bool ccsys_fstat (cce_destination_t @var{L}, ccsys_fd_t @var{fd}, ccsys_stat_t * @var{S})
+@deftypefunx bool ccsys_fstat (cce_destination_t @var{L}, ccsys_dirfd_t @var{fd}, ccsys_stat_t * @var{S})
 Wrapper for @cfunc{fstat}; @manpage{fstat, Get file status}.
 @end deftypefun
 
 
-@deftypefun void ccsys_fstatat (cce_destination_t @var{L}, ccsys_dirfd_t @var{fd}, char const * @var{pathname}, ccsys_stat_t * @var{S}, ccsys_fstatat_flags_t @var{flags})
+@deftypefun bool ccsys_fstatat (cce_destination_t @var{L}, ccsys_dirfd_t @var{fd}, char const * @var{pathname}, ccsys_stat_t * @var{S}, ccsys_fstatat_flags_t @var{flags})
 Wrapper for @cfunc{fstatat}; @manpage{fstatat, Get file status}.
 @end deftypefun
 
 
-@deftypefun void ccsys_lstat (cce_destination_t @var{L}, char const * @var{pathname}, ccsys_stat_t * @var{S})
+@deftypefun bool ccsys_lstat (cce_destination_t @var{L}, char const * @var{pathname}, ccsys_stat_t * @var{S})
 Wrapper for @cfunc{lstat}; @manpage{lstat, Get file status}.
 @end deftypefun
 

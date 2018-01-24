@@ -1178,24 +1178,24 @@ ccsys_decl void ccsys_error_handler_dirstream_init (cce_destination_t L, cce_han
  ** File system: reading attributes.
  ** ----------------------------------------------------------------- */
 
-ccsys_decl void ccsys_stat (cce_destination_t L, char const * pathname, ccsys_stat_t * buf)
+ccsys_decl bool ccsys_stat (cce_destination_t L, char const * pathname, ccsys_stat_t * buf)
   __attribute__((__nonnull__(1,2,3)));
 
-ccsys_decl void ccsys_rawfd_fstat (cce_destination_t L, int fd, ccsys_stat_t * buf)
+ccsys_decl bool ccsys_rawfd_fstat (cce_destination_t L, int fd, ccsys_stat_t * buf)
   __attribute__((__nonnull__(1,3)));
 
 __attribute__((__always_inline__,__nonnull__(1,3)))
-static inline void
+static inline bool
 ccsys_fd_fstat (cce_destination_t L, ccsys_fd_t fd, ccsys_stat_t * buf)
 {
-  ccsys_rawfd_fstat(L, fd.data, buf);
+  return ccsys_rawfd_fstat(L, fd.data, buf);
 }
 
 __attribute__((__always_inline__,__nonnull__(1,3)))
-static inline void
+static inline bool
 ccsys_dirfd_fstat (cce_destination_t L, ccsys_dirfd_t fd, ccsys_stat_t * buf)
 {
-  ccsys_rawfd_fstat(L, fd.data, buf);
+  return ccsys_rawfd_fstat(L, fd.data, buf);
 }
 
 #define ccsys_fstat(L,fd,buf)					\
@@ -1203,11 +1203,11 @@ ccsys_dirfd_fstat (cce_destination_t L, ccsys_dirfd_t fd, ccsys_stat_t * buf)
 	   ccsys_fd_t:		ccsys_fd_fstat,			\
 	   ccsys_dirfd_t:	ccsys_dirfd_fstat)(L,fd,buf)
 
-ccsys_decl void ccsys_fstatat (cce_destination_t L, ccsys_dirfd_t fd, char const * pathname, ccsys_stat_t * buf,
+ccsys_decl bool ccsys_fstatat (cce_destination_t L, ccsys_dirfd_t fd, char const * pathname, ccsys_stat_t * buf,
 			       ccsys_fstatat_flags_t flags)
   __attribute__((__nonnull__(1,3,4)));
 
-ccsys_decl void ccsys_lstat (cce_destination_t L, char const * pathname, ccsys_stat_t * buf)
+ccsys_decl bool ccsys_lstat (cce_destination_t L, char const * pathname, ccsys_stat_t * buf)
   __attribute__((__nonnull__(1,2,3)));
 
 /* ------------------------------------------------------------------ */
