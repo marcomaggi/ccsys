@@ -284,8 +284,8 @@ test_3_3 (cce_destination_t upper_L)
 /* Create a diirectory with "ccsys_mkdirat()". */
 {
   cce_location_t	L[1];
-  cce_handler_t		dirname1_H[1];
-  cce_handler_t		dir_H[1];
+  cce_cleanup_handler_t	dirname1_H[1];
+  cce_cleanup_handler_t	filedes_H[1];
 
   if (cce_location(L)) {
     if (0) { fprintf(stderr, "%s: %s\n", __func__, cce_condition_static_message(cce_condition(L))); }
@@ -299,17 +299,21 @@ test_3_3 (cce_destination_t upper_L)
     {
       ccsys_open_mode_t	mode  = { .data = CCSYS_S_IRWXU };
       ccsys_mkdir(L, dirname1, mode);
-      ccsys_cleanup_handler_rmdir_init(L, dirname1_H, dirname1);
+      ccsys_handler_rmdir_init(L, dirname1_H, dirname1);
     }
 
-    /* Open the parent directory.  The descriptor in "dirfd1" is released
-       automatically when "dirstream" is released. */
+    /* Open  the  parent  directory.   The  descriptor  in  "dirfd1"  is
+       released automatically when "fd" is released. */
     {
-      ccsys_dir_t *	dir;
+      ccsys_open_flags_t	flags;
+      ccsys_open_mode_t		mode;
+      ccsys_fd_t		fd;
 
-      dir = ccsys_opendir(L, dirname1);
-      ccsys_cleanup_handler_dirstream_init(L, dir_H, dir);
-      dirfd1 = ccsys_dirfd(L, dir);
+      flags.data = CCSYS_O_PATH;
+      mode.data  = CCSYS_S_IRUSR | CCSYS_S_IWUSR;
+      fd     = ccsys_open(L, dirname1, flags, mode);
+      ccsys_handler_filedes_init(L, filedes_H, fd);
+      dirfd1 = ccsys_fd_to_dirfd(fd);
     }
 
     /* Create the subdirectory. */

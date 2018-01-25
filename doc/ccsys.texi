@@ -1786,6 +1786,14 @@ Constant representing the current directory for the argument @var{dirfd} to @cfu
 The following symbols are defined in the header file @file{ccsys.h}.
 
 
+@deftypefun ccsys_dirfd_t ccsys_fd_to_dirfd (ccsys_fd_t @var{fd})
+@deftypefunx ccsys_fd_t ccsys_fd_drom_dirfd (ccsys_dirfd_t @var{dirfd})
+@deftypefunx ccsys_dirfd_t ccsys_dirfd_from_fd (ccsys_fd_t @var{fd})
+@deftypefunx ccsys_fd_t ccsys_dirfd_to_fd (ccsys_dirfd_t @var{dirfd})
+Convert between file descriptor semantic types.
+@end deftypefun
+
+
 @deftypefun bool ccsys_fd_equal (ccsys_fd_t @vari{fd}, ccsys_fd_t @varii{fd})
 Return @true{} if the arguments are equal, otherwise return @false{}.  We can also perform this
 operation using the @code{=} operator.
