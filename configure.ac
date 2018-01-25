@@ -109,6 +109,7 @@ AC_CHECK_HEADERS([assert.h errno.h stdint.h stddef.h setjmp.h memory.h limits.h 
 AC_CHECK_HEADERS([sys/select.h sys/stat.h sys/time.h sys/types.h sys/uio.h sys/mman.h sys/wait.h])
 AC_CHECK_HEADERS([netdb.h netinet/in.h arpa/inet.h sys/socket.h sys/un.h])
 AC_CHECK_HEADERS([signal.h])
+AC_CHECK_HEADERS([linux/fs.h])
 AC_HEADER_STDBOOL
 
 dnl The  documentation of GNU  Autoconf states that AC_PROG_CC  sets the
@@ -134,7 +135,8 @@ AC_CHECK_FUNCS([getcwd chdir fchdir get_current_dir_name])
 AC_CHECK_FUNCS([opendir fdopendir readdir closedir dirfd])
 AC_CHECK_FUNCS([stat fstat fstatat lstat])
 AC_CHECK_FUNCS([mkdir mkdirat rmdir])
-AC_CHECK_FUNCS([link linkat symlink symlinkat readlink readlinkat realpath unlink unlinkat remove rename])
+AC_CHECK_FUNCS([link linkat symlink symlinkat readlink readlinkat realpath unlink unlinkat remove])
+AC_CHECK_FUNCS([rename renameat renameat2])
 AC_CHECK_FUNCS([chown fchown lchown fchownat])
 AC_CHECK_FUNCS([chmod fchmod fchmodat access faccessat])
 AC_CHECK_FUNCS([utime utimes])
@@ -533,6 +535,13 @@ CCSYS_MAYBE_ENUM_DEF([CCSYS_S_IFBLK],[S_IFBLK],[CCSYS_SYS_STAT_HEADER])
 CCSYS_MAYBE_ENUM_DEF([CCSYS_S_IFDIR],[S_IFDIR],[CCSYS_SYS_STAT_HEADER])
 CCSYS_MAYBE_ENUM_DEF([CCSYS_S_IFCHR],[S_IFCHR],[CCSYS_SYS_STAT_HEADER])
 CCSYS_MAYBE_ENUM_DEF([CCSYS_S_IFIFO],[S_IFIFO],[CCSYS_SYS_STAT_HEADER])
+
+# Flags  for the  argument  "flags" of  "renameat2()", a  Linux-specific
+# function.
+#
+CCSYS_MAYBE_ENUM_DEF([CCSYS_RENAME_EXCHANGE],[RENAME_EXCHANGE],[CCSYS_LINUX_FS_HEADER])
+CCSYS_MAYBE_ENUM_DEF([CCSYS_RENAME_NOREPLACE],[RENAME_NOREPLACE],[CCSYS_LINUX_FS_HEADER])
+CCSYS_MAYBE_ENUM_DEF([CCSYS_RENAME_WHITEOUT],[RENAME_WHITEOUT],[CCSYS_LINUX_FS_HEADER])
 
 # Socket  namespaces.   On  GNU+Linux   systems,  see  the  manual  page
 # "socket(2)" for the full list.

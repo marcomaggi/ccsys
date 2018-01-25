@@ -1115,6 +1115,37 @@ ccsys_rename (cce_location_t * L, const char * oldname, const char * newname)
 }
 #endif
 
+#ifdef HAVE_RENAMEAT
+void
+ccsys_renameat (cce_destination_t L,
+		ccsys_dirfd_t old_dirfd, char const * oldname,
+		ccsys_dirfd_t new_dirfd, char const * newname)
+{
+  int	rv;
+  errno = 0;
+  rv = renameat(old_dirfd.data, oldname, new_dirfd.data, newname);
+  if (-1 == rv) {
+    cce_raise(L, cce_condition_new_errno_clear());
+  }
+}
+#endif
+
+#ifdef HAVE_RENAMEAT2
+void
+ccsys_renameat2 (cce_destination_t L,
+		 ccsys_dirfd_t old_dirfd, char const * oldname,
+		 ccsys_dirfd_t new_dirfd, char const * newname,
+		 ccsys_renameat2_flags_t flags)
+{
+  int	rv;
+  errno = 0;
+  rv = renameat2(old_dirfd.data, oldname, new_dirfd.data, newname, flags.data);
+  if (-1 == rv) {
+    cce_raise(L, cce_condition_new_errno_clear());
+  }
+}
+#endif
+
 
 /** --------------------------------------------------------------------
  ** File system: changing owner.

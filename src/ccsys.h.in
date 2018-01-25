@@ -150,6 +150,7 @@ typedef struct ccsys_off_t			ccsys_off_t;
 typedef struct ccsys_open_flags_t		ccsys_open_flags_t;
 typedef struct ccsys_open_mode_t		ccsys_open_mode_t;
 typedef struct ccsys_pid_t			ccsys_pid_t;
+typedef struct ccsys_renameat2_flags_t		ccsys_renameat2_flags_t;
 typedef struct ccsys_scatter_gather_flags_t	ccsys_scatter_gather_flags_t;
 typedef struct ccsys_signum_t			ccsys_signum_t;
 typedef struct ccsys_socket_namespace_t		ccsys_socket_namespace_t;
@@ -185,6 +186,7 @@ struct ccsys_off_t			{ @CCSYS_TYPE_OFF_T@		data; };
 struct ccsys_open_flags_t		{ int				data; };
 struct ccsys_open_mode_t		{ @CCSYS_TYPE_MODE_T@		data; };
 struct ccsys_pid_t			{ @CCSYS_TYPE_PID_T@		data; };
+struct ccsys_renameat2_flags_t		{ int				data; };
 struct ccsys_scatter_gather_flags_t	{ @CCSYS_TYPE_PID_T@		data; };
 struct ccsys_signum_t			{ int				data; };
 struct ccsys_socket_namespace_t		{ int				data; };
@@ -400,6 +402,13 @@ enum ccsys_stat_mode_enum_t {
   @CCSYS_ENUM_DEF_CCSYS_S_IFDIR@
   @CCSYS_ENUM_DEF_CCSYS_S_IFCHR@
   @CCSYS_ENUM_DEF_CCSYS_S_IFIFO@
+};
+
+enum ccsys_renameat2_flags_enum_t {
+  @CCSYS_ENUM_DEF_CCSYS_RENAME_EXCHANGE@
+  @CCSYS_ENUM_DEF_CCSYS_RENAME_NOREPLACE@
+  @CCSYS_ENUM_DEF_CCSYS_RENAME_WHITEOUT@
+  CCSYS_RENAMEAT2_FLAGS_ENUM_LAST_VALUE
 };
 
 enum ccsys_socket_namespace_enum_t {
@@ -709,6 +718,7 @@ typedef enum ccsys_memory_remap_enum_t		ccsys_memory_remap_enum_t;
 typedef enum ccsys_memory_sync_enum_t		ccsys_memory_sync_enum_t;
 typedef enum ccsys_open_flags_enum_t		ccsys_open_flags_enum_t;
 typedef enum ccsys_open_mode_enum_t		ccsys_open_mode_enum_t;
+typedef enum ccsys_renameat2_flags_enum_t	ccsys_renameat2_flags_enum_t;
 typedef enum ccsys_scatter_gather_flags_enum_t	ccsys_scatter_gather_flags_enum_t;
 typedef enum ccsys_signum_enum_t		ccsys_signum_enum_t;
 typedef enum ccsys_socket_namespace_enum_t	ccsys_socket_namespace_enum_t;
@@ -1408,6 +1418,17 @@ ccsys_decl void ccsys_error_handler_remove_init (cce_destination_t L, cce_handle
 
 ccsys_decl void ccsys_rename (cce_destination_t L, char const * oldname, char const * newname)
   __attribute__((__nonnull__(1,2,3)));
+
+ccsys_decl void ccsys_renameat (cce_destination_t L,
+				ccsys_dirfd_t old_dirfd, char const * oldname,
+				ccsys_dirfd_t new_dirfd, char const * newname)
+  __attribute__((__nonnull__(1,3,5)));
+
+ccsys_decl void ccsys_renameat2 (cce_destination_t L,
+				 ccsys_dirfd_t old_dirfd, char const * oldname,
+				 ccsys_dirfd_t new_dirfd, char const * newname,
+				 ccsys_renameat2_flags_t flags)
+  __attribute__((__nonnull__(1,3,5)));
 
 
 /** --------------------------------------------------------------------

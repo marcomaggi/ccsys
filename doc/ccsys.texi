@@ -487,6 +487,14 @@ combination of the enumerated constants of type @objtype{ccsys_at_flags_enum_t}.
 @end deftp
 
 
+@anchor{ccsys_renameat2_flags_t}
+@deftp {Semantic Type} ccsys_renameat2_flags_t
+Exact signed integer representing the flags for @cfunc{ccsys_renameat2}.  It is meant to be a
+bitwise combination of the enumerated constants of type @objtype{ccsys_renameat2_flags_enum_t}.
+@ref{ccsys_renameat2_flags_enum_t, Enumerated constants}.
+@end deftp
+
+
 @anchor{ccsys_socket_namespace_t}
 @deftp {Semantic Type} ccsys_socket_namespace_t
 Exact signed integer representing a socket namespace (or domain).  It is the of the argument
@@ -844,6 +852,21 @@ defines the following constants:
 CCSYS_S_IFMT    CCSYS_S_IFSOCK  CCSYS_S_IFLNK
 CCSYS_S_IFREG   CCSYS_S_IFBLK   CCSYS_S_IFDIR
 CCSYS_S_IFCHR   CCSYS_S_IFIFO
+@end example
+@end deftp
+
+
+@EnumeratedConstant{CCSYS_RENAME_EXCHANGE}
+@EnumeratedConstant{CCSYS_RENAME_NOREPLACE}
+@EnumeratedConstant{CCSYS_RENAME_WHITEOUT}
+@anchor{ccsys_renameat2_flags_enum_t}
+@deftp {Enum Typedef} ccsys_renameat2_flags_enum_t
+Type of flags for @cfunc{ccsys_renameat2}.  It defines the following constants:
+
+@example
+CCSYS_RENAME_EXCHANGE
+CCSYS_RENAME_NOREPLACE
+CCSYS_RENAME_WHITEOUT
 @end example
 @end deftp
 
@@ -4484,7 +4507,8 @@ The following symbols are defined in the header file @file{ccsys.h}.
 
 
 @deftypefun void ccsys_remove (cce_destination_t @var{L}, char const * @var{pathname})
-Wrapper for @cfunc{remove}.  This function removes both files and empty directories.
+Wrapper for @cfunc{remove}; @manpage{remove, Remove a file or directory}.  This function removes
+both files and empty directories.
 @end deftypefun
 
 @c ------------------------------------------------------------------------
@@ -4561,7 +4585,21 @@ The following symbols are defined in the header file @file{ccsys.h}.
 
 
 @deftypefun void ccsys_rename (cce_destination_t @var{L}, char const * @var{oldname}, char const * @var{newname})
-Wrapper for @cfunc{rename}.
+Wrapper for @cfunc{rename}; @manpage{rename, Change the name or location of a file}.
+@end deftypefun
+
+
+@deftypefun void ccsys_renameat (cce_destination_t @var{L}, ccsys_dirfd_t @var{old_dirfd}, char const * @var{oldname}, ccsys_dirfd_t @var{new_dirfd}, char const * @var{newname})
+Wrapper for @cfunc{renameat}; @manpage{renameat, Change the name or location of a file}.
+@end deftypefun
+
+
+@deftypefun void ccsys_renameat2 (cce_destination_t @var{L}, ccsys_dirfd_t @var{old_dirfd}, char const * @var{oldname}, ccsys_dirfd_t @var{new_dirfd}, char const * @var{newname}, ccsys_renameat2_flags_t @var{flags})
+Wrapper for @cfunc{renameat2}; @manpage{renameat2, Change the name or location of a file}.
+
+@quotation
+@strong{NOTE} This function is available only on Linux platforms.
+@end quotation
 @end deftypefun
 
 @c page

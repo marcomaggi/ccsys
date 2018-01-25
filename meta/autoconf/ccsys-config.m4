@@ -57,6 +57,12 @@ AC_DEFUN([CCSYS_LIMITS_HEADER],[
 #endif
 ])
 
+AC_DEFUN([CCSYS_LINUX_FS_HEADER],[
+#ifdef HAVE_LINUX_FS_H
+#  include <linux/fs.h>
+#endif
+])
+
 AC_DEFUN([CCSYS_NETINET_IN_HEADER],[
 #ifdef HAVE_NETINET_IN_H
 #  include <netinet/in.h>
