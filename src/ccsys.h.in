@@ -106,6 +106,13 @@ extern "C" {
   CCSYS_STRUCT_GETTER(STEM,STRUCT_TYPE,FIELD_TYPE)		\
   CCSYS_STRUCT_SETTER(STEM,STRUCT_TYPE,FIELD_TYPE)
 
+/* ------------------------------------------------------------------ */
+
+#define CCSYS_ON_LINUX		@CCSYS_ON_LINUX@
+#define CCSYS_ON_BSD		@CCSYS_ON_BSD@
+#define CCSYS_ON_CYGWIN		@CCSYS_ON_CYGWIN@
+#define CCSYS_ON_DARWIN		@CCSYS_ON_DARWIN@
+
 
 /** --------------------------------------------------------------------
  ** Headers.

@@ -121,6 +121,7 @@ included in the section entitled ``@gnu{} Free Documentation License''.
 @menu
 * overview::                    Overview of the package.
 * version::                     Version functions.
+* defines::                     General preprocessor symbols.
 * semantic::                    Semantic types.
 * enums::                       Enumerated constants.
 * memory::                      Memory allocation, locking, mapping.
@@ -375,6 +376,37 @@ Return an integer representing the library interface current revision number.
 @deftypefun int ccsys_version_interface_age (void)
 Return an integer representing the library interface current age.
 @end deftypefun
+
+@c page
+@node defines
+@chapter General preprocessor symbols
+
+
+The following symbols are defined in the header file @file{ccsys.h}.
+
+
+@defmac CCSYS_ON_LINUX
+Always defined.  Expands to @code{1} if the underlying platform is Linux; otherwise it expands to
+@code{0}.
+@end defmac
+
+
+@defmac CCSYS_ON_BSD
+Always defined.  Expands to @code{1} if the underlying platform is BSD; otherwise it expands to
+@code{0}.
+@end defmac
+
+
+@defmac CCSYS_ON_CYGWIN
+Always defined.  Expands to @code{1} if the underlying platform is Cygwin; otherwise it expands to
+@code{0}.
+@end defmac
+
+
+@defmac CCSYS_ON_DARWIN
+Always defined.  Expands to @code{1} if the underlying platform is Darwin; otherwise it expands to
+@code{0}.
+@end defmac
 
 @c page
 @node semantic

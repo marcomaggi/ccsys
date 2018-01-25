@@ -1392,7 +1392,7 @@ ccsys_utimes (cce_location_t * L, char const * pathname, const ccsys_timeval_t T
 }
 #endif
 
-#if ((defined HAVE_LUTIMES) && (! (defined CCSYS_ON_DARWIN)))
+#if ((defined HAVE_LUTIMES) && (0 == CCSYS_ON_DARWIN))
 void
 ccsys_lutimes (cce_location_t * L, char const * pathname, const ccsys_timeval_t TVP[2])
 {
@@ -1405,7 +1405,7 @@ ccsys_lutimes (cce_location_t * L, char const * pathname, const ccsys_timeval_t 
 }
 #endif
 
-#if ((defined HAVE_FUTIMES) && (! (defined CCSYS_ON_DARWIN)))
+#if ((defined HAVE_FUTIMES) && (0 == CCSYS_ON_DARWIN))
 void
 ccsys_futimes (cce_location_t * L, ccsys_fd_t filedes, const ccsys_timeval_t TVP[2])
 {

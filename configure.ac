@@ -48,29 +48,33 @@ LT_INIT
 dnl page
 #### configuration
 
+AS_VAR_SET([CCSYS_ON_LINUX], [0])
+AS_VAR_SET([CCSYS_ON_BSD],   [0])
+AS_VAR_SET([CCSYS_ON_CYGWIN],[0])
+AS_VAR_SET([CCSYS_ON_DARWIN],[0])
+
 AS_CASE("$target_os",
   [*linux*],
-  [ccsys_OS_LINUX=yes
-   AC_DEFINE([CCSYS_ON_LINUX],[1],[True if the platform is Linux])
+  [AS_VAR_SET([CCSYS_ON_LINUX],[1])
    AC_MSG_NOTICE([detected OS: linux])],
   [*bsd*],
-  [ccsys_OS_BSD=yes
-   AC_DEFINE([CCSYS_ON_BSD],[1],[True if the platform is BSD])
+  [AS_VAR_SET([CCSYS_ON_BSD],[1])
    AC_MSG_NOTICE([detected OS: BSD])],
   [*cygwin*],
-  [ccsys_OS_CYGWIN=yes
-   AC_DEFINE([CCSYS_ON_CYGWIN],[1],[True if the platform is Cygwin])
+  [AS_VAR_SET([CCSYS_ON_CYGWIN],[1])
    AC_MSG_NOTICE([detected OS: CYGWIN])],
   [*darwin*],
-  [ccsys_OS_DARWIN=yes
-   AC_DEFINE([CCSYS_ON_DARWIN],[1],[True if the platform is Darwin])
+  [AS_VAR_SET([CCSYS_ON_CYGWIN],[1])
    AC_MSG_NOTICE([detected OS: DARWIN])])
-AM_CONDITIONAL([ON_LINUX], [test "x$ccsys_OS_LINUX"  = xyes])
-AM_CONDITIONAL([ON_BSD],   [test "x$ccsys_OS_BSD"    = xyes])
-AM_CONDITIONAL([ON_CYGWIN],[test "x$ccsys_OS_CYGWIN" = xyes])
-AM_CONDITIONAL([ON_DARWIN],[test "x$ccsys_OS_DARWIN" = xyes])
+AM_CONDITIONAL([ON_LINUX], [test "x$CCSYS_ON_LINUX"  = x1])
+AM_CONDITIONAL([ON_BSD],   [test "x$CCSYS_ON_BSD"    = x1])
+AM_CONDITIONAL([ON_CYGWIN],[test "x$CCSYS_ON_CYGWIN" = x1])
+AM_CONDITIONAL([ON_DARWIN],[test "x$CCSYS_ON_DARWIN" = x1])
 
-AM_COND_IF([ON_DARWIN],[AC_DEFINE([CCSYS_ON_DARWIN],[1],[defined to 1 when compiling on Darwin])])
+AC_SUBST([CCSYS_ON_LINUX], [$CCSYS_ON_LINUX])
+AC_SUBST([CCSYS_ON_BSD],   [$CCSYS_ON_BSD])
+AC_SUBST([CCSYS_ON_CYGWIN],[$CCSYS_ON_CYGWIN])
+AC_SUBST([CCSYS_ON_DARWIN],[$CCSYS_ON_DARWIN])
 
 dnl page
 #### libraries interface version

@@ -1563,7 +1563,7 @@ test_8_2 (cce_destination_t upper_L)
 void
 test_8_3 (cce_destination_t upper_L CCSYS_UNUSED)
 {
-#ifdef CCSYS_ON_LINUX
+#if (1 == CCSYS_ON_LINUX)
   cce_location_t	L[1];
   cce_cleanup_handler_t	filename_H[1];
   cce_cleanup_handler_t	newname_H[1];

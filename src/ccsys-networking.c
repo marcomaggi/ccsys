@@ -80,7 +80,7 @@ ccsys_getsockname (cce_location_t * L, ccsys_fd_t socket, ccsys_sockaddr_t * add
 
 /* ------------------------------------------------------------------ */
 
-#if ((defined HAVE_INET_ATON) && (! (defined CCSYS_ON_DARWIN)))
+#if ((defined HAVE_INET_ATON) && (0 == CCSYS_ON_DARWIN))
 void
 ccsys_inet_aton (cce_location_t * L, const char * name, ccsys_in_addr_t * _addr)
 {
@@ -94,7 +94,7 @@ ccsys_inet_aton (cce_location_t * L, const char * name, ccsys_in_addr_t * _addr)
 }
 #endif
 
-#if ((defined HAVE_INET_NETWORK) && (! (defined CCSYS_ON_DARWIN)))
+#if ((defined HAVE_INET_NETWORK) && (0 == CCSYS_ON_DARWIN))
 ccsys_in_addr_t
 ccsys_inet_network (cce_location_t * L, const char * name)
 {
