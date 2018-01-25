@@ -1067,12 +1067,10 @@ test_5_3_2 (cce_destination_t upper_L)
     {
       ccsys_open_flags_t	flags;
       ccsys_open_mode_t		mode;
-      ccsys_fd_t		fd;
 
       flags.data = CCSYS_O_CREAT;
       mode.data  = CCSYS_S_IRUSR | CCSYS_S_IWUSR;
-      fd = ccsys_openat(L, CCSYS_AT_FDCWD, filename, flags, mode);
-      ccsys_close(L, fd);
+      ccsys_touch(L, filename, flags, mode);
       ccsys_handler_remove_init(L, filename_H, filename);
     }
 
@@ -1184,12 +1182,10 @@ test_5_4_2 (cce_destination_t upper_L)
     {
       ccsys_open_flags_t	flags;
       ccsys_open_mode_t		mode;
-      ccsys_fd_t		fd;
 
       flags.data = CCSYS_O_CREAT;
       mode.data  = CCSYS_S_IRUSR | CCSYS_S_IWUSR;
-      fd = ccsys_openat(L, CCSYS_AT_FDCWD, filename, flags, mode);
-      ccsys_close(L, fd);
+      ccsys_touch(L, filename, flags, mode);
       ccsys_handler_remove_init(L, filename_H, filename);
     }
 
@@ -1234,12 +1230,10 @@ test_6_1 (cce_destination_t upper_L)
     {
       ccsys_open_flags_t	flags;
       ccsys_open_mode_t		mode;
-      ccsys_fd_t		fd;
 
       flags.data = CCSYS_O_CREAT;
       mode.data  = CCSYS_S_IRUSR | CCSYS_S_IWUSR;
-      fd = ccsys_open(L, filename, flags, mode);
-      ccsys_close(L, fd);
+      ccsys_touch(L, filename, flags, mode);
       ccsys_handler_remove_init(L, filename_H, filename);
     }
 
@@ -1286,12 +1280,10 @@ test_6_2 (cce_destination_t upper_L)
     {
       ccsys_open_flags_t	flags;
       ccsys_open_mode_t		mode;
-      ccsys_fd_t		fd;
 
       flags.data = CCSYS_O_CREAT;
       mode.data  = CCSYS_S_IRUSR | CCSYS_S_IWUSR;
-      fd = ccsys_open(L, filename, flags, mode);
-      ccsys_close(L, fd);
+      ccsys_touch(L, filename, flags, mode);
       ccsys_handler_remove_init(L, filename_H, filename);
     }
 
@@ -1336,12 +1328,10 @@ test_6_3_1 (cce_destination_t upper_L)
     {
       ccsys_open_flags_t	flags;
       ccsys_open_mode_t		mode;
-      ccsys_fd_t		fd;
 
       flags.data = CCSYS_O_CREAT;
       mode.data  = CCSYS_S_IRUSR | CCSYS_S_IWUSR;
-      fd = ccsys_open(L, filename, flags, mode);
-      ccsys_close(L, fd);
+      ccsys_touch(L, filename, flags, mode);
       ccsys_handler_remove_init(L, filename_H, filename);
     }
 
@@ -1379,12 +1369,10 @@ test_6_3_2 (cce_destination_t upper_L)
     {
       ccsys_open_flags_t	flags;
       ccsys_open_mode_t		mode;
-      ccsys_fd_t		fd;
 
       flags.data = CCSYS_O_CREAT;
       mode.data  = CCSYS_S_IRUSR | CCSYS_S_IWUSR;
-      fd = ccsys_open(L, filename, flags, mode);
-      ccsys_close(L, fd);
+      ccsys_touch(L, filename, flags, mode);
       ccsys_handler_remove_init(L, filename_H, filename);
     }
 

@@ -3568,6 +3568,7 @@ Wrapper for @cfunc{fdatasync}; @manpage{fdatasync, Committing file system caches
 
 
 @menu
+* fs touch::                    Creating files.
 * fs dirs working::             The working directory.
 * fs dirs reading::             Reading directory entries.
 * fs dirs creating::            Creating and deleting directories.
@@ -3582,6 +3583,48 @@ Wrapper for @cfunc{fdatasync}; @manpage{fdatasync, Committing file system caches
 * fs times::                    File times.
 * fs temp::                     Temporary files and directories.
 @end menu
+
+@c page
+@node fs touch
+@section Creating files
+
+
+The following symbols are defined in the header file @file{ccsys.h}.
+
+
+@deftypefun void ccsys_touch (cce_destination_t @var{L}, const char * @var{filename}, ccsys_open_flags_t @var{flags}, ccsys_open_mode_t @var{mode})
+Create a file by opening it and then closing it; the arguments are the same of @cfunc{ccsys_open};
+@ref{io open, ccsys_open}.
+
+Calling this function is equivalent to executing the code:
+
+@example
+ccsys_fd_t      fd;
+
+fd = ccsys_open(L, filename, flags, mode);
+ccsys_close(L, fd);
+@end example
+@end deftypefun
+
+
+As usage example of @cfunc{ccsys_touch} see the following code:
+
+@example
+cce_location_t  L[1];
+
+if (cce_location(L)) @{
+  cce_run_error_handlers_final(L);
+@} else @{
+  ccsys_open_flags_t    flags;
+  ccsys_open_mode_t     mode;
+
+  flags.data = CCSYS_O_CREAT;
+  mode.data  = CCSYS_S_IRUSR | CCSYS_S_IWUSR;
+  ccsys_touch(L, filename, flags, mode);
+
+  cce_run_cleanup_handlers(L);
+@}
+@end example
 
 @c page
 @node fs dirs working
