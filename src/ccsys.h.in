@@ -1286,6 +1286,17 @@ ccsys_decl bool ccsys_s_issock (ccsys_stat_mode_t F)
 
 #endif
 
+/* ------------------------------------------------------------------ */
+
+ccsys_decl bool ccsys_pathname_exists (cce_destination_t L, char const * pathname)
+  __attribute__((__nonnull__(1,2)));
+
+ccsys_decl bool ccsys_pathname_isreg (cce_destination_t L, char const * pathname)
+  __attribute__((__nonnull__(1,2)));
+
+ccsys_decl bool ccsys_pathname_isdir (cce_destination_t L, char const * pathname)
+  __attribute__((__nonnull__(1,2)));
+
 
 /** --------------------------------------------------------------------
  ** File system: creating files.

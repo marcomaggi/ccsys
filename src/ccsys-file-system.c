@@ -701,6 +701,43 @@ ccsys_s_issock (ccsys_stat_mode_t F)
 
 
 /** --------------------------------------------------------------------
+ ** File system: pathname existence and type.
+ ** ----------------------------------------------------------------- */
+
+bool
+ccsys_pathname_exists (cce_destination_t L, char const * pathname)
+{
+  ccsys_stat_t	S[1];
+
+  return ccsys_stat(L, pathname, S);
+}
+
+bool
+ccsys_pathname_isreg (cce_destination_t L, char const * pathname)
+{
+  ccsys_stat_t	S[1];
+
+  if (ccsys_stat(L, pathname, S)) {
+    return ccsys_s_isreg(ccsys_ref_stat_st_mode(S));
+  } else {
+    return false;
+  }
+}
+
+bool
+ccsys_pathname_isdir (cce_destination_t L, char const * pathname)
+{
+  ccsys_stat_t	S[1];
+
+  if (ccsys_stat(L, pathname, S)) {
+    return ccsys_s_isdir(ccsys_ref_stat_st_mode(S));
+  } else {
+    return false;
+  }
+}
+
+
+/** --------------------------------------------------------------------
  ** File system: working directory.
  ** ----------------------------------------------------------------- */
 

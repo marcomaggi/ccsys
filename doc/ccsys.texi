@@ -4612,6 +4612,7 @@ Wrapper for @cfunc{renameat2}; @manpage{renameat2, Change the name or location o
 * fs stat macros::              Feature macros.
 * fs stat setget::              Setters and getters for @objtype{ccsys_stat_t}.
 * fs stat mode::                Inspecting the file mode.
+* fs stat exists::              Pathname existence and type.
 * fs stat one::                 Using @cfunc{ccsys_stat}.
 * fs stat two::                 Using @cfunc{ccsys_fstatat}.
 @end menu
@@ -4932,6 +4933,28 @@ Return @true{} if @var{F} describes a symbolic link.
 
 @deftypefun bool ccsys_s_issock (ccsys_stat_mode_t @var{F})
 Return @true{} if @var{F} describes a socket.
+@end deftypefun
+
+@c page
+@node fs stat exists
+@subsection Pathname existence and type
+
+
+The following symbols are defined in the header file @file{ccsys.h}.
+
+
+@deftypefun bool ccsys_pathname_exists (cce_destination_t @var{L}, char const * @var{pathname})
+Return @true{} if @var{pathname} exists; otherwise return @false{}.
+@end deftypefun
+
+
+@deftypefun bool ccsys_pathname_isreg (cce_destination_t @var{L}, char const * @var{pathname})
+Return @true{} if @var{pathname} exists and it represents a regular file; otherwise return @false{}.
+@end deftypefun
+
+
+@deftypefun bool ccsys_pathname_isdir (cce_destination_t @var{L}, char const * @var{pathname})
+Return @true{} if @var{pathname} exists and it represents a directory; otherwise return @false{}.
 @end deftypefun
 
 @c page
