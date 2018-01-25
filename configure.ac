@@ -51,15 +51,19 @@ dnl page
 AS_CASE("$target_os",
   [*linux*],
   [ccsys_OS_LINUX=yes
+   AC_DEFINE([CCSYS_ON_LINUX],[1],[True if the platform is Linux])
    AC_MSG_NOTICE([detected OS: linux])],
   [*bsd*],
   [ccsys_OS_BSD=yes
+   AC_DEFINE([CCSYS_ON_BSD],[1],[True if the platform is BSD])
    AC_MSG_NOTICE([detected OS: BSD])],
   [*cygwin*],
   [ccsys_OS_CYGWIN=yes
+   AC_DEFINE([CCSYS_ON_CYGWIN],[1],[True if the platform is Cygwin])
    AC_MSG_NOTICE([detected OS: CYGWIN])],
   [*darwin*],
   [ccsys_OS_DARWIN=yes
+   AC_DEFINE([CCSYS_ON_DARWIN],[1],[True if the platform is Darwin])
    AC_MSG_NOTICE([detected OS: DARWIN])])
 AM_CONDITIONAL([ON_LINUX], [test "x$ccsys_OS_LINUX"  = xyes])
 AM_CONDITIONAL([ON_BSD],   [test "x$ccsys_OS_BSD"    = xyes])
@@ -106,7 +110,7 @@ AC_PROG_CC
 AM_PROG_CC_C_O
 AC_HEADER_STDC
 AC_CHECK_HEADERS([assert.h errno.h stdint.h stddef.h setjmp.h memory.h limits.h utime.h fcntl.h dirent.h time.h])
-AC_CHECK_HEADERS([sys/select.h sys/stat.h sys/time.h sys/types.h sys/uio.h sys/mman.h sys/wait.h])
+AC_CHECK_HEADERS([sys/syscall.h sys/select.h sys/stat.h sys/time.h sys/types.h sys/uio.h sys/mman.h sys/wait.h])
 AC_CHECK_HEADERS([netdb.h netinet/in.h arpa/inet.h sys/socket.h sys/un.h])
 AC_CHECK_HEADERS([signal.h])
 AC_CHECK_HEADERS([linux/fs.h])

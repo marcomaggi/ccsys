@@ -93,6 +93,12 @@ AC_DEFUN([CCSYS_SYS_SOCKET_HEADER],[
 #endif
 ])
 
+AC_DEFUN([CCSYS_SYS_SYSCALL_HEADER],[
+#ifdef HAVE_SYS_SYSCALL_H
+#  include <sys/syscall.h>
+#endif
+])
+
 AC_DEFUN([CCSYS_SYS_UN_HEADER],[
 #ifdef HAVE_SYS_UN_H
 #  include <sys/un.h>

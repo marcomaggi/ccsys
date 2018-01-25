@@ -4602,6 +4602,130 @@ Wrapper for @cfunc{renameat2}; @manpage{renameat2, Change the name or location o
 @end quotation
 @end deftypefun
 
+@menu
+* fs renaming one::             Using @cfunc{ccsys_rename}.
+* fs renaming two::             Using @cfunc{ccsys_renameat}.
+* fs renaming three::           Using @cfunc{ccsys_renameat2}.
+@end menu
+
+@c page
+@node fs renaming one
+@subsection Using @cfunc{ccsys_rename}
+
+
+As usage example of @cfunc{ccsys_rename} see the following code.
+
+@smallexample
+cce_location_t        L[1];
+
+if (cce_location(L)) @{
+  cce_run_error_handlers_raise(L, upper_L);
+@} else @{
+  char const *        filename = "name.ext";
+  char const *        newname  = "blue.ext";
+
+  /* Create the file. */
+  @{
+    ccsys_open_flags_t        flags;
+    ccsys_open_mode_t         mode;
+
+    flags.data = CCSYS_O_CREAT;
+    mode.data  = CCSYS_S_IRUSR | CCSYS_S_IWUSR;
+    ccsys_touch(L, filename, flags, mode);
+  @}
+
+  /* Rename the pathname. */
+  @{
+    ccsys_rename(L, filename, newname);
+    assert(false == ccsys_pathname_isreg(L, filename));
+    assert(true  == ccsys_pathname_isreg(L, newname));
+  @}
+
+  cce_run_cleanup_handlers(L);
+@}
+@end smallexample
+
+@c page
+@node fs renaming two
+@subsection Using @cfunc{ccsys_renameat}
+
+
+As usage example of @cfunc{ccsys_renameat} see the following code.
+
+@smallexample
+cce_location_t        L[1];
+
+if (cce_location(L)) @{
+  cce_run_error_handlers_raise(L, upper_L);
+@} else @{
+  char const *        filename = "name.ext";
+  char const *        newname  = "blue.ext";
+
+  /* Create the file. */
+  @{
+    ccsys_open_flags_t        flags;
+    ccsys_open_mode_t         mode;
+
+    flags.data = CCSYS_O_CREAT;
+    mode.data  = CCSYS_S_IRUSR | CCSYS_S_IWUSR;
+    ccsys_touch(L, filename, flags, mode);
+  @}
+
+  /* Rename the pathname. */
+  @{
+    ccsys_renameat(L, CCSYS_AT_FDCWD, filename,
+                      CCSYS_AT_FDCWD, newname);
+    assert(false == ccsys_pathname_isreg(L, filename));
+    assert(true  == ccsys_pathname_isreg(L, newname));
+  @}
+
+  cce_run_cleanup_handlers(L);
+@}
+@end smallexample
+
+@c page
+@node fs renaming three
+@subsection Using @cfunc{ccsys_renameat2}
+
+
+As usage example of @cfunc{ccsys_renameat2} see the following code.
+
+@smallexample
+cce_location_t        L[1];
+
+if (cce_location(L)) @{
+  cce_run_error_handlers_raise(L, upper_L);
+@} else @{
+  char const *        filename = "name.ext";
+  char const *        newname  = "blue.ext";
+
+  /* Create the file. */
+  @{
+    ccsys_open_flags_t        flags;
+    ccsys_open_mode_t         mode;
+
+    flags.data = CCSYS_O_CREAT;
+    mode.data  = CCSYS_S_IRUSR | CCSYS_S_IWUSR;
+    ccsys_touch(L, filename, flags, mode);
+  @}
+
+  /* Rename the pathname. */
+  @{
+    ccsys_renameat2_flags_t   flags;
+
+    flags.data = 0;
+    ccsys_renameat2(L,
+                    CCSYS_AT_FDCWD, filename,
+                    CCSYS_AT_FDCWD, newname,
+                    flags);
+    assert(false == ccsys_pathname_isreg(L, filename));
+    assert(true  == ccsys_pathname_isreg(L, newname));
+  @}
+
+  cce_run_cleanup_handlers(L);
+@}
+@end smallexample
+
 @c page
 @node fs stat
 @section Reading file attributes

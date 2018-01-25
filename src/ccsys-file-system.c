@@ -37,11 +37,17 @@
 #ifdef HAVE_FCNTL_H
 #  include <fcntl.h>
 #endif
+#ifdef HAVE_LINUX_FS_H
+#  include <linux/fs.h>
+#endif
 #ifdef HAVE_STRING_H
 #  include <string.h>
 #endif
 #ifdef HAVE_SYS_STAT_H
 #  include <sys/stat.h>
+#endif
+#ifdef HAVE_SYS_SYSCALL_H
+#  include <sys/syscall.h>
 #endif
 #ifdef HAVE_SYS_TIME_H
 #  include <sys/time.h>
@@ -1167,7 +1173,7 @@ ccsys_renameat (cce_destination_t L,
 }
 #endif
 
-#ifdef HAVE_RENAMEAT2
+#if (defined CCSYS_ON_LINUX)
 void
 ccsys_renameat2 (cce_destination_t L,
 		 ccsys_dirfd_t old_dirfd, char const * oldname,
@@ -1176,7 +1182,7 @@ ccsys_renameat2 (cce_destination_t L,
 {
   int	rv;
   errno = 0;
-  rv = renameat2(old_dirfd.data, oldname, new_dirfd.data, newname, flags.data);
+  rv = syscall(SYS_renameat2, old_dirfd.data, oldname, new_dirfd.data, newname, flags.data);
   if (-1 == rv) {
     cce_raise(L, cce_condition_new_errno_clear());
   }

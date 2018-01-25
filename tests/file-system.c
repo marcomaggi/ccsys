@@ -1178,7 +1178,7 @@ test_5_4_2 (cce_destination_t upper_L)
     char const *	filename = "name.ext";
     char const *	linkname = "link.ext";
 
-    /* Create and open the file. */
+    /* Create the file. */
     {
       ccsys_open_flags_t	flags;
       ccsys_open_mode_t		mode;
@@ -1226,7 +1226,7 @@ test_6_1 (cce_destination_t upper_L)
     char const *	filename = "name.ext";
     char const *	linkname = "link.ext";
 
-    /* Create and open the file. */
+    /* Create the file. */
     {
       ccsys_open_flags_t	flags;
       ccsys_open_mode_t		mode;
@@ -1276,7 +1276,7 @@ test_6_2 (cce_destination_t upper_L)
     char const *	filename = "name.ext";
     char const *	linkname = "link.ext";
 
-    /* Create and open the file. */
+    /* Create the file. */
     {
       ccsys_open_flags_t	flags;
       ccsys_open_mode_t		mode;
@@ -1324,7 +1324,7 @@ test_6_3_1 (cce_destination_t upper_L)
   } else {
     char const *	filename = "name.ext";
 
-    /* Create and open the file. */
+    /* Create the file. */
     {
       ccsys_open_flags_t	flags;
       ccsys_open_mode_t		mode;
@@ -1365,7 +1365,7 @@ test_6_3_2 (cce_destination_t upper_L)
   } else {
     char const *	filename = "name.ext";
 
-    /* Create and open the file. */
+    /* Create the file. */
     {
       ccsys_open_flags_t	flags;
       ccsys_open_mode_t		mode;
@@ -1406,7 +1406,7 @@ test_7_1 (cce_destination_t upper_L)
   } else {
     char const *	filename = "name.ext";
 
-    /* Create and open the file. */
+    /* Create the file. */
     {
       ccsys_open_flags_t	flags;
       ccsys_open_mode_t		mode;
@@ -1446,7 +1446,7 @@ test_7_2 (cce_destination_t upper_L)
   } else {
     char const *	filename = "name.ext";
 
-    /* Create and open the file. */
+    /* Create the file. */
     {
       ccsys_open_flags_t	flags;
       ccsys_open_mode_t		mode;
@@ -1469,6 +1469,141 @@ test_7_2 (cce_destination_t upper_L)
 
     cce_run_cleanup_handlers(L);
   }
+}
+
+
+/** --------------------------------------------------------------------
+ ** File system: renaming links with "ccsys_rename()".
+ ** ----------------------------------------------------------------- */
+
+void
+test_8_1 (cce_destination_t upper_L)
+{
+  cce_location_t	L[1];
+  cce_cleanup_handler_t	filename_H[1];
+  cce_cleanup_handler_t	newname_H[1];
+
+  if (cce_location(L)) {
+    if (1) { fprintf(stderr, "%s: %s\n", __func__, cce_condition_static_message(cce_condition(L))); }
+    cce_run_error_handlers_raise(L, upper_L);
+  } else {
+    char const *	filename = "name.ext";
+    char const *	newname  = "blue.ext";
+
+    /* Create the file. */
+    {
+      ccsys_open_flags_t	flags;
+      ccsys_open_mode_t		mode;
+
+      flags.data = CCSYS_O_CREAT;
+      mode.data  = CCSYS_S_IRUSR | CCSYS_S_IWUSR;
+      ccsys_touch(L, filename, flags, mode);
+      ccsys_handler_remove_init(L, filename_H, filename);
+    }
+
+    /* Rename the pathname. */
+    {
+      ccsys_rename(L, filename, newname);
+      ccsys_handler_remove_init(L, newname_H, newname);
+      cctests_assert(L, false == ccsys_pathname_isreg(L, filename));
+      cctests_assert(L, true  == ccsys_pathname_isreg(L, newname));
+    }
+
+    cce_run_cleanup_handlers(L);
+  }
+}
+
+
+/** --------------------------------------------------------------------
+ ** File system: renaming links with "ccsys_renameat()".
+ ** ----------------------------------------------------------------- */
+
+void
+test_8_2 (cce_destination_t upper_L)
+{
+  cce_location_t	L[1];
+  cce_cleanup_handler_t	filename_H[1];
+  cce_cleanup_handler_t	newname_H[1];
+
+  if (cce_location(L)) {
+    if (1) { fprintf(stderr, "%s: %s\n", __func__, cce_condition_static_message(cce_condition(L))); }
+    cce_run_error_handlers_raise(L, upper_L);
+  } else {
+    char const *	filename = "name.ext";
+    char const *	newname  = "blue.ext";
+
+    /* Create the file. */
+    {
+      ccsys_open_flags_t	flags;
+      ccsys_open_mode_t		mode;
+
+      flags.data = CCSYS_O_CREAT;
+      mode.data  = CCSYS_S_IRUSR | CCSYS_S_IWUSR;
+      ccsys_touch(L, filename, flags, mode);
+      ccsys_handler_remove_init(L, filename_H, filename);
+    }
+
+    /* Rename the pathname. */
+    {
+      ccsys_renameat(L, CCSYS_AT_FDCWD, filename, CCSYS_AT_FDCWD, newname);
+      ccsys_handler_remove_init(L, newname_H, newname);
+      cctests_assert(L, false == ccsys_pathname_isreg(L, filename));
+      cctests_assert(L, true  == ccsys_pathname_isreg(L, newname));
+    }
+
+    cce_run_cleanup_handlers(L);
+  }
+}
+
+
+/** --------------------------------------------------------------------
+ ** File system: renaming links with "ccsys_renameat2()".
+ ** ----------------------------------------------------------------- */
+
+void
+test_8_3 (cce_destination_t upper_L CCSYS_UNUSED)
+{
+#ifdef CCSYS_ON_LINUX
+  cce_location_t	L[1];
+  cce_cleanup_handler_t	filename_H[1];
+  cce_cleanup_handler_t	newname_H[1];
+
+  fprintf(stderr, "%s: running test for renameat2()\n", __func__);
+
+  if (cce_location(L)) {
+    if (1) { fprintf(stderr, "%s: %s\n", __func__, cce_condition_static_message(cce_condition(L))); }
+    cce_run_error_handlers_raise(L, upper_L);
+  } else {
+    char const *	filename = "name.ext";
+    char const *	newname  = "blue.ext";
+
+    /* Create the file. */
+    {
+      ccsys_open_flags_t	flags;
+      ccsys_open_mode_t		mode;
+
+      flags.data = CCSYS_O_CREAT;
+      mode.data  = CCSYS_S_IRUSR | CCSYS_S_IWUSR;
+      ccsys_touch(L, filename, flags, mode);
+      ccsys_handler_remove_init(L, filename_H, filename);
+    }
+
+    /* Rename the pathname. */
+    {
+      ccsys_renameat2_flags_t	flags;
+
+      flags.data = 0;
+      ccsys_renameat2(L, CCSYS_AT_FDCWD, filename, CCSYS_AT_FDCWD, newname, flags);
+      ccsys_handler_remove_init(L, newname_H, newname);
+      cctests_assert(L, false == ccsys_pathname_isreg(L, filename));
+      cctests_assert(L, true  == ccsys_pathname_isreg(L, newname));
+    }
+
+    cce_run_cleanup_handlers(L);
+  }
+#else
+  fprintf(stderr, "%s: undefined renameat2()\n", __func__);
+#endif
 }
 
 
@@ -1536,6 +1671,14 @@ main (void)
     {
       cctests_run(test_7_1);
       cctests_run(test_7_2);
+    }
+    cctests_end_group();
+
+    cctests_begin_group("renaming links");
+    {
+      cctests_run(test_8_1);
+      cctests_run(test_8_2);
+      cctests_run(test_8_3);
     }
     cctests_end_group();
   }
