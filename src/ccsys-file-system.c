@@ -61,6 +61,22 @@
 
 
 /** --------------------------------------------------------------------
+ ** File system: creating files.
+ ** ----------------------------------------------------------------- */
+
+#if ((defined HAVE_OPEN) && (defined HAVE_CLOSE))
+void
+ccsys_touch (cce_destination_t L, const char *filename, ccsys_open_flags_t flags, ccsys_open_mode_t mode)
+{
+  ccsys_fd_t	fd;
+
+  fd = ccsys_open(L, filename, flags, mode);
+  ccsys_close(L, fd);
+}
+#endif
+
+
+/** --------------------------------------------------------------------
  ** File system: reading directory entries.
  ** ----------------------------------------------------------------- */
 

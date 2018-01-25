@@ -1402,6 +1402,88 @@ test_6_3_2 (cce_destination_t upper_L)
 }
 
 
+/** --------------------------------------------------------------------
+ ** File system: removing links with "ccsys_unlink()".
+ ** ----------------------------------------------------------------- */
+
+void
+test_7_1 (cce_destination_t upper_L)
+{
+  cce_location_t	L[1];
+  cce_cleanup_handler_t	filename_H[1];
+
+  if (cce_location(L)) {
+    if (1) { fprintf(stderr, "%s: %s\n", __func__, cce_condition_static_message(cce_condition(L))); }
+    cce_run_error_handlers_raise(L, upper_L);
+  } else {
+    char const *	filename = "name.ext";
+
+    /* Create and open the file. */
+    {
+      ccsys_open_flags_t	flags;
+      ccsys_open_mode_t		mode;
+
+      flags.data = CCSYS_O_CREAT;
+      mode.data  = CCSYS_S_IRUSR | CCSYS_S_IWUSR;
+      ccsys_touch(L, filename, flags, mode);
+      ccsys_handler_remove_init(L, filename_H, filename);
+    }
+
+    /* Unlink the pathname. */
+    {
+      ccsys_stat_t	S[1];
+
+      ccsys_unlink(L, filename);
+      cctests_assert(L, false == ccsys_stat(L, filename, S));
+    }
+
+    cce_run_cleanup_handlers(L);
+  }
+}
+
+
+/** --------------------------------------------------------------------
+ ** File system: removing links with "ccsys_unlinkat()".
+ ** ----------------------------------------------------------------- */
+
+void
+test_7_2 (cce_destination_t upper_L)
+{
+  cce_location_t	L[1];
+  cce_cleanup_handler_t	filename_H[1];
+
+  if (cce_location(L)) {
+    if (1) { fprintf(stderr, "%s: %s\n", __func__, cce_condition_static_message(cce_condition(L))); }
+    cce_run_error_handlers_raise(L, upper_L);
+  } else {
+    char const *	filename = "name.ext";
+
+    /* Create and open the file. */
+    {
+      ccsys_open_flags_t	flags;
+      ccsys_open_mode_t		mode;
+
+      flags.data = CCSYS_O_CREAT;
+      mode.data  = CCSYS_S_IRUSR | CCSYS_S_IWUSR;
+      ccsys_touch(L, filename, flags, mode);
+      ccsys_handler_remove_init(L, filename_H, filename);
+    }
+
+    /* Unlink the pathname. */
+    {
+      ccsys_unlinkat_flags_t	flags;
+      ccsys_stat_t		S[1];
+
+      flags.data = 0;
+      ccsys_unlinkat(L, CCSYS_AT_FDCWD, filename, flags);
+      cctests_assert(L, false == ccsys_stat(L, filename, S));
+    }
+
+    cce_run_cleanup_handlers(L);
+  }
+}
+
+
 int
 main (void)
 {
@@ -1459,6 +1541,13 @@ main (void)
       cctests_run(test_6_2);
       cctests_run(test_6_3_1);
       cctests_run(test_6_3_2);
+    }
+    cctests_end_group();
+
+    cctests_begin_group("removing links");
+    {
+      cctests_run(test_7_1);
+      cctests_run(test_7_2);
     }
     cctests_end_group();
   }

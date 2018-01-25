@@ -1278,6 +1278,14 @@ ccsys_decl bool ccsys_s_issock (ccsys_stat_mode_t F)
 
 
 /** --------------------------------------------------------------------
+ ** File system: creating files.
+ ** ----------------------------------------------------------------- */
+
+ccsys_decl void ccsys_touch (cce_destination_t L, const char *filename, ccsys_open_flags_t flags, ccsys_open_mode_t mode)
+  __attribute__((__nonnull__(1,2)));
+
+
+/** --------------------------------------------------------------------
  ** File system: creating and deleting directories.
  ** ----------------------------------------------------------------- */
 

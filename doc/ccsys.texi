@@ -4015,7 +4015,7 @@ if (cce_location(L)) @{
 @menu
 * fs links creating::           Creating links and symbolic links.
 * fs links reading::            Reading links and symbolic links.
-* fs links removing::           Removing links links.
+* fs links removing::           Removing links.
 @end menu
 
 @c page
@@ -4329,19 +4329,19 @@ if (cce_location(L)) @{
 
 @c page
 @node fs links removing
-@subsection Removing links links
+@subsection Removing links
 
 
 The following symbols are defined in the header file @file{ccsys.h}.
 
 
 @deftypefun void ccsys_unlink (cce_destination_t @var{L}, char const * @var{filename})
-Wrapper for @cfunc{unlink}.
+Wrapper for @cfunc{unlink}; @manpage{unlink, Delete a name and possibly the file it refers to}.
 @end deftypefun
 
 
 @deftypefun void ccsys_unlinkat (cce_destination_t @var{L}, ccsys_dirfd_t @var{dirfd}, char const * @var{filename}, ccsys_unlinkat_flags_t @var{flags})
-Wrapper for @cfunc{unlinkat}.
+Wrapper for @cfunc{unlinkat}; @manpage{unlinkat, Delete a name and possibly the file it refers to}.
 @end deftypefun
 
 @c ------------------------------------------------------------------------
