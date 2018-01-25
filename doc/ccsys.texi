@@ -4392,25 +4392,38 @@ Wrapper for @cfunc{unlinkat}; @manpage{unlinkat, Delete a name and possibly the 
 @subsubheading Handler for at--links removal
 
 
-We can remove temporary files with the standard function @cfunc{unlink} as follows:
+We can remove temporary files with the standard function @cfunc{unlinkat} as follows:
 
 @example
 cce_location_t          L[1];
-cce_cleanup_handler_t   fd_H[1];
-cce_cleanup_handler_t   file_H[1];
+cce_cleanup_handler_t   filedes_H[1];
+cce_cleanup_handler_t   filename_H[1];
+ccsys_at_link_t         lnk;
 
 if (cce_location(L)) @{
   cce_run_error_handlers_final(L);
 @} else @{
-  ccsys_open_flags_t    flags;
-  ccsys_open_mode_t     mode;
-  ccsys_fd_t            fd;
+  ccsys_dirfd_t dirfd    = CCSYS_AT_FDCWD;
+  char const *  filename = "name.ext";
+  ccsys_fd_t    fd;
 
-  flags.data    = CCSYS_O_CREAT;
-  mode.data     = CCSYS_S_IRUSR | CCSYS_S_IWUSR;
-  fd            = ccsys_open(L, "name.ext", flags, mode);
-  ccsys_cleanup_handler_filedes_init(L, fd_H, fd);
-  ccsys_cleanup_handler_remove_init(L, file_H, "name.ext");
+  @{
+    ccsys_open_flags_t    flags;
+    ccsys_open_mode_t     mode;
+
+    flags.data = CCSYS_O_CREAT;
+    mode.data  = CCSYS_S_IRUSR | CCSYS_S_IWUSR;
+    fd         = ccsys_open(L, dirfd, "name.ext", flags, mode);
+    ccsys_handler_filedes_init(L, filedes_H, fd);
+  @}
+
+  @{
+    lnk.dirfd      = dirfd;
+    lnk.pathname   = filename;
+    lnk.flags.data = 0;
+    ccsys_handler_unlinkat_init(L, filename_H, &lnk);
+  @}
+
   cce_run_cleanup_handlers(L);
 @}
 @end example
@@ -4421,23 +4434,35 @@ we can use the source code of this handler as template to implement a more compl
 The following symbols are defined in the header file @file{ccsys.h}.
 
 
-@deftypefun void ccsys_cleanup_handler_unlinkat_init (cce_destination_t @var{L}, cce_handler_t * @var{H}, char const * @var{pathname})
-@deftypefunx void ccsys_error_handler_unlinkat_init (cce_destination_t @var{L}, cce_handler_t * @var{H}, char const * @var{pathname})
+@deftp {Struct Typedef} ccsys_at_link_t
+Type of structure used to hold data for an @cfunc{unlinkat} call.  It has the following public
+fields:
+
+@table @code
+@item ccsys_dirfd_t dirfd
+The file descriptor of the directory to which the pathname is relative.
+
+@item char const * pathname
+The pathname to unlink.  It must be an @asciiz{} representation of the pathname; it is @strong{not}
+duplicated by this handler and it must exist for the whole usage extent of the handler.
+
+@item ccsys_unlinkat_flags_t flags
+Flags for the unlinking operation.  We can use these, for example, to unlink a directory rather than
+a file.
+@end table
+@end deftp
+
+
+@deftypefun void ccsys_cleanup_handler_unlinkat_init (cce_destination_t @var{L}, cce_handler_t * @var{H}, ccsys_at_link_t * @var{lnk})
+@deftypefunx void ccsys_error_handler_unlinkat_init (cce_destination_t @var{L}, cce_handler_t * @var{H}, ccsys_at_link_t * @var{lnk})
 Register @var{H} as cleanup or error handler in the context of @var{L}.  The handler function will
-unlinkat the file whose pathname is @var{pathname} using the standard function @cfunc{unlinkat};
-errors in @cfunc{unlinkat} are @strong{ignored}.
-
-The string referenced by @var{pathname} must be an @asciiz{} representation of the file pathname; it
-is @strong{not} duplicated by this function and it must exist for the whole extent of the usage of
-@var{H}.
-
-If an error occurs while configuring the handler: an exception is raised by performing a non--local
-exit to @var{L}.
+unlink at the file whose pathname is @code{@var{lnk}->@var{pathname}} using the standard function
+@cfunc{unlinkat}; errors in @cfunc{unlinkat} are @strong{ignored}.
 @end deftypefun
 
 
-@deftypefn {Preprocessor Macro} void ccsys_handler_unlinkat_init (cce_destination_t @var{L}, cce_cleanup_handler_t * @var{H}, char const * @var{pathname})
-@deftypefnx {Preprocessor Macro} void ccsys_handler_unlinkat_init (cce_destination_t @var{L}, cce_error_handler_t * @var{H}, char const * @var{pathname})
+@deftypefn {Preprocessor Macro} void ccsys_handler_unlinkat_init (cce_destination_t @var{L}, cce_cleanup_handler_t * @var{H}, ccsys_at_link_t * @var{lnk})
+@deftypefnx {Preprocessor Macro} void ccsys_handler_unlinkat_init (cce_destination_t @var{L}, cce_error_handler_t * @var{H}, ccsys_at_link_t * @var{lnk})
 This preprocessor macro uses @code{_Generic} to dispatch the call according to the type of the
 pointer @var{H}; if the type is:
 
