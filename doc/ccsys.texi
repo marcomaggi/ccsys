@@ -1732,7 +1732,7 @@ The argument @var{advice} is meant to be a bitwise combination of the constants 
 * users persona::               Reading the persona of a process.
 * users setuid::                Setting the user identity.
 * users setgid::                Setting the group identity.
-* users addgrp::                Setting and getting additional
+* users groups::                Setting and getting additional
                                 group identities.
 * users login::                 Who logged in.
 @end menu
@@ -1809,7 +1809,7 @@ Wrapper for @cfunc{setregid}; @manpage{setregid, Setting the user identity}.
 @end deftypefun
 
 @c page
-@node users addgrp
+@node users groups
 @section Setting and getting additional group identities
 
 
@@ -1847,6 +1847,74 @@ belongs}.
 @deftypefun int ccsys_getgrouplist_acquire_groups_number (cce_destination_t @var{L}, char const * @var{username})
 Special wrapper for @cfunc{getgrouplist} which returns the number of groups for the selected user.
 @end deftypefun
+
+@menu
+* users groups one::            Using @cfunc{ccsys_getgroups}.
+* users groups two::            Using @cfunc{ccsys_getgrouplist}.
+@end menu
+
+@c page
+@node users groups one
+@subsection Using @cfunc{ccsys_getgroups}
+
+
+As usage example of @cfunc{ccsys_getgroups} see the following code.
+
+@example
+cce_location_t        L[1];
+
+if (cce_location(L)) @{
+  cce_run_error_handlers_raise(L, upper_L);
+@} else @{
+  int         count;
+
+  count = ccsys_getgroups_acquire_groups_number(L);
+  @{
+    ccsys_gid_t       groups[count];
+    int               ngroups;
+
+    ngroups = ccsys_getgroups(L, count, groups);
+
+    for (int i=0; i<ngroups; ++i) @{
+      printf("groups[%d]=%d\n", i, groups[i].data);
+    @}
+  @}
+  cce_run_cleanup_handlers(L);
+@}
+@end example
+
+@c page
+@node users groups two
+@subsection Using @cfunc{ccsys_getgrouplist}
+
+
+As usage example of @cfunc{ccsys_getgrouplist} see the following code.
+
+@example
+cce_location_t        L[1];
+
+if (cce_location(L)) @{
+  cce_run_error_handlers_raise(L, upper_L);
+@} else @{
+  char const *        username = "marco";
+  int                 count;
+
+  count = ccsys_getgrouplist_acquire_groups_number(L, username);
+  @{
+    ccsys_gid_t       gid;
+    int               ngroups = count;
+    ccsys_gid_t       groups[ngroups];
+
+    gid.data = 0;
+    ccsys_getgrouplist(L, username, gid, groups, &ngroups);
+
+    for (int i=0; i<ngroups; ++i) @{
+      printf("groups[%d]=%d\n", i, groups[i].data);
+    @}
+  @}
+  cce_run_cleanup_handlers(L);
+@}
+@end example
 
 @c page
 @node users login
