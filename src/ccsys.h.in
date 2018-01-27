@@ -140,6 +140,7 @@ typedef struct ccsys_blksize_t			ccsys_blksize_t;
 typedef struct ccsys_dev_t			ccsys_dev_t;
 typedef struct ccsys_dirfd_t			ccsys_dirfd_t;
 typedef struct ccsys_exit_status_t		ccsys_exit_status_t;
+typedef struct ccsys_fchownat_flags_t		ccsys_fchownat_flags_t;
 typedef struct ccsys_fd_flags_t			ccsys_fd_flags_t;
 typedef struct ccsys_fd_t			ccsys_fd_t;
 typedef struct ccsys_fstatat_flags_t		ccsys_fstatat_flags_t;
@@ -206,6 +207,7 @@ struct ccsys_unlinkat_flags_t		{ int				data; };
 struct ccsys_waitpid_options_t		{ int				data; };
 struct ccsys_waitpid_status_t		{ int				data; };
 struct ccsys_whence_t			{ int				data; };
+struct ccsys_fchownat_flags_t		{ int				data; };
 
 /* ------------------------------------------------------------------ */
 /* The ones below are opaque types. */
@@ -879,6 +881,55 @@ ccsys_decl void ccsys_madvise (cce_destination_t L, void * address, size_t lengt
 
 
 /** --------------------------------------------------------------------
+ ** Users and groups.
+ ** ----------------------------------------------------------------- */
+
+ccsys_decl ccsys_uid_t ccsys_getuid (void);
+ccsys_decl ccsys_gid_t ccsys_getgid (void);
+ccsys_decl ccsys_uid_t ccsys_geteuid (void);
+ccsys_decl ccsys_gid_t ccsys_getegid (void);
+
+/* ------------------------------------------------------------------ */
+
+ccsys_decl void ccsys_setuid   (cce_destination_t L, ccsys_uid_t uid);
+ccsys_decl void ccsys_seteuid  (cce_destination_t L, ccsys_uid_t uid);
+ccsys_decl void ccsys_setreuid (cce_destination_t L, ccsys_uid_t ruid, ccsys_uid_t euid);
+
+/* ------------------------------------------------------------------ */
+
+ccsys_decl void ccsys_setgid   (cce_destination_t L, ccsys_gid_t gid);
+ccsys_decl void ccsys_setegid  (cce_destination_t L, ccsys_gid_t gid);
+ccsys_decl void ccsys_setregid (cce_destination_t L, ccsys_gid_t rgid, ccsys_gid_t egid);
+
+/* ------------------------------------------------------------------ */
+
+ccsys_decl int  ccsys_getgroups (cce_destination_t L, int    count, ccsys_gid_t       * groups)
+  __attribute__((__nonnull__(1)));
+
+ccsys_decl void ccsys_setgroups (cce_destination_t L, size_t size,  ccsys_gid_t const * groups)
+  __attribute__((__nonnull__(1)));
+
+ccsys_decl void ccsys_initgroups (cce_destination_t L, char const * user, ccsys_gid_t gid)
+  __attribute__((__nonnull__(1,2)));
+
+ccsys_decl void ccsys_getgrouplist (cce_destination_t L, char const * user, ccsys_gid_t gid, ccsys_gid_t * groups, int * ngroups)
+  __attribute__((__nonnull__(1,2,4)));
+
+ccsys_decl int ccsys_getgroups_acquire_groups_number (cce_destination_t L)
+  __attribute__((__nonnull__(1)));
+
+ccsys_decl int ccsys_getgrouplist_acquire_groups_number (cce_destination_t L, char const * username)
+  __attribute__((__nonnull__(1,2)));
+
+/* ------------------------------------------------------------------ */
+
+#define CCSYS_L_CUSERID		@VALUEOF_CCSYS_L_CUSERID@
+
+ccsys_decl void ccsys_getlogin_r (cce_destination_t L, char * buf, size_t maxlen)
+  __attribute__((__nonnull__(1,2)));
+
+
+/** --------------------------------------------------------------------
  ** Input/output: file descriptor utilities.
  ** ----------------------------------------------------------------- */
 
@@ -1499,7 +1550,7 @@ ccsys_decl void ccsys_lchown (cce_destination_t L, char const * pathname, ccsys_
   __attribute__((__nonnull__(1,2)));
 
 ccsys_decl void ccsys_fchownat (cce_destination_t L, ccsys_dirfd_t dirfd, char const * pathname,
-				ccsys_uid_t owner, ccsys_gid_t group, int flags)
+				ccsys_uid_t owner, ccsys_gid_t group, ccsys_fchownat_flags_t flags)
   __attribute__((__nonnull__(1,3)));
 
 
@@ -1513,7 +1564,8 @@ ccsys_decl void ccsys_chmod (cce_destination_t L, char const * pathname, ccsys_o
 ccsys_decl void ccsys_fchmod (cce_destination_t L, ccsys_fd_t filedes, ccsys_open_mode_t mode)
   __attribute__((__nonnull__(1)));
 
-ccsys_decl void ccsys_fchmodat (cce_destination_t L, ccsys_dirfd_t dirfd, char const * pathname, ccsys_open_mode_t mode, int flags)
+ccsys_decl void ccsys_fchmodat (cce_destination_t L, ccsys_dirfd_t dirfd, char const * pathname,
+				ccsys_open_mode_t mode, int flags)
   __attribute__((__nonnull__(1,3)));
 
 

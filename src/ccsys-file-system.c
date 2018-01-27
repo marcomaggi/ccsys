@@ -1235,11 +1235,12 @@ ccsys_lchown (cce_location_t * L, char const * pathname, ccsys_uid_t owner, ccsy
 
 #ifdef HAVE_FCHOWNAT
 void
-ccsys_fchownat (cce_location_t * L, ccsys_dirfd_t dirfd, char const * pathname, ccsys_uid_t owner, ccsys_gid_t group, int flags)
+ccsys_fchownat (cce_location_t * L, ccsys_dirfd_t dirfd, char const * pathname, ccsys_uid_t owner, ccsys_gid_t group,
+		ccsys_fchownat_flags_t flags)
 {
   int	rv;
   errno = 0;
-  rv = fchownat(dirfd.data, pathname, owner.data, group.data, flags);
+  rv = fchownat(dirfd.data, pathname, owner.data, group.data, flags.data);
   if (-1 == rv) {
     cce_raise(L, cce_condition_new_errno_clear());
   }

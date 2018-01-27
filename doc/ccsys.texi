@@ -125,6 +125,7 @@ included in the section entitled ``@gnu{} Free Documentation License''.
 * semantic::                    Semantic types.
 * enums::                       Enumerated constants.
 * memory::                      Memory allocation, locking, mapping.
+* users::                       Users and groups system calls.
 * io::                          Input/output system calls.
 * fs::                          File system system calls.
 * sockets::                     Socket system calls.
@@ -1720,6 +1721,143 @@ The argument @var{advice} is meant to be a bitwise combination of the constants 
 @quotation
 @strong{NOTE}  This function is implemented by the @gnu{} C Library.
 @end quotation
+@end deftypefun
+
+@c page
+@node users
+@chapter Users and groups system calls
+
+
+@menu
+* users persona::               Reading the persona of a process.
+* users setuid::                Setting the user identity.
+* users setgid::                Setting the group identity.
+* users addgrp::                Setting and getting additional
+                                group identities.
+* users login::                 Who logged in.
+@end menu
+
+@c page
+@node users persona
+@section Reading the persona of a process
+
+
+The following symbols are defined in the header file @file{ccsys.h}.
+
+
+@deftypefun ccsys_uid_t ccsys_getuid (void)
+Wrapper for @cfunc{getuid}; @manpage{getuid, Get user identity}.
+@end deftypefun
+
+
+@deftypefun ccsys_gid_t ccsys_getgid (void)
+Wrapper for @cfunc{getgid}; @manpage{getgid, Get group identity}.
+@end deftypefun
+
+
+@deftypefun ccsys_uid_t ccsys_geteuid (void)
+Wrapper for @cfunc{geteuid}; @manpage{getuid, Get user identity}.
+@end deftypefun
+
+
+@deftypefun ccsys_gid_t ccsys_getegid (void)
+Wrapper for @cfunc{getegid}; @manpage{getuid, Get group identity}.
+@end deftypefun
+
+@c page
+@node users setuid
+@section Setting the user identity
+
+
+The following symbols are defined in the header file @file{ccsys.h}.
+
+
+@deftypefun void ccsys_setuid (cce_destination_t @var{L}, ccsys_uid_t @var{uid})
+Wrapper for @cfunc{setuid}; @manpage{setuid, Setting the user identity}.
+@end deftypefun
+
+
+@deftypefun void ccsys_seteuid (cce_destination_t @var{L}, ccsys_uid_t @var{uid})
+Wrapper for @cfunc{seteuid}; @manpage{seteuid, Setting the user identity}.
+@end deftypefun
+
+
+@deftypefun void ccsys_setreuid (cce_destination_t @var{L}, ccsys_uid_t @var{ruid}, ccsys_uid_t @var{euid})
+Wrapper for @cfunc{setreuid}; @manpage{setreuid, Setting the user identity}.
+@end deftypefun
+
+@c page
+@node users setgid
+@section Setting the group identity
+
+
+The following symbols are defined in the header file @file{ccsys.h}.
+
+
+@deftypefun void ccsys_setgid (cce_destination_t @var{L}, ccsys_gid_t @var{gid})
+Wrapper for @cfunc{setgid}; @manpage{setgid, Setting the user identity}.
+@end deftypefun
+
+
+@deftypefun void ccsys_setegid (cce_destination_t @var{L}, ccsys_gid_t @var{gid})
+Wrapper for @cfunc{setegid}; @manpage{setegid, Setting the user identity}.
+@end deftypefun
+
+
+@deftypefun void ccsys_setregid (cce_destination_t @var{L}, ccsys_gid_t @var{rgid}, ccsys_gid_t @var{egid})
+Wrapper for @cfunc{setregid}; @manpage{setregid, Setting the user identity}.
+@end deftypefun
+
+@c page
+@node users addgrp
+@section Setting and getting additional group identities
+
+
+The following symbols are defined in the header file @file{ccsys.h}.
+
+
+@deftypefun int ccsys_getgroups (cce_destination_t @var{L}, int @var{count}, ccsys_gid_t * @var{groups})
+Wrapper for @cfunc{getgroups}; @manpage{getgroups, Get list of supplementary group IDs}.
+@end deftypefun
+
+
+@deftypefun int ccsys_getgroups_acquire_groups_number (cce_destination_t @var{L})
+Special wrapper for @cfunc{getgroups} which returns the number of supplementary groups for the
+process.
+@end deftypefun
+
+
+@deftypefun void ccsys_setgroups (cce_destination_t @var{L}, size_t @var{size},  ccsys_gid_t const * @var{groups})
+Wrapper for @cfunc{setgroups}; @manpage{setgroups, Set list of supplementary group IDs}.
+@end deftypefun
+
+
+@deftypefun void ccsys_initgroups (cce_destination_t @var{L}, char const * @var{user}, ccsys_gid_t @var{gid})
+Wrapper for @cfunc{initgroups}; @manpage{initgroups, Initialize the supplementary group access
+list}.
+@end deftypefun
+
+
+@deftypefun void ccsys_getgrouplist (cce_destination_t @var{L}, char const * @var{user}, ccsys_gid_t @var{gid}, ccsys_gid_t * @var{groups}, int * @var{ngroups})
+Wrapper for @cfunc{getgrouplist}; @manpage{getgrouplist, Get list of groups to which a user
+belongs}.
+@end deftypefun
+
+
+@deftypefun int ccsys_getgrouplist_acquire_groups_number (cce_destination_t @var{L}, char const * @var{username})
+Special wrapper for @cfunc{getgrouplist} which returns the number of groups for the selected user.
+@end deftypefun
+
+@c page
+@node users login
+@section Who logged in
+
+
+The following symbols are defined in the header file @file{ccsys.h}.
+
+
+@deftypefun void ccsys_getlogin_r (cce_destination_t L, char * buf, size_t maxlen)
+Wrapper for @cfunc{getlogin_r}; @manpage{getlogin_r, Get the user name}.
 @end deftypefun
 
 @c page
@@ -5372,22 +5510,22 @@ The following symbols are defined in the header file @file{ccsys.h}.
 
 
 @deftypefun void ccsys_chown (cce_destination_t @var{L}, char const * @var{pathname}, uid_t @var{owner}, gid_t @var{group})
-Wrapper for @cfunc{chown}.
+Wrapper for @cfunc{chown}; @manpage{chown, Change ownership of a file}.
 @end deftypefun
 
 
 @deftypefun void ccsys_fchown (cce_destination_t @var{L}, int @var{filedes}, uid_t @var{owner}, gid_t @var{group})
-Wrapper for @cfunc{fchown}.
+Wrapper for @cfunc{fchown}; @manpage{chown, Change ownership of a file}.
 @end deftypefun
 
 
 @deftypefun void ccsys_lchown (cce_destination_t @var{L}, char const * @var{pathname}, uid_t @var{owner}, gid_t @var{group})
-Wrapper for @cfunc{lchown}.
+Wrapper for @cfunc{lchown}; @manpage{chown, Change ownership of a file}.
 @end deftypefun
 
 
-@deftypefun void ccsys_fchownat (cce_destination_t @var{L}, ccsys_dirfd_t @var{dirfd}, char const * @var{pathname}, uid_t @var{owner}, gid_t @var{group}, int @var{flags})
-Wrapper for @cfunc{fchownat}.
+@deftypefun void ccsys_fchownat (cce_destination_t @var{L}, ccsys_dirfd_t @var{dirfd}, char const * @var{pathname}, uid_t @var{owner}, gid_t @var{group}, ccsys_fchownat_flags_t @var{flags})
+Wrapper for @cfunc{fchownat}; @manpage{chown, Change ownership of a file}.
 @end deftypefun
 
 @c page
@@ -5399,17 +5537,17 @@ The following symbols are defined in the header file @file{ccsys.h}.
 
 
 @deftypefun void ccsys_chmod (cce_destination_t @var{L}, char const * @var{pathname}, ccsys_open_mode_t @var{mode})
-Wrapper for @cfunc{chmod}.
+Wrapper for @cfunc{chmod}; @manpage{chmod, Change permissions of a file}.
 @end deftypefun
 
 
 @deftypefun void ccsys_fchmod (cce_destination_t @var{L}, int @var{filedes}, ccsys_open_mode_t @var{mode})
-Wrapper for @cfunc{fchmod}.
+Wrapper for @cfunc{fchmod}; @manpage{fchmod, Change permissions of a file}.
 @end deftypefun
 
 
 @deftypefun void ccsys_fchmodat (cce_destination_t @var{L}, ccsys_dirfd_t @var{dirfd}, char const * @var{pathname}, ccsys_open_mode_t @var{mode}, int @var{flags})
-Wrapper for @cfunc{fchmodat}.
+Wrapper for @cfunc{fchmodat}; @manpage{fchmodat, Change permissions of a file}.
 @end deftypefun
 
 @c page

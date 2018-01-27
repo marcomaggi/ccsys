@@ -40,6 +40,7 @@ libccsys_la_LDFLAGS	= -version-info $(ccsys_CURRENT):$(ccsys_REVISION):$(ccsys_A
 libccsys_la_SOURCES	= \
 	src/ccsys-internals.h		\
 	src/ccsys-memory.c		\
+	src/ccsys-users-groups.c	\
 	src/ccsys-input-output.c	\
 	src/ccsys-file-system.c		\
 	src/ccsys-processes.c		\
@@ -75,6 +76,7 @@ check_PROGRAMS	= \
 	tests/version				\
 	tests/system-memory			\
 	tests/system-handlers			\
+	tests/users-groups			\
 	tests/input-output			\
 	tests/file-system
 
@@ -91,6 +93,9 @@ tests_system_memory_LDADD	= $(ccsys_tests_ldadd)
 
 tests_system_handlers_CPPFLAGS	= $(ccsys_tests_cppflags)
 tests_system_handlers_LDADD	= $(ccsys_tests_ldadd)
+
+tests_users_groups_CPPFLAGS	= $(ccsys_tests_cppflags)
+tests_users_groups_LDADD	= $(ccsys_tests_ldadd)
 
 tests_input_output_CPPFLAGS	= $(ccsys_tests_cppflags)
 tests_input_output_LDADD	= $(ccsys_tests_ldadd)

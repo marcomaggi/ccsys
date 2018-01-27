@@ -114,6 +114,7 @@ AC_PROG_CC
 AM_PROG_CC_C_O
 AC_HEADER_STDC
 AC_CHECK_HEADERS([assert.h errno.h stdint.h stddef.h setjmp.h memory.h limits.h utime.h fcntl.h dirent.h time.h])
+AC_CHECK_HEADERS([grp.h])
 AC_CHECK_HEADERS([sys/syscall.h sys/select.h sys/stat.h sys/time.h sys/types.h sys/uio.h sys/mman.h sys/wait.h])
 AC_CHECK_HEADERS([netdb.h netinet/in.h arpa/inet.h sys/socket.h sys/un.h])
 AC_CHECK_HEADERS([signal.h])
@@ -133,6 +134,8 @@ AC_FUNC_MALLOC
 
 AC_CHECK_FUNCS([mlock munlock mlockall munlockall])
 AC_CHECK_FUNCS([mmap munmap msync mprotect])
+AC_CHECK_FUNCS([getuid getgid geteuid getegid setuid seteuid setreuid setgid setegid setregid])
+AC_CHECK_FUNCS([getgroups setgroups initgroups getgrouplist getlogin_r])
 AC_CHECK_FUNCS([open openat close read pread write pwrite lseek])
 AC_CHECK_FUNCS([readv writev preadv pwritev preadv2 pwritev2])
 AC_CHECK_FUNCS([pipe pipe2 mkfifo mkfifoat])
@@ -451,6 +454,10 @@ AC_CACHE_SAVE
 
 dnl page
 #### system constants
+
+CCSYS_VALUEOF([CCSYS_L_CUSERID],[L_cuserid],[
+#include <stdio.h>
+])
 
 # Open modes.
 #

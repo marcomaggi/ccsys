@@ -51,6 +51,12 @@ AC_DEFUN([CCSYS_FCNTL_HEADER],[
 #endif
 ])
 
+AC_DEFUN([CCSYS_GRP_HEADER],[
+#ifdef HAVE_GRP_H
+#  include <grp.h>
+#endif
+])
+
 AC_DEFUN([CCSYS_LIMITS_HEADER],[
 #ifdef HAVE_LIMITS_H
 #  include <limits.h>
@@ -108,6 +114,12 @@ AC_DEFUN([CCSYS_SYS_UN_HEADER],[
 AC_DEFUN([CCSYS_STDDEF_HEADER],[
 #ifdef HAVE_STDDEF_H
 #  include <stddef.h>
+#endif
+])
+
+AC_DEFUN([CCSYS_STDIO_HEADER],[
+#ifdef HAVE_STDIO_H
+#  include <stdio.h>
 #endif
 ])
 
