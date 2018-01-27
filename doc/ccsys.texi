@@ -1856,9 +1856,41 @@ Special wrapper for @cfunc{getgrouplist} which returns the number of groups for 
 The following symbols are defined in the header file @file{ccsys.h}.
 
 
+@deftypevr {Preprocessor Symbol} int CCSYS_L_CUSERID
+The maximum number of character to allocate to store a full user name.
+@end deftypevr
+
+
 @deftypefun void ccsys_getlogin_r (cce_destination_t L, char * buf, size_t maxlen)
 Wrapper for @cfunc{getlogin_r}; @manpage{getlogin_r, Get the user name}.
 @end deftypefun
+
+
+@menu
+* users login one::             Using @cfunc{getlogin_r}.
+@end menu
+
+@c page
+@node users login one,  , users login, users login
+@subsection Using @cfunc{getlogin_r}
+
+
+As usage example of @cfunc{getlogin_r} see the following code.
+
+@example
+cce_location_t        L[1];
+
+if (cce_location(L)) @{
+  cce_run_error_handlers_final(L);
+@} else @{
+  size_t      maxlen = CCSYS_L_CUSERID;
+  char        username[maxlen];
+
+  ccsys_getlogin_r(L, username, maxlen);
+  printf("login user=%s\n", username);
+  cce_run_cleanup_handlers(L);
+@}
+@end example
 
 @c page
 @node io
