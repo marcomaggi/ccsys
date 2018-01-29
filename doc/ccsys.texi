@@ -2036,41 +2036,41 @@ otherwise it expands to @code{0}.
 @subsubheading Field getters
 
 
-The following field accessors are defined only if @objtype{struct stat} has the associated field;
+The following field accessors are defined only if @objtype{struct passwd} has the associated field;
 otherwise they are not implemented.
 
 
-@deftypefun {char const *} ccsys_ref_passwd_pw_name (ccsys_stat_t const * @var{S})
+@deftypefun {char const *} ccsys_ref_passwd_pw_name (ccsys_passwd_t const * @var{S})
 Getter for the field @code{pw_name} of @var{S}.
 @end deftypefun
 
 
-@deftypefun {char const *} ccsys_ref_passwd_pw_passwd (ccsys_stat_t const * @var{S})
+@deftypefun {char const *} ccsys_ref_passwd_pw_passwd (ccsys_passwd_t const * @var{S})
 Getter for the field @code{pw_passwd} of @var{S}.
 @end deftypefun
 
 
-@deftypefun ccsys_uid_t ccsys_ref_passwd_pw_uid (ccsys_stat_t const * @var{S})
+@deftypefun ccsys_uid_t ccsys_ref_passwd_pw_uid (ccsys_passwd_t const * @var{S})
 Getter for the field @code{pw_uid} of @var{S}.
 @end deftypefun
 
 
-@deftypefun ccsys_gid_t ccsys_ref_passwd_pw_gid (ccsys_stat_t const * @var{S})
+@deftypefun ccsys_gid_t ccsys_ref_passwd_pw_gid (ccsys_passwd_t const * @var{S})
 Getter for the field @code{pw_gid} of @var{S}.
 @end deftypefun
 
 
-@deftypefun {char const *} ccsys_ref_passwd_pw_gecos (ccsys_stat_t const * @var{S})
+@deftypefun {char const *} ccsys_ref_passwd_pw_gecos (ccsys_passwd_t const * @var{S})
 Getter for the field @code{pw_gecos} of @var{S}.
 @end deftypefun
 
 
-@deftypefun {char const *} ccsys_ref_passwd_pw_dir (ccsys_stat_t const * @var{S})
+@deftypefun {char const *} ccsys_ref_passwd_pw_dir (ccsys_passwd_t const * @var{S})
 Getter for the field @code{pw_dir} of @var{S}.
 @end deftypefun
 
 
-@deftypefun {char const *} ccsys_ref_passwd_pw_shell (ccsys_stat_t const * @var{S})
+@deftypefun {char const *} ccsys_ref_passwd_pw_shell (ccsys_passwd_t const * @var{S})
 Getter for the field @code{pw_shell} of @var{S}.
 @end deftypefun
 
@@ -2259,6 +2259,79 @@ The following symbols are defined in the header file @file{ccsys.h}.
 @c page
 @node users grpdb
 @section The groups database
+
+
+@menu
+* users grpdb struct::          The database entry structure.
+* users grpdb lookup::          Looking up one user.
+* users grpdb scan::            Scanning the database.
+@end menu
+
+@c page
+@node users grpdb struct
+@subsection The database entry structure
+
+
+The following symbols are defined in the header file @file{ccsys.h}.
+
+
+@deftp {Struct Typedef} ccsys_group_t
+Opaque wrapper for @objtype{struct group}.
+@end deftp
+
+@c ------------------------------------------------------------------------
+
+@subsubheading Feature macros
+
+
+@defmac CCSYS_HAVE_STRUCT_GROUP_GR_NAME
+Always defined.  Expands to @code{1} if @objtype{struct group} has the field @code{gr_name};
+otherwise it expands to @code{0}.
+@end defmac
+
+
+@defmac CCSYS_HAVE_STRUCT_GROUP_GR_GID
+Always defined.  Expands to @code{1} if @objtype{struct group} has the field @code{gr_gid};
+otherwise it expands to @code{0}.
+@end defmac
+
+
+@defmac CCSYS_HAVE_STRUCT_GROUP_GR_MEM
+Always defined.  Expands to @code{1} if @objtype{struct group} has the field @code{gr_mem};
+otherwise it expands to @code{0}.
+@end defmac
+
+@c ------------------------------------------------------------------------
+
+@subsubheading Field getters
+
+
+The following field accessors are defined only if @objtype{struct group} has the associated field;
+otherwise they are not implemented.
+
+
+@deftypefun {char const *} ccsys_ref_group_gr_name (ccsys_passwd_t const * @var{S})
+Getter for the field @code{gr_name} of @var{S}.
+@end deftypefun
+
+
+@deftypefun ccsys_gid_t ccsys_ref_group_gr_gid (ccsys_passwd_t const * @var{S})
+Getter for the field @code{gr_gid} of @var{S}.
+@end deftypefun
+
+
+@deftypefun {char const * const *} ccsys_ref_group_gr_mem (ccsys_passwd_t const * @var{S})
+Getter for the field @code{gr_mem} of @var{S}.
+@end deftypefun
+
+@c page
+@node users grpdb lookup
+@subsection Looking up one user
+
+@c page
+@node users grpdb scan
+@subsection Scanning the database
+
 
 
 @c page

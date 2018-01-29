@@ -221,6 +221,7 @@ typedef struct ccsys_dir_t			ccsys_dir_t;
 
 typedef struct ccsys_dirent_t			ccsys_dirent_t;
 typedef struct ccsys_fd_set_t			ccsys_fd_set_t;
+typedef struct ccsys_group_t			ccsys_group_t;
 typedef struct ccsys_hostent_t			ccsys_hostent_t;
 typedef struct ccsys_in_addr_t			ccsys_in_addr_t;
 typedef struct ccsys_iovec_t			ccsys_iovec_t;
@@ -235,6 +236,7 @@ typedef struct ccsys_utimbuf_t			ccsys_utimbuf_t;
 
 struct ccsys_dirent_t		{ uint8_t data[@SIZEOF_STRUCT_DIRENT@]; };
 struct ccsys_fd_set_t		{ uint8_t data[@SIZEOF_STRUCT_FD_SET@]; };
+struct ccsys_group_t		{ uint8_t data[@SIZEOF_STRUCT_GROUP@]; };
 struct ccsys_hostent_t		{ uint8_t data[@SIZEOF_STRUCT_HOSTENT@]; };
 struct ccsys_in_addr_t		{ uint8_t data[@SIZEOF_STRUCT_IN_ADDR@]; };
 struct ccsys_iovec_t		{ uint8_t data[@SIZEOF_STRUCT_IOVEC@]; };
@@ -982,6 +984,19 @@ ccsys_decl void ccsys_getpwent (cce_destination_t L);
 ccsys_decl void ccsys_getpwent_r (cce_destination_t L);
 
 ccsys_decl void ccsys_endpwent (cce_destination_t L);
+
+
+/** --------------------------------------------------------------------
+ ** Users and groups: groups database.
+ ** ----------------------------------------------------------------- */
+
+#define CCSYS_HAVE_STRUCT_GROUP_GR_NAME		@CCSYS_HAVE_STRUCT_GROUP_GR_NAME@
+#define CCSYS_HAVE_STRUCT_GROUP_GR_GID		@CCSYS_HAVE_STRUCT_GROUP_GR_GID@
+#define CCSYS_HAVE_STRUCT_GROUP_GR_MEM		@CCSYS_HAVE_STRUCT_GROUP_GR_MEM@
+
+CCSYS_STRUCT_GETTER(group_gr_name,	ccsys_group_t, char const *)
+CCSYS_STRUCT_GETTER(group_gr_gid,	ccsys_group_t, ccsys_gid_t)
+CCSYS_STRUCT_GETTER(group_gr_mem,	ccsys_group_t, char const * const *)
 
 
 /** --------------------------------------------------------------------

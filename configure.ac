@@ -117,7 +117,7 @@ AC_CHECK_HEADERS([assert.h errno.h stdint.h stddef.h setjmp.h memory.h limits.h 
 AC_CHECK_HEADERS([grp.h])
 AC_CHECK_HEADERS([sys/syscall.h sys/select.h sys/stat.h sys/time.h sys/types.h sys/uio.h sys/mman.h sys/wait.h])
 AC_CHECK_HEADERS([netdb.h netinet/in.h arpa/inet.h sys/socket.h sys/un.h])
-AC_CHECK_HEADERS([signal.h pwd.h])
+AC_CHECK_HEADERS([signal.h pwd.h grp.h])
 AC_CHECK_HEADERS([linux/fs.h])
 AC_HEADER_STDBOOL
 
@@ -240,6 +240,13 @@ CCSYS_STRUCT_FIELD([STRUCT_PASSWD_PW_GID],    [struct passwd],[pw_gid],    [CCSY
 CCSYS_STRUCT_FIELD([STRUCT_PASSWD_PW_GECOS],  [struct passwd],[pw_gecos],  [CCSYS_PWD_HEADER])
 CCSYS_STRUCT_FIELD([STRUCT_PASSWD_PW_DIR],    [struct passwd],[pw_dir],    [CCSYS_PWD_HEADER])
 CCSYS_STRUCT_FIELD([STRUCT_PASSWD_PW_SHELL],  [struct passwd],[pw_shell],  [CCSYS_PWD_HEADER])
+
+# Inspection of: "struct group".
+#
+CCSYS_SIZEOF([STRUCT_GROUP],[struct group],[CCSYS_GRP_HEADER])
+CCSYS_STRUCT_FIELD([STRUCT_GROUP_GR_NAME],   [struct group],[gr_name],   [CCSYS_GRP_HEADER])
+CCSYS_STRUCT_FIELD([STRUCT_GROUP_GR_GID],    [struct group],[gr_gid],    [CCSYS_GRP_HEADER])
+CCSYS_STRUCT_FIELD([STRUCT_GROUP_GR_MEM],    [struct group],[gr_mem],    [CCSYS_GRP_HEADER])
 
 CCSYS_SIZEOF([STRUCT_HOSTENT],[struct hostent],[CCSYS_NETDB_HEADER])
 
