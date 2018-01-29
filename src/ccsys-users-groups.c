@@ -440,4 +440,19 @@ ccsys_getpwnam_r (cce_destination_t L, char const * name, ccsys_passwd_t * resul
 }
 #endif
 
+/* ------------------------------------------------------------------ */
+
+#ifdef HAVE_PUTPWENT
+void
+ccsys_putpwent (cce_destination_t L, ccsys_passwd_t * pw, ccsys_file_t stream)
+{
+  int	rv;
+
+  rv = putpwent((struct passwd const *) pw, (FILE *) stream.data);
+  if (-1 == rv) {
+    cce_raise(L, cce_condition_new_errno_clear());
+  }
+}
+#endif
+
 /* end of file */

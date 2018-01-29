@@ -440,6 +440,12 @@ Type of file descriptors for directories.  It is a singed integer.
 @end deftp
 
 
+@anchor{ccsys_file_t}
+@deftp {Semantic Type} ccsys_file_t
+Type of @code{FILE} streams.  It is a pointer.
+@end deftp
+
+
 @anchor{ccsys_off_t}
 @deftp {Semantic Type} ccsys_off_t
 Type of offsets.  It is a signed integer.

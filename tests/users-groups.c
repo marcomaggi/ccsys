@@ -361,7 +361,19 @@ test_5_1 (cce_destination_t upper_L)
 
   if (cce_location(L)) {
     if (1) { fprintf(stderr, "%s: %s\n", __func__, cce_condition_static_message(cce_condition(L))); }
-    cce_run_error_handlers_raise(L, upper_L);
+    if (cce_condition_is_errno(cce_condition(L))) {
+      CCSYS_PC(cce_condition_errno_t, C, cce_condition(L));
+      if (ENOTTY == C->errnum) {
+	/* This may  happen (I think)  when running the test  suite with
+	   GNU Automake's Parallel Test  Harness.  (Marco Maggi; Jan 29,
+	   2018) */
+	if (1) { fprintf(stderr, "%s: \"no controlling TTY\" error, let's make it OK\n", __func__); }
+      } else {
+	cce_run_error_handlers_raise(L, upper_L);
+      }
+    } else {
+      cce_run_error_handlers_raise(L, upper_L);
+    }
   } else {
     size_t	maxlen = CCSYS_L_CUSERID;
     char	username[maxlen];
@@ -602,7 +614,7 @@ main (void)
     }
     cctests_end_group();
 
-    cctests_begin_group("the users database");
+    cctests_begin_group("looking up the users database");
     {
       cctests_run(test_6_1);
       cctests_run(test_6_2);
