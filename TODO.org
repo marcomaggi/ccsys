@@ -1,5 +1,8 @@
 * Input/output functions
 ** ioctl
 ** fcntl
+* Unix standard
+** sysconf
+** pathconf
 * end of file
 
