@@ -230,6 +230,8 @@ CCSYS_SIZEOF([STRUCT_UTIMBUF],[struct utimbuf],[CCSYS_UTIME_HEADER])
 
 CCSYS_SIZEOF([SIGSET_T],[sigset_t],[CCSYS_SYS_SELECT_HEADER])
 
+CCSYS_SIZEOF([FPOS_T],[fpos_t],[CCSYS_STDIO_HEADER])
+
 # Inspection of: "struct passwd".
 #
 CCSYS_SIZEOF([STRUCT_PASSWD],[struct passwd],[CCSYS_PWD_HEADER])

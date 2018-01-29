@@ -2357,6 +2357,7 @@ Getter for the field @code{gr_mem} of @var{S}.
 * io dup::                      Duplicating file descriptors.
 * io select::                   Waiting for input/output.
 * io sync::                     Committing file system caches to disk.
+* io streams::                  Stream input/output.
 @end menu
 
 @c page
@@ -4241,6 +4242,78 @@ Wrapper for @cfunc{fsync}; @manpage{fsync, Committing file system caches to disk
 
 @deftypefun void ccsys_fdatasync (cce_destination_t L, ccsys_fd_t fd)
 Wrapper for @cfunc{fdatasync}; @manpage{fdatasync, Committing file system caches to disk}.
+@end deftypefun
+
+@c page
+@node io streams
+@section Stream input/output
+
+
+The following symbols are defined in the header file @file{ccsys.h}.
+
+
+@deftp {Opaque Typedef} ccsys_file_t
+A wrapper for @objtype{FILE *}.
+@end deftp
+
+
+@deftp {Opaque Typedef} ccsys_fpos_t
+A wrapper for @objtype{fpos_t}.
+@end deftp
+
+
+@deftypefun ccsys_file_t ccsys_fopen (cce_destination_t @var{L}, char const * @var{pathname}, char const * @var{mode})
+Wrapper for @cfunc{fopen}; @manpage{fopen, Stream open functions}.
+@end deftypefun
+
+
+@deftypefun ccsys_file_t ccsys_fdopen (cce_destination_t @var{L}, ccsys_fd_t @var{fd}, char const * @var{mode})
+Wrapper for @cfunc{fdopen}; @manpage{fdopen, Stream open functions}.
+@end deftypefun
+
+
+@deftypefun ccsys_file_t ccsys_freopen (cce_destination_t @var{L}, char const * @var{pathname}, char const * @var{mode}, ccsys_file_t @var{stream})
+Wrapper for @cfunc{freopen}; @manpage{freopen, Stream open functions}.
+@end deftypefun
+
+
+@deftypefun void ccsys_fclose (cce_destination_t @var{L}, ccsys_file_t @var{stream})
+Wrapper for @cfunc{fclose}; @manpage{fclose, Close a stream}.
+@end deftypefun
+
+
+@deftypefun size_t ccsys_fread (cce_destination_t @var{L}, void * @var{bufptr}, size_t @var{item_size}, size_t @var{item_num}, ccsys_file_t @var{stream})
+Wrapper for @cfunc{fread}; @manpage{fread, Binary stream input/output}.
+@end deftypefun
+
+
+@deftypefun size_t ccsys_fwrite (cce_destination_t @var{L}, void * @var{bufptr}, size_t @var{item_size}, size_t @var{item_num}, ccsys_file_t @var{stream})
+Wrapper for @cfunc{fwrite}; @manpage{fwrite, Binary stream input/output}.
+@end deftypefun
+
+
+@deftypefun void ccsys_fseek (cce_destination_t @var{L}, ccsys_file_t @var{stream}, long @var{offset}, ccsys_whence_t @var{whence})
+Wrapper for @cfunc{fseek}; @manpage{fseek, Reposition a stream}.
+@end deftypefun
+
+
+@deftypefun long ccsys_ftell (cce_destination_t @var{L}, ccsys_file_t @var{stream})
+Wrapper for @cfunc{ftell}; @manpage{ftell, Reposition a stream}.
+@end deftypefun
+
+
+@deftypefun void ccsys_rewind (cce_destination_t @var{L}, ccsys_file_t @var{stream})
+Wrapper for @cfunc{rewind}; @manpage{rewind, Reposition a stream}.
+@end deftypefun
+
+
+@deftypefun void ccsys_fgetpos (cce_destination_t @var{L}, ccsys_file_t @var{stream}, ccsys_fpos_t * @var{pos})
+Wrapper for @cfunc{fgetpos}; @manpage{fgetpos, Reposition a stream}.
+@end deftypefun
+
+
+@deftypefun void ccsys_fsetpos (cce_destination_t @var{L}, ccsys_file_t @var{stream}, ccsys_fpos_t const * @var{pos})
+Wrapper for @cfunc{fsetpos}; @manpage{fsetpos, Reposition a stream}.
 @end deftypefun
 
 @c page

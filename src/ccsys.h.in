@@ -223,6 +223,7 @@ typedef struct ccsys_dir_t			ccsys_dir_t;
 
 typedef struct ccsys_dirent_t			ccsys_dirent_t;
 typedef struct ccsys_fd_set_t			ccsys_fd_set_t;
+typedef struct ccsys_fpos_t			ccsys_fpos_t;
 typedef struct ccsys_group_t			ccsys_group_t;
 typedef struct ccsys_hostent_t			ccsys_hostent_t;
 typedef struct ccsys_in_addr_t			ccsys_in_addr_t;
@@ -238,6 +239,7 @@ typedef struct ccsys_utimbuf_t			ccsys_utimbuf_t;
 
 struct ccsys_dirent_t		{ uint8_t data[@SIZEOF_STRUCT_DIRENT@]; };
 struct ccsys_fd_set_t		{ uint8_t data[@SIZEOF_STRUCT_FD_SET@]; };
+struct ccsys_fpos_t		{ uint8_t data[@SIZEOF_FPOS_T@]; };
 struct ccsys_group_t		{ uint8_t data[@SIZEOF_STRUCT_GROUP@]; };
 struct ccsys_hostent_t		{ uint8_t data[@SIZEOF_STRUCT_HOSTENT@]; };
 struct ccsys_in_addr_t		{ uint8_t data[@SIZEOF_STRUCT_IN_ADDR@]; };
@@ -1293,6 +1295,75 @@ ccsys_decl void ccsys_fsync (cce_destination_t L, ccsys_fd_t fd)
 
 ccsys_decl void ccsys_fdatasync (cce_destination_t L, ccsys_fd_t fd)
   __attribute__((__nonnull__(1)));
+
+
+/** --------------------------------------------------------------------
+ ** Input/output: streams.
+ ** ----------------------------------------------------------------- */
+
+ccsys_decl ccsys_file_t ccsys_fopen (cce_destination_t L, char const * pathname, char const * mode)
+  __attribute__((__nonnull__(1,2,3)));
+
+ccsys_decl ccsys_file_t ccsys_fdopen (cce_destination_t L, ccsys_fd_t fd, char const * mode)
+  __attribute__((__nonnull__(1,3)));
+
+ccsys_decl ccsys_file_t ccsys_freopen (cce_destination_t L, char const * pathname, char const * mode, ccsys_file_t stream)
+  __attribute__((__nonnull__(1,2,3)));
+
+ccsys_decl void ccsys_fclose (cce_destination_t L, ccsys_file_t stream)
+  __attribute__((__nonnull__(1)));
+
+ccsys_decl size_t ccsys_fread (cce_destination_t L, void * bufptr, size_t item_size, size_t item_num, ccsys_file_t stream)
+  __attribute__((__nonnull__(1,2)));
+
+ccsys_decl size_t ccsys_fwrite (cce_destination_t L, void * bufptr, size_t item_size, size_t item_num, ccsys_file_t stream)
+  __attribute__((__nonnull__(1,2)));
+
+ccsys_decl void ccsys_fseek (cce_destination_t L, ccsys_file_t stream, long offset, ccsys_whence_t whence)
+  __attribute__((__nonnull__(1)));
+
+ccsys_decl long ccsys_ftell (cce_destination_t L, ccsys_file_t stream)
+  __attribute__((__nonnull__(1)));
+
+ccsys_decl void ccsys_rewind (cce_destination_t L, ccsys_file_t stream)
+  __attribute__((__nonnull__(1)));
+
+ccsys_decl void ccsys_fgetpos (cce_destination_t L, ccsys_file_t stream, ccsys_fpos_t * pos)
+  __attribute__((__nonnull__(1,3)));
+
+ccsys_decl void ccsys_fsetpos (cce_destination_t L, ccsys_file_t stream, ccsys_fpos_t const * pos)
+  __attribute__((__nonnull__(1,3)));
+
+/* ------------------------------------------------------------------ */
+
+__attribute__((__always_inline__))
+static inline void
+ccsys_clearerr (ccsys_file_t stream)
+{
+  clearerr((FILE *) stream.data);
+}
+
+__attribute__((__always_inline__,__pure__))
+static inline bool
+ccsys_feof (ccsys_file_t stream)
+{
+  return (feof((FILE *) stream.data))? true : false;
+}
+
+__attribute__((__always_inline__,__pure__))
+static inline bool
+ccsys_ferror (ccsys_file_t stream)
+{
+  return (ferror((FILE *) stream.data))? true : false;
+}
+
+__attribute__((__always_inline__,__pure__))
+static inline ccsys_fd_t
+ccsys_fileno (ccsys_file_t stream)
+{
+  ccsys_fd_t	fd = { .data = fileno((FILE *)stream.data) };
+  return fd;
+}
 
 
 /** --------------------------------------------------------------------

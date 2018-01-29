@@ -594,6 +594,158 @@ ccsys_fdatasync (cce_destination_t L, ccsys_fd_t fd)
 
 
 /** --------------------------------------------------------------------
+ ** Input/output: streams.
+ ** ----------------------------------------------------------------- */
+
+ccsys_file_t
+ccsys_fopen (cce_destination_t L, char const * pathname, char const * mode)
+{
+  FILE *	rv;
+
+  errno = 0;
+  rv = fopen(pathname, mode);
+  if (NULL != rv) {
+    ccsys_file_t	stream = { .data = rv };
+    return stream;
+  } else {
+    cce_raise(L, cce_condition_new_errno_clear());
+  }
+}
+
+ccsys_file_t
+ccsys_fdopen (cce_destination_t L, ccsys_fd_t fd, char const * mode)
+{
+  FILE *	rv;
+
+  errno = 0;
+  rv = fdopen(fd.data, mode);
+  if (NULL != rv) {
+    ccsys_file_t	stream = { .data = rv };
+    return stream;
+  } else {
+    cce_raise(L, cce_condition_new_errno_clear());
+  }
+}
+
+ccsys_file_t
+ccsys_freopen (cce_destination_t L, char const * pathname, char const * mode, ccsys_file_t stream)
+{
+  FILE *	rv;
+
+  errno = 0;
+  rv = freopen(pathname, mode, (FILE *)stream.data);
+  if (NULL != rv) {
+    ccsys_file_t	stream = { .data = rv };
+    return stream;
+  } else {
+    cce_raise(L, cce_condition_new_errno_clear());
+  }
+}
+
+/* ------------------------------------------------------------------ */
+
+void
+ccsys_fclose (cce_destination_t L, ccsys_file_t stream)
+{
+  int	rv;
+
+  errno = 0;
+  rv = fclose((FILE *)stream.data);
+  if (0 != rv) {
+    cce_raise(L, cce_condition_new_errno_clear());
+  }
+}
+
+/* ------------------------------------------------------------------ */
+
+size_t
+ccsys_fread (cce_destination_t L, void * bufptr, size_t item_size, size_t item_num, ccsys_file_t stream)
+{
+  size_t	rv;
+  errno = 0;
+  rv = fread(bufptr, item_size, item_num, (FILE *)stream.data);
+  if (! ferror((FILE *)stream.data)) {
+    return rv;
+  } else {
+    cce_raise(L, cce_condition_new_errno_clear());
+  }
+}
+
+size_t
+ccsys_fwrite (cce_destination_t L, void * bufptr, size_t item_size, size_t item_num, ccsys_file_t stream)
+{
+  size_t	rv;
+  errno = 0;
+  rv = fwrite(bufptr, item_size, item_num, (FILE *)stream.data);
+  if (! ferror((FILE *)stream.data)) {
+    return rv;
+  } else {
+    cce_raise(L, cce_condition_new_errno_clear());
+  }
+}
+
+/* ------------------------------------------------------------------ */
+
+void
+ccsys_fseek (cce_destination_t L, ccsys_file_t stream, long offset, ccsys_whence_t whence)
+{
+  int	rv;
+  errno = 0;
+  rv = fseek((FILE *)stream.data, offset, whence.data);
+  if (-1 == rv) {
+    cce_raise(L, cce_condition_new_errno_clear());
+  }
+}
+
+long
+ccsys_ftell (cce_destination_t L, ccsys_file_t stream)
+{
+  long	rv;
+  errno = 0;
+  rv = ftell((FILE *)stream.data);
+  if (0 == rv) {
+    return rv;
+  } else {
+    cce_raise(L, cce_condition_new_errno_clear());
+  }
+}
+
+void
+ccsys_rewind (cce_destination_t L, ccsys_file_t stream)
+{
+  errno = 0;
+  rewind((FILE *)stream.data);
+  if (ferror((FILE *)stream.data)) {
+    cce_raise(L, cce_condition_new_errno_clear());
+  }
+}
+
+/* ------------------------------------------------------------------ */
+
+void
+ccsys_fgetpos (cce_destination_t L, ccsys_file_t stream, ccsys_fpos_t * pos)
+{
+  int	rv;
+  errno = 0;
+  rv = fgetpos((FILE *)stream.data, (fpos_t *) pos);
+  if (-1 == rv) {
+    cce_raise(L, cce_condition_new_errno_clear());
+  }
+}
+
+void
+ccsys_fsetpos (cce_destination_t L, ccsys_file_t stream, ccsys_fpos_t const * pos)
+{
+  int	rv;
+  errno = 0;
+  rv = fsetpos((FILE *)stream.data, (fpos_t const *) pos);
+  if (-1 == rv) {
+    cce_raise(L, cce_condition_new_errno_clear());
+  }
+}
+
+
+/** --------------------------------------------------------------------
  ** Input/output: file descriptor handler.
  ** ----------------------------------------------------------------- */
 

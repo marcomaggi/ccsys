@@ -124,9 +124,7 @@ AC_DEFUN([CCSYS_STDDEF_HEADER],[
 ])
 
 AC_DEFUN([CCSYS_STDIO_HEADER],[
-#ifdef HAVE_STDIO_H
-#  include <stdio.h>
-#endif
+#include <stdio.h>
 ])
 
 AC_DEFUN([CCSYS_STDLIB_HEADER],[
