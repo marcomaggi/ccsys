@@ -7,7 +7,7 @@
 
 
 
-  Copyright (C) 2017 Marco Maggi <marco.maggi-ipsu@poste.it>
+  Copyright (C) 2017, 2018 Marco Maggi <marco.maggi-ipsu@poste.it>
 
   This program is  free software: you can redistribute  it and/or modify
   it  under the  terms  of  the GNU  Lesser  General  Public License  as
@@ -246,7 +246,7 @@ cctests_p_run (char const * const test_func_name, cctests_fun_t * const fun)
 	cctests_successful_func  = false;
 	{
 	  CCTESTS_PC(cctests_condition_unreachable_t, C, cce_condition(L));
-	  fprintf(cctests_log_stream, "CCTests: exception in test function %s: "
+	  fprintf(cctests_log_stream, "CCTests: error in test function %s: exception raised, "
 		  "unreachable code was executed in file=%s, function=%s, line number=%u\n",
 		  test_func_name, C->filename, C->funcname, C->linenum);
 	}
@@ -254,7 +254,7 @@ cctests_p_run (char const * const test_func_name, cctests_fun_t * const fun)
 	cctests_all_test_passed  = false;
 	cctests_successful_group = false;
 	cctests_successful_func  = false;
-	fprintf(cctests_log_stream, "CCTests: exception in test function: %s\n", test_func_name);
+	fprintf(cctests_log_stream, "CCTests: error in test function: %s, exception raised\n", test_func_name);
       }
     } else {
       if (test_func_matches_user_selection(L, test_func_name)) {
