@@ -1491,6 +1491,132 @@ test_9_2_child (ccsys_fd_t infd, ccsys_fd_t oufd)
 }
 
 
+/** --------------------------------------------------------------------
+ ** Input/output: input/output with streams.
+ ** ----------------------------------------------------------------- */
+
+void
+test_10_1 (cce_destination_t upper_L)
+{
+  cce_location_t	L[1];
+  cce_cleanup_handler_t	stream_H[1];
+  cce_cleanup_handler_t	filename_H[1];
+
+  if (cce_location(L)) {
+    if (1) { fprintf(stderr, "%s: %s\n", __func__, cce_condition_static_message(cce_condition(L))); }
+    cce_run_error_handlers_raise(L, upper_L);
+  } else {
+    char const *	filename = "name.ext";
+    char const *	mode     = "w+";
+    ccsys_file_t	stream;
+
+    /* Open the stream. */
+    {
+      stream = ccsys_fopen(L, filename, mode);
+      ccsys_handler_stream_init(L, stream_H, stream);
+      ccsys_handler_remove_init(L, filename_H, filename);
+    }
+
+    /* Write to the stream. */
+    {
+      size_t const	len     = 11;
+      char		buf[11] = "0123456789";
+      size_t		rv;
+
+      rv = ccsys_fwrite(L, buf, 1, len, stream);
+      cctests_assert(L, rv == len);
+    }
+
+    /* Seek back to the beginning. */
+    {
+      long		offset;
+      ccsys_whence_t	whence;
+
+      offset = ccsys_ftell(L, stream);
+      if (0) { fprintf(stderr, "%s: offset=%ld\n", __func__, offset); }
+      cctests_assert(L, 11 == offset);
+
+      whence.data = CCSYS_SEEK_SET;
+      ccsys_fseek(L, stream, 0L, whence);
+    }
+
+    /* Write to the stream. */
+    {
+      size_t const	len      = 11;
+      char		buf[len];
+      size_t		rv;
+
+      rv = ccsys_fread(L, buf, 1, len, stream);
+      cctests_assert(L, rv == len);
+      cctests_assert(L, 0 == strncmp(buf, "0123456789", len));
+    }
+
+    /* Get and set the position. */
+    {
+      ccsys_fpos_t	pos;
+
+      ccsys_fgetpos(L, stream, &pos);
+      ccsys_fsetpos(L, stream, &pos);
+
+      {
+	long	offset = ccsys_ftell(L, stream);
+	if (0) { fprintf(stderr, "%s: offset=%ld\n", __func__, offset); }
+	cctests_assert(L, 11 == offset);
+      }
+    }
+
+    /* Rewind the position. */
+    {
+      ccsys_rewind(L, stream);
+
+      {
+	long	offset = ccsys_ftell(L, stream);
+	if (0) { fprintf(stderr, "%s: offset=%ld\n", __func__, offset); }
+	cctests_assert(L, 0 == offset);
+      }
+    }
+    cce_run_cleanup_handlers(L);
+  }
+}
+
+void
+test_10_2 (cce_destination_t upper_L)
+{
+  cce_location_t	L[1];
+  cce_cleanup_handler_t	filename_H[1];
+
+  if (cce_location(L)) {
+    if (1) { fprintf(stderr, "%s: %s\n", __func__, cce_condition_static_message(cce_condition(L))); }
+    cce_run_error_handlers_raise(L, upper_L);
+  } else {
+    char const *	filename = "name.ext";
+    char const *	mode     = "w+";
+    ccsys_file_t	stream;
+
+    /* Open the stream. */
+    {
+      stream = ccsys_fopen(L, filename, mode);
+      ccsys_handler_remove_init(L, filename_H, filename);
+    }
+
+    cctests_assert(L, false == ccsys_feof(stream));
+    cctests_assert(L, false == ccsys_ferror(stream));
+
+    ccsys_clearerr(stream);
+
+    {
+      ccsys_fd_t	fd CCSYS_UNUSED;
+      fd = ccsys_fileno(stream);
+    }
+
+    /* Close the stream. */
+    ccsys_fclose(L, stream);
+
+    cce_run_cleanup_handlers(L);
+  }
+}
+
+
 int
 main (void)
 {
@@ -1549,6 +1675,13 @@ main (void)
     {
       cctests_run(test_9_1);
       cctests_run(test_9_2);
+    }
+    cctests_end_group();
+
+    cctests_begin_group("input/output with streams");
+    {
+      cctests_run(test_10_1);
+      cctests_run(test_10_2);
     }
     cctests_end_group();
   }

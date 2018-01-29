@@ -703,7 +703,7 @@ ccsys_ftell (cce_destination_t L, ccsys_file_t stream)
   long	rv;
   errno = 0;
   rv = ftell((FILE *)stream.data);
-  if (0 == rv) {
+  if (! ferror((FILE *)stream.data)) {
     return rv;
   } else {
     cce_raise(L, cce_condition_new_errno_clear());
@@ -751,7 +751,7 @@ ccsys_fsetpos (cce_destination_t L, ccsys_file_t stream, ccsys_fpos_t const * po
 
 __attribute__((nonnull(1,2)))
 static void
-cce_handler_filedes_function (const cce_condition_t * C CCE_UNUSED, cce_handler_t * H)
+cce_handler_filedes_function (cce_condition_t const * C CCE_UNUSED, cce_handler_t * H)
 {
   close(H->filedes);
   if (0) { fprintf(stderr, "%s: done\n", __func__); }
@@ -775,12 +775,41 @@ ccsys_error_handler_filedes_init (cce_location_t * L, cce_handler_t * H, ccsys_f
 
 
 /** --------------------------------------------------------------------
+ ** Input/output: stream handler.
+ ** ----------------------------------------------------------------- */
+
+__attribute__((nonnull(1,2)))
+static void
+cce_handler_stream_function (cce_condition_t const * C CCE_UNUSED, cce_handler_t * H)
+{
+  fclose(H->pointer);
+  if (0) { fprintf(stderr, "%s: done\n", __func__); }
+}
+
+void
+ccsys_cleanup_handler_stream_init (cce_location_t * L, cce_handler_t * H, ccsys_file_t file)
+{
+  H->function	= cce_handler_stream_function;
+  H->pointer	= file.data;
+  cce_register_cleanup_handler(L, H);
+}
+
+void
+ccsys_error_handler_stream_init (cce_location_t * L, cce_handler_t * H, ccsys_file_t file)
+{
+  H->function	= cce_handler_stream_function;
+  H->pointer	= file.data;
+  cce_register_error_handler(L, H);
+}
+
+
+/** --------------------------------------------------------------------
  ** Input/output: directory descriptor handler.
  ** ----------------------------------------------------------------- */
 
 __attribute__((nonnull(1,2)))
 static void
-cce_handler_dirfd_function (const cce_condition_t * C CCE_UNUSED, cce_handler_t * H)
+cce_handler_dirfd_function (cce_condition_t const * C CCE_UNUSED, cce_handler_t * H)
 {
   close(H->filedes);
   if (0) { fprintf(stderr, "%s: done\n", __func__); }
@@ -809,7 +838,7 @@ ccsys_error_handler_dirfd_init (cce_location_t * L, cce_handler_t * H, ccsys_dir
 
 __attribute__((nonnull(1,2)))
 static void
-cce_handler_pipedes_function (const cce_condition_t * C CCE_UNUSED, cce_handler_t * H)
+cce_handler_pipedes_function (cce_condition_t const * C CCE_UNUSED, cce_handler_t * H)
 {
 #ifdef HAVE_CLOSE
   close(H->pipedes[0]);

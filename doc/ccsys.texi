@@ -4249,16 +4249,24 @@ Wrapper for @cfunc{fdatasync}; @manpage{fdatasync, Committing file system caches
 @section Stream input/output
 
 
+@menu
+* io streams opening::          Opening streams.
+* io streams closing::          Closing streams.
+* io streams rw::               Reading from and writing to streams.
+* io streams pos::              Repositioning a stream.
+* io streams status::           Stream status.
+@end menu
+
+@c page
+@node io streams opening
+@subsection Opening streams
+
+
 The following symbols are defined in the header file @file{ccsys.h}.
 
 
 @deftp {Opaque Typedef} ccsys_file_t
 A wrapper for @objtype{FILE *}.
-@end deftp
-
-
-@deftp {Opaque Typedef} ccsys_fpos_t
-A wrapper for @objtype{fpos_t}.
 @end deftp
 
 
@@ -4276,10 +4284,51 @@ Wrapper for @cfunc{fdopen}; @manpage{fdopen, Stream open functions}.
 Wrapper for @cfunc{freopen}; @manpage{freopen, Stream open functions}.
 @end deftypefun
 
+@c page
+@node io streams closing
+@subsection Closing streams
+
+
+The following symbols are defined in the header file @file{ccsys.h}.
+
 
 @deftypefun void ccsys_fclose (cce_destination_t @var{L}, ccsys_file_t @var{stream})
 Wrapper for @cfunc{fclose}; @manpage{fclose, Close a stream}.
 @end deftypefun
+
+@c ------------------------------------------------------------------------
+
+@subsubheading Stream handlers
+
+
+@deftypefun void ccsys_cleanup_handler_stream_init (cce_destination_t @var{L}, cce_handler_t * @var{H}, ccsys_file_t @var{stream})
+@deftypefunx void ccsys_error_handler_stream_init (cce_destination_t @var{L}, cce_handler_t * @var{H}, ccsys_file_t @var{stream})
+Register @var{H} as cleanup or error handler in the context of @var{L}.  The handler function will
+release the stream @var{stream} using the standard function @cfunc{fclose}; errors in @cfunc{fclose}
+are @strong{ignored}.
+@end deftypefun
+
+
+@deftypefn {Preprocessor Macro} void ccsys_handler_stream_init (cce_destination_t @var{L}, cce_cleanup_handler_t * @var{H}, ccsys_file_t @var{stream})
+@deftypefnx {Preprocessor Macro} void ccsys_handler_stream_init (cce_destination_t @var{L}, cce_error_handler_t * @var{H}, ccsys_file_t @var{stream})
+This preprocessor macro uses @code{_Generic} to dispatch the call according to the type of the
+pointer @var{H}; if the type is:
+
+@table @code
+@item cce_cleanup_handler_t
+The macro expands into a call to @cfunc{ccsys_cleanup_handler_stream_init}.
+
+@item cce_error_handler_t
+The macro expands into a call to @cfunc{ccsys_error_handler_stream_init}.
+@end table
+@end deftypefn
+
+@c page
+@node io streams rw
+@subsection Reading from and writing to streams
+
+
+The following symbols are defined in the header file @file{ccsys.h}.
 
 
 @deftypefun size_t ccsys_fread (cce_destination_t @var{L}, void * @var{bufptr}, size_t @var{item_size}, size_t @var{item_num}, ccsys_file_t @var{stream})
@@ -4290,6 +4339,18 @@ Wrapper for @cfunc{fread}; @manpage{fread, Binary stream input/output}.
 @deftypefun size_t ccsys_fwrite (cce_destination_t @var{L}, void * @var{bufptr}, size_t @var{item_size}, size_t @var{item_num}, ccsys_file_t @var{stream})
 Wrapper for @cfunc{fwrite}; @manpage{fwrite, Binary stream input/output}.
 @end deftypefun
+
+@c page
+@node io streams pos
+@subsection Repositioning a stream
+
+
+The following symbols are defined in the header file @file{ccsys.h}.
+
+
+@deftp {Opaque Typedef} ccsys_fpos_t
+A wrapper for @objtype{fpos_t}.
+@end deftp
 
 
 @deftypefun void ccsys_fseek (cce_destination_t @var{L}, ccsys_file_t @var{stream}, long @var{offset}, ccsys_whence_t @var{whence})
@@ -4314,6 +4375,33 @@ Wrapper for @cfunc{fgetpos}; @manpage{fgetpos, Reposition a stream}.
 
 @deftypefun void ccsys_fsetpos (cce_destination_t @var{L}, ccsys_file_t @var{stream}, ccsys_fpos_t const * @var{pos})
 Wrapper for @cfunc{fsetpos}; @manpage{fsetpos, Reposition a stream}.
+@end deftypefun
+
+@c page
+@node io streams status
+@subsection Stream status
+
+
+The following symbols are defined in the header file @file{ccsys.h}.
+
+
+@deftypefun void ccsys_clearerr (ccsys_file_t @var{stream})
+Wrapper for @cfunc{clearerr}; @manpage{clearerr, Check and reset stream status}.
+@end deftypefun
+
+
+@deftypefun bool ccsys_feof (ccsys_file_t @var{stream})
+Wrapper for @cfunc{feof}; @manpage{feof, Check and reset stream status}.
+@end deftypefun
+
+
+@deftypefun bool ccsys_ferror (ccsys_file_t @var{stream})
+Wrapper for @cfunc{ferror}; @manpage{ferror, Check and reset stream status}.
+@end deftypefun
+
+
+@deftypefun ccsys_fd_t ccsys_fileno (ccsys_file_t @var{stream})
+Wrapper for @cfunc{fileno}; @manpage{fileno, Check and reset stream status}.
 @end deftypefun
 
 @c page
