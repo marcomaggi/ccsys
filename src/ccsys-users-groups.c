@@ -35,6 +35,9 @@
 #ifdef HAVE_GRP_H
 #  include <grp.h>
 #endif
+#ifdef HAVE_PWD_H
+#  include <pwd.h>
+#endif
 #ifdef HAVE_SYS_TYPES_H
 #  include <sys/types.h>
 #endif
@@ -294,6 +297,144 @@ ccsys_getlogin_r (cce_destination_t L, char * buf, size_t maxlen)
   errno = 0;
   rv    = getlogin_r(buf, maxlen);
   if (0 != rv) {
+    cce_raise(L, cce_condition_new_errno_clear());
+  }
+}
+#endif
+
+
+/** --------------------------------------------------------------------
+ ** Users and groups: the users database.
+ ** ----------------------------------------------------------------- */
+
+#if (1 == CCSYS_HAVE_STRUCT_PASSWD_PW_NAME)
+char const *
+ccsys_ref_passwd_pw_name (ccsys_passwd_t const * const S)
+{
+  CCSYS_PC(struct passwd const, D, S);
+  return D->pw_name;
+}
+#endif
+
+#if (1 == CCSYS_HAVE_STRUCT_PASSWD_PW_PASSWD)
+char const *
+ccsys_ref_passwd_pw_passwd (ccsys_passwd_t const * const S)
+{
+  CCSYS_PC(struct passwd const, D, S);
+  return D->pw_passwd;
+}
+#endif
+
+#if (1 == CCSYS_HAVE_STRUCT_PASSWD_PW_UID)
+ccsys_uid_t
+ccsys_ref_passwd_pw_uid (ccsys_passwd_t const * const S)
+{
+  CCSYS_PC(struct passwd const, D, S);
+  ccsys_uid_t	rv = { .data = D->pw_uid };
+  return rv;
+}
+#endif
+
+#if (1 == CCSYS_HAVE_STRUCT_PASSWD_PW_GID)
+ccsys_gid_t
+ccsys_ref_passwd_pw_gid (ccsys_passwd_t const * const S)
+{
+  CCSYS_PC(struct passwd const, D, S);
+  ccsys_gid_t	rv = { .data = D->pw_gid };
+  return rv;
+}
+#endif
+
+#if (1 == CCSYS_HAVE_STRUCT_PASSWD_PW_GECOS)
+char const *
+ccsys_ref_passwd_pw_gecos (ccsys_passwd_t const * const S)
+{
+  CCSYS_PC(struct passwd const, D, S);
+  return D->pw_gecos;
+}
+#endif
+
+#if (1 == CCSYS_HAVE_STRUCT_PASSWD_PW_DIR)
+char const *
+ccsys_ref_passwd_pw_dir (ccsys_passwd_t const * const S)
+{
+  CCSYS_PC(struct passwd const, D, S);
+  return D->pw_dir;
+}
+#endif
+
+#if (1 == CCSYS_HAVE_STRUCT_PASSWD_PW_SHELL)
+char const *
+ccsys_ref_passwd_pw_shell (ccsys_passwd_t const * const S)
+{
+  CCSYS_PC(struct passwd const, D, S);
+  return D->pw_shell;
+}
+#endif
+
+/* ------------------------------------------------------------------ */
+
+#ifdef HAVE_GETPWUID
+ccsys_passwd_t const *
+ccsys_getpwuid (cce_destination_t L, ccsys_uid_t uid)
+{
+  struct passwd const *	rv;
+
+  rv = getpwuid(uid.data);
+  if (NULL != rv) {
+    return (ccsys_passwd_t const *)rv;
+  } else {
+    cce_raise(L, cce_condition_new_errno_clear());
+  }
+}
+#endif
+
+#ifdef HAVE_GETPWUID_R
+bool
+ccsys_getpwuid_r (cce_destination_t L, ccsys_uid_t uid, ccsys_passwd_t * result_buf,
+		  char * bufptr, size_t buflen, ccsys_passwd_t ** result)
+{
+  int	rv;
+
+  rv = getpwuid_r(uid.data, (struct passwd *)result_buf, bufptr, buflen, (struct passwd **) result);
+  if (NULL != *result) {
+    return true;
+  } else if (ERANGE == rv) {
+    return false;
+  } else {
+    cce_raise(L, cce_condition_new_errno_clear());
+  }
+}
+#endif
+
+#ifdef HAVE_GETPWNAM
+ccsys_passwd_t const *
+ccsys_getpwnam (cce_destination_t L, char const * name)
+{
+  struct passwd const *	rv;
+
+  rv = getpwnam(name);
+  if (NULL != rv) {
+    return (ccsys_passwd_t const *)rv;
+  } else {
+    cce_raise(L, cce_condition_new_errno_clear());
+  }
+}
+#endif
+
+#ifdef HAVE_GETPWNAM_R
+bool
+ccsys_getpwnam_r (cce_destination_t L, char const * name, ccsys_passwd_t * result_buf,
+		  char * bufptr, size_t buflen, ccsys_passwd_t ** result)
+{
+  int	rv;
+
+  rv = getpwnam_r(name, (struct passwd *)result_buf, bufptr, buflen, (struct passwd **) result);
+  if (NULL != *result) {
+    return true;
+  } else if (ERANGE == rv) {
+    return false;
+  } else {
     cce_raise(L, cce_condition_new_errno_clear());
   }
 }

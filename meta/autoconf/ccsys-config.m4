@@ -81,6 +81,12 @@ AC_DEFUN([CCSYS_NETDB_HEADER],[
 #endif
 ])
 
+AC_DEFUN([CCSYS_PWD_HEADER],[
+#ifdef HAVE_PWD_H
+#  include <pwd.h>
+#endif
+])
+
 AC_DEFUN([CCSYS_SIGNAL_HEADER],[
 #ifdef HAVE_SIGNAL_H
 #  include <signal.h>

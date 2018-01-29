@@ -117,7 +117,7 @@ AC_CHECK_HEADERS([assert.h errno.h stdint.h stddef.h setjmp.h memory.h limits.h 
 AC_CHECK_HEADERS([grp.h])
 AC_CHECK_HEADERS([sys/syscall.h sys/select.h sys/stat.h sys/time.h sys/types.h sys/uio.h sys/mman.h sys/wait.h])
 AC_CHECK_HEADERS([netdb.h netinet/in.h arpa/inet.h sys/socket.h sys/un.h])
-AC_CHECK_HEADERS([signal.h])
+AC_CHECK_HEADERS([signal.h pwd.h])
 AC_CHECK_HEADERS([linux/fs.h])
 AC_HEADER_STDBOOL
 
@@ -136,6 +136,8 @@ AC_CHECK_FUNCS([mlock munlock mlockall munlockall])
 AC_CHECK_FUNCS([mmap munmap msync mprotect])
 AC_CHECK_FUNCS([getuid getgid geteuid getegid setuid seteuid setreuid setgid setegid setregid])
 AC_CHECK_FUNCS([getgroups setgroups initgroups getgrouplist getlogin_r])
+AC_CHECK_FUNCS([getpwuid getpwuid_r getpwnam getpwnam_r])
+AC_CHECK_FUNCS([fgetpwent fgetpwent_r setpwent getpwent getpwent_r endpwent])
 AC_CHECK_FUNCS([open openat close read pread write pwrite lseek])
 AC_CHECK_FUNCS([readv writev preadv pwritev preadv2 pwritev2])
 AC_CHECK_FUNCS([pipe pipe2 mkfifo mkfifoat])
@@ -227,6 +229,17 @@ CCSYS_STRUCT_FIELD([STRUCT_STAT_ST_CTIM],   [struct stat],[st_ctim],   [CCSYS_SY
 CCSYS_SIZEOF([STRUCT_UTIMBUF],[struct utimbuf],[CCSYS_UTIME_HEADER])
 
 CCSYS_SIZEOF([SIGSET_T],[sigset_t],[CCSYS_SYS_SELECT_HEADER])
+
+# Inspection of: "struct passwd".
+#
+CCSYS_SIZEOF([STRUCT_PASSWD],[struct passwd],[CCSYS_PWD_HEADER])
+CCSYS_STRUCT_FIELD([STRUCT_PASSWD_PW_NAME],   [struct passwd],[pw_name],   [CCSYS_PWD_HEADER])
+CCSYS_STRUCT_FIELD([STRUCT_PASSWD_PW_PASSWD], [struct passwd],[pw_passwd], [CCSYS_PWD_HEADER])
+CCSYS_STRUCT_FIELD([STRUCT_PASSWD_PW_UID],    [struct passwd],[pw_uid],    [CCSYS_PWD_HEADER])
+CCSYS_STRUCT_FIELD([STRUCT_PASSWD_PW_GID],    [struct passwd],[pw_gid],    [CCSYS_PWD_HEADER])
+CCSYS_STRUCT_FIELD([STRUCT_PASSWD_PW_GECOS],  [struct passwd],[pw_gecos],  [CCSYS_PWD_HEADER])
+CCSYS_STRUCT_FIELD([STRUCT_PASSWD_PW_DIR],    [struct passwd],[pw_dir],    [CCSYS_PWD_HEADER])
+CCSYS_STRUCT_FIELD([STRUCT_PASSWD_PW_SHELL],  [struct passwd],[pw_shell],  [CCSYS_PWD_HEADER])
 
 CCSYS_SIZEOF([STRUCT_HOSTENT],[struct hostent],[CCSYS_NETDB_HEADER])
 

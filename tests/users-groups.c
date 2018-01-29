@@ -350,7 +350,7 @@ test_4_4 (cce_destination_t upper_L)
 
 
 /** --------------------------------------------------------------------
- ** Users and groups: getting the user name.
+ ** Users and groups: getting the user login name.
  ** ----------------------------------------------------------------- */
 
 void
@@ -360,6 +360,7 @@ test_5_1 (cce_destination_t upper_L)
   cce_location_t	L[1];
 
   if (cce_location(L)) {
+    if (1) { fprintf(stderr, "%s: %s\n", __func__, cce_condition_static_message(cce_condition(L))); }
     cce_run_error_handlers_raise(L, upper_L);
   } else {
     size_t	maxlen = CCSYS_L_CUSERID;
@@ -367,6 +368,188 @@ test_5_1 (cce_destination_t upper_L)
 
     ccsys_getlogin_r(L, username, maxlen);
     if (1) { fprintf(stderr, "%s: login user=%s\n", __func__, username); }
+
+    cce_run_cleanup_handlers(L);
+  }
+#endif
+}
+
+
+/** --------------------------------------------------------------------
+ ** Users and groups: looking up in the users database.
+ ** ----------------------------------------------------------------- */
+
+void
+test_6_1 (cce_destination_t upper_L)
+/* Using "getpwuid()". */
+{
+#if (defined HAVE_GETPWUID)
+  cce_location_t	L[1];
+
+  if (cce_location(L)) {
+    cce_run_error_handlers_raise(L, upper_L);
+  } else {
+    ccsys_passwd_t const *	S;
+
+    S = ccsys_getpwuid(L, ccsys_getuid());
+
+#if (1 == CCSYS_HAVE_STRUCT_PASSWD_PW_NAME)
+    fprintf(stderr, "%s: pw_name=%s\n",		__func__, ccsys_ref_passwd_pw_name(S));
+#endif
+#if (1 == CCSYS_HAVE_STRUCT_PASSWD_PW_PASSWD)
+    fprintf(stderr, "%s: pw_passwd=%s\n",	__func__, ccsys_ref_passwd_pw_passwd(S));
+#endif
+#if (1 == CCSYS_HAVE_STRUCT_PASSWD_PW_UID)
+    fprintf(stderr, "%s: pw_uid=%d\n",		__func__, ccsys_dref(ccsys_ref_passwd_pw_uid(S)));
+#endif
+#if (1 == CCSYS_HAVE_STRUCT_PASSWD_PW_GID)
+    fprintf(stderr, "%s: pw_gid=%d\n",		__func__, ccsys_dref(ccsys_ref_passwd_pw_gid(S)));
+#endif
+#if (1 == CCSYS_HAVE_STRUCT_PASSWD_PW_GECOS)
+    fprintf(stderr, "%s: pw_gecos=%s\n",	__func__, ccsys_ref_passwd_pw_gecos(S));
+#endif
+#if (1 == CCSYS_HAVE_STRUCT_PASSWD_PW_DIR)
+    fprintf(stderr, "%s: pw_dir=%s\n",		__func__, ccsys_ref_passwd_pw_dir(S));
+#endif
+#if (1 == CCSYS_HAVE_STRUCT_PASSWD_PW_SHELL)
+    fprintf(stderr, "%s: pw_shell=%s\n",	__func__, ccsys_ref_passwd_pw_shell(S));
+#endif
+
+    cce_run_cleanup_handlers(L);
+  }
+#endif
+}
+
+void
+test_6_2 (cce_destination_t upper_L)
+/* Using "getpwnam()". */
+{
+#if ((defined HAVE_GETPWUID) && (defined HAVE_GETPWNAM))
+  cce_location_t	L[1];
+
+  if (cce_location(L)) {
+    cce_run_error_handlers_raise(L, upper_L);
+  } else {
+    ccsys_passwd_t const	*A, *B;
+
+    A = ccsys_getpwuid(L, ccsys_getuid());
+    B = ccsys_getpwnam(L, ccsys_ref_passwd_pw_name(A));
+
+#if (1 == CCSYS_HAVE_STRUCT_PASSWD_PW_NAME)
+    fprintf(stderr, "%s: pw_name=%s\n",		__func__, ccsys_ref_passwd_pw_name(B));
+#endif
+#if (1 == CCSYS_HAVE_STRUCT_PASSWD_PW_PASSWD)
+    fprintf(stderr, "%s: pw_passwd=%s\n",	__func__, ccsys_ref_passwd_pw_passwd(B));
+#endif
+#if (1 == CCSYS_HAVE_STRUCT_PASSWD_PW_UID)
+    fprintf(stderr, "%s: pw_uid=%d\n",		__func__, ccsys_dref(ccsys_ref_passwd_pw_uid(B)));
+#endif
+#if (1 == CCSYS_HAVE_STRUCT_PASSWD_PW_GID)
+    fprintf(stderr, "%s: pw_gid=%d\n",		__func__, ccsys_dref(ccsys_ref_passwd_pw_gid(B)));
+#endif
+#if (1 == CCSYS_HAVE_STRUCT_PASSWD_PW_GECOS)
+    fprintf(stderr, "%s: pw_gecos=%s\n",	__func__, ccsys_ref_passwd_pw_gecos(B));
+#endif
+#if (1 == CCSYS_HAVE_STRUCT_PASSWD_PW_DIR)
+    fprintf(stderr, "%s: pw_dir=%s\n",		__func__, ccsys_ref_passwd_pw_dir(B));
+#endif
+#if (1 == CCSYS_HAVE_STRUCT_PASSWD_PW_SHELL)
+    fprintf(stderr, "%s: pw_shell=%s\n",	__func__, ccsys_ref_passwd_pw_shell(B));
+#endif
+
+    cce_run_cleanup_handlers(L);
+  }
+#endif
+}
+
+void
+test_6_3 (cce_destination_t upper_L)
+/* Using "getpwuid_r()". */
+{
+#if (defined HAVE_GETPWUID_R)
+  cce_location_t	L[1];
+
+  if (cce_location(L)) {
+    cce_run_error_handlers_raise(L, upper_L);
+  } else {
+    ccsys_passwd_t 	S;
+    ccsys_passwd_t *	R;
+    size_t		buflen = 4 * 4096;
+    char		bufptr[buflen];
+    bool		rv;
+
+    rv = ccsys_getpwuid_r(L, ccsys_getuid(), &S, bufptr, buflen, &R);
+    cctests_assert(L, true == rv);
+
+#if (1 == CCSYS_HAVE_STRUCT_PASSWD_PW_NAME)
+    fprintf(stderr, "%s: pw_name=%s\n",		__func__, ccsys_ref_passwd_pw_name(R));
+#endif
+#if (1 == CCSYS_HAVE_STRUCT_PASSWD_PW_PASSWD)
+    fprintf(stderr, "%s: pw_passwd=%s\n",	__func__, ccsys_ref_passwd_pw_passwd(R));
+#endif
+#if (1 == CCSYS_HAVE_STRUCT_PASSWD_PW_UID)
+    fprintf(stderr, "%s: pw_uid=%d\n",		__func__, ccsys_dref(ccsys_ref_passwd_pw_uid(R)));
+#endif
+#if (1 == CCSYS_HAVE_STRUCT_PASSWD_PW_GID)
+    fprintf(stderr, "%s: pw_gid=%d\n",		__func__, ccsys_dref(ccsys_ref_passwd_pw_gid(R)));
+#endif
+#if (1 == CCSYS_HAVE_STRUCT_PASSWD_PW_GECOS)
+    fprintf(stderr, "%s: pw_gecos=%s\n",	__func__, ccsys_ref_passwd_pw_gecos(R));
+#endif
+#if (1 == CCSYS_HAVE_STRUCT_PASSWD_PW_DIR)
+    fprintf(stderr, "%s: pw_dir=%s\n",		__func__, ccsys_ref_passwd_pw_dir(R));
+#endif
+#if (1 == CCSYS_HAVE_STRUCT_PASSWD_PW_SHELL)
+    fprintf(stderr, "%s: pw_shell=%s\n",	__func__, ccsys_ref_passwd_pw_shell(R));
+#endif
+
+    cce_run_cleanup_handlers(L);
+  }
+#endif
+}
+
+void
+test_6_4 (cce_destination_t upper_L)
+/* Using "getpwnam_r()". */
+{
+#if ((defined HAVE_GETPWUID) && (defined HAVE_GETPWNAM_R))
+  cce_location_t	L[1];
+
+  if (cce_location(L)) {
+    cce_run_error_handlers_raise(L, upper_L);
+  } else {
+    ccsys_passwd_t const *	A;
+    ccsys_passwd_t		S;
+    ccsys_passwd_t *		R;
+    size_t			buflen = 4 * 4096;
+    char			bufptr[buflen];
+    bool			rv;
+
+    A  = ccsys_getpwuid(L, ccsys_getuid());
+    rv = ccsys_getpwnam_r(L, ccsys_ref_passwd_pw_name(A), &S, bufptr, buflen, &R);
+    cctests_assert(L, true == rv);
+
+#if (1 == CCSYS_HAVE_STRUCT_PASSWD_PW_NAME)
+    fprintf(stderr, "%s: pw_name=%s\n",		__func__, ccsys_ref_passwd_pw_name(R));
+#endif
+#if (1 == CCSYS_HAVE_STRUCT_PASSWD_PW_PASSWD)
+    fprintf(stderr, "%s: pw_passwd=%s\n",	__func__, ccsys_ref_passwd_pw_passwd(R));
+#endif
+#if (1 == CCSYS_HAVE_STRUCT_PASSWD_PW_UID)
+    fprintf(stderr, "%s: pw_uid=%d\n",		__func__, ccsys_dref(ccsys_ref_passwd_pw_uid(R)));
+#endif
+#if (1 == CCSYS_HAVE_STRUCT_PASSWD_PW_GID)
+    fprintf(stderr, "%s: pw_gid=%d\n",		__func__, ccsys_dref(ccsys_ref_passwd_pw_gid(R)));
+#endif
+#if (1 == CCSYS_HAVE_STRUCT_PASSWD_PW_GECOS)
+    fprintf(stderr, "%s: pw_gecos=%s\n",	__func__, ccsys_ref_passwd_pw_gecos(R));
+#endif
+#if (1 == CCSYS_HAVE_STRUCT_PASSWD_PW_DIR)
+    fprintf(stderr, "%s: pw_dir=%s\n",		__func__, ccsys_ref_passwd_pw_dir(R));
+#endif
+#if (1 == CCSYS_HAVE_STRUCT_PASSWD_PW_SHELL)
+    fprintf(stderr, "%s: pw_shell=%s\n",	__func__, ccsys_ref_passwd_pw_shell(R));
+#endif
 
     cce_run_cleanup_handlers(L);
   }
@@ -413,9 +596,18 @@ main (void)
     }
     cctests_end_group();
 
-    cctests_begin_group("getting the user name");
+    cctests_begin_group("getting the user login name");
     {
       cctests_run(test_5_1);
+    }
+    cctests_end_group();
+
+    cctests_begin_group("the users database");
+    {
+      cctests_run(test_6_1);
+      cctests_run(test_6_2);
+      cctests_run(test_6_3);
+      cctests_run(test_6_4);
     }
     cctests_end_group();
   }

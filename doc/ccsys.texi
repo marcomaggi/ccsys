@@ -1735,6 +1735,8 @@ The argument @var{advice} is meant to be a bitwise combination of the constants 
 * users groups::                Setting and getting additional
                                 group identities.
 * users login::                 Who logged in.
+* users usrdb::                 The users database.
+* users grpdb::                 The groups database.
 @end menu
 
 @c page
@@ -1939,7 +1941,7 @@ Wrapper for @cfunc{getlogin_r}; @manpage{getlogin_r, Get the user name}.
 @end menu
 
 @c page
-@node users login one,  , users login, users login
+@node users login one
 @subsection Using @cfunc{getlogin_r}
 
 
@@ -1959,6 +1961,305 @@ if (cce_location(L)) @{
   cce_run_cleanup_handlers(L);
 @}
 @end example
+
+@c page
+@node users usrdb
+@section The users database
+
+
+@menu
+* users usrdb struct::          The database entry structure.
+* users usrdb lookup::          Looking up one user.
+* users usrdb scan::            Scanning the database.
+@end menu
+
+@c page
+@node users usrdb struct
+@subsection The database entry structure
+
+
+The following symbols are defined in the header file @file{ccsys.h}.
+
+
+@deftp {Struct Typedef} ccsys_passwd_t
+Opaque wrapper for @objtype{struct passwd}.
+@end deftp
+
+@c ------------------------------------------------------------------------
+
+@subsubheading Feature macros
+
+
+@defmac CCSYS_HAVE_STRUCT_PASSWD_PW_NAME
+Always defined.  Expands to @code{1} if @objtype{struct passwd} has the field @code{pw_name};
+otherwise it expands to @code{0}.
+@end defmac
+
+
+@defmac CCSYS_HAVE_STRUCT_PASSWD_PW_PASSWD
+Always defined.  Expands to @code{1} if @objtype{struct passwd} has the field @code{pw_passwd};
+otherwise it expands to @code{0}.
+@end defmac
+
+
+@defmac CCSYS_HAVE_STRUCT_PASSWD_PW_UID
+Always defined.  Expands to @code{1} if @objtype{struct passwd} has the field @code{pw_uid};
+otherwise it expands to @code{0}.
+@end defmac
+
+
+@defmac CCSYS_HAVE_STRUCT_PASSWD_PW_GID
+Always defined.  Expands to @code{1} if @objtype{struct passwd} has the field @code{pw_gid};
+otherwise it expands to @code{0}.
+@end defmac
+
+
+@defmac CCSYS_HAVE_STRUCT_PASSWD_PW_GECOS
+Always defined.  Expands to @code{1} if @objtype{struct passwd} has the field @code{pw_gecos};
+otherwise it expands to @code{0}.
+@end defmac
+
+
+@defmac CCSYS_HAVE_STRUCT_PASSWD_PW_DIR
+Always defined.  Expands to @code{1} if @objtype{struct passwd} has the field @code{pw_dir};
+otherwise it expands to @code{0}.
+@end defmac
+
+
+@defmac CCSYS_HAVE_STRUCT_PASSWD_PW_SHELL
+Always defined.  Expands to @code{1} if @objtype{struct passwd} has the field @code{pw_shell};
+otherwise it expands to @code{0}.
+@end defmac
+
+@c ------------------------------------------------------------------------
+
+@subsubheading Field getters
+
+
+The following field accessors are defined only if @objtype{struct stat} has the associated field;
+otherwise they are not implemented.
+
+
+@deftypefun {char const *} ccsys_ref_passwd_pw_name (ccsys_stat_t const * @var{S})
+Getter for the field @code{pw_name} of @var{S}.
+@end deftypefun
+
+
+@deftypefun {char const *} ccsys_ref_passwd_pw_passwd (ccsys_stat_t const * @var{S})
+Getter for the field @code{pw_passwd} of @var{S}.
+@end deftypefun
+
+
+@deftypefun ccsys_uid_t ccsys_ref_passwd_pw_uid (ccsys_stat_t const * @var{S})
+Getter for the field @code{pw_uid} of @var{S}.
+@end deftypefun
+
+
+@deftypefun ccsys_gid_t ccsys_ref_passwd_pw_gid (ccsys_stat_t const * @var{S})
+Getter for the field @code{pw_gid} of @var{S}.
+@end deftypefun
+
+
+@deftypefun {char const *} ccsys_ref_passwd_pw_gecos (ccsys_stat_t const * @var{S})
+Getter for the field @code{pw_gecos} of @var{S}.
+@end deftypefun
+
+
+@deftypefun {char const *} ccsys_ref_passwd_pw_dir (ccsys_stat_t const * @var{S})
+Getter for the field @code{pw_dir} of @var{S}.
+@end deftypefun
+
+
+@deftypefun {char const *} ccsys_ref_passwd_pw_shell (ccsys_stat_t const * @var{S})
+Getter for the field @code{pw_shell} of @var{S}.
+@end deftypefun
+
+@c page
+@node users usrdb lookup
+@subsection Looking up one user
+
+
+The following symbols are defined in the header file @file{ccsys.h}.
+
+
+@deftypefun {ccsys_passwd_t const *} ccsys_getpwuid (cce_destination_t @var{L}, ccsys_uid_t @var{uid})
+Wrapper for @cfunc{getpwuid}; @manpage{getpwuid, Get password file entry}.  Notice that this
+function never returns @cnull{}: in case of error an exception is raised.
+@end deftypefun
+
+
+@deftypefun {ccsys_passwd_t const *} ccsys_getpwnam (cce_destination_t @var{L}, ccsys_uid_t @var{uid})
+Wrapper for @cfunc{getpwnam}; @manpage{getpwnam, Get password file entry}.  Notice that this
+function never returns @cnull{}: in case of error an exception is raised.
+@end deftypefun
+
+
+@deftypefun bool ccsys_getpwuid_r (cce_destination_t @var{L}, ccsys_uid_t @var{uid}, ccsys_passwd_t * @var{result_buf}, char * @var{bufptr}, size_t @var{buflen}, ccsys_passwd_t ** @var{result})
+Wrapper for @cfunc{getpwuid_r}; @manpage{getpwuid_r, Get password file entry}.  Notice that this
+function never stores @cnull{} in the variable pointed to by @var{result}: in case of error an
+exception is raised.
+
+If the call to @cfunc{getpwuid_r} is successful: the return value is @true{}.  If @cfunc{getpwuid_r}
+fails with @code{ERANGE}: the return value is @false{}, it means the region of memory pointer to by
+@var{bufptr} is not wide enough to hold the results.
+@end deftypefun
+
+
+@deftypefun bool ccsys_getpwnam_r (cce_destination_t @var{L}, ccsys_uid_t @var{uid}, ccsys_passwd_t * @var{result_buf}, char * @var{bufptr}, size_t @var{buflen}, ccsys_passwd_t ** @var{result})
+Wrapper for @cfunc{getpwnam_r}; @manpage{getpwnam_r, Get password file entry}.  Notice that this
+function never stores @cnull{} in the variable pointed to by @var{result}: in case of error an
+exception is raised.
+
+If the call to @cfunc{getpwnam_r} is successful: the return value is @true{}.  If @cfunc{getpwnam_r}
+fails with @code{ERANGE}: the return value is @false{}, it means the region of memory pointer to by
+@var{bufptr} is not wide enough to hold the results.
+@end deftypefun
+
+@menu
+* users usrdb lookup one::      Using @cfunc{getpwuid}.
+* users usrdb lookup two::      Using @cfunc{getpwnam}.
+* users usrdb lookup three::    Using @cfunc{getpwuid_r}.
+* users usrdb lookup four::     Using @cfunc{getpwnam_r}.
+@end menu
+
+@c page
+@node users usrdb lookup one
+@subsubsection Using @cfunc{getpwuid}
+
+
+As usage example of @cfunc{getpwuid} see the following code.
+
+@example
+cce_location_t        L[1];
+
+if (cce_location(L)) @{
+  cce_run_error_handlers_final(L);
+@} else @{
+  ccsys_passwd_t const *      S;
+
+  S = ccsys_getpwuid(L, ccsys_getuid());
+
+  fprint("pw_name=%s\n",   ccsys_ref_passwd_pw_name(S));
+  fprint("pw_passwd=%s\n", ccsys_ref_passwd_pw_passwd(S));
+  fprint("pw_uid=%d\n",    ccsys_dref(ccsys_ref_passwd_pw_uid(S)));
+  fprint("pw_gid=%d\n",    ccsys_dref(ccsys_ref_passwd_pw_gid(S)));
+  fprint("pw_gecos=%s\n",  ccsys_ref_passwd_pw_gecos(S));
+  fprint("pw_dir=%s\n",    ccsys_ref_passwd_pw_dir(S));
+  fprint("pw_shell=%s\n",  ccsys_ref_passwd_pw_shell(S));
+
+  cce_run_cleanup_handlers(L);
+@}
+@end example
+
+@c page
+@node users usrdb lookup two
+@subsubsection Using @cfunc{getpwnam}
+
+
+As usage example of @cfunc{getpwnam} see the following code.
+
+@example
+cce_location_t        L[1];
+
+if (cce_location(L)) @{
+  cce_run_error_handlers_final(L);
+@} else @{
+  ccsys_passwd_t const *        S;
+
+  S = ccsys_getpwnam(L, "root");
+
+  fprint("pw_name=%s\n",   ccsys_ref_passwd_pw_name(S));
+  fprint("pw_passwd=%s\n", ccsys_ref_passwd_pw_passwd(S));
+  fprint("pw_uid=%d\n",    ccsys_dref(ccsys_ref_passwd_pw_uid(S)));
+  fprint("pw_gid=%d\n",    ccsys_dref(ccsys_ref_passwd_pw_gid(S)));
+  fprint("pw_gecos=%s\n",  ccsys_ref_passwd_pw_gecos(S));
+  fprint("pw_dir=%s\n",    ccsys_ref_passwd_pw_dir(S));
+  fprint("pw_shell=%s\n",  ccsys_ref_passwd_pw_shell(S));
+
+  cce_run_cleanup_handlers(L);
+@}
+@end example
+
+@c page
+@node users usrdb lookup three
+@subsubsection Using @cfunc{getpwuid_r}
+
+
+As usage example of @cfunc{getpwuid_r} see the following code.
+
+@example
+cce_location_t        L[1];
+
+if (cce_location(L)) @{
+  cce_run_error_handlers_final(L);
+@} else @{
+  ccsys_passwd_t      S;
+  ccsys_passwd_t *    R;
+  size_t              buflen = 4 * 4096;
+  char                bufptr[buflen];
+  bool                rv;
+
+  rv = ccsys_getpwuid_r(L, ccsys_getuid(), &S, bufptr, buflen, &R);
+  assert(true == rv);
+
+  fprint("pw_name=%s\n",   ccsys_ref_passwd_pw_name(S));
+  fprint("pw_passwd=%s\n", ccsys_ref_passwd_pw_passwd(S));
+  fprint("pw_uid=%d\n",    ccsys_dref(ccsys_ref_passwd_pw_uid(S)));
+  fprint("pw_gid=%d\n",    ccsys_dref(ccsys_ref_passwd_pw_gid(S)));
+  fprint("pw_gecos=%s\n",  ccsys_ref_passwd_pw_gecos(S));
+  fprint("pw_dir=%s\n",    ccsys_ref_passwd_pw_dir(S));
+  fprint("pw_shell=%s\n",  ccsys_ref_passwd_pw_shell(S));
+
+  cce_run_cleanup_handlers(L);
+@}
+@end example
+
+@c page
+@node users usrdb lookup four
+@subsubsection Using @cfunc{getpwnam_r}
+
+
+As usage example of @cfunc{getpwnam_r} see the following code.
+
+@example
+cce_location_t        L[1];
+
+if (cce_location(L)) @{
+  cce_run_error_handlers_final(L);
+@} else @{
+  ccsys_passwd_t      S;
+  ccsys_passwd_t *    R;
+  size_t              buflen = 4 * 4096;
+  char                bufptr[buflen];
+  bool                rv;
+
+  rv = ccsys_getpwnam_r(L, "root", &S, bufptr, buflen, &R);
+  assert(true == rv);
+
+  fprint("pw_name=%s\n",   ccsys_ref_passwd_pw_name(S));
+  fprint("pw_passwd=%s\n", ccsys_ref_passwd_pw_passwd(S));
+  fprint("pw_uid=%d\n",    ccsys_dref(ccsys_ref_passwd_pw_uid(S)));
+  fprint("pw_gid=%d\n",    ccsys_dref(ccsys_ref_passwd_pw_gid(S)));
+  fprint("pw_gecos=%s\n",  ccsys_ref_passwd_pw_gecos(S));
+  fprint("pw_dir=%s\n",    ccsys_ref_passwd_pw_dir(S));
+  fprint("pw_shell=%s\n",  ccsys_ref_passwd_pw_shell(S));
+
+  cce_run_cleanup_handlers(L);
+@}
+@end example
+
+@c page
+@node users usrdb scan
+@subsection Scanning the database
+
+
+The following symbols are defined in the header file @file{ccsys.h}.
+
+
+@c page
+@node users grpdb
+@section The groups database
+
 
 @c page
 @node io
