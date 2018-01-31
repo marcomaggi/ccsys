@@ -1010,6 +1010,46 @@ CCSYS_STRUCT_GETTER(group_gr_name,	ccsys_group_t, char const *)
 CCSYS_STRUCT_GETTER(group_gr_gid,	ccsys_group_t, ccsys_gid_t)
 CCSYS_STRUCT_GETTER(group_gr_mem,	ccsys_group_t, char const * const *)
 
+/* ------------------------------------------------------------------ */
+
+ccsys_decl ccsys_group_t const * ccsys_getgrgid (cce_destination_t L, ccsys_gid_t gid)
+  __attribute__((__nonnull__(1),__returns_nonnull__));
+
+ccsys_decl bool ccsys_getgrgid_r (cce_destination_t L, ccsys_gid_t gid, ccsys_group_t * result_buf,
+				  char * buffer, size_t buflen, ccsys_group_t ** result)
+  __attribute__((__nonnull__(1,3,4,6)));
+
+ccsys_decl ccsys_group_t const * ccsys_getgrnam (cce_destination_t L, char const * name)
+  __attribute__((__nonnull__(1,2),__returns_nonnull__));
+
+ccsys_decl bool ccsys_getgrnam_r (cce_destination_t L, char const * name, ccsys_group_t * result_buf,
+				  char * buffer, size_t buflen, ccsys_group_t ** result)
+  __attribute__((__nonnull__(1,2,3,4,6)));
+
+/* ------------------------------------------------------------------ */
+
+ccsys_decl void ccsys_setgrent (cce_destination_t L)
+  __attribute__((__nonnull__(1)));
+
+ccsys_decl void ccsys_endgrent (cce_destination_t L)
+  __attribute__((__nonnull__(1)));
+
+ccsys_decl ccsys_group_t const * ccsys_getgrent (cce_destination_t L)
+  __attribute__((__nonnull__(1)));
+
+/* ------------------------------------------------------------------ */
+
+ccsys_decl void ccsys_cleanup_handler_endgrent_init (cce_destination_t L, cce_handler_t * H)
+  __attribute__((__nonnull__(1,2)));
+
+ccsys_decl void ccsys_error_handler_endgrent_init (cce_destination_t L, cce_handler_t * H)
+  __attribute__((__nonnull__(1,2)));
+
+#define ccsys_handler_endgrent_init(L,P_H) \
+  _Generic((P_H),								\
+	   cce_cleanup_handler_t	*: ccsys_cleanup_handler_endgrent_init,	\
+	   cce_error_handler_t		*: ccsys_error_handler_endgrent_init)(L,&(P_H->handler))
+
 
 /** --------------------------------------------------------------------
  ** Input/output: file descriptor utilities.

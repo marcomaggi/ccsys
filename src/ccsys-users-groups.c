@@ -491,6 +491,132 @@ ccsys_getpwnam_r (cce_destination_t L, char const * name, ccsys_passwd_t * resul
 
 
 /** --------------------------------------------------------------------
+ ** Users and groups: "struct group" interface.
+ ** ----------------------------------------------------------------- */
+
+#if (1 == CCSYS_HAVE_STRUCT_GROUP_GR_NAME)
+char const *
+ccsys_ref_group_gr_name (ccsys_group_t const * const S)
+{
+  CCSYS_PC(struct group const, D, S);
+  return D->gr_name;
+}
+void
+ccsys_set_group_gr_name (ccsys_group_t * const S, char const * F)
+{
+  CCSYS_PC(struct group, D, S);
+  D->gr_name = (char *)F;
+}
+#endif
+
+#if (1 == CCSYS_HAVE_STRUCT_GROUP_GR_GID)
+ccsys_gid_t
+ccsys_ref_group_gr_gid (ccsys_group_t const * const S)
+{
+  CCSYS_PC(struct group const, D, S);
+  ccsys_gid_t	rv = { .data = D->gr_gid };
+  return rv;
+}
+void
+ccsys_set_group_gr_gid (ccsys_group_t * const S, ccsys_gid_t F)
+{
+  CCSYS_PC(struct group, D, S);
+  D->gr_gid = F.data;
+}
+#endif
+
+#if (1 == CCSYS_HAVE_STRUCT_GROUP_GR_MEM)
+char const * const *
+ccsys_ref_group_gr_mem (ccsys_group_t const * const S)
+{
+  CCSYS_PC(struct group const, D, S);
+  return (char const * const *)(D->gr_mem);
+}
+void
+ccsys_set_group_gr_mem (ccsys_group_t * const S, char const * const * F)
+{
+  CCSYS_PC(struct group, D, S);
+  D->gr_mem = (char **)F;
+}
+#endif
+
+
+/** --------------------------------------------------------------------
+ ** Users and groups: looking up in the groups database.
+ ** ----------------------------------------------------------------- */
+
+#ifdef HAVE_GETGRGID
+ccsys_group_t const *
+ccsys_getgrgid (cce_destination_t L, ccsys_gid_t gid)
+{
+  struct group const *	rv;
+
+  errno = 0;
+  rv = getgrgid(gid.data);
+  if (NULL != rv) {
+    return (ccsys_group_t const *)rv;
+  } else {
+    cce_raise(L, cce_condition_new_errno_clear());
+  }
+}
+#endif
+
+#ifdef HAVE_GETGRGID_R
+bool
+ccsys_getgrgid_r (cce_destination_t L, ccsys_gid_t gid, ccsys_group_t * result_buf,
+		  char * bufptr, size_t buflen, ccsys_group_t ** result)
+{
+  int	rv;
+
+  errno = 0;
+  rv = getgrgid_r(gid.data, (struct group *)result_buf, bufptr, buflen, (struct group **) result);
+  if (NULL != *result) {
+    return true;
+  } else if (ERANGE == rv) {
+    return false;
+  } else {
+    cce_raise(L, cce_condition_new_errno_clear());
+  }
+}
+#endif
+
+#ifdef HAVE_GETGRNAM
+ccsys_group_t const *
+ccsys_getgrnam (cce_destination_t L, char const * name)
+{
+  struct group const *	rv;
+
+  errno = 0;
+  rv = getgrnam(name);
+  if (NULL != rv) {
+    return (ccsys_group_t const *)rv;
+  } else {
+    cce_raise(L, cce_condition_new_errno_clear());
+  }
+}
+#endif
+
+#ifdef HAVE_GETGRNAM_R
+bool
+ccsys_getgrnam_r (cce_destination_t L, char const * name, ccsys_group_t * result_buf,
+		  char * bufptr, size_t buflen, ccsys_group_t ** result)
+{
+  int	rv;
+
+  errno = 0;
+  rv = getgrnam_r(name, (struct group *)result_buf, bufptr, buflen, (struct group **) result);
+  if (NULL != *result) {
+    return true;
+  } else if (ERANGE == rv) {
+    return false;
+  } else {
+    cce_raise(L, cce_condition_new_errno_clear());
+  }
+}
+#endif
+
+
+/** --------------------------------------------------------------------
  ** Users and groups: scanning the users database.
  ** ----------------------------------------------------------------- */
 
@@ -542,9 +668,61 @@ ccsys_getpwent (cce_destination_t L)
 
 
 /** --------------------------------------------------------------------
+ ** Users and groups: scanning the users database.
+ ** ----------------------------------------------------------------- */
+
+#ifdef HAVE_SETGRENT
+void
+ccsys_setgrent (cce_destination_t L)
+/* The  "errno"  handling  in  this function  is  not  documented:  does
+   "setgrent()"  modify   "errno"?   We   do  this,   nevertheless,  for
+   safety. */
+{
+  errno = 0;
+  setgrent();
+  if (errno) {
+    cce_raise(L, cce_condition_new_errno_clear());
+  }
+}
+#endif
+
+#ifdef HAVE_ENDGRENT
+void
+ccsys_endgrent (cce_destination_t L)
+/* The  "errno"  handling  in  this function  is  not  documented:  does
+   "endgrent()"  modify   "errno"?   We   do  this,   nevertheless,  for
+   safety. */
+{
+  errno = 0;
+  endgrent();
+  if (errno) {
+    cce_raise(L, cce_condition_new_errno_clear());
+  }
+}
+#endif
+
+#ifdef HAVE_GETGRENT
+ccsys_group_t const *
+ccsys_getgrent (cce_destination_t L)
+{
+  struct group const *	gr;
+
+  errno = 0;
+  gr = getgrent();
+  if ((NULL == gr) && (0 != errno)) {
+    cce_raise(L, cce_condition_new_errno_clear());
+  } else {
+    return (ccsys_group_t const *)gr;
+  }
+}
+#endif
+
+
+/** --------------------------------------------------------------------
  ** Users and groups: endpwent handler.
  ** ----------------------------------------------------------------- */
 
+#ifdef HAVE_ENDPWENT
 __attribute__((__nonnull__(1,2)))
 static void
 cce_handler_endpwent_function (const cce_condition_t * C CCSYS_UNUSED, cce_handler_t * H CCSYS_UNUSED)
@@ -566,7 +744,35 @@ ccsys_error_handler_endpwent_init (cce_location_t * L, cce_handler_t * H)
   H->function	= cce_handler_endpwent_function;
   cce_register_error_handler(L, H);
 }
+#endif
 
+
+/** --------------------------------------------------------------------
+ ** Users and groups: endgrent handler.
+ ** ----------------------------------------------------------------- */
 
+#ifdef HAVE_ENDGRENT
+__attribute__((__nonnull__(1,2)))
+static void
+cce_handler_endgrent_function (const cce_condition_t * C CCSYS_UNUSED, cce_handler_t * H CCSYS_UNUSED)
+{
+  endgrent();
+  if (0) { fprintf(stderr, "%s: done\n", __func__); }
+}
+
+void
+ccsys_cleanup_handler_endgrent_init (cce_location_t * L, cce_handler_t * H)
+{
+  H->function	= cce_handler_endgrent_function;
+  cce_register_cleanup_handler(L, H);
+}
+
+void
+ccsys_error_handler_endgrent_init (cce_location_t * L, cce_handler_t * H)
+{
+  H->function	= cce_handler_endgrent_function;
+  cce_register_error_handler(L, H);
+}
+#endif
 
 /* end of file */

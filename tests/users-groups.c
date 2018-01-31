@@ -601,6 +601,203 @@ test_7_1 (cce_destination_t upper_L)
 }
 
 
+/** --------------------------------------------------------------------
+ ** Users and groups: looking up in the groups database.
+ ** ----------------------------------------------------------------- */
+
+void
+test_8_1 (cce_destination_t upper_L)
+/* Using "getgruid()". */
+{
+#if (defined HAVE_GETGRGID)
+  cce_location_t	L[1];
+
+  if (cce_location(L)) {
+    cce_run_error_handlers_raise(L, upper_L);
+  } else {
+    ccsys_group_t const *	S;
+
+    S = ccsys_getgrgid(L, ccsys_getgid());
+
+#if (1 == CCSYS_HAVE_STRUCT_GROUP_GR_NAME)
+    fprintf(stderr, "%s: gr_name=%s\n",		__func__, ccsys_ref_group_gr_name(S));
+#endif
+#if (1 == CCSYS_HAVE_STRUCT_GROUP_GR_GID)
+    fprintf(stderr, "%s: gr_gid=%d\n",		__func__, ccsys_dref(ccsys_ref_group_gr_gid(S)));
+#endif
+#if (1 == CCSYS_HAVE_STRUCT_GROUP_GR_MEM)
+    {
+      char const * const *	username;
+      int		i;
+      for (username = ccsys_ref_group_gr_mem(S), i=0; *username; ++username, ++i) {
+	fprintf(stderr, "%s: gr_mem[%d]=%s\n",	__func__, i, *username);
+      }
+    }
+#endif
+
+    cce_run_cleanup_handlers(L);
+  }
+#endif
+}
+
+void
+test_8_2 (cce_destination_t upper_L)
+/* Using "getgrnam()". */
+{
+#if ((defined HAVE_GETGRGID) && (defined HAVE_GETGRNAM))
+  cce_location_t	L[1];
+
+  if (cce_location(L)) {
+    cce_run_error_handlers_raise(L, upper_L);
+  } else {
+    ccsys_group_t const *A, *B;
+
+    A = ccsys_getgrgid(L, ccsys_getgid());
+    B = ccsys_getgrnam(L, ccsys_ref_group_gr_name(A));
+
+#if (1 == CCSYS_HAVE_STRUCT_GROUP_GR_NAME)
+    fprintf(stderr, "%s: gr_name=%s\n",		__func__, ccsys_ref_group_gr_name(B));
+#endif
+#if (1 == CCSYS_HAVE_STRUCT_GROUP_GR_GID)
+    fprintf(stderr, "%s: gr_gid=%d\n",		__func__, ccsys_dref(ccsys_ref_group_gr_gid(B)));
+#endif
+#if (1 == CCSYS_HAVE_STRUCT_GROUP_GR_MEM)
+    {
+      char const * const *	username;
+      int		i;
+      for (username = ccsys_ref_group_gr_mem(B), i=0; *username; ++username, ++i) {
+	fprintf(stderr, "%s: gr_mem[%d]=%s\n",	__func__, i, *username);
+      }
+    }
+#endif
+
+    cce_run_cleanup_handlers(L);
+  }
+#endif
+}
+
+void
+test_8_3 (cce_destination_t upper_L)
+/* Using "getgruid_r()". */
+{
+#if (defined HAVE_GETGRGID_R)
+  cce_location_t	L[1];
+
+  if (cce_location(L)) {
+    cce_run_error_handlers_raise(L, upper_L);
+  } else {
+    ccsys_group_t 	S;
+    ccsys_group_t *	R;
+    size_t		buflen = 4 * 4096;
+    char		bufptr[buflen];
+    bool		rv;
+
+    rv = ccsys_getgrgid_r(L, ccsys_getgid(), &S, bufptr, buflen, &R);
+    cctests_assert(L, true == rv);
+
+#if (1 == CCSYS_HAVE_STRUCT_GROUP_GR_NAME)
+    fprintf(stderr, "%s: gr_name=%s\n",		__func__, ccsys_ref_group_gr_name(&S));
+#endif
+#if (1 == CCSYS_HAVE_STRUCT_GROUP_GR_GID)
+    fprintf(stderr, "%s: gr_gid=%d\n",		__func__, ccsys_dref(ccsys_ref_group_gr_gid(&S)));
+#endif
+#if (1 == CCSYS_HAVE_STRUCT_GROUP_GR_MEM)
+    {
+      char const * const *	username;
+      int		i;
+      for (username = ccsys_ref_group_gr_mem(&S), i=0; *username; ++username, ++i) {
+	fprintf(stderr, "%s: gr_mem[%d]=%s\n",	__func__, i, *username);
+      }
+    }
+#endif
+
+    cce_run_cleanup_handlers(L);
+  }
+#endif
+}
+
+void
+test_8_4 (cce_destination_t upper_L)
+/* Using "getgrnam_r()". */
+{
+#if ((defined HAVE_GETGRGID) && (defined HAVE_GETGRNAM_R))
+  cce_location_t	L[1];
+
+  if (cce_location(L)) {
+    cce_run_error_handlers_raise(L, upper_L);
+  } else {
+    ccsys_group_t const *	A;
+    ccsys_group_t		S;
+    ccsys_group_t *		R;
+    size_t			buflen = 4 * 4096;
+    char			bufptr[buflen];
+    bool			rv;
+
+    A  = ccsys_getgrgid(L, ccsys_getgid());
+    rv = ccsys_getgrnam_r(L, ccsys_ref_group_gr_name(A), &S, bufptr, buflen, &R);
+    cctests_assert(L, true == rv);
+
+#if (1 == CCSYS_HAVE_STRUCT_GROUP_GR_NAME)
+    fprintf(stderr, "%s: gr_name=%s\n",		__func__, ccsys_ref_group_gr_name(&S));
+#endif
+#if (1 == CCSYS_HAVE_STRUCT_GROUP_GR_GID)
+    fprintf(stderr, "%s: gr_gid=%d\n",		__func__, ccsys_dref(ccsys_ref_group_gr_gid(&S)));
+#endif
+#if (1 == CCSYS_HAVE_STRUCT_GROUP_GR_MEM)
+    {
+      char const * const *	username;
+      int		i;
+      for (username = ccsys_ref_group_gr_mem(&S), i=0; *username; ++username, ++i) {
+	fprintf(stderr, "%s: gr_mem[%d]=%s\n",	__func__, i, *username);
+      }
+    }
+#endif
+
+    cce_run_cleanup_handlers(L);
+  }
+#endif
+}
+
+
+/** --------------------------------------------------------------------
+ ** Users and groups: scanning the groups database.
+ ** ----------------------------------------------------------------- */
+
+void
+test_9_1 (cce_destination_t upper_L)
+/* Testing "ccsys_getgrent()".*/
+{
+#if ((defined HAVE_SETGRENT) && (defined HAVE_ENDGRENT) && (defined HAVE_GETGRENT))
+  cce_location_t	L[1];
+  cce_cleanup_handler_t	endgrent_H[1];
+
+  if (cce_location(L)) {
+    if (1) { fprintf(stderr, "%s: %s\n", __func__, cce_condition_static_message(cce_condition(L))); }
+    cce_run_error_handlers_raise(L, upper_L);
+  } else {
+    ccsys_setgrent(L);
+    ccsys_handler_endgrent_init(L, endgrent_H);
+
+    for (ccsys_group_t const * S = ccsys_getgrent(L); NULL != S; S = ccsys_getgrent(L)) {
+      fprintf(stderr, "%s: /etc/group entry: gr_name=%s\n",	__func__, ccsys_ref_group_gr_name(S));
+      if (0) {
+	fprintf(stderr, "%s:\tgr_gid=%d\n",	__func__, ccsys_dref(ccsys_ref_group_gr_gid(S)));
+	{
+	  char const * const *	username;
+	  int		i;
+	  for (username = ccsys_ref_group_gr_mem(S), i=0; *username; ++username, ++i) {
+	    fprintf(stderr, "%s:\tgr_mem[%d]=%s\n",	__func__, i, *username);
+	  }
+	}
+      }
+    }
+
+    cce_run_cleanup_handlers(L);
+  }
+#endif
+}
+
+
 int
 main (void)
 {
@@ -661,6 +858,20 @@ main (void)
     }
     cctests_end_group();
 
+    cctests_begin_group("looking up the groups database");
+    {
+      cctests_run(test_8_1);
+      cctests_run(test_8_2);
+      cctests_run(test_8_3);
+      cctests_run(test_8_4);
+    }
+    cctests_end_group();
+
+    cctests_begin_group("scanning the groups database");
+    {
+      cctests_run(test_9_1);
+    }
+    cctests_end_group();
   }
   cctests_final();
 }

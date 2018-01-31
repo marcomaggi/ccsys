@@ -2410,11 +2410,87 @@ Getter for the field @code{gr_mem} of @var{S}.
 @node users grpdb lookup
 @subsection Looking up one user
 
+
+The following symbols are defined in the header file @file{ccsys.h}.
+
+
+@deftypefun {ccsys_group_t const *} ccsys_getgrgid (cce_destination_t @var{L}, ccsys_gid_t @var{gid})
+Wrapper for @cfunc{getgrgid}; @manpage{getgrgid, Get group file entry}.  Notice that this function
+never returns @cnull{}: in case of error an exception is raised.
+@end deftypefun
+
+
+@deftypefun {ccsys_group_t const *} ccsys_getgrnam (cce_destination_t @var{L}, ccsys_gid_t @var{gid})
+Wrapper for @cfunc{getgrnam}; @manpage{getgrnam, Get group file entry}.  Notice that this function
+never returns @cnull{}: in case of error an exception is raised.
+@end deftypefun
+
+
+@deftypefun bool ccsys_getgrgid_r (cce_destination_t @var{L}, ccsys_gid_t @var{gid}, ccsys_group_t * @var{result_buf}, char * @var{bufptr}, size_t @var{buflen}, ccsys_group_t ** @var{result})
+Wrapper for @cfunc{getgrgid_r}; @manpage{getgrgid_r, Get group file entry}.  Notice that this
+function never stores @cnull{} in the variable pointed to by @var{result}: in case of error an
+exception is raised.
+
+If the call to @cfunc{getgrgid_r} is successful: the return value is @true{}.  If @cfunc{getgrgid_r}
+fails with @code{ERANGE}: the return value is @false{}, it means the region of memory pointer to by
+@var{bufptr} is not wide enough to hold the results.
+@end deftypefun
+
+
+@deftypefun bool ccsys_getgrnam_r (cce_destination_t @var{L}, ccsys_gid_t @var{gid}, ccsys_group_t * @var{result_buf}, char * @var{bufptr}, size_t @var{buflen}, ccsys_group_t ** @var{result})
+Wrapper for @cfunc{getgrnam_r}; @manpage{getgrnam_r, Get group file entry}.  Notice that this
+function never stores @cnull{} in the variable pointed to by @var{result}: in case of error an
+exception is raised.
+
+If the call to @cfunc{getgrnam_r} is successful: the return value is @true{}.  If @cfunc{getgrnam_r}
+fails with @code{ERANGE}: the return value is @false{}, it means the region of memory pointer to by
+@var{bufptr} is not wide enough to hold the results.
+@end deftypefun
+
 @c page
 @node users grpdb scan
 @subsection Scanning the database
 
 
+The following symbols are defined in the header file @file{ccsys.h}.
+
+
+@deftypefun void ccsys_setgrent (cce_destination_t @var{L})
+Wrapper for @cfunc{setgrent}; @manpage{setgrent, Get group file entry}.
+@end deftypefun
+
+
+@deftypefun void ccsys_endgrent (cce_destination_t @var{L})
+Wrapper for @cfunc{endgrent}; @manpage{endgrent, Get group file entry}.
+@end deftypefun
+
+
+@deftypefun {ccsys_group_t const *} ccsys_getgrent (cce_destination_t @var{L})
+Wrapper for @cfunc{getgrent}; @manpage{getgrent, Get group file entry}.
+@end deftypefun
+
+@c ------------------------------------------------------------------------
+
+@deftypefun void ccsys_cleanup_handler_endgrent_init (cce_destination_t @var{L}, cce_handler_t * @var{H})
+@deftypefunx void ccsys_error_handler_endgrent_init (cce_destination_t @var{L}, cce_handler_t * @var{H})
+Register @var{H} as cleanup or error handler in the context of @var{L}.  The handler function will
+reset the users database pointer using the standard function @cfunc{endgrent}.
+@end deftypefun
+
+
+@deftypefn {Preprocessor Macro} void ccsys_handler_endgrent_init (cce_destination_t @var{L}, cce_cleanup_handler_t * @var{P_H})
+@deftypefnx {Preprocessor Macro} void ccsys_handler_endgrent_init (cce_destination_t @var{L}, cce_error_handler_t * @var{P_H})
+This preprocessor macro uses @code{_Generic} to dispatch the call according to the type of the
+pointer @var{P_H}; if the type is:
+
+@table @code
+@item cce_cleanup_handler_t
+The macro expands into a call to @cfunc{ccsys_cleanup_handler_endgrent_init}.
+
+@item cce_error_handler_t
+The macro expands into a call to @cfunc{ccsys_error_handler_endgrent_init}.
+@end table
+@end deftypefn
 
 @c page
 @node io
