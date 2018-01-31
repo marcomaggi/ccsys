@@ -1610,6 +1610,177 @@ test_8_3 (cce_destination_t upper_L CCSYS_UNUSED)
 }
 
 
+/** --------------------------------------------------------------------
+ ** File system: changing ownership, test for "ccsys_chown()".
+ ** ----------------------------------------------------------------- */
+
+void
+test_9_1 (cce_destination_t upper_L CCSYS_UNUSED)
+{
+  cce_location_t	L[1];
+  cce_cleanup_handler_t	filename_H[1];
+
+  if (cce_location(L)) {
+    cce_run_error_handlers_raise(L, upper_L);
+  } else {
+    char const *	filename = "name.ext";
+
+    /* Create the file. */
+    {
+      ccsys_open_flags_t	flags;
+      ccsys_open_mode_t		mode;
+
+      flags.data = CCSYS_O_CREAT;
+      mode.data  = CCSYS_S_IRUSR | CCSYS_S_IWUSR;
+      ccsys_touch(L, filename, flags, mode);
+      ccsys_handler_remove_init(L, filename_H, filename);
+    }
+
+    /* Change ownership. */
+    {
+      ccsys_uid_t	uid = ccsys_getuid();
+      ccsys_gid_t	gid = ccsys_getgid();
+
+      ccsys_chown(L, filename, uid, gid);
+    }
+
+    cce_run_cleanup_handlers(L);
+  }
+}
+
+
+/** --------------------------------------------------------------------
+ ** File system: changing ownership, test for "ccsys_lchown()".
+ ** ----------------------------------------------------------------- */
+
+void
+test_9_2 (cce_destination_t upper_L)
+{
+  cce_location_t	L[1];
+  cce_cleanup_handler_t	filename_H[1];
+  cce_cleanup_handler_t	linkname_H[1];
+
+  if (cce_location(L)) {
+    cce_run_error_handlers_raise(L, upper_L);
+  } else {
+    char const *	filename = "name.ext";
+    char const *	linkname = "link.ext";
+
+    /* Create the file. */
+    {
+      ccsys_open_flags_t	flags;
+      ccsys_open_mode_t		mode;
+
+      flags.data = CCSYS_O_CREAT;
+      mode.data  = CCSYS_S_IRUSR | CCSYS_S_IWUSR;
+      ccsys_touch(L, filename, flags, mode);
+      ccsys_handler_remove_init(L, filename_H, filename);
+    }
+
+    /* Create the link. */
+    {
+      ccsys_symlink(L, filename, linkname);
+      ccsys_handler_remove_init(L, linkname_H, linkname);
+    }
+
+    /* Change ownership. */
+    {
+      ccsys_uid_t	uid = ccsys_getuid();
+      ccsys_gid_t	gid = ccsys_getgid();
+
+      ccsys_lchown(L, linkname, uid, gid);
+    }
+
+    cce_run_cleanup_handlers(L);
+  }
+}
+
+
+/** --------------------------------------------------------------------
+ ** File system: changing ownership, test for "ccsys_fchown()".
+ ** ----------------------------------------------------------------- */
+
+void
+test_9_3 (cce_destination_t upper_L)
+{
+  cce_location_t	L[1];
+  cce_cleanup_handler_t	filedes_H[1];
+  cce_cleanup_handler_t	filename_H[1];
+
+  if (cce_location(L)) {
+    if (1) { fprintf(stderr, "%s: %s\n", __func__, cce_condition_static_message(cce_condition(L))); }
+    cce_run_error_handlers_raise(L, upper_L);
+  } else {
+    char const *	filename = "name.ext";
+    ccsys_fd_t		fd;
+
+    /* Create the file. */
+    {
+      ccsys_open_flags_t	flags;
+      ccsys_open_mode_t		mode;
+
+      flags.data = CCSYS_O_CREAT;
+      mode.data  = CCSYS_S_IRUSR | CCSYS_S_IWUSR;
+      fd = ccsys_open(L, filename, flags, mode);
+      ccsys_handler_filedes_init(L, filedes_H, fd);
+      ccsys_handler_remove_init(L, filename_H, filename);
+    }
+
+    /* Change ownership. */
+    {
+      ccsys_uid_t	uid = ccsys_getuid();
+      ccsys_gid_t	gid = ccsys_getgid();
+
+      ccsys_fchown(L, fd, uid, gid);
+    }
+
+    cce_run_cleanup_handlers(L);
+  }
+}
+
+
+/** --------------------------------------------------------------------
+ ** File system: changing ownership, test for "ccsys_fchownat()".
+ ** ----------------------------------------------------------------- */
+
+void
+test_9_4 (cce_destination_t upper_L)
+{
+  cce_location_t	L[1];
+  cce_cleanup_handler_t	filename_H[1];
+
+  if (cce_location(L)) {
+    if (1) { fprintf(stderr, "%s: %s\n", __func__, cce_condition_static_message(cce_condition(L))); }
+    cce_run_error_handlers_raise(L, upper_L);
+  } else {
+    char const *	filename = "name.ext";
+
+    /* Create the file. */
+    {
+      ccsys_open_flags_t	flags;
+      ccsys_open_mode_t		mode;
+
+      flags.data = CCSYS_O_CREAT;
+      mode.data  = CCSYS_S_IRUSR | CCSYS_S_IWUSR;
+      ccsys_touch(L, filename, flags, mode);
+      ccsys_handler_remove_init(L, filename_H, filename);
+    }
+
+    /* Change ownership. */
+    {
+      ccsys_uid_t		uid = ccsys_getuid();
+      ccsys_gid_t		gid = ccsys_getgid();
+      ccsys_fchownat_flags_t	flags;
+
+      flags.data = 0;
+      ccsys_fchownat(L, CCSYS_AT_FDCWD, filename, uid, gid, flags);
+    }
+
+    cce_run_cleanup_handlers(L);
+  }
+}
+
+
 int
 main (void)
 {
@@ -1682,6 +1853,15 @@ main (void)
       cctests_run(test_8_1);
       cctests_run(test_8_2);
       cctests_run(test_8_3);
+    }
+    cctests_end_group();
+
+    cctests_begin_group("changing ownership");
+    {
+      cctests_run(test_9_1);
+      cctests_run(test_9_2);
+      cctests_run(test_9_3);
+      cctests_run(test_9_4);
     }
     cctests_end_group();
   }

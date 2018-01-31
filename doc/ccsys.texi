@@ -542,6 +542,14 @@ Exact signed integer representing a socket namespace (or domain).  It is the of 
 @end deftp
 
 
+@anchor{ccsys_fchownat_flags_t}
+@deftp {Semantic Type} ccsys_fchownat_flags_t
+Exact signed integer representing the flags for @cfunc{ccsys_fchownat}.  It is meant to be a bitwise
+combination of some of the enumerated constants of type @objtype{ccsys_at_flags_enum_t}.
+@ref{ccsys_at_flags_enum_t, Enumerated constants}.
+@end deftp
+
+
 @anchor{ccsys_socket_style_t}
 @deftp {Semantic Type} ccsys_socket_style_t
 Exact signed integer representing a socket style (or type).  It is the of the argument @var{style}
@@ -6320,6 +6328,173 @@ Wrapper for @cfunc{lchown}; @manpage{chown, Change ownership of a file}.
 @deftypefun void ccsys_fchownat (cce_destination_t @var{L}, ccsys_dirfd_t @var{dirfd}, char const * @var{pathname}, uid_t @var{owner}, gid_t @var{group}, ccsys_fchownat_flags_t @var{flags})
 Wrapper for @cfunc{fchownat}; @manpage{chown, Change ownership of a file}.
 @end deftypefun
+
+
+@menu
+* fs owner one::                Using @cfunc{ccsys_chown}.
+* fs owner two::                Using @cfunc{ccsys_fchown}.
+* fs owner three::              Using @cfunc{ccsys_lchown}.
+* fs owner four::               Using @cfunc{ccsys_fchownat}.
+@end menu
+
+@c page
+@node fs owner one
+@subsection Using @cfunc{ccsys_chown}
+
+
+As usage example for @cfunc{ccsys_chown} see the following code.
+
+@example
+cce_location_t        L[1];
+
+if (cce_location(L)) @{
+  cce_run_error_handlers_final(L);
+@} else @{
+  char const *        filename = "name.ext";
+
+  /* Create the file. */
+  @{
+    ccsys_open_flags_t        flags;
+    ccsys_open_mode_t         mode;
+
+    flags.data = CCSYS_O_CREAT;
+    mode.data  = CCSYS_S_IRUSR | CCSYS_S_IWUSR;
+    ccsys_touch(L, filename, flags, mode);
+  @}
+
+  /* Change ownership. */
+  @{
+    ccsys_uid_t       uid = ccsys_getuid();
+    ccsys_gid_t       gid = ccsys_getgid();
+
+    ccsys_chown(L, filename, uid, gid);
+  @}
+
+  cce_run_cleanup_handlers(L);
+@}
+@end example
+
+@c page
+@node fs owner two
+@subsection Using @cfunc{ccsys_fchown}
+
+
+As usage example for @cfunc{ccsys_fchown} see the following code.
+
+@example
+cce_location_t        L[1];
+cce_cleanup_handler_t filedes_H[1];
+
+if (cce_location(L)) @{
+    cce_run_error_handlers_final(L);
+@} else @{
+  char const *        filename = "name.ext";
+  ccsys_fd_t          fd;
+
+  /* Create the file. */
+  @{
+    ccsys_open_flags_t        flags;
+    ccsys_open_mode_t         mode;
+
+    flags.data = CCSYS_O_CREAT;
+    mode.data  = CCSYS_S_IRUSR | CCSYS_S_IWUSR;
+    fd = ccsys_open(L, filename, flags, mode);
+    ccsys_handler_filedes_init(L, filedes_H, fd);
+  @}
+
+  /* Change ownership. */
+  @{
+    ccsys_uid_t       uid = ccsys_getuid();
+    ccsys_gid_t       gid = ccsys_getgid();
+
+    ccsys_fchown(L, fd, uid, gid);
+  @}
+
+  cce_run_cleanup_handlers(L);
+@}
+@end example
+
+@c page
+@node fs owner three
+@subsection Using @cfunc{ccsys_lchown}
+
+
+As usage example for @cfunc{ccsys_lchown} see the following code.
+
+@example
+cce_location_t        L[1];
+
+if (cce_location(L)) @{
+  cce_run_error_handlers_final(L);
+@} else @{
+  char const *        filename = "name.ext";
+  char const *        linkname = "link.ext";
+
+  /* Create the file. */
+  @{
+    ccsys_open_flags_t        flags;
+    ccsys_open_mode_t         mode;
+
+    flags.data = CCSYS_O_CREAT;
+    mode.data  = CCSYS_S_IRUSR | CCSYS_S_IWUSR;
+    ccsys_touch(L, filename, flags, mode);
+  @}
+
+  /* Create the link. */
+  @{
+    ccsys_symlink(L, filename, linkname);
+  @}
+
+  /* Change ownership. */
+  @{
+    ccsys_uid_t       uid = ccsys_getuid();
+    ccsys_gid_t       gid = ccsys_getgid();
+
+    ccsys_lchown(L, linkname, uid, gid);
+  @}
+
+  cce_run_cleanup_handlers(L);
+@}
+@end example
+
+@c page
+@node fs owner four
+@subsection Using @cfunc{ccsys_fchownat}
+
+
+As usage example for @cfunc{ccsys_fchownat} see the following code.
+
+@example
+cce_location_t        L[1];
+
+if (cce_location(L)) @{
+  cce_run_error_handlers_final(L);
+@} else @{
+  char const *        filename = "name.ext";
+
+  /* Create the file. */
+  @{
+    ccsys_open_flags_t        flags;
+    ccsys_open_mode_t         mode;
+
+    flags.data = CCSYS_O_CREAT;
+    mode.data  = CCSYS_S_IRUSR | CCSYS_S_IWUSR;
+    ccsys_touch(L, filename, flags, mode);
+  @}
+
+  /* Change ownership. */
+  @{
+    ccsys_uid_t               uid = ccsys_getuid();
+    ccsys_gid_t               gid = ccsys_getgid();
+    ccsys_fchownat_flags_t    flags;
+
+    flags.data = 0;
+    ccsys_fchownat(L, CCSYS_AT_FDCWD, filename, uid, gid, flags);
+  @}
+
+  cce_run_cleanup_handlers(L);
+@}
+@end example
 
 @c page
 @node fs access perms
