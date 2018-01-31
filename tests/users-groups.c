@@ -254,9 +254,7 @@ test_4_2 (cce_destination_t upper_L)
   if (cce_location(L)) {
     if (0) { fprintf(stderr, "%s: %s\n", __func__, cce_condition_static_message(cce_condition(L))); }
     if (cce_condition_is_errno(cce_condition(L))) {
-      CCSYS_PC(cce_condition_errno_t, C, cce_condition(L));
-
-      if (EPERM == C->errnum) {
+      if (CCSYS_EPERM == cce_ref_condition_errno_errnum(cce_condition(L))) {
 	fprintf(stderr, "%s: no permissions to set groups, but it's OK\n", __func__);
       } else {
 	cce_run_error_handlers_raise(L, upper_L);
@@ -292,9 +290,7 @@ test_4_3 (cce_destination_t upper_L)
   if (cce_location(L)) {
     if (0) { fprintf(stderr, "%s: %s\n", __func__, cce_condition_static_message(cce_condition(L))); }
     if (cce_condition_is_errno(cce_condition(L))) {
-      CCSYS_PC(cce_condition_errno_t, C, cce_condition(L));
-
-      if (EPERM == C->errnum) {
+      if (CCSYS_EPERM == cce_ref_condition_errno_errnum(cce_condition(L))) {
 	fprintf(stderr, "%s: no permissions to set groups, but it's OK\n", __func__);
       } else {
 	cce_run_error_handlers_raise(L, upper_L);
@@ -362,8 +358,7 @@ test_5_1 (cce_destination_t upper_L)
   if (cce_location(L)) {
     if (1) { fprintf(stderr, "%s: %s\n", __func__, cce_condition_static_message(cce_condition(L))); }
     if (cce_condition_is_errno(cce_condition(L))) {
-      CCSYS_PC(cce_condition_errno_t, C, cce_condition(L));
-      if (ENOTTY == C->errnum) {
+      if (CCSYS_ENOTTY == cce_ref_condition_errno_errnum(cce_condition(L))) {
 	/* This may  happen (I think)  when running the test  suite with
 	   GNU Automake's Parallel Test  Harness.  (Marco Maggi; Jan 29,
 	   2018) */
@@ -569,6 +564,43 @@ test_6_4 (cce_destination_t upper_L)
 }
 
 
+/** --------------------------------------------------------------------
+ ** Users and groups: scanning the users database.
+ ** ----------------------------------------------------------------- */
+
+void
+test_7_1 (cce_destination_t upper_L)
+/* Testing "ccsys_getpwent()".*/
+{
+#if ((defined HAVE_SETPWENT) && (defined HAVE_ENDPWENT) && (defined HAVE_GETPWENT))
+  cce_location_t	L[1];
+  cce_cleanup_handler_t	endpwent_H[1];
+
+  if (cce_location(L)) {
+    if (1) { fprintf(stderr, "%s: %s\n", __func__, cce_condition_static_message(cce_condition(L))); }
+    cce_run_error_handlers_raise(L, upper_L);
+  } else {
+    ccsys_setpwent(L);
+    ccsys_handler_endpwent_init(L, endpwent_H);
+
+    for (ccsys_passwd_t const * S = ccsys_getpwent(L); NULL != S; S = ccsys_getpwent(L)) {
+      fprintf(stderr, "%s: /etc/passwd entry: pw_name=%s\n",	__func__, ccsys_ref_passwd_pw_name(S));
+      if (0) {
+	fprintf(stderr, "%s:\tpw_passwd=%s\n",	__func__, ccsys_ref_passwd_pw_passwd(S));
+	fprintf(stderr, "%s:\tpw_uid=%d\n",	__func__, ccsys_dref(ccsys_ref_passwd_pw_uid(S)));
+	fprintf(stderr, "%s:\tpw_gid=%d\n",	__func__, ccsys_dref(ccsys_ref_passwd_pw_gid(S)));
+	fprintf(stderr, "%s:\tpw_gecos=%s\n",	__func__, ccsys_ref_passwd_pw_gecos(S));
+	fprintf(stderr, "%s:\tpw_dir=%s\n",	__func__, ccsys_ref_passwd_pw_dir(S));
+	fprintf(stderr, "%s:\tpw_shell=%s\n",	__func__, ccsys_ref_passwd_pw_shell(S));
+      }
+    }
+
+    cce_run_cleanup_handlers(L);
+  }
+#endif
+}
+
+
 int
 main (void)
 {
@@ -622,6 +654,13 @@ main (void)
       cctests_run(test_6_4);
     }
     cctests_end_group();
+
+    cctests_begin_group("scanning the users database");
+    {
+      cctests_run(test_7_1);
+    }
+    cctests_end_group();
+
   }
   cctests_final();
 }

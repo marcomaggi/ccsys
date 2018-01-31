@@ -949,13 +949,13 @@ ccsys_decl void ccsys_getlogin_r (cce_destination_t L, char * buf, size_t maxlen
 #define CCSYS_HAVE_STRUCT_PASSWD_PW_DIR		@CCSYS_HAVE_STRUCT_PASSWD_PW_DIR@
 #define CCSYS_HAVE_STRUCT_PASSWD_PW_SHELL	@CCSYS_HAVE_STRUCT_PASSWD_PW_SHELL@
 
-CCSYS_STRUCT_GETTER(passwd_pw_name,	ccsys_passwd_t, char const *)
-CCSYS_STRUCT_GETTER(passwd_pw_passwd,	ccsys_passwd_t, char const *)
-CCSYS_STRUCT_GETTER(passwd_pw_uid,	ccsys_passwd_t, ccsys_uid_t)
-CCSYS_STRUCT_GETTER(passwd_pw_gid,	ccsys_passwd_t, ccsys_gid_t)
-CCSYS_STRUCT_GETTER(passwd_pw_gecos,	ccsys_passwd_t, char const *)
-CCSYS_STRUCT_GETTER(passwd_pw_dir,	ccsys_passwd_t, char const *)
-CCSYS_STRUCT_GETTER(passwd_pw_shell,	ccsys_passwd_t, char const *)
+CCSYS_STRUCT_ACCESSORS(passwd_pw_name,	ccsys_passwd_t, char const *)
+CCSYS_STRUCT_ACCESSORS(passwd_pw_passwd,ccsys_passwd_t, char const *)
+CCSYS_STRUCT_ACCESSORS(passwd_pw_uid,	ccsys_passwd_t, ccsys_uid_t)
+CCSYS_STRUCT_ACCESSORS(passwd_pw_gid,	ccsys_passwd_t, ccsys_gid_t)
+CCSYS_STRUCT_ACCESSORS(passwd_pw_gecos,	ccsys_passwd_t, char const *)
+CCSYS_STRUCT_ACCESSORS(passwd_pw_dir,	ccsys_passwd_t, char const *)
+CCSYS_STRUCT_ACCESSORS(passwd_pw_shell,	ccsys_passwd_t, char const *)
 
 /* ------------------------------------------------------------------ */
 
@@ -975,23 +975,27 @@ ccsys_decl bool ccsys_getpwnam_r (cce_destination_t L, char const * name, ccsys_
 
 /* ------------------------------------------------------------------ */
 
-ccsys_decl void ccsys_putpwent (cce_destination_t L, ccsys_passwd_t * pw, ccsys_file_t stream);
+ccsys_decl void ccsys_setpwent (cce_destination_t L)
+  __attribute__((__nonnull__(1)));
+
+ccsys_decl void ccsys_endpwent (cce_destination_t L)
+  __attribute__((__nonnull__(1)));
+
+ccsys_decl ccsys_passwd_t const * ccsys_getpwent (cce_destination_t L)
+  __attribute__((__nonnull__(1)));
 
 /* ------------------------------------------------------------------ */
 
-ccsys_decl ccsys_passwd_t * ccsys_fgetpwent (cce_destination_t L, ccsys_file_t stream);
+ccsys_decl void ccsys_cleanup_handler_endpwent_init (cce_destination_t L, cce_handler_t * H)
+  __attribute__((__nonnull__(1,2)));
 
-ccsys_decl void ccsys_fgetpwent_r (cce_destination_t L);
+ccsys_decl void ccsys_error_handler_endpwent_init (cce_destination_t L, cce_handler_t * H)
+  __attribute__((__nonnull__(1,2)));
 
-/* ------------------------------------------------------------------ */
-
-ccsys_decl void ccsys_setpwent (cce_destination_t L);
-
-ccsys_decl void ccsys_getpwent (cce_destination_t L);
-
-ccsys_decl void ccsys_getpwent_r (cce_destination_t L);
-
-ccsys_decl void ccsys_endpwent (cce_destination_t L);
+#define ccsys_handler_endpwent_init(L,P_H) \
+  _Generic((P_H),								\
+	   cce_cleanup_handler_t	*: ccsys_cleanup_handler_endpwent_init,	\
+	   cce_error_handler_t		*: ccsys_error_handler_endpwent_init)(L,&(P_H->handler))
 
 
 /** --------------------------------------------------------------------

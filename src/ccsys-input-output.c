@@ -628,15 +628,15 @@ ccsys_fdopen (cce_destination_t L, ccsys_fd_t fd, char const * mode)
 }
 
 ccsys_file_t
-ccsys_freopen (cce_destination_t L, char const * pathname, char const * mode, ccsys_file_t stream)
+ccsys_freopen (cce_destination_t L, char const * pathname, char const * mode, ccsys_file_t in_stream)
 {
   FILE *	rv;
 
   errno = 0;
-  rv = freopen(pathname, mode, (FILE *)stream.data);
+  rv = freopen(pathname, mode, (FILE *)in_stream.data);
   if (NULL != rv) {
-    ccsys_file_t	stream = { .data = rv };
-    return stream;
+    ccsys_file_t	ou_stream = { .data = rv };
+    return ou_stream;
   } else {
     cce_raise(L, cce_condition_new_errno_clear());
   }

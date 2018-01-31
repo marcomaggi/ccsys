@@ -304,7 +304,7 @@ ccsys_getlogin_r (cce_destination_t L, char * buf, size_t maxlen)
 
 
 /** --------------------------------------------------------------------
- ** Users and groups: the users database.
+ ** Users and groups: "struct passwd" interface.
  ** ----------------------------------------------------------------- */
 
 #if (1 == CCSYS_HAVE_STRUCT_PASSWD_PW_NAME)
@@ -314,6 +314,12 @@ ccsys_ref_passwd_pw_name (ccsys_passwd_t const * const S)
   CCSYS_PC(struct passwd const, D, S);
   return D->pw_name;
 }
+void
+ccsys_set_passwd_pw_name (ccsys_passwd_t * const S, char const * F)
+{
+  CCSYS_PC(struct passwd, D, S);
+  D->pw_name = (char *)F;
+}
 #endif
 
 #if (1 == CCSYS_HAVE_STRUCT_PASSWD_PW_PASSWD)
@@ -322,6 +328,12 @@ ccsys_ref_passwd_pw_passwd (ccsys_passwd_t const * const S)
 {
   CCSYS_PC(struct passwd const, D, S);
   return D->pw_passwd;
+}
+void
+ccsys_set_passwd_pw_passwd (ccsys_passwd_t * const S, char const * F)
+{
+  CCSYS_PC(struct passwd, D, S);
+  D->pw_passwd = (char *)F;
 }
 #endif
 
@@ -333,6 +345,12 @@ ccsys_ref_passwd_pw_uid (ccsys_passwd_t const * const S)
   ccsys_uid_t	rv = { .data = D->pw_uid };
   return rv;
 }
+void
+ccsys_set_passwd_pw_uid (ccsys_passwd_t * const S, ccsys_uid_t F)
+{
+  CCSYS_PC(struct passwd, D, S);
+  D->pw_uid = F.data;
+}
 #endif
 
 #if (1 == CCSYS_HAVE_STRUCT_PASSWD_PW_GID)
@@ -343,6 +361,12 @@ ccsys_ref_passwd_pw_gid (ccsys_passwd_t const * const S)
   ccsys_gid_t	rv = { .data = D->pw_gid };
   return rv;
 }
+void
+ccsys_set_passwd_pw_gid (ccsys_passwd_t * const S, ccsys_gid_t F)
+{
+  CCSYS_PC(struct passwd, D, S);
+  D->pw_gid = F.data;
+}
 #endif
 
 #if (1 == CCSYS_HAVE_STRUCT_PASSWD_PW_GECOS)
@@ -351,6 +375,12 @@ ccsys_ref_passwd_pw_gecos (ccsys_passwd_t const * const S)
 {
   CCSYS_PC(struct passwd const, D, S);
   return D->pw_gecos;
+}
+void
+ccsys_set_passwd_pw_gecos (ccsys_passwd_t * const S, char const * F)
+{
+  CCSYS_PC(struct passwd, D, S);
+  D->pw_gecos = (char *)F;
 }
 #endif
 
@@ -361,6 +391,12 @@ ccsys_ref_passwd_pw_dir (ccsys_passwd_t const * const S)
   CCSYS_PC(struct passwd const, D, S);
   return D->pw_dir;
 }
+void
+ccsys_set_passwd_pw_dir (ccsys_passwd_t * const S, char const * F)
+{
+  CCSYS_PC(struct passwd, D, S);
+  D->pw_dir = (char *)F;
+}
 #endif
 
 #if (1 == CCSYS_HAVE_STRUCT_PASSWD_PW_SHELL)
@@ -370,9 +406,18 @@ ccsys_ref_passwd_pw_shell (ccsys_passwd_t const * const S)
   CCSYS_PC(struct passwd const, D, S);
   return D->pw_shell;
 }
+void
+ccsys_set_passwd_pw_shell (ccsys_passwd_t * const S, char const * F)
+{
+  CCSYS_PC(struct passwd, D, S);
+  D->pw_shell = (char *)F;
+}
 #endif
 
-/* ------------------------------------------------------------------ */
+
+/** --------------------------------------------------------------------
+ ** Users and groups: looking up in the users database.
+ ** ----------------------------------------------------------------- */
 
 #ifdef HAVE_GETPWUID
 ccsys_passwd_t const *
@@ -380,6 +425,7 @@ ccsys_getpwuid (cce_destination_t L, ccsys_uid_t uid)
 {
   struct passwd const *	rv;
 
+  errno = 0;
   rv = getpwuid(uid.data);
   if (NULL != rv) {
     return (ccsys_passwd_t const *)rv;
@@ -396,6 +442,7 @@ ccsys_getpwuid_r (cce_destination_t L, ccsys_uid_t uid, ccsys_passwd_t * result_
 {
   int	rv;
 
+  errno = 0;
   rv = getpwuid_r(uid.data, (struct passwd *)result_buf, bufptr, buflen, (struct passwd **) result);
   if (NULL != *result) {
     return true;
@@ -413,6 +460,7 @@ ccsys_getpwnam (cce_destination_t L, char const * name)
 {
   struct passwd const *	rv;
 
+  errno = 0;
   rv = getpwnam(name);
   if (NULL != rv) {
     return (ccsys_passwd_t const *)rv;
@@ -429,6 +477,7 @@ ccsys_getpwnam_r (cce_destination_t L, char const * name, ccsys_passwd_t * resul
 {
   int	rv;
 
+  errno = 0;
   rv = getpwnam_r(name, (struct passwd *)result_buf, bufptr, buflen, (struct passwd **) result);
   if (NULL != *result) {
     return true;
@@ -440,19 +489,84 @@ ccsys_getpwnam_r (cce_destination_t L, char const * name, ccsys_passwd_t * resul
 }
 #endif
 
-/* ------------------------------------------------------------------ */
+
+/** --------------------------------------------------------------------
+ ** Users and groups: scanning the users database.
+ ** ----------------------------------------------------------------- */
 
-#ifdef HAVE_PUTPWENT
+#ifdef HAVE_SETPWENT
 void
-ccsys_putpwent (cce_destination_t L, ccsys_passwd_t * pw, ccsys_file_t stream)
+ccsys_setpwent (cce_destination_t L)
+/* The  "errno"  handling  in  this function  is  not  documented:  does
+   "setpwent()"  modify   "errno"?   We   do  this,   nevertheless,  for
+   safety. */
 {
-  int	rv;
-
-  rv = putpwent((struct passwd const *) pw, (FILE *) stream.data);
-  if (-1 == rv) {
+  errno = 0;
+  setpwent();
+  if (errno) {
     cce_raise(L, cce_condition_new_errno_clear());
   }
 }
 #endif
+
+#ifdef HAVE_ENDPWENT
+void
+ccsys_endpwent (cce_destination_t L)
+/* The  "errno"  handling  in  this function  is  not  documented:  does
+   "endpwent()"  modify   "errno"?   We   do  this,   nevertheless,  for
+   safety. */
+{
+  errno = 0;
+  endpwent();
+  if (errno) {
+    cce_raise(L, cce_condition_new_errno_clear());
+  }
+}
+#endif
+
+#ifdef HAVE_GETPWENT
+ccsys_passwd_t const *
+ccsys_getpwent (cce_destination_t L)
+{
+  struct passwd const *	pw;
+
+  errno = 0;
+  pw = getpwent();
+  if ((NULL == pw) && (0 != errno)) {
+    cce_raise(L, cce_condition_new_errno_clear());
+  } else {
+    return (ccsys_passwd_t const *)pw;
+  }
+}
+#endif
+
+
+/** --------------------------------------------------------------------
+ ** Users and groups: endpwent handler.
+ ** ----------------------------------------------------------------- */
+
+__attribute__((__nonnull__(1,2)))
+static void
+cce_handler_endpwent_function (const cce_condition_t * C CCSYS_UNUSED, cce_handler_t * H CCSYS_UNUSED)
+{
+  endpwent();
+  if (0) { fprintf(stderr, "%s: done\n", __func__); }
+}
+
+void
+ccsys_cleanup_handler_endpwent_init (cce_location_t * L, cce_handler_t * H)
+{
+  H->function	= cce_handler_endpwent_function;
+  cce_register_cleanup_handler(L, H);
+}
+
+void
+ccsys_error_handler_endpwent_init (cce_location_t * L, cce_handler_t * H)
+{
+  H->function	= cce_handler_endpwent_function;
+  cce_register_error_handler(L, H);
+}
+
+
 
 /* end of file */

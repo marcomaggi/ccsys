@@ -2039,7 +2039,7 @@ otherwise it expands to @code{0}.
 
 @c ------------------------------------------------------------------------
 
-@subsubheading Field getters
+@subsubheading Field accessors
 
 
 The following field accessors are defined only if @objtype{struct passwd} has the associated field;
@@ -2047,37 +2047,44 @@ otherwise they are not implemented.
 
 
 @deftypefun {char const *} ccsys_ref_passwd_pw_name (ccsys_passwd_t const * @var{S})
-Getter for the field @code{pw_name} of @var{S}.
+@deftypefunx void ccsys_set_passwd_pw_name (ccsys_passwd_t const @var{S}, char const * @var{F})
+Getter and setter for the field @code{pw_name} of @var{S}.
 @end deftypefun
 
 
 @deftypefun {char const *} ccsys_ref_passwd_pw_passwd (ccsys_passwd_t const * @var{S})
-Getter for the field @code{pw_passwd} of @var{S}.
+@deftypefunx void ccsys_set_passwd_pw_passwd (ccsys_passwd_t * @var{S}, char const * @var{F})
+Getter and setter for the field @code{pw_passwd} of @var{S}.
 @end deftypefun
 
 
 @deftypefun ccsys_uid_t ccsys_ref_passwd_pw_uid (ccsys_passwd_t const * @var{S})
-Getter for the field @code{pw_uid} of @var{S}.
+@deftypefunx void ccsys_set_passwd_pw_uid (ccsys_passwd_t * @var{S}, ccsys_uid_t @var{F})
+Getter and setter for the field @code{pw_uid} of @var{S}.
 @end deftypefun
 
 
 @deftypefun ccsys_gid_t ccsys_ref_passwd_pw_gid (ccsys_passwd_t const * @var{S})
-Getter for the field @code{pw_gid} of @var{S}.
+@deftypefunx void ccsys_set_passwd_pw_gid (ccsys_passwd_t * @var{S}, ccsys_gid_t @var{F})
+Getter and setter for the field @code{pw_gid} of @var{S}.
 @end deftypefun
 
 
 @deftypefun {char const *} ccsys_ref_passwd_pw_gecos (ccsys_passwd_t const * @var{S})
-Getter for the field @code{pw_gecos} of @var{S}.
+@deftypefunx void ccsys_set_passwd_pw_gecos (ccsys_passwd_t * @var{S}, char const * @var{F})
+Getter and setter for the field @code{pw_gecos} of @var{S}.
 @end deftypefun
 
 
 @deftypefun {char const *} ccsys_ref_passwd_pw_dir (ccsys_passwd_t const * @var{S})
-Getter for the field @code{pw_dir} of @var{S}.
+@deftypefunx void ccsys_set_passwd_pw_dir (ccsys_passwd_t * @var{S}, char const * @var{F})
+Getter and setter for the field @code{pw_dir} of @var{S}.
 @end deftypefun
 
 
 @deftypefun {char const *} ccsys_ref_passwd_pw_shell (ccsys_passwd_t const * @var{S})
-Getter for the field @code{pw_shell} of @var{S}.
+@deftypefunx void ccsys_set_passwd_pw_shell (ccsys_passwd_t * @var{S}, char const * @var{F})
+Getter and setter for the field @code{pw_shell} of @var{S}.
 @end deftypefun
 
 @c page
@@ -2261,6 +2268,75 @@ if (cce_location(L)) @{
 
 The following symbols are defined in the header file @file{ccsys.h}.
 
+
+@deftypefun void ccsys_setpwent (cce_destination_t @var{L})
+Wrapper for @cfunc{setpwent}; @manpage{setpwent, Get password file entry}.
+@end deftypefun
+
+
+@deftypefun void ccsys_endpwent (cce_destination_t @var{L})
+Wrapper for @cfunc{endpwent}; @manpage{endpwent, Get password file entry}.
+@end deftypefun
+
+
+@deftypefun {ccsys_passwd_t const *} ccsys_getpwent (cce_destination_t @var{L})
+Wrapper for @cfunc{getpwent}; @manpage{getpwent, Get password file entry}.
+@end deftypefun
+
+@c ------------------------------------------------------------------------
+
+@deftypefun void ccsys_cleanup_handler_endpwent_init (cce_destination_t @var{L}, cce_handler_t * @var{H})
+@deftypefunx void ccsys_error_handler_endpwent_init (cce_destination_t @var{L}, cce_handler_t * @var{H})
+Register @var{H} as cleanup or error handler in the context of @var{L}.  The handler function will
+reset the users database pointer using the standard function @cfunc{endpwent}.
+@end deftypefun
+
+
+@deftypefn {Preprocessor Macro} void ccsys_handler_endpwent_init (cce_destination_t @var{L}, cce_cleanup_handler_t * @var{P_H})
+@deftypefnx {Preprocessor Macro} void ccsys_handler_endpwent_init (cce_destination_t @var{L}, cce_error_handler_t * @var{P_H})
+This preprocessor macro uses @code{_Generic} to dispatch the call according to the type of the
+pointer @var{P_H}; if the type is:
+
+@table @code
+@item cce_cleanup_handler_t
+The macro expands into a call to @cfunc{ccsys_cleanup_handler_endpwent_init}.
+
+@item cce_error_handler_t
+The macro expands into a call to @cfunc{ccsys_error_handler_endpwent_init}.
+@end table
+@end deftypefn
+
+
+@menu
+* users usrdb scan one::        Using @cfunc{ccsys_getpwent}.
+@end menu
+
+@c page
+@node users usrdb scan one
+@subsubsection Using @cfunc{ccsys_getpwent}
+
+
+As usage example of @cfunc{ccsys_getpwent} see the following code.
+
+@example
+cce_location_t        L[1];
+cce_cleanup_handler_t endpwent_H[1];
+
+if (cce_location(L)) @{
+  cce_run_error_handlers_final(L);
+@} else @{
+  ccsys_setpwent(L);
+  ccsys_handler_endpwent_init(L, endpwent_H);
+
+  for (ccsys_passwd_t const * S = ccsys_getpwent(L);
+       NULL != S;
+       S = ccsys_getpwent(L)) @{
+    printf("pw_name=%s\n", ccsys_ref_passwd_pw_name(S));
+  @}
+
+  cce_run_cleanup_handlers(L);
+@}
+@end example
 
 @c page
 @node users grpdb

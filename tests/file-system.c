@@ -55,8 +55,7 @@ test_1_1_2 (cce_destination_t upper_L)
 
     if (cce_location(inner_L)) {
       if (cce_condition_is_errno(cce_condition(inner_L))) {
-	CCE_PC(cce_condition_errno_t, C, cce_condition(inner_L));
-	if (CCSYS_ERANGE == C->errnum) {
+	if (CCSYS_ERANGE == cce_ref_condition_errno_errnum(cce_condition(inner_L))) {
 	  len *= 2;
 	  cce_retry(L);
 	}

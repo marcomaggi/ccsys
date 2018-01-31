@@ -90,7 +90,7 @@ MM_LIBTOOL_LIBRARY_VERSIONS([ccsys],1,0,0)
 dnl page
 #### external libraries
 
-PKG_CHECK_MODULES([CCEXCEPTIONS],[ccexceptions >= 0.6])
+PKG_CHECK_MODULES([CCEXCEPTIONS],[ccexceptions >= 0.6.4])
 
 AC_CACHE_SAVE
 
@@ -136,8 +136,7 @@ AC_CHECK_FUNCS([mlock munlock mlockall munlockall])
 AC_CHECK_FUNCS([mmap munmap msync mprotect])
 AC_CHECK_FUNCS([getuid getgid geteuid getegid setuid seteuid setreuid setgid setegid setregid])
 AC_CHECK_FUNCS([getgroups setgroups initgroups getgrouplist getlogin_r])
-AC_CHECK_FUNCS([getpwuid getpwuid_r getpwnam getpwnam_r])
-AC_CHECK_FUNCS([putpwent fgetpwent fgetpwent_r setpwent getpwent getpwent_r endpwent])
+AC_CHECK_FUNCS([getpwuid getpwuid_r getpwnam getpwnam_r setpwent getpwent endpwent])
 AC_CHECK_FUNCS([open openat close read pread write pwrite lseek])
 AC_CHECK_FUNCS([readv writev preadv pwritev preadv2 pwritev2])
 AC_CHECK_FUNCS([pipe pipe2 mkfifo mkfifoat])
