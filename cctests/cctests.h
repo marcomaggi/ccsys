@@ -147,8 +147,6 @@ cctests_decl void cctests_init (char const * test_file_name)
 cctests_decl void cctests_final (void);
 cctests_decl void ctests_reset_global_state (void);
 
-cctests_decl FILE * cctests_log_stream;
-
 
 /** --------------------------------------------------------------------
  ** Version functions.
@@ -583,6 +581,18 @@ cctests_decl void cctests_p_assert (cce_destination_t L, char const * const expr
 typedef void cctests_child_process_function_t (cce_destination_t L);
 
 cctests_decl void cctests_call_in_forked_process (cce_destination_t L, cctests_child_process_function_t * child_function);
+
+
+/** --------------------------------------------------------------------
+ ** Helpers.
+ ** ----------------------------------------------------------------- */
+
+cctests_decl FILE * cctests_log_stream;
+
+cctests_decl bool cctests_isatty (FILE * stream)
+  __attribute__((__nonnull__(1)));
+
+cctests_decl bool cctests_log_stream_isatty (void);
 
 
 /** --------------------------------------------------------------------

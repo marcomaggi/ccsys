@@ -158,6 +158,7 @@ AC_CHECK_FUNCS([mkstemp])
 AC_CHECK_FUNCS([bind getsockname inet_network socket shutdown socketpair connect listen accept getpeername])
 AC_CHECK_FUNCS([send recv sendto recvfrom getsockopt setsockopt])
 AC_CHECK_FUNCS([system exit _exit fork execv execve execvp waitpid])
+AC_CHECK_FUNCS([isatty])
 
 dnl GNU C library stuff
 
