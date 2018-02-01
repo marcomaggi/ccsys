@@ -135,6 +135,10 @@
 
 @c ------------------------------------------------------------
 
+@macro gid{}
+@acronym{GID}
+@end macro
+
 @macro git{}
 @acronym{GIT}
 @end macro
@@ -247,6 +251,10 @@
 
 @macro udp{}
 @acronym{UDP}
+@end macro
+
+@macro uid{}
+@acronym{UID}
 @end macro
 
 @macro utf{}

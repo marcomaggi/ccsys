@@ -1595,6 +1595,9 @@ ccsys_decl bool ccsys_pathname_isreg (cce_destination_t L, char const * pathname
 ccsys_decl bool ccsys_pathname_isdir (cce_destination_t L, char const * pathname)
   __attribute__((__nonnull__(1,2)));
 
+ccsys_decl bool ccsys_pathname_uid_gid (cce_destination_t L, char const * pathname, ccsys_uid_t * uidp, ccsys_gid_t * gidp)
+  __attribute__((__nonnull__(1,2,3,4)));
+
 
 /** --------------------------------------------------------------------
  ** File system: creating files.

@@ -6092,6 +6092,13 @@ Return @true{} if @var{pathname} exists and it represents a regular file; otherw
 Return @true{} if @var{pathname} exists and it represents a directory; otherwise return @false{}.
 @end deftypefun
 
+
+@deftypefun bool ccsys_pathname_uid_gid (cce_destination_t @var{L}, char const * @var{pathname}, ccsys_uid_t * @var{uidp}, ccsys_gid_t * @var{gidp})
+Return @true{} if @var{pathname} exists; otherwise return @false{}.  If the pathname exists: the
+variable referenced by @var{uidp} is set to the @uid{} of the pathname; the variable referenced by
+@var{gidp} is set to the @gid{} of the pathname.
+@end deftypefun
+
 @c page
 @node fs stat one
 @subsection Using @cfunc{ccsys_stat}

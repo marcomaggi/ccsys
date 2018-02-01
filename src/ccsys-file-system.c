@@ -742,6 +742,20 @@ ccsys_pathname_isdir (cce_destination_t L, char const * pathname)
   }
 }
 
+bool
+ccsys_pathname_uid_gid (cce_destination_t L, char const * pathname, ccsys_uid_t * uidp, ccsys_gid_t * gidp)
+{
+  ccsys_stat_t	S[1];
+
+  if (ccsys_stat(L, pathname, S)) {
+    *uidp = ccsys_ref_stat_st_uid(S);
+    *gidp = ccsys_ref_stat_st_gid(S);
+    return true;
+  } else {
+    return false;
+  }
+}
+
 
 /** --------------------------------------------------------------------
  ** File system: working directory.
