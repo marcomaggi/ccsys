@@ -534,6 +534,22 @@ bitwise combination of the enumerated constants of type @objtype{ccsys_renameat2
 @end deftp
 
 
+@anchor{ccsys_access_mode_t}
+@deftp {Semantic Type} ccsys_access_mode_t
+Exact signed integer representing the mode for @cfunc{ccsys_access}.  It is meant to be a bitwise
+combination of the enumerated constants of type @objtype{ccsys_access_mode_enum_t}.
+@ref{ccsys_access_mode_enum_t, Enumerated constants}.
+@end deftp
+
+
+@anchor{ccsys_faccessat_flags_t}
+@deftp {Semantic Type} ccsys_faccessat_flags_t
+Exact signed integer representing the flags for @cfunc{ccsys_faccessat}.  It is meant to be a
+bitwise combination of some of the enumerated constants of type @objtype{ccsys_at_flags_enum_t}.
+@ref{ccsys_at_flags_enum_t, Enumerated constants}.
+@end deftp
+
+
 @anchor{ccsys_socket_namespace_t}
 @deftp {Semantic Type} ccsys_socket_namespace_t
 Exact signed integer representing a socket namespace (or domain).  It is the of the argument
@@ -922,6 +938,20 @@ Type of flags for @cfunc{ccsys_renameat2}.  It defines the following constants:
 CCSYS_RENAME_EXCHANGE
 CCSYS_RENAME_NOREPLACE
 CCSYS_RENAME_WHITEOUT
+@end example
+@end deftp
+
+
+@EnumeratedConstant{CCSYS_F_OK}
+@EnumeratedConstant{CCSYS_R_OK}
+@EnumeratedConstant{CCSYS_W_OK}
+@EnumeratedConstant{CCSYS_X_OK}
+@anchor{ccsys_access_mode_enum_t}
+@deftp {Enum Typedef} ccsys_access_mode_enum_t
+Type of flags for @cfunc{ccsys_access}.  It defines the following constants:
+
+@example
+CCSYS_F_OK  CCSYS_R_OK  CCSYS_W_OK  CCSYS_X_OK
 @end example
 @end deftp
 
@@ -6579,9 +6609,9 @@ if (cce_location(L)) @{
     ccsys_stat_t      S;
     ccsys_stat_mode_t mode;
 
-    assert(L, true == ccsys_stat(L, filename, &S));
+    assert(true == ccsys_stat(L, filename, &S));
     mode = ccsys_ref_stat_st_mode(&S);
-    assert(L, CCSYS_S_IRWXU == (CCSYS_S_IRWXU & mode.data));
+    assert(CCSYS_S_IRWXU == (CCSYS_S_IRWXU & mode.data));
   @}
 
   cce_run_cleanup_handlers(L);
@@ -6631,9 +6661,9 @@ if (cce_location(L)) @{
     ccsys_stat_t      S;
     ccsys_stat_mode_t mode;
 
-    assert(L, true == ccsys_stat(L, filename, &S));
+    assert(true == ccsys_stat(L, filename, &S));
     mode = ccsys_ref_stat_st_mode(&S);
-    assert(L, CCSYS_S_IRWXU == (CCSYS_S_IRWXU & mode.data));
+    assert(CCSYS_S_IRWXU == (CCSYS_S_IRWXU & mode.data));
   @}
 
   cce_run_cleanup_handlers(L);
@@ -6682,9 +6712,9 @@ if (cce_location(L)) @{
     ccsys_stat_t      S;
     ccsys_stat_mode_t mode;
 
-    assert(L, true == ccsys_stat(L, filename, &S));
+    assert(true == ccsys_stat(L, filename, &S));
     mode = ccsys_ref_stat_st_mode(&S);
-    assert(L, CCSYS_S_IRWXU == (CCSYS_S_IRWXU & mode.data));
+    assert(CCSYS_S_IRWXU == (CCSYS_S_IRWXU & mode.data));
   @}
 
   cce_run_cleanup_handlers(L);
@@ -6699,15 +6729,152 @@ if (cce_location(L)) @{
 The following symbols are defined in the header file @file{ccsys.h}.
 
 
-@deftypefun int ccsys_access (cce_destination_t @var{L}, char const * @var{pathname}, int @var{how})
-Wrapper for @cfunc{access}.  The return value is @samp{0} if access is denied; the return value is
-@samp{-1} if access is granted.
+@deftypefun bool ccsys_access (cce_destination_t @var{L}, char const * @var{pathname}, ccsys_access_mode_t @var{how})
+Wrapper for @cfunc{access}; @manpage{access, Check user's permissions for a file}.  If access is
+granted: return @true{}; otherwise return @false{}.
 @end deftypefun
 
 
-@deftypefun int ccsys_faccessat (cce_destination_t @var{L}, ccsys_dirfd_t @var{dirfd}, char const * @var{pathname}, int @var{how}, int @var{flags})
-Wrapper for @cfunc{faccessat}.
+@deftypefun bool ccsys_faccessat (cce_destination_t @var{L}, ccsys_dirfd_t @var{dirfd}, char const * @var{pathname}, ccsys_access_mode_t @var{how}, ccsys_faccessat_flags_t @var{flags})
+Wrapper for @cfunc{faccessat}; @manpage{faccessat, Check user's permissions for a file}.  If access
+is granted: return @true{}; otherwise return @false{}.
 @end deftypefun
+
+@menu
+* fs access tests one::         Using @cfunc{ccsys_access}.
+* fs access tests two::         Using @cfunc{ccsys_faccessat}.
+@end menu
+
+@c page
+@node fs access tests one
+@subsection Using @cfunc{ccsys_access}
+
+
+As usage example of @cfunc{ccsys_access} see the following code.
+
+@example
+cce_location_t        L[1];
+cce_cleanup_handler_t filename_H[1];
+
+if (cce_location(L)) @{
+  cce_run_error_handlers_final(L);
+@} else @{
+  char const *        filename = "name.ext";
+
+  /* Create the file. */
+  @{
+    ccsys_open_mode_t         mode;
+    ccsys_open_flags_t        flags;
+
+    flags.data = CCSYS_O_CREAT;
+    mode.data  = 0;
+    ccsys_touch(L, filename, flags, mode);
+    ccsys_handler_remove_init(L, filename_H, filename);
+  @}
+
+  /* Testing permissions. */
+  @{
+    ccsys_access_mode_t       mode;
+
+    mode.data = CCSYS_R_OK;
+    assert(false == ccsys_access(L, filename, mode));
+  @}
+
+  /* Change mode. */
+  @{
+    ccsys_open_mode_t         mode;
+
+    mode.data  = CCSYS_S_IRUSR | CCSYS_S_IWUSR;
+    ccsys_chmod(L, filename, mode);
+  @}
+
+  /* Testing read/write permissions. */
+  @{
+    ccsys_access_mode_t       mode;
+
+    mode.data = CCSYS_R_OK & CCSYS_W_OK;
+    assert(true == ccsys_access(L, filename, mode));
+  @}
+
+  /* Testing execute permissions. */
+  @{
+    ccsys_access_mode_t       mode;
+
+    mode.data = CCSYS_X_OK;
+    assert(false == ccsys_access(L, filename, mode));
+  @}
+
+  cce_run_cleanup_handlers(L);
+@}
+@end example
+
+@c page
+@node fs access tests two
+@subsection Using @cfunc{ccsys_faccessat}
+
+
+As usage example of @cfunc{ccsys_faccessat} see the following code.
+
+@example
+cce_location_t        L[1];
+cce_cleanup_handler_t filename_H[1];
+
+if (cce_location(L)) @{
+  cce_run_error_handlers_final(L);
+@} else @{
+  char const *        filename = "name.ext";
+
+  /* Create the file. */
+  @{
+    ccsys_open_mode_t         mode;
+    ccsys_open_flags_t        flags;
+
+    flags.data = CCSYS_O_CREAT;
+    mode.data  = 0;
+    ccsys_touch(L, filename, flags, mode);
+    ccsys_handler_remove_init(L, filename_H, filename);
+  @}
+
+  /* Testing permissions. */
+  @{
+    ccsys_access_mode_t       mode  = @{ .data = CCSYS_R_OK @};
+    ccsys_faccessat_flags_t   flags = @{ .data = 0 @};
+
+    assert(false ==
+      ccsys_faccessat(L, CCSYS_AT_FDCWD, filename, mode, flags));
+  @}
+
+  /* Change mode. */
+  @{
+    ccsys_open_mode_t         mode;
+
+    mode.data  = CCSYS_S_IRUSR | CCSYS_S_IWUSR;
+    ccsys_chmod(L, filename, mode);
+  @}
+
+  /* Testing read/write permissions. */
+  @{
+    ccsys_access_mode_t       mode;
+    ccsys_faccessat_flags_t   flags = @{ .data = 0 @};
+
+    mode.data = CCSYS_R_OK & CCSYS_W_OK;
+    assert(true ==
+      ccsys_faccessat(L, CCSYS_AT_FDCWD, filename, mode, flags));
+  @}
+
+  /* Testing execute permissions. */
+  @{
+    ccsys_access_mode_t       mode;
+    ccsys_faccessat_flags_t   flags = @{ .data = 0 @};
+
+    mode.data = CCSYS_X_OK;
+    assert(false ==
+      ccsys_faccessat(L, CCSYS_AT_FDCWD, filename, mode, flags));
+  @}
+
+  cce_run_cleanup_handlers(L);
+@}
+@end example
 
 @c page
 @node fs trunc

@@ -1938,6 +1938,132 @@ test_10_3 (cce_destination_t upper_L)
 }
 
 
+/** --------------------------------------------------------------------
+ ** Users and groups: testing access permissions.
+ ** ----------------------------------------------------------------- */
+
+void
+test_11_1 (cce_destination_t upper_L)
+/* Testing "ccsys_access()".*/
+{
+#if (defined HAVE_ACCESS)
+  cce_location_t	L[1];
+  cce_cleanup_handler_t	filename_H[1];
+
+  if (cce_location(L)) {
+    if (1) { fprintf(stderr, "%s: %s\n", __func__, cce_condition_static_message(cce_condition(L))); }
+    cce_run_error_handlers_raise(L, upper_L);
+  } else {
+    char const *	filename = "name.ext";
+
+    /* Create the file. */
+    {
+      ccsys_open_mode_t		mode;
+      ccsys_open_flags_t	flags;
+
+      flags.data = CCSYS_O_CREAT;
+      mode.data  = 0;
+      ccsys_touch(L, filename, flags, mode);
+      ccsys_handler_remove_init(L, filename_H, filename);
+    }
+
+    /* Testing permissions. */
+    {
+      ccsys_access_mode_t	mode = { .data = CCSYS_R_OK };
+
+      cctests_assert(L, false == ccsys_access(L, filename, mode));
+    }
+
+    /* Change mode. */
+    {
+      ccsys_open_mode_t		mode;
+
+      mode.data  = CCSYS_S_IRUSR | CCSYS_S_IWUSR;
+      ccsys_chmod(L, filename, mode);
+    }
+
+    /* Testing read/write permissions. */
+    {
+      ccsys_access_mode_t	mode = { .data = CCSYS_R_OK & CCSYS_W_OK };
+
+      cctests_assert(L, true == ccsys_access(L, filename, mode));
+    }
+
+    /* Testing execute permissions. */
+    {
+      ccsys_access_mode_t	mode = { .data = CCSYS_X_OK };
+
+      cctests_assert(L, false == ccsys_access(L, filename, mode));
+    }
+
+    cce_run_cleanup_handlers(L);
+  }
+#endif
+}
+
+void
+test_11_2 (cce_destination_t upper_L)
+/* Testing "ccsys_faccessat()".*/
+{
+#if (defined HAVE_FACCESSAT)
+  cce_location_t	L[1];
+  cce_cleanup_handler_t	filename_H[1];
+
+  if (cce_location(L)) {
+    if (1) { fprintf(stderr, "%s: %s\n", __func__, cce_condition_static_message(cce_condition(L))); }
+    cce_run_error_handlers_raise(L, upper_L);
+  } else {
+    char const *	filename = "name.ext";
+
+    /* Create the file. */
+    {
+      ccsys_open_mode_t		mode;
+      ccsys_open_flags_t	flags;
+
+      flags.data = CCSYS_O_CREAT;
+      mode.data  = 0;
+      ccsys_touch(L, filename, flags, mode);
+      ccsys_handler_remove_init(L, filename_H, filename);
+    }
+
+    /* Testing permissions. */
+    {
+      ccsys_access_mode_t	mode  = { .data = CCSYS_R_OK };
+      ccsys_faccessat_flags_t	flags = { .data = 0 };
+
+      cctests_assert(L, false == ccsys_faccessat(L, CCSYS_AT_FDCWD, filename, mode, flags));
+    }
+
+    /* Change mode. */
+    {
+      ccsys_open_mode_t		mode;
+
+      mode.data  = CCSYS_S_IRUSR | CCSYS_S_IWUSR;
+      ccsys_chmod(L, filename, mode);
+    }
+
+    /* Testing read/write permissions. */
+    {
+      ccsys_access_mode_t	mode  = { .data = CCSYS_R_OK & CCSYS_W_OK };
+      ccsys_faccessat_flags_t	flags = { .data = 0 };
+
+      cctests_assert(L, true == ccsys_faccessat(L, CCSYS_AT_FDCWD, filename, mode, flags));
+    }
+
+    /* Testing execute permissions. */
+    {
+      ccsys_access_mode_t	mode  = { .data = CCSYS_X_OK };
+      ccsys_faccessat_flags_t	flags = { .data = 0 };
+
+      cctests_assert(L, false == ccsys_faccessat(L, CCSYS_AT_FDCWD, filename, mode, flags));
+    }
+
+    cce_run_cleanup_handlers(L);
+  }
+#endif
+}
+
+
 int
 main (void)
 {
@@ -2027,6 +2153,13 @@ main (void)
       cctests_run(test_10_1);
       cctests_run(test_10_2);
       cctests_run(test_10_3);
+    }
+    cctests_end_group();
+
+    cctests_begin_group("testing access permissions");
+    {
+      cctests_run(test_11_1);
+      cctests_run(test_11_2);
     }
     cctests_end_group();
   }

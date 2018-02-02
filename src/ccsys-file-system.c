@@ -1311,35 +1311,36 @@ ccsys_fchmodat (cce_location_t * L, ccsys_dirfd_t dirfd, char const * pathname, 
  ** ----------------------------------------------------------------- */
 
 #ifdef HAVE_ACCESS
-int
-ccsys_access (cce_location_t * L, char const * pathname, int how)
+bool
+ccsys_access (cce_location_t * L, char const * pathname, ccsys_access_mode_t how)
 {
   int	rv;
   errno = 0;
-  rv = access(pathname, how);
+  rv = access(pathname, how.data);
   if (0 == rv) {
-    return rv;
-  } else if (errno) {
-    cce_raise(L, cce_condition_new_errno_clear());
+    return true;
+  } else if (CCSYS_EACCES == errno) {
+    return false;
   } else {
-    return rv;
+    cce_raise(L, cce_condition_new_errno_clear());
   }
 }
 #endif
 
 #ifdef HAVE_FACCESSAT
-int
-ccsys_faccessat (cce_location_t * L, ccsys_dirfd_t dirfd, char const * pathname, int how, int flags)
+bool
+ccsys_faccessat (cce_location_t * L, ccsys_dirfd_t dirfd, char const * pathname,
+		 ccsys_access_mode_t  how, ccsys_faccessat_flags_t flags)
 {
   int	rv;
   errno = 0;
-  rv = faccessat(dirfd.data, pathname, how, flags);
+  rv = faccessat(dirfd.data, pathname, how.data, flags.data);
   if (0 == rv) {
-    return rv;
-  } else if (errno) {
-    cce_raise(L, cce_condition_new_errno_clear());
+    return true;
+  } else if (CCSYS_EACCES == errno) {
+    return false;
   } else {
-    return rv;
+    cce_raise(L, cce_condition_new_errno_clear());
   }
 }
 #endif
