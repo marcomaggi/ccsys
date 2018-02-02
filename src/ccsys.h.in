@@ -140,6 +140,7 @@ typedef struct ccsys_blksize_t			ccsys_blksize_t;
 typedef struct ccsys_dev_t			ccsys_dev_t;
 typedef struct ccsys_dirfd_t			ccsys_dirfd_t;
 typedef struct ccsys_exit_status_t		ccsys_exit_status_t;
+typedef struct ccsys_fchmodat_flags_t		ccsys_fchmodat_flags_t;
 typedef struct ccsys_fchownat_flags_t		ccsys_fchownat_flags_t;
 typedef struct ccsys_fd_flags_t			ccsys_fd_flags_t;
 typedef struct ccsys_fd_t			ccsys_fd_t;
@@ -178,6 +179,8 @@ struct ccsys_blksize_t			{ @CCSYS_TYPE_BLKSIZE_T@	data; };
 struct ccsys_dev_t			{ @CCSYS_TYPE_DEV_T@		data; };
 struct ccsys_dirfd_t			{ int				data; };
 struct ccsys_exit_status_t		{ int				data; };
+struct ccsys_fchmodat_flags_t		{ int				data; };
+struct ccsys_fchownat_flags_t		{ int				data; };
 struct ccsys_fd_flags_t			{ int				data; };
 struct ccsys_fd_t			{ int				data; };
 struct ccsys_file_t			{ void *			data; };
@@ -209,7 +212,6 @@ struct ccsys_unlinkat_flags_t		{ int				data; };
 struct ccsys_waitpid_options_t		{ int				data; };
 struct ccsys_waitpid_status_t		{ int				data; };
 struct ccsys_whence_t			{ int				data; };
-struct ccsys_fchownat_flags_t		{ int				data; };
 
 /* ------------------------------------------------------------------ */
 /* The ones below are opaque types. */
@@ -1772,7 +1774,7 @@ ccsys_decl void ccsys_fchmod (cce_destination_t L, ccsys_fd_t filedes, ccsys_ope
   __attribute__((__nonnull__(1)));
 
 ccsys_decl void ccsys_fchmodat (cce_destination_t L, ccsys_dirfd_t dirfd, char const * pathname,
-				ccsys_open_mode_t mode, int flags)
+				ccsys_open_mode_t mode, ccsys_fchmodat_flags_t flags)
   __attribute__((__nonnull__(1,3)));
 
 

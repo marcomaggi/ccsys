@@ -1781,6 +1781,163 @@ test_9_4 (cce_destination_t upper_L)
 }
 
 
+/** --------------------------------------------------------------------
+ ** Users and groups: changing file mode.
+ ** ----------------------------------------------------------------- */
+
+void
+test_10_1 (cce_destination_t upper_L)
+/* Testing "ccsys_chmod()".*/
+{
+#if (defined HAVE_CHMOD)
+  cce_location_t	L[1];
+  cce_cleanup_handler_t	filename_H[1];
+
+  if (cce_location(L)) {
+    if (1) { fprintf(stderr, "%s: %s\n", __func__, cce_condition_static_message(cce_condition(L))); }
+    cce_run_error_handlers_raise(L, upper_L);
+  } else {
+    char const *	filename = "name.ext";
+
+    /* Create the file. */
+    {
+      ccsys_open_mode_t		mode;
+      ccsys_open_flags_t	flags;
+
+      flags.data = CCSYS_O_CREAT;
+      mode.data  = 0;
+      ccsys_touch(L, filename, flags, mode);
+      ccsys_handler_remove_init(L, filename_H, filename);
+    }
+
+    /* Change mode. */
+    {
+      ccsys_open_mode_t		mode;
+
+      mode.data  = CCSYS_S_IRWXU;
+      ccsys_chmod(L, filename, mode);
+    }
+
+    /* Validate mode. */
+    {
+      ccsys_stat_t	S;
+      ccsys_stat_mode_t	mode;
+
+      cctests_assert(L, true == ccsys_stat(L, filename, &S));
+      mode = ccsys_ref_stat_st_mode(&S);
+      if (0) { fprintf(stderr, "%s: mode=%o\n", __func__, mode.data); }
+      cctests_assert(L, CCSYS_S_IRWXU == (CCSYS_S_IRWXU & mode.data));
+    }
+
+    cce_run_cleanup_handlers(L);
+  }
+#endif
+}
+
+void
+test_10_2 (cce_destination_t upper_L)
+/* Testing "ccsys_fchmod()".*/
+{
+#if (defined HAVE_FCHMOD)
+  cce_location_t	L[1];
+  cce_cleanup_handler_t	filename_H[1];
+  cce_cleanup_handler_t	filedes_H[1];
+
+  if (cce_location(L)) {
+    if (1) { fprintf(stderr, "%s: %s\n", __func__, cce_condition_static_message(cce_condition(L))); }
+    cce_run_error_handlers_raise(L, upper_L);
+  } else {
+    char const *	filename = "name.ext";
+    ccsys_fd_t		fd;
+
+    /* Create the file. */
+    {
+      ccsys_open_mode_t		mode;
+      ccsys_open_flags_t	flags;
+
+      flags.data = CCSYS_O_CREAT;
+      mode.data  = 0;
+      fd = ccsys_open(L, filename, flags, mode);
+      ccsys_handler_filedes_init(L, filedes_H, fd);
+      ccsys_handler_remove_init(L, filename_H, filename);
+    }
+
+    /* Change mode. */
+    {
+      ccsys_open_mode_t		mode;
+
+      mode.data  = CCSYS_S_IRWXU;
+      ccsys_fchmod(L, fd, mode);
+    }
+
+    /* Validate mode. */
+    {
+      ccsys_stat_t	S;
+      ccsys_stat_mode_t	mode;
+
+      cctests_assert(L, true == ccsys_stat(L, filename, &S));
+      mode = ccsys_ref_stat_st_mode(&S);
+      if (0) { fprintf(stderr, "%s: mode=%o\n", __func__, mode.data); }
+      cctests_assert(L, CCSYS_S_IRWXU == (CCSYS_S_IRWXU & mode.data));
+    }
+
+    cce_run_cleanup_handlers(L);
+  }
+#endif
+}
+
+void
+test_10_3 (cce_destination_t upper_L)
+/* Testing "ccsys_fchmodat()".*/
+{
+#if (defined HAVE_FCHMODAT)
+  cce_location_t	L[1];
+  cce_cleanup_handler_t	filename_H[1];
+
+  if (cce_location(L)) {
+    if (1) { fprintf(stderr, "%s: %s\n", __func__, cce_condition_static_message(cce_condition(L))); }
+    cce_run_error_handlers_raise(L, upper_L);
+  } else {
+    char const *	filename = "name.ext";
+
+    /* Create the file. */
+    {
+      ccsys_open_mode_t		mode;
+      ccsys_open_flags_t	flags;
+
+      flags.data = CCSYS_O_CREAT;
+      mode.data  = 0;
+      ccsys_touch(L, filename, flags, mode);
+      ccsys_handler_remove_init(L, filename_H, filename);
+    }
+
+    /* Change mode. */
+    {
+      ccsys_open_mode_t		mode;
+      ccsys_fchmodat_flags_t	flags;
+
+      mode.data  = CCSYS_S_IRWXU;
+      flags.data = 0;
+      ccsys_fchmodat(L, CCSYS_AT_FDCWD, filename, mode, flags);
+    }
+
+    /* Validate mode. */
+    {
+      ccsys_stat_t	S;
+      ccsys_stat_mode_t	mode;
+
+      cctests_assert(L, true == ccsys_stat(L, filename, &S));
+      mode = ccsys_ref_stat_st_mode(&S);
+      if (0) { fprintf(stderr, "%s: mode=%o\n", __func__, mode.data); }
+      cctests_assert(L, CCSYS_S_IRWXU == (CCSYS_S_IRWXU & mode.data));
+    }
+
+    cce_run_cleanup_handlers(L);
+  }
+#endif
+}
+
+
 int
 main (void)
 {
@@ -1862,6 +2019,14 @@ main (void)
       cctests_run(test_9_2);
       cctests_run(test_9_3);
       cctests_run(test_9_4);
+    }
+    cctests_end_group();
+
+    cctests_begin_group("changing file mode");
+    {
+      cctests_run(test_10_1);
+      cctests_run(test_10_2);
+      cctests_run(test_10_3);
     }
     cctests_end_group();
   }

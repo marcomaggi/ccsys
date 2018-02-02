@@ -1294,11 +1294,11 @@ ccsys_fchmod (cce_location_t * L, ccsys_fd_t filedes, ccsys_open_mode_t mode)
 
 #ifdef HAVE_FCHMODAT
 void
-ccsys_fchmodat (cce_location_t * L, ccsys_dirfd_t dirfd, char const * pathname, ccsys_open_mode_t mode, int flags)
+ccsys_fchmodat (cce_location_t * L, ccsys_dirfd_t dirfd, char const * pathname, ccsys_open_mode_t mode, ccsys_fchmodat_flags_t flags)
 {
   int	rv;
   errno = 0;
-  rv = fchmodat(dirfd.data, pathname, mode.data, flags);
+  rv = fchmodat(dirfd.data, pathname, mode.data, flags.data);
   if (-1 == rv) {
     cce_raise(L, cce_condition_new_errno_clear());
   }

@@ -550,6 +550,14 @@ combination of some of the enumerated constants of type @objtype{ccsys_at_flags_
 @end deftp
 
 
+@anchor{ccsys_fchmodat_flags_t}
+@deftp {Semantic Type} ccsys_fchmodat_flags_t
+Exact signed integer representing the flags for @cfunc{ccsys_fchmodat}.  It is meant to be a bitwise
+combination of some of the enumerated constants of type @objtype{ccsys_at_flags_enum_t}.
+@ref{ccsys_at_flags_enum_t, Enumerated constants}.
+@end deftp
+
+
 @anchor{ccsys_socket_style_t}
 @deftp {Semantic Type} ccsys_socket_style_t
 Exact signed integer representing a socket style (or type).  It is the of the argument @var{style}
@@ -6521,9 +6529,167 @@ Wrapper for @cfunc{fchmod}; @manpage{fchmod, Change permissions of a file}.
 @end deftypefun
 
 
-@deftypefun void ccsys_fchmodat (cce_destination_t @var{L}, ccsys_dirfd_t @var{dirfd}, char const * @var{pathname}, ccsys_open_mode_t @var{mode}, int @var{flags})
+@deftypefun void ccsys_fchmodat (cce_destination_t @var{L}, ccsys_dirfd_t @var{dirfd}, char const * @var{pathname}, ccsys_open_mode_t @var{mode}, ccsys_fchmodat_flags_t @var{flags})
 Wrapper for @cfunc{fchmodat}; @manpage{fchmodat, Change permissions of a file}.
 @end deftypefun
+
+@menu
+* fs access perms one::         Using @cfunc{ccsys_chmod}.
+* fs access perms two::         Using @cfunc{ccsys_fchmod}.
+* fs access perms three::       Using @cfunc{ccsys_fchmodat}.
+@end menu
+
+@c page
+@node fs access perms one
+@subsection Using @cfunc{ccsys_chmod}
+
+
+As usage example of @cfunc{ccsys_chmod} see the following code.
+
+@example
+cce_location_t        L[1];
+cce_cleanup_handler_t filename_H[1];
+
+if (cce_location(L)) @{
+  cce_run_error_handlers_final(L);
+@} else @{
+  char const *        filename = "name.ext";
+
+  /* Create the file. */
+  @{
+    ccsys_open_mode_t         mode;
+    ccsys_open_flags_t        flags;
+
+    flags.data = CCSYS_O_CREAT;
+    mode.data  = 0;
+    ccsys_touch(L, filename, flags, mode);
+    ccsys_handler_remove_init(L, filename_H, filename);
+  @}
+
+  /* Change mode. */
+  @{
+    ccsys_open_mode_t         mode;
+
+    mode.data  = CCSYS_S_IRWXU;
+    ccsys_chmod(L, filename, mode);
+  @}
+
+  /* Validate mode. */
+  @{
+    ccsys_stat_t      S;
+    ccsys_stat_mode_t mode;
+
+    assert(L, true == ccsys_stat(L, filename, &S));
+    mode = ccsys_ref_stat_st_mode(&S);
+    assert(L, CCSYS_S_IRWXU == (CCSYS_S_IRWXU & mode.data));
+  @}
+
+  cce_run_cleanup_handlers(L);
+@}
+@end example
+
+@c page
+@node fs access perms two
+@subsection Using @cfunc{ccsys_fchmod}
+
+
+As usage example of @cfunc{ccsys_fchmod} see the following code.
+
+@example
+cce_location_t        L[1];
+cce_cleanup_handler_t filename_H[1];
+cce_cleanup_handler_t filedes_H[1];
+
+if (cce_location(L)) @{
+  cce_run_error_handlers_final(L);
+@} else @{
+  char const *        filename = "name.ext";
+  ccsys_fd_t          fd;
+
+  /* Create the file. */
+  @{
+    ccsys_open_mode_t         mode;
+    ccsys_open_flags_t        flags;
+
+    flags.data = CCSYS_O_CREAT;
+    mode.data  = 0;
+    fd = ccsys_open(L, filename, flags, mode);
+    ccsys_handler_filedes_init(L, filedes_H, fd);
+    ccsys_handler_remove_init(L, filename_H, filename);
+  @}
+
+  /* Change mode. */
+  @{
+    ccsys_open_mode_t         mode;
+
+    mode.data  = CCSYS_S_IRWXU;
+    ccsys_fchmod(L, fd, mode);
+  @}
+
+  /* Validate mode. */
+  @{
+    ccsys_stat_t      S;
+    ccsys_stat_mode_t mode;
+
+    assert(L, true == ccsys_stat(L, filename, &S));
+    mode = ccsys_ref_stat_st_mode(&S);
+    assert(L, CCSYS_S_IRWXU == (CCSYS_S_IRWXU & mode.data));
+  @}
+
+  cce_run_cleanup_handlers(L);
+@}
+@end example
+
+@c page
+@node fs access perms three
+@subsection Using @cfunc{ccsys_fchmodat}
+
+
+As usage example of @cfunc{ccsys_fchmodat} see the following code.
+
+@example
+cce_location_t        L[1];
+cce_cleanup_handler_t filename_H[1];
+
+if (cce_location(L)) @{
+    cce_run_error_handlers_final(L);
+  @} else @{
+  char const *        filename = "name.ext";
+
+  /* Create the file. */
+  @{
+    ccsys_open_mode_t         mode;
+    ccsys_open_flags_t        flags;
+
+    flags.data = CCSYS_O_CREAT;
+    mode.data  = 0;
+    ccsys_touch(L, filename, flags, mode);
+    ccsys_handler_remove_init(L, filename_H, filename);
+  @}
+
+  /* Change mode. */
+  @{
+    ccsys_open_mode_t         mode;
+    ccsys_fchmodat_flags_t    flags;
+
+    mode.data  = CCSYS_S_IRWXU;
+    flags.data = 0;
+    ccsys_fchmodat(L, CCSYS_AT_FDCWD, filename, mode, flags);
+  @}
+
+  /* Validate mode. */
+  @{
+    ccsys_stat_t      S;
+    ccsys_stat_mode_t mode;
+
+    assert(L, true == ccsys_stat(L, filename, &S));
+    mode = ccsys_ref_stat_st_mode(&S);
+    assert(L, CCSYS_S_IRWXU == (CCSYS_S_IRWXU & mode.data));
+  @}
+
+  cce_run_cleanup_handlers(L);
+@}
+@end example
 
 @c page
 @node fs access tests
