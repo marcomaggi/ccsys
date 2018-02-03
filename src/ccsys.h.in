@@ -129,9 +129,9 @@ extern "C" {
  ** ----------------------------------------------------------------- */
 
 #define ccsys_dref(D)		((int)		((D).data))
-#define ccsys_udref(D)		((unsigned int)	((D).data))
+#define ccsys_uref(D)		((unsigned int)	((D).data))
 #define ccsys_lref(D)		((long)		((D).data))
-#define ccsys_ulref(D)		((unsigned long)((D).data))
+#define ccsys_luref(D)		((unsigned long)((D).data))
 
 /* ------------------------------------------------------------------ */
 

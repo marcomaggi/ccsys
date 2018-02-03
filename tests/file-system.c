@@ -2064,6 +2064,143 @@ test_11_2 (cce_destination_t upper_L)
 }
 
 
+/** --------------------------------------------------------------------
+ ** Users and groups: truncate a file to a specified length.
+ ** ----------------------------------------------------------------- */
+
+void
+test_12_1 (cce_destination_t upper_L)
+/* Testing "ccsys_truncate()".*/
+{
+#if (defined HAVE_TRUNCATE)
+  cce_location_t	L[1];
+  cce_cleanup_handler_t	filename_H[1];
+  cce_cleanup_handler_t	filedes_H[1];
+
+  if (cce_location(L)) {
+    if (1) { fprintf(stderr, "%s: %s\n", __func__, cce_condition_static_message(cce_condition(L))); }
+    cce_run_error_handlers_raise(L, upper_L);
+  } else {
+    char const *	filename = "name.ext";
+    ccsys_fd_t		fd;
+
+    /* Create the file. */
+    {
+      ccsys_open_mode_t		mode;
+      ccsys_open_flags_t	flags;
+
+      flags.data = CCSYS_O_CREAT | CCSYS_O_RDWR;
+      mode.data  = CCSYS_S_IRUSR | CCSYS_S_IWUSR;
+      fd = ccsys_open(L, filename, flags, mode);
+      ccsys_handler_filedes_init(L, filedes_H, fd);
+      ccsys_handler_remove_init(L, filename_H, filename);
+    }
+
+    /* Write some data to the file. */
+    {
+      size_t		buflen = 1024;
+      char const *	bufptr[buflen];
+
+      memset(bufptr, 0, buflen);
+      ccsys_write(L, fd, bufptr, buflen);
+    }
+
+    /* Check the size. */
+    {
+      ccsys_stat_t	S[1];
+
+      ccsys_stat(L, filename, S);
+      cctests_assert(L, 1024 == ccsys_luref(ccsys_ref_stat_st_size(S)));
+    }
+
+    /* Truncate the file. */
+    {
+      ccsys_off_t	len = { .data = 100 };
+
+      ccsys_truncate(L, filename, len);
+    }
+
+    /* Check the size after truncation. */
+    {
+      ccsys_stat_t	S[1];
+
+      ccsys_stat(L, filename, S);
+      if (0) { fprintf(stderr, "%s: len=%lu\n", __func__, ccsys_luref(ccsys_ref_stat_st_size(S))); }
+      cctests_assert(L, 100 == ccsys_luref(ccsys_ref_stat_st_size(S)));
+    }
+
+    cce_run_cleanup_handlers(L);
+  }
+#endif
+}
+
+void
+test_12_2 (cce_destination_t upper_L)
+/* Testing "ccsys_ftruncate()".*/
+{
+#if (defined HAVE_FTRUNCATE)
+  cce_location_t	L[1];
+  cce_cleanup_handler_t	filename_H[1];
+  cce_cleanup_handler_t	filedes_H[1];
+
+  if (cce_location(L)) {
+    if (1) { fprintf(stderr, "%s: %s\n", __func__, cce_condition_static_message(cce_condition(L))); }
+    cce_run_error_handlers_raise(L, upper_L);
+  } else {
+    char const *	filename = "name.ext";
+    ccsys_fd_t		fd;
+
+    /* Create the file. */
+    {
+      ccsys_open_mode_t		mode;
+      ccsys_open_flags_t	flags;
+
+      flags.data = CCSYS_O_CREAT | CCSYS_O_RDWR;
+      mode.data  = CCSYS_S_IRUSR | CCSYS_S_IWUSR;
+      fd = ccsys_open(L, filename, flags, mode);
+      ccsys_handler_filedes_init(L, filedes_H, fd);
+      ccsys_handler_remove_init(L, filename_H, filename);
+    }
+
+    /* Write some data to the file. */
+    {
+      size_t		buflen = 1024;
+      char const *	bufptr[buflen];
+
+      memset(bufptr, 0, buflen);
+      ccsys_write(L, fd, bufptr, buflen);
+    }
+
+    /* Check the size. */
+    {
+      ccsys_stat_t	S[1];
+
+      ccsys_stat(L, filename, S);
+      cctests_assert(L, 1024 == ccsys_luref(ccsys_ref_stat_st_size(S)));
+    }
+
+    /* Truncate the file. */
+    {
+      ccsys_off_t	len = { .data = 101 };
+
+      ccsys_ftruncate(L, fd, len);
+    }
+
+    /* Check the size after truncation. */
+    {
+      ccsys_stat_t	S[1];
+
+      ccsys_stat(L, filename, S);
+      if (0) { fprintf(stderr, "%s: len=%lu\n", __func__, ccsys_luref(ccsys_ref_stat_st_size(S))); }
+      cctests_assert(L, 101 == ccsys_luref(ccsys_ref_stat_st_size(S)));
+    }
+
+    cce_run_cleanup_handlers(L);
+  }
+#endif
+}
+
+
 int
 main (void)
 {
@@ -2160,6 +2297,13 @@ main (void)
     {
       cctests_run(test_11_1);
       cctests_run(test_11_2);
+    }
+    cctests_end_group();
+
+    cctests_begin_group("truncate a file to a specified length");
+    {
+      cctests_run(test_12_1);
+      cctests_run(test_12_2);
     }
     cctests_end_group();
   }

@@ -679,7 +679,7 @@ Helper macro that extracts a value from a semantic type and casts it to an @code
 @end deftypefn
 
 
-@deftypefn {Preprocessor Macro} {unsigned int} ccsys_udref (struct @var{D})
+@deftypefn {Preprocessor Macro} {unsigned int} ccsys_uref (struct @var{D})
 Helper macro that extracts a value from a semantic type and casts it to an @code{unsigned int}.
 Expand into:
 
@@ -689,7 +689,7 @@ Expand into:
 @end deftypefn
 
 
-@deftypefn {Preprocessor Macro} {long} ccsys_dref (struct @var{D})
+@deftypefn {Preprocessor Macro} {long} ccsys_lref (struct @var{D})
 Helper macro that extracts a value from a semantic type and casts it to an @code{long}.  Expand into:
 
 @example
@@ -698,7 +698,7 @@ Helper macro that extracts a value from a semantic type and casts it to an @code
 @end deftypefn
 
 
-@deftypefn {Preprocessor Macro} {unsigned long} ccsys_udref (struct @var{D})
+@deftypefn {Preprocessor Macro} {unsigned long} ccsys_luref (struct @var{D})
 Helper macro that extracts a value from a semantic type and casts it to an @code{unsigned long}.
 Expand into:
 
@@ -6884,14 +6884,152 @@ if (cce_location(L)) @{
 The following symbols are defined in the header file @file{ccsys.h}.
 
 
-@deftypefun void ccsys_truncate (cce_destination_t @var{L}, char const * @var{pathname}, off_t @var{length})
-Wrapper for @cfunc{truncate}.
+@deftypefun void ccsys_truncate (cce_destination_t @var{L}, char const * @var{pathname}, ccsys_off_t @var{length})
+Wrapper for @cfunc{truncate}; @manpage{truncate, Truncate a file to a specified length}.
 @end deftypefun
 
 
-@deftypefun void ccsys_ftruncate (cce_destination_t @var{L}, int @var{filedes}, off_t @var{length})
-Wrapper for @cfunc{ftruncate}.
+@deftypefun void ccsys_ftruncate (cce_destination_t @var{L}, int @var{filedes}, ccsys_off_t @var{length})
+Wrapper for @cfunc{ftruncate}; @manpage{ftruncate, Truncate a file to a specified length}.
 @end deftypefun
+
+
+@menu
+* fs trunc one::                Using @cfunc{truncate}.
+* fs trunc two::                Using @cfunc{ftruncate}.
+@end menu
+
+@c page
+@node fs trunc one
+@subsection Using @cfunc{truncate}
+
+
+As usage example of @cfunc{truncate} see the following code.
+
+@example
+cce_location_t        L[1];
+cce_cleanup_handler_t filename_H[1];
+cce_cleanup_handler_t filedes_H[1];
+
+if (cce_location(L)) @{
+  cce_run_error_handlers_final(L);
+@} else @{
+  char const *        filename = "name.ext";
+  ccsys_fd_t          fd;
+
+  /* Create the file. */
+  @{
+    ccsys_open_mode_t         mode;
+    ccsys_open_flags_t        flags;
+
+    flags.data = CCSYS_O_CREAT | CCSYS_O_RDWR;
+    mode.data  = CCSYS_S_IRUSR | CCSYS_S_IWUSR;
+    fd = ccsys_open(L, filename, flags, mode);
+    ccsys_handler_filedes_init(L, filedes_H, fd);
+    ccsys_handler_remove_init(L, filename_H, filename);
+  @}
+
+  /* Write some data to the file. */
+  @{
+    size_t            buflen = 1024;
+    char const *      bufptr[buflen];
+
+    memset(bufptr, 0, buflen);
+    ccsys_write(L, fd, bufptr, buflen);
+  @}
+
+  /* Check the size. */
+  @{
+    ccsys_stat_t      S[1];
+
+    ccsys_stat(L, filename, S);
+    assert(1024 == ccsys_luref(ccsys_ref_stat_st_size(S)));
+  @}
+
+  /* Truncate the file. */
+  @{
+    ccsys_off_t       len = @{ .data = 100 @};
+
+    ccsys_truncate(L, filename, len);
+  @}
+
+  /* Check the size after truncation. */
+  @{
+    ccsys_stat_t      S[1];
+
+    ccsys_stat(L, filename, S);
+    assert(100 == ccsys_luref(ccsys_ref_stat_st_size(S)));
+  @}
+
+  cce_run_cleanup_handlers(L);
+@}
+@end example
+
+@c page
+@node fs trunc two
+@subsection Using @cfunc{ftruncate}
+
+
+As usage example of @cfunc{ftruncate} see the following code.
+
+@example
+cce_location_t        L[1];
+cce_cleanup_handler_t filename_H[1];
+cce_cleanup_handler_t filedes_H[1];
+
+if (cce_location(L)) @{
+  cce_run_error_handlers_final(L);
+@} else @{
+  char const *        filename = "name.ext";
+  ccsys_fd_t          fd;
+
+  /* Create the file. */
+  @{
+    ccsys_open_mode_t         mode;
+    ccsys_open_flags_t        flags;
+
+    flags.data = CCSYS_O_CREAT | CCSYS_O_RDWR;
+    mode.data  = CCSYS_S_IRUSR | CCSYS_S_IWUSR;
+    fd = ccsys_open(L, filename, flags, mode);
+    ccsys_handler_filedes_init(L, filedes_H, fd);
+    ccsys_handler_remove_init(L, filename_H, filename);
+  @}
+
+  /* Write some data to the file. */
+  @{
+    size_t            buflen = 1024;
+    char const *      bufptr[buflen];
+
+    memset(bufptr, 0, buflen);
+    ccsys_write(L, fd, bufptr, buflen);
+  @}
+
+  /* Check the size. */
+  @{
+    ccsys_stat_t      S[1];
+
+    ccsys_stat(L, filename, S);
+    assert(1024 == ccsys_luref(ccsys_ref_stat_st_size(S)));
+  @}
+
+  /* Truncate the file. */
+  @{
+    ccsys_off_t       len = @{ .data = 101 @};
+
+    ccsys_ftruncate(L, fd, len);
+  @}
+
+  /* Check the size after truncation. */
+  @{
+    ccsys_stat_t      S[1];
+
+    ccsys_stat(L, filename, S);
+    assert(101 == ccsys_luref(ccsys_ref_stat_st_size(S)));
+  @}
+
+  cce_run_cleanup_handlers(L);
+@}
+@end example
 
 @c page
 @node fs times
