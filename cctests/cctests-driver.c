@@ -197,25 +197,17 @@ cctests_begin_group (char const * const test_group_name)
     cce_run_error_handlers_final(L);
   } else {
     if (test_group_matches_user_selection(L, test_group_name)) {
-      {
-	char const *	msg;
-	if (cctests_log_stream_isatty()) {
-	  msg = "CCTests: \033[33;1mbegin group\033[0m: %s\n";
-	} else {
-	  msg = "CCTests: begin group: %s\n";
-	}
-	fprintf(cctests_log_stream, msg, cctests_test_group_name);
+      if (cctests_log_stream_isatty()) {
+	fprintf(cctests_log_stream, "CCTests: \033[33;1mbegin group\033[0m: %s\n", cctests_test_group_name);
+      } else {
+	fprintf(cctests_log_stream, "CCTests: begin group: %s\n", cctests_test_group_name);
       }
       run_tests_in_group	= true;
     } else {
-      {
-	char const *	msg;
-	if (cctests_log_stream_isatty()) {
-	  msg = "CCTests: \033[33;1mskip group\033[0m: %s\n";
-	} else {
-	  msg = "CCTests: skip group: %s\n";
-	}
-	fprintf(cctests_log_stream, msg, cctests_test_group_name);
+      if (cctests_log_stream_isatty()) {
+	fprintf(cctests_log_stream, "CCTests: \033[33;1mskip group\033[0m: %s\n", cctests_test_group_name);
+      } else {
+	fprintf(cctests_log_stream, "CCTests: \033[33;1mskip group\033[0m: %s\n", cctests_test_group_name);
       }
       run_tests_in_group	= false;
     }
@@ -226,14 +218,10 @@ cctests_begin_group (char const * const test_group_name)
 void
 cctests_end_group (void)
 {
-  {
-    char const *	msg;
-    if (cctests_log_stream_isatty()) {
-      msg = "CCTests: \033[33;1mend group\033[0m: %s\n\n";
-    } else {
-      msg = "CCTests: end group: %s\n\n";
-    }
-    fprintf(cctests_log_stream, msg, cctests_test_group_name);
+  if (cctests_log_stream_isatty()) {
+    fprintf(cctests_log_stream, "CCTests: \033[33;1mend group\033[0m: %s\n\n", cctests_test_group_name);
+  } else {
+    fprintf(cctests_log_stream, "CCTests: end group: %s\n\n", cctests_test_group_name);
   }
   cctests_test_group_name = NULL;
 }
@@ -263,14 +251,14 @@ cctests_p_run (char const * const test_func_name, cctests_fun_t * const fun)
 	cctests_all_test_passed  = false;
 	cctests_successful_group = false;
 	cctests_successful_func  = false;
-	{
-	  char const *	msg;
-	  if (cctests_log_stream_isatty()) {
-	    msg = "CCTests: \033[35;1merror\033[0m: unexpected signal exception raised by test function: %s\n";
-	  } else {
-	    msg = "CCTests: error: unexpected signal exception raised by test function: %s\n";
-	  }
-	  fprintf(cctests_log_stream, msg, test_func_name);
+	if (cctests_log_stream_isatty()) {
+	  fprintf(cctests_log_stream,
+		  "CCTests: \033[35;1merror\033[0m: unexpected signal exception raised by test function: %s\n",
+		  test_func_name);
+	} else {
+	  fprintf(cctests_log_stream,
+		  "CCTests: error: unexpected signal exception raised by test function: %s\n",
+		  test_func_name);
 	}
       } else if (cctests_condition_is_unreachable(cce_condition(L))) {
 	cctests_all_test_passed  = false;
@@ -283,11 +271,12 @@ cctests_p_run (char const * const test_func_name, cctests_fun_t * const fun)
 	    if (cctests_log_stream_isatty()) {
 	      msg = "CCTests: \033[35;1merror\033[0m in test function %s: exception raised, "
 		"unreachable code was executed in file=%s, function=%s, line number=%u\n";
+	      fprintf(cctests_log_stream, msg, test_func_name, C->filename, C->funcname, C->linenum);
 	    } else {
 	      msg = "CCTests: error in test function %s: exception raised, "
 		"unreachable code was executed in file=%s, function=%s, line number=%u\n";
+	      fprintf(cctests_log_stream, msg, test_func_name, C->filename, C->funcname, C->linenum);
 	    }
-	    fprintf(cctests_log_stream, msg, test_func_name, C->filename, C->funcname, C->linenum);
 	  }
 	}
       } else {
@@ -298,10 +287,11 @@ cctests_p_run (char const * const test_func_name, cctests_fun_t * const fun)
 	  char const *	msg;
 	  if (cctests_log_stream_isatty()) {
 	    msg = "CCTests: \033[35;1merror\033[0m in test function: %s, exception raised\n";
+	    fprintf(cctests_log_stream, msg, test_func_name);
 	  } else {
 	    msg = "CCTests: error in test function: %s, exception raised\n";
+	    fprintf(cctests_log_stream, msg, test_func_name);
 	  }
-	  fprintf(cctests_log_stream, msg, test_func_name);
 	}
       }
     } else {
@@ -313,10 +303,11 @@ cctests_p_run (char const * const test_func_name, cctests_fun_t * const fun)
 	  char const *	msg;
 	  if (cctests_log_stream_isatty()) {
 	    msg = "CCTests: \033[32;1msuccessful\033[0m test function: %s\n";
+	    fprintf(cctests_log_stream, msg, test_func_name);
 	  } else {
 	    msg = "CCTests: successful test function: %s\n";
+	    fprintf(cctests_log_stream, msg, test_func_name);
 	  }
-	  fprintf(cctests_log_stream, msg, test_func_name);
 	}
       } else {
 	cctests_successful_func  = true;
@@ -324,10 +315,11 @@ cctests_p_run (char const * const test_func_name, cctests_fun_t * const fun)
 	  char const *	msg;
 	  if (cctests_log_stream_isatty()) {
 	    msg = "CCTests: \033[36;1mskipped\033[0m test function: %s\n";
+	    fprintf(cctests_log_stream, msg, test_func_name);
 	  } else {
 	    msg = "CCTests: skipped test function: %s\n";
+	    fprintf(cctests_log_stream, msg, test_func_name);
 	  }
-	  fprintf(cctests_log_stream, msg, test_func_name);
 	}
       }
     }
@@ -358,19 +350,21 @@ acquire_environment_test_file (cce_destination_t upper_L)
 	const char *	msg;
 	if (cctests_log_stream_isatty()) {
 	  msg = "CCTests: \033[35;1merror\033[0m acquiring environment variable \"" CCTESTS_ENVIRONMENT_VARIABLE_FILE "\": %s\n";
+	  fprintf(cctests_log_stream, msg, C->regex_error.error_message);
 	} else {
 	  msg = "CCTests: error acquiring environment variable \"" CCTESTS_ENVIRONMENT_VARIABLE_FILE "\": %s\n";
+	  fprintf(cctests_log_stream, msg, C->regex_error.error_message);
 	}
-	fprintf(cctests_log_stream, msg, C->regex_error.error_message);
       }
     } else {
       const char *	msg;
       if (cctests_log_stream_isatty()) {
 	msg = "CCTests: \033[35;1merror\033[0m: %s\n";
+	fprintf(cctests_log_stream, msg, cce_condition_static_message(cce_condition(L)));
       } else {
 	msg = "CCTests: error: %s\n";
+	fprintf(cctests_log_stream, msg, cce_condition_static_message(cce_condition(L)));
       }
-      fprintf(cctests_log_stream, msg, cce_condition_static_message(cce_condition(L)));
     }
     cce_run_error_handlers_raise(L, upper_L);
   } else {
@@ -401,19 +395,21 @@ acquire_environment_test_group (cce_destination_t upper_L)
 	const char *	msg;
 	if (cctests_log_stream_isatty()) {
 	  msg = "CCTests: \033[35;1merror\033[0m acquiring environment variable \"" CCTESTS_ENVIRONMENT_VARIABLE_GROUP "\": %s\n";
+	  fprintf(cctests_log_stream, msg, C->regex_error.error_message);
 	} else {
 	  msg = "CCTests: error acquiring environment variable \"" CCTESTS_ENVIRONMENT_VARIABLE_GROUP "\": %s\n";
+	  fprintf(cctests_log_stream, msg, C->regex_error.error_message);
 	}
-	fprintf(cctests_log_stream, msg, C->regex_error.error_message);
       }
     } else {
       const char *	msg;
       if (cctests_log_stream_isatty()) {
 	msg = "CCTests: \033[35;1merror\033[0m: %s\n";
+	fprintf(cctests_log_stream, msg, cce_condition_static_message(cce_condition(L)));
       } else {
 	msg = "CCTests: error: %s\n";
+	fprintf(cctests_log_stream, msg, cce_condition_static_message(cce_condition(L)));
       }
-      fprintf(cctests_log_stream, msg, cce_condition_static_message(cce_condition(L)));
     }
     cce_run_error_handlers_raise(L, upper_L);
   } else {
@@ -445,19 +441,21 @@ acquire_environment_test_name (cce_destination_t upper_L)
 	const char *	msg;
 	if (cctests_log_stream_isatty()) {
 	  msg = "CCTests: \033[35;1merror\033[0m acquiring environment variable \"" CCTESTS_ENVIRONMENT_VARIABLE_NAME "\": %s\n";
+	  fprintf(cctests_log_stream, msg, C->regex_error.error_message);
 	} else {
 	  msg = "CCTests: error acquiring environment variable \"" CCTESTS_ENVIRONMENT_VARIABLE_NAME "\": %s\n";
+	  fprintf(cctests_log_stream, msg, C->regex_error.error_message);
 	}
-	fprintf(cctests_log_stream, msg, C->regex_error.error_message);
       }
     } else {
       const char *	msg;
       if (cctests_log_stream_isatty()) {
 	msg = "CCTests: \033[35;1merror\033[0m: %s\n";
+	fprintf(cctests_log_stream, msg, cce_condition_static_message(cce_condition(L)));
       } else {
 	msg = "CCTests: error: %s\n";
+	fprintf(cctests_log_stream, msg, cce_condition_static_message(cce_condition(L)));
       }
-      fprintf(cctests_log_stream, msg, cce_condition_static_message(cce_condition(L)));
     }
     cce_run_error_handlers_raise(L, upper_L);
   } else {
