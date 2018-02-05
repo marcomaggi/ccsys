@@ -4,5 +4,6 @@
 * Unix standard
 ** sysconf
 ** pathconf
+** umask
 * end of file
 
