@@ -2749,6 +2749,42 @@ test_14_4 (cce_destination_t upper_L)
 }
 
 
+/** --------------------------------------------------------------------
+ ** File system: creating temporary directories.
+ ** ----------------------------------------------------------------- */
+
+void
+test_15_1 (cce_destination_t upper_L)
+/* Testing "ccsys_mkdtemp()".*/
+{
+#if (defined HAVE_MKDTEMP)
+  cce_location_t	L[1];
+  cce_cleanup_handler_t	dirname_H[1];
+
+  if (cce_location(L)) {
+    if (1) { fprintf(stderr, "%s: %s\n", __func__, cce_condition_static_message(cce_condition(L))); }
+    cce_run_error_handlers_raise(L, upper_L);
+  } else {
+    char	dirname[] = "name.d.XXXXXX";
+
+    /* Create the directory. */
+    {
+      ccsys_mkdtemp(L, dirname);
+      ccsys_handler_rmdir_init(L, dirname_H, dirname);
+    }
+
+    /* Validate file existence. */
+    {
+      cctests_assert(L, true == ccsys_pathname_isdir(L, dirname));
+      if (1) { fprintf(stderr, "%s: tempname=%s\n", __func__, dirname); }
+    }
+
+    cce_run_cleanup_handlers(L);
+  }
+#endif
+}
+
+
 int
 main (void)
 {
@@ -2872,6 +2908,12 @@ main (void)
       cctests_run(test_14_2);
       cctests_run(test_14_3);
       cctests_run(test_14_4);
+    }
+    cctests_end_group();
+
+    cctests_begin_group("creating temporary directories");
+    {
+      cctests_run(test_15_1);
     }
     cctests_end_group();
   }
