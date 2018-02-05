@@ -7468,13 +7468,13 @@ if (cce_location(L)) @{
 The following symbols are defined in the header file @file{ccsys.h}.
 
 
-@deftypefun int ccsys_mkstemp (cce_destination_t @var{L}, char * @var{template})
+@deftypefun ccsys_fd_t ccsys_mkstemp (cce_destination_t @var{L}, char * @var{template})
 Wrapper for @cfunc{mkstemp}; @manpage{mkstemp, Create a unique temporary file}.  Remember that this
 call will mutate @var{template}.
 @end deftypefun
 
 
-@deftypefun int ccsys_mkostemp (cce_destination_t @var{L}, char * @var{template}, ccsys_open_flags_t @var{flags})
+@deftypefun ccsys_fd_t ccsys_mkostemp (cce_destination_t @var{L}, char * @var{template}, ccsys_open_flags_t @var{flags})
 Wrapper for @cfunc{mkostemp}; @manpage{mkostemp, Create a unique temporary file}.  Remember that
 this call will mutate @var{template}.
 
@@ -7484,7 +7484,7 @@ this call will mutate @var{template}.
 @end deftypefun
 
 
-@deftypefun int ccsys_mkstemps (cce_destination_t @var{L}, char * @var{template})
+@deftypefun ccsys_fd_t ccsys_mkstemps (cce_destination_t @var{L}, char * @var{template})
 Wrapper for @cfunc{mkstemps}; @manpage{mkstemps, Create a unique temporary file}.  Remember that
 this call will mutate @var{template}.
 
@@ -7494,7 +7494,7 @@ this call will mutate @var{template}.
 @end deftypefun
 
 
-@deftypefun int ccsys_mkostemps (cce_destination_t @var{L}, char * @var{template}, ccsys_open_flags_t @var{flags})
+@deftypefun ccsys_fd_t ccsys_mkostemps (cce_destination_t @var{L}, char * @var{template}, ccsys_open_flags_t @var{flags})
 Wrapper for @cfunc{mkostemps}; @manpage{mkostemps, Create a unique temporary file}.  Remember that
 this call will mutate @var{template}.
 
