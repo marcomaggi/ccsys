@@ -1657,8 +1657,19 @@ ccsys_decl void ccsys_error_handler_rmdir_init (cce_destination_t L, cce_handler
  ** File system: temporary files and directories.
  ** ----------------------------------------------------------------- */
 
-ccsys_decl int ccsys_mkstemp (cce_destination_t L, char * template)
+ccsys_decl ccsys_fd_t ccsys_mkstemp (cce_destination_t L, char * template)
   __attribute__((__nonnull__(1,2)));
+
+ccsys_decl ccsys_fd_t ccsys_mkostemp (cce_destination_t L, char * template, ccsys_open_flags_t flags)
+  __attribute__((__nonnull__(1,2)));
+
+ccsys_decl ccsys_fd_t ccsys_mkstemps (cce_destination_t L, char * template, int suffixlen)
+  __attribute__((__nonnull__(1,2)));
+
+ccsys_decl ccsys_fd_t ccsys_mkostemps (cce_destination_t L, char * template, int suffixlen, ccsys_open_flags_t flags)
+  __attribute__((__nonnull__(1,2)));
+
+/* ------------------------------------------------------------------ */
 
 ccsys_decl char * ccsys_mkdtemp (cce_destination_t L, char * template)
   __attribute__((__nonnull__(1,2)));

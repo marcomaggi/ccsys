@@ -910,7 +910,7 @@ ccsys_error_handler_rmdir_init (cce_location_t * L, cce_handler_t * H, char cons
  ** ----------------------------------------------------------------- */
 
 #ifdef HAVE_MKSTEMP
-int
+ccsys_fd_t
 ccsys_mkstemp (cce_location_t * L, char * template)
 {
   int	rv;
@@ -920,10 +920,64 @@ ccsys_mkstemp (cce_location_t * L, char * template)
   if (-1 == rv) {
     cce_raise(L, cce_condition_new_errno_clear());
   } else {
-    return rv;
+    ccsys_fd_t	fd = { .data = rv };
+    return fd;
   }
 }
 #endif
+
+#ifdef HAVE_MKOSTEMP
+ccsys_fd_t
+ccsys_mkostemp (cce_location_t * L, char * template, ccsys_open_flags_t flags)
+{
+  int	rv;
+  errno = 0;
+  /* Remember that this call will mutate TEMPLATE. */
+  rv = mkostemp(template, flags.data);
+  if (-1 == rv) {
+    cce_raise(L, cce_condition_new_errno_clear());
+  } else {
+    ccsys_fd_t	fd = { .data = rv };
+    return fd;
+  }
+}
+#endif
+
+#ifdef HAVE_MKSTEMPS
+ccsys_fd_t
+ccsys_mkstemps (cce_location_t * L, char * template, int suffixlen)
+{
+  int	rv;
+  errno = 0;
+  /* Remember that this call will mutate TEMPLATE. */
+  rv = mkstemps(template, suffixlen);
+  if (-1 == rv) {
+    cce_raise(L, cce_condition_new_errno_clear());
+  } else {
+    ccsys_fd_t	fd = { .data = rv };
+    return fd;
+  }
+}
+#endif
+
+#ifdef HAVE_MKOSTEMPS
+ccsys_fd_t
+ccsys_mkostemps (cce_location_t * L, char * template, int suffixlen, ccsys_open_flags_t flags)
+{
+  int	rv;
+  errno = 0;
+  /* Remember that this call will mutate TEMPLATE. */
+  rv = mkostemps(template, suffixlen, flags.data);
+  if (-1 == rv) {
+    cce_raise(L, cce_condition_new_errno_clear());
+  } else {
+    ccsys_fd_t	fd = { .data = rv };
+    return fd;
+  }
+}
+#endif
+
+/* ------------------------------------------------------------------ */
 
 #ifdef HAVE_MKDTEMP
 char *

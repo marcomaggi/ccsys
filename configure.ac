@@ -163,7 +163,8 @@ AC_CHECK_FUNCS([isatty])
 dnl GNU C library stuff
 
 dnl AC_CHECK_HEADERS([search.h])
-AC_CHECK_FUNCS([mkdtemp mremap madvise inet_aton])
+AC_CHECK_FUNCS([mremap madvise inet_aton])
+AC_CHECK_FUNCS([mkdtemp mkstemps mkostemp mkostemps])
 dnl AC_CHECK_FUNCS([gethostbyname_r gethostbyname2_r gethostbyaddr_r])
 
 dnl Linux stuff

@@ -7469,7 +7469,38 @@ The following symbols are defined in the header file @file{ccsys.h}.
 
 
 @deftypefun int ccsys_mkstemp (cce_destination_t @var{L}, char * @var{template})
-Wrapper for @cfunc{mkstemp}.  Remember that this call will mutate @var{template}.
+Wrapper for @cfunc{mkstemp}; @manpage{mkstemp, Create a unique temporary file}.  Remember that this
+call will mutate @var{template}.
+@end deftypefun
+
+
+@deftypefun int ccsys_mkostemp (cce_destination_t @var{L}, char * @var{template}, ccsys_open_flags_t @var{flags})
+Wrapper for @cfunc{mkostemp}; @manpage{mkostemp, Create a unique temporary file}.  Remember that
+this call will mutate @var{template}.
+
+@quotation
+@strong{NOTE} This function is a @gnu{} C Library extension.
+@end quotation
+@end deftypefun
+
+
+@deftypefun int ccsys_mkstemps (cce_destination_t @var{L}, char * @var{template})
+Wrapper for @cfunc{mkstemps}; @manpage{mkstemps, Create a unique temporary file}.  Remember that
+this call will mutate @var{template}.
+
+@quotation
+@strong{NOTE} This function is a @gnu{} C Library extension.
+@end quotation
+@end deftypefun
+
+
+@deftypefun int ccsys_mkostemps (cce_destination_t @var{L}, char * @var{template}, ccsys_open_flags_t @var{flags})
+Wrapper for @cfunc{mkostemps}; @manpage{mkostemps, Create a unique temporary file}.  Remember that
+this call will mutate @var{template}.
+
+@quotation
+@strong{NOTE} This function is a @gnu{} C Library extension.
+@end quotation
 @end deftypefun
 
 
@@ -7478,11 +7509,152 @@ Wrapper for @cfunc{mkdtemp}.  This function never returns @cnull{}.  Remember th
 mutate @var{template}.
 
 @quotation
-@strong{NOTE} This function is implemented by the @gnu{} C Library.  The feature is available only
-if the package is configured with @option{--enable-glibc}; otherwise the function will raise an
-exception with condition object of type @objtype{ccsys_unimplemented_C_t}.
+@strong{NOTE} This function is implemented by the @gnu{} C Library.
 @end quotation
 @end deftypefun
+
+@menu
+* fs temp one::                 Using @cfunc{ccsys_mkstemp}.
+* fs temp two::                 Using @cfunc{ccsys_mkostemp}.
+* fs temp three::               Using @cfunc{ccsys_mkstemps}.
+* fs temp four::                Using @cfunc{ccsys_mkostemps}.
+@end menu
+
+@c page
+@node fs temp one
+@subsection Using @cfunc{ccsys_mkstemp}
+
+
+As usage example of @cfunc{ccsys_mkstemp} see the following code.
+
+@example
+cce_location_t        L[1];
+cce_cleanup_handler_t filename_H[1];
+cce_cleanup_handler_t filedes_H[1];
+
+if (cce_location(L)) @{
+  cce_run_error_handlers_final(L);
+@} else @{
+  char        filename[] = "name.ext.XXXXXX";
+
+  /* Create the file. */
+  @{
+    ccsys_fd_t        fd;
+
+    fd = ccsys_mkstemp(L, filename);
+    ccsys_handler_filedes_init(L, filedes_H, fd);
+    ccsys_handler_remove_init(L, filename_H, filename);
+  @}
+
+  /* Validate file existence. */
+  assert(true == ccsys_pathname_isreg(L, filename));
+
+  cce_run_cleanup_handlers(L);
+@}
+@end example
+
+@c page
+@node fs temp two
+@subsection Using @cfunc{ccsys_mkostemp}
+
+
+As usage example of @cfunc{ccsys_mkostemp} see the following code.
+
+@example
+cce_location_t        L[1];
+cce_cleanup_handler_t filename_H[1];
+cce_cleanup_handler_t filedes_H[1];
+
+if (cce_location(L)) @{
+  cce_run_error_handlers_final(L);
+@} else @{
+  char        filename[] = "name.ext.XXXXXX";
+
+  /* Create the file. */
+  @{
+    ccsys_open_flags_t        flags;
+    ccsys_fd_t                fd;
+
+    flags.data = CCSYS_O_CREAT | CCSYS_O_RDWR;
+    fd = ccsys_mkostemp(L, filename, flags);
+    ccsys_handler_filedes_init(L, filedes_H, fd);
+    ccsys_handler_remove_init(L, filename_H, filename);
+  @}
+
+  /* Validate file existence. */
+  assert(true == ccsys_pathname_isreg(L, filename));
+
+  cce_run_cleanup_handlers(L);
+@}
+@end example
+
+@c page
+@node fs temp three
+@subsection Using @cfunc{ccsys_mkstemps}
+
+
+As usage example of @cfunc{ccsys_mkstemps} see the following code.
+
+@example
+cce_location_t        L[1];
+cce_cleanup_handler_t filename_H[1];
+cce_cleanup_handler_t filedes_H[1];
+
+if (cce_location(L)) @{
+  cce_run_error_handlers_final(L);
+@} else @{
+  char        filename[] = "nameXXXXXX.ext";
+
+  /* Create the file. */
+  @{
+    ccsys_fd_t        fd;
+
+    fd = ccsys_mkstemps(L, filename, 4);
+    ccsys_handler_filedes_init(L, filedes_H, fd);
+    ccsys_handler_remove_init(L, filename_H, filename);
+  @}
+
+  /* Validate file existence. */
+  assert(true == ccsys_pathname_isreg(L, filename));
+
+  cce_run_cleanup_handlers(L);
+@}
+@end example
+
+@c page
+@node fs temp four
+@subsection Using @cfunc{ccsys_mkostemps}
+
+
+As usage example of @cfunc{ccsys_mkostemps} see the following code.
+
+@example
+cce_location_t        L[1];
+cce_cleanup_handler_t filename_H[1];
+cce_cleanup_handler_t filedes_H[1];
+
+if (cce_location(L)) @{
+  cce_run_error_handlers_final(L);
+@} else @{
+  char        filename[] = "nameXXXXXX.ext";
+
+  /* Create the file. */
+  @{
+    ccsys_open_flags_t        flags;
+    ccsys_fd_t                fd;
+
+    flags.data = CCSYS_O_CREAT | CCSYS_O_RDWR;
+    fd = ccsys_mkostemps(L, filename, 4, flags);
+    ccsys_handler_filedes_init(L, filedes_H, fd);
+    ccsys_handler_remove_init(L, filename_H, filename);
+  @}
+
+  /* Validate file existence. */
+  assert(true == ccsys_pathname_isreg(L, filename));
+
+  cce_run_cleanup_handlers(L);
+@}
+@end example
 
 @c page
 @node sockets

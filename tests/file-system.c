@@ -2600,6 +2600,155 @@ test_13_6 (cce_destination_t upper_L)
 }
 
 
+/** --------------------------------------------------------------------
+ ** File system: creating temporary files.
+ ** ----------------------------------------------------------------- */
+
+void
+test_14_1 (cce_destination_t upper_L)
+/* Testing "ccsys_mkstemp()".*/
+{
+#if (defined HAVE_MKSTEMP)
+  cce_location_t	L[1];
+  cce_cleanup_handler_t	filename_H[1];
+  cce_cleanup_handler_t	filedes_H[1];
+
+  if (cce_location(L)) {
+    if (1) { fprintf(stderr, "%s: %s\n", __func__, cce_condition_static_message(cce_condition(L))); }
+    cce_run_error_handlers_raise(L, upper_L);
+  } else {
+    char	filename[] = "name.ext.XXXXXX";
+
+    /* Create the file. */
+    {
+      ccsys_fd_t	fd;
+
+      fd = ccsys_mkstemp(L, filename);
+      ccsys_handler_filedes_init(L, filedes_H, fd);
+      ccsys_handler_remove_init(L, filename_H, filename);
+    }
+
+    /* Validate file existence. */
+    {
+      cctests_assert(L, true == ccsys_pathname_isreg(L, filename));
+      if (1) { fprintf(stderr, "%s: tempname=%s\n", __func__, filename); }
+    }
+
+    cce_run_cleanup_handlers(L);
+  }
+#endif
+}
+
+void
+test_14_2 (cce_destination_t upper_L)
+/* Testing "ccsys_mkostemp()".*/
+{
+#if (defined HAVE_MKOSTEMP)
+  cce_location_t	L[1];
+  cce_cleanup_handler_t	filename_H[1];
+  cce_cleanup_handler_t	filedes_H[1];
+
+  if (cce_location(L)) {
+    if (1) { fprintf(stderr, "%s: %s\n", __func__, cce_condition_static_message(cce_condition(L))); }
+    cce_run_error_handlers_raise(L, upper_L);
+  } else {
+    char	filename[] = "name.ext.XXXXXX";
+
+    /* Create the file. */
+    {
+      ccsys_open_flags_t	flags;
+      ccsys_fd_t		fd;
+
+      flags.data = CCSYS_O_CREAT | CCSYS_O_RDWR;
+      fd = ccsys_mkostemp(L, filename, flags);
+      ccsys_handler_filedes_init(L, filedes_H, fd);
+      ccsys_handler_remove_init(L, filename_H, filename);
+    }
+
+    /* Validate file existence. */
+    {
+      cctests_assert(L, true == ccsys_pathname_isreg(L, filename));
+      if (1) { fprintf(stderr, "%s: tempname=%s\n", __func__, filename); }
+    }
+
+    cce_run_cleanup_handlers(L);
+  }
+#endif
+}
+
+void
+test_14_3 (cce_destination_t upper_L)
+/* Testing "ccsys_mkstemps()".*/
+{
+#if (defined HAVE_MKSTEMPS)
+  cce_location_t	L[1];
+  cce_cleanup_handler_t	filename_H[1];
+  cce_cleanup_handler_t	filedes_H[1];
+
+  if (cce_location(L)) {
+    if (1) { fprintf(stderr, "%s: %s\n", __func__, cce_condition_static_message(cce_condition(L))); }
+    cce_run_error_handlers_raise(L, upper_L);
+  } else {
+    char	filename[] = "nameXXXXXX.ext";
+
+    /* Create the file. */
+    {
+      ccsys_fd_t	fd;
+
+      fd = ccsys_mkstemps(L, filename, 4);
+      ccsys_handler_filedes_init(L, filedes_H, fd);
+      ccsys_handler_remove_init(L, filename_H, filename);
+    }
+
+    /* Validate file existence. */
+    {
+      cctests_assert(L, true == ccsys_pathname_isreg(L, filename));
+      if (1) { fprintf(stderr, "%s: tempname=%s\n", __func__, filename); }
+    }
+
+    cce_run_cleanup_handlers(L);
+  }
+#endif
+}
+
+void
+test_14_4 (cce_destination_t upper_L)
+/* Testing "ccsys_mkostemps()".*/
+{
+#if (defined HAVE_MKOSTEMPS)
+  cce_location_t	L[1];
+  cce_cleanup_handler_t	filename_H[1];
+  cce_cleanup_handler_t	filedes_H[1];
+
+  if (cce_location(L)) {
+    if (1) { fprintf(stderr, "%s: %s\n", __func__, cce_condition_static_message(cce_condition(L))); }
+    cce_run_error_handlers_raise(L, upper_L);
+  } else {
+    char	filename[] = "nameXXXXXX.ext";
+
+    /* Create the file. */
+    {
+      ccsys_open_flags_t	flags;
+      ccsys_fd_t		fd;
+
+      flags.data = CCSYS_O_CREAT | CCSYS_O_RDWR;
+      fd = ccsys_mkostemps(L, filename, 4, flags);
+      ccsys_handler_filedes_init(L, filedes_H, fd);
+      ccsys_handler_remove_init(L, filename_H, filename);
+    }
+
+    /* Validate file existence. */
+    {
+      cctests_assert(L, true == ccsys_pathname_isreg(L, filename));
+      if (1) { fprintf(stderr, "%s: tempname=%s\n", __func__, filename); }
+    }
+
+    cce_run_cleanup_handlers(L);
+  }
+#endif
+}
+
+
 int
 main (void)
 {
@@ -2714,6 +2863,15 @@ main (void)
       cctests_run(test_13_4);
       cctests_run(test_13_5);
       cctests_run(test_13_6);
+    }
+    cctests_end_group();
+
+    cctests_begin_group("creating temporary files");
+    {
+      cctests_run(test_14_1);
+      cctests_run(test_14_2);
+      cctests_run(test_14_3);
+      cctests_run(test_14_4);
     }
     cctests_end_group();
   }
