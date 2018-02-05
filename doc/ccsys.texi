@@ -7039,24 +7039,426 @@ if (cce_location(L)) @{
 The following symbols are defined in the header file @file{ccsys.h}.
 
 
-@deftypefun void ccsys_utime (cce_destination_t @var{L}, char const * @var{pathname}, const struct utimbuf * @var{times})
-Wrapper for @cfunc{utime}.
+@deftypevr Constant {ccsys_nanoseconds_t const} CCSYS_UTIME_NOW
+@deftypevrx Constant {ccsys_nanoseconds_t const} CCSYS_UTIME_OMIT
+Special wrappers for @code{UTIME_NOW} and @code{UTIME_OMIT}, to be used as values for the
+nanoseconds field in calls to @cfunc{ccsys_utimensat} and @cfunc{futimens}.
+@end deftypevr
+
+
+@deftypefun void ccsys_utimensat (cce_destination_t @var{L}, ccsys_dirfd_t @var{dirfd}, char const * @var{pathname}, ccsys_timespec_t const @var{T} [2], ccsys_utimensat_flags_t @var{flags})
+Wrapper for @cfunc{utimensat}; @manpage{utimensat, Change file timestamps}.
 @end deftypefun
 
 
-@deftypefun void ccsys_utimes (cce_destination_t @var{L}, char const * @var{pathname}, const struct timeval @var{TVP} [2])
-Wrapper for @cfunc{utimes}.
+@deftypefun void ccsys_futimens (cce_destination_t @var{L}, ccsys_fd_t @var{fd}, ccsys_timespec_t const @var{T} [2])
+Wrapper for @cfunc{futimens}; @manpage{futimens, Change file timestamps}.
 @end deftypefun
 
 
-@deftypefun void ccsys_lutimes (cce_destination_t @var{L}, char const * @var{pathname}, const struct timeval @var{TVP} [2])
-Wrapper for @cfunc{lutimes}.
+@deftypefun void ccsys_utimes (cce_destination_t @var{L}, char const * @var{pathname}, ccsys_timeval_t const @var{TVP} [2])
+Wrapper for @cfunc{utimes}; @manpage{utimes, Change file timestamps}.
 @end deftypefun
 
 
-@deftypefun void ccsys_futimes (cce_destination_t @var{L}, int @var{filedes}, const struct timeval @var{TVP} [2])
-Wrapper for @cfunc{futimes}.
+@deftypefun void ccsys_lutimes (cce_destination_t @var{L}, char const * @var{pathname}, ccsys_timeval_t const @var{TVP} [2])
+Wrapper for @cfunc{lutimes}; @manpage{lutimes, Change file timestamps}.
+
+@quotation
+@strong{NOTE} This function is Linux specific.
+@end quotation
 @end deftypefun
+
+
+@deftypefun void ccsys_futimes (cce_destination_t @var{L}, ccsys_fd_t @var{filedes}, ccsys_timeval_t const @var{TVP} [2])
+Wrapper for @cfunc{futimes}; @manpage{futimes, Change file timestamps}.
+
+@quotation
+@strong{NOTE} This function is Linux specific.
+@end quotation
+@end deftypefun
+
+
+@deftypefun void ccsys_futimesat (cce_destination_t @var{L}, ccsys_dirfd_t @var{dirfd}, char const * @var{pathname}, ccsys_timeval_t const @var{T} [2])
+Wrapper for @cfunc{futimesat}; @manpage{futimesat, Change file timestamps}.
+
+@quotation
+@strong{NOTE} This function is specific to the @gnu{} C Library.
+@end quotation
+@end deftypefun
+
+@menu
+* fs times one::                Using @cfunc{ccsys_utimensat}.
+* fs times two::                Using @cfunc{ccsys_futimens}.
+* fs times three::              Using @cfunc{ccsys_utimes}.
+* fs times four::               Using @cfunc{ccsys_lutimes}.
+* fs times five::               Using @cfunc{ccsys_futimes}.
+* fs times six::                Using @cfunc{ccsys_futimesat}.
+@end menu
+
+@c page
+@node fs times one
+@subsection Using @cfunc{ccsys_utimensat}
+
+
+As usage example of @cfunc{ccsys_utimensat} see the following code.
+
+@example
+cce_location_t        L[1];
+cce_cleanup_handler_t filename_H[1];
+
+if (cce_location(L)) @{
+  cce_run_error_handlers_final(L);
+@} else @{
+  char const *        filename = "name.ext";
+
+  /* Create the file. */
+  @{
+    ccsys_open_mode_t         mode;
+    ccsys_open_flags_t        flags;
+
+    flags.data = CCSYS_O_CREAT | CCSYS_O_RDWR;
+    mode.data  = CCSYS_S_IRUSR | CCSYS_S_IWUSR;
+    ccsys_touch(L, filename, flags, mode);
+    ccsys_handler_remove_init(L, filename_H, filename);
+  @}
+
+  /* Set the times. */
+  @{
+    ccsys_timespec_t          T[2];
+    ccsys_utimensat_flags_t   flags;
+
+    T[0].seconds.data         = 123;
+    T[0].nanoseconds.data     = 0;
+    T[1].seconds.data         = 456;
+    T[1].nanoseconds.data     = 0;
+
+    flags.data = 0;
+    ccsys_utimensat(L, CCSYS_AT_FDCWD, filename, T, flags);
+  @}
+
+  /* Validate the times. */
+  @{
+    ccsys_stat_t      S[1];
+    ccsys_timespec_t  atim;
+    ccsys_timespec_t  mtim;
+
+    ccsys_stat(L, filename, S);
+    atim = ccsys_ref_stat_st_atim(S);
+    mtim = ccsys_ref_stat_st_mtim(S);
+    assert(123 == ccsys_luref(atim.seconds));
+    assert(0   == ccsys_luref(atim.nanoseconds));
+    assert(456 == ccsys_luref(mtim.seconds));
+    assert(0   == ccsys_luref(mtim.nanoseconds));
+  @}
+
+  cce_run_cleanup_handlers(L);
+@}
+@end example
+
+@c page
+@node fs times two
+@subsection Using @cfunc{ccsys_futimens}
+
+
+As usage example of @cfunc{ccsys_futimens} see the following code.
+
+@example
+cce_location_t        L[1];
+cce_cleanup_handler_t filename_H[1];
+cce_cleanup_handler_t filedes_H[1];
+
+if (cce_location(L)) @{
+  cce_run_error_handlers_final(L);
+@} else @{
+  char const *        filename = "name.ext";
+  ccsys_fd_t          fd;
+
+  /* Create the file. */
+  @{
+    ccsys_open_mode_t         mode;
+    ccsys_open_flags_t        flags;
+
+    flags.data = CCSYS_O_CREAT | CCSYS_O_RDWR;
+    mode.data  = CCSYS_S_IRUSR | CCSYS_S_IWUSR;
+    fd = ccsys_open(L, filename, flags, mode);
+    ccsys_handler_filedes_init(L, filedes_H, fd);
+    ccsys_handler_remove_init(L, filename_H, filename);
+  @}
+
+  /* Set the times. */
+  @{
+    ccsys_timespec_t  T[2];
+
+    T[0].seconds.data         = 123;
+    T[0].nanoseconds.data     = 0;
+    T[1].seconds.data         = 456;
+    T[1].nanoseconds.data     = 0;
+
+    ccsys_futimens(L, fd, T);
+  @}
+
+  /* Validate the times. */
+  @{
+    ccsys_stat_t      S[1];
+    ccsys_timespec_t  atim;
+    ccsys_timespec_t  mtim;
+
+    ccsys_stat(L, filename, S);
+    atim = ccsys_ref_stat_st_atim(S);
+    mtim = ccsys_ref_stat_st_mtim(S);
+    assert(123 == ccsys_luref(atim.seconds));
+    assert(0   == ccsys_luref(atim.nanoseconds));
+    assert(456 == ccsys_luref(mtim.seconds));
+    assert(0   == ccsys_luref(mtim.nanoseconds));
+  @}
+
+  cce_run_cleanup_handlers(L);
+@}
+@end example
+
+@c page
+@node fs times three
+@subsection Using @cfunc{ccsys_utimes}
+
+
+As usage example of @cfunc{ccsys_utimes} see the following code.
+
+@example
+cce_location_t        L[1];
+cce_cleanup_handler_t filename_H[1];
+
+if (cce_location(L)) @{
+  cce_run_error_handlers_final(L);
+@} else @{
+  char const *        filename = "name.ext";
+
+  /* Create the file. */
+  @{
+    ccsys_open_mode_t         mode;
+    ccsys_open_flags_t        flags;
+
+    flags.data = CCSYS_O_CREAT | CCSYS_O_RDWR;
+    mode.data  = CCSYS_S_IRUSR | CCSYS_S_IWUSR;
+    ccsys_touch(L, filename, flags, mode);
+    ccsys_handler_remove_init(L, filename_H, filename);
+  @}
+
+  /* Set the times. */
+  @{
+    ccsys_timeval_t   T[2];
+
+    T[0].seconds.data         = 123;
+    T[0].microseconds.data    = 0;
+    T[1].seconds.data         = 456;
+    T[1].microseconds.data    = 0;
+
+    ccsys_utimes(L, filename, T);
+  @}
+
+  /* Validate the times. */
+  @{
+    ccsys_stat_t      S[1];
+    ccsys_timespec_t  atim;
+    ccsys_timespec_t  mtim;
+
+    ccsys_stat(L, filename, S);
+    atim = ccsys_ref_stat_st_atim(S);
+    mtim = ccsys_ref_stat_st_mtim(S);
+    assert(123 == ccsys_luref(atim.seconds));
+    assert(0   == ccsys_luref(atim.nanoseconds));
+    assert(456 == ccsys_luref(mtim.seconds));
+    assert(0   == ccsys_luref(mtim.nanoseconds));
+  @}
+
+  cce_run_cleanup_handlers(L);
+@}
+@end example
+
+@c page
+@node fs times four
+@subsection Using @cfunc{ccsys_lutimes}
+
+
+As usage example of @cfunc{ccsys_lutimes} see the following code.
+
+@example
+cce_location_t        L[1];
+cce_cleanup_handler_t filename_H[1];
+cce_cleanup_handler_t linkname_H[1];
+
+if (cce_location(L)) @{
+  cce_run_error_handlers_final(L);
+@} else @{
+  char const *        filename = "name.ext";
+  char const *        linkname = "link.ext";
+
+  /* Create the file. */
+  @{
+    ccsys_open_mode_t         mode;
+    ccsys_open_flags_t        flags;
+
+    flags.data = CCSYS_O_CREAT | CCSYS_O_RDWR;
+    mode.data  = CCSYS_S_IRUSR | CCSYS_S_IWUSR;
+    ccsys_touch(L, filename, flags, mode);
+    ccsys_handler_remove_init(L, filename_H, filename);
+  @}
+
+  /* Create the link. */
+  @{
+    ccsys_symlink(L, filename, linkname);
+    ccsys_handler_remove_init(L, linkname_H, linkname);
+  @}
+
+  /* Set the times. */
+  @{
+    ccsys_timeval_t   T[2];
+
+    T[0].seconds.data         = 123;
+    T[0].microseconds.data    = 0;
+    T[1].seconds.data         = 456;
+    T[1].microseconds.data    = 0;
+
+    ccsys_lutimes(L, linkname, T);
+  @}
+
+  /* Validate the times. */
+  @{
+    ccsys_stat_t      S[1];
+    ccsys_timespec_t  atim;
+    ccsys_timespec_t  mtim;
+
+    ccsys_lstat(L, linkname, S);
+    atim = ccsys_ref_stat_st_atim(S);
+    mtim = ccsys_ref_stat_st_mtim(S);
+    assert(123 == ccsys_luref(atim.seconds));
+    assert(0   == ccsys_luref(atim.nanoseconds));
+    assert(456 == ccsys_luref(mtim.seconds));
+    assert(0   == ccsys_luref(mtim.nanoseconds));
+  @}
+
+  cce_run_cleanup_handlers(L);
+@}
+@end example
+
+@c page
+@node fs times five
+@subsection Using @cfunc{ccsys_futimes}
+
+
+As usage example of @cfunc{ccsys_futimes} see the following code.
+
+@example
+cce_location_t        L[1];
+cce_cleanup_handler_t filename_H[1];
+cce_cleanup_handler_t filedes_H[1];
+
+if (cce_location(L)) @{
+  cce_run_error_handlers_final(L);
+@} else @{
+  char const *        filename = "name.ext";
+  ccsys_fd_t          fd;
+
+  /* Create the file. */
+  @{
+    ccsys_open_mode_t         mode;
+    ccsys_open_flags_t        flags;
+
+    flags.data = CCSYS_O_CREAT | CCSYS_O_RDWR;
+    mode.data  = CCSYS_S_IRUSR | CCSYS_S_IWUSR;
+    fd = ccsys_open(L, filename, flags, mode);
+    ccsys_handler_filedes_init(L, filedes_H, fd);
+    ccsys_handler_remove_init(L, filename_H, filename);
+  @}
+
+  /* Set the times. */
+  @{
+    ccsys_timeval_t   T[2];
+
+    T[0].seconds.data         = 123;
+    T[0].microseconds.data    = 0;
+    T[1].seconds.data         = 456;
+    T[1].microseconds.data    = 0;
+
+    ccsys_futimes(L, fd, T);
+  @}
+
+  /* Validate the times. */
+  @{
+    ccsys_stat_t      S[1];
+    ccsys_timespec_t  atim;
+    ccsys_timespec_t  mtim;
+
+    ccsys_fstat(L, fd, S);
+    atim = ccsys_ref_stat_st_atim(S);
+    mtim = ccsys_ref_stat_st_mtim(S);
+    assert(123 == ccsys_luref(atim.seconds));
+    assert(0   == ccsys_luref(atim.nanoseconds));
+    assert(456 == ccsys_luref(mtim.seconds));
+    assert(0   == ccsys_luref(mtim.nanoseconds));
+  @}
+
+  cce_run_cleanup_handlers(L);
+@}
+@end example
+
+@c page
+@node fs times six
+@subsection Using @cfunc{ccsys_futimesat}
+
+
+As usage example of @cfunc{ccsys_futimesat} see the following code.
+
+@example
+cce_location_t        L[1];
+cce_cleanup_handler_t filename_H[1];
+
+if (cce_location(L)) @{
+  cce_run_error_handlers_final(L);
+@} else @{
+  char const *        filename = "name.ext";
+
+  /* Create the file. */
+  @{
+    ccsys_open_mode_t         mode;
+    ccsys_open_flags_t        flags;
+
+    flags.data = CCSYS_O_CREAT | CCSYS_O_RDWR;
+    mode.data  = CCSYS_S_IRUSR | CCSYS_S_IWUSR;
+    ccsys_touch(L, filename, flags, mode);
+    ccsys_handler_remove_init(L, filename_H, filename);
+  @}
+
+  /* Set the times. */
+  @{
+    ccsys_timeval_t   T[2];
+
+    T[0].seconds.data         = 123;
+    T[0].microseconds.data    = 0;
+    T[1].seconds.data         = 456;
+    T[1].microseconds.data    = 0;
+
+    ccsys_futimesat(L, CCSYS_AT_FDCWD, filename, T);
+  @}
+
+  /* Validate the times. */
+  @{
+    ccsys_stat_t      S[1];
+    ccsys_timespec_t  atim;
+    ccsys_timespec_t  mtim;
+
+    ccsys_stat(L, filename, S);
+    atim = ccsys_ref_stat_st_atim(S);
+    mtim = ccsys_ref_stat_st_mtim(S);
+    assert(123 == ccsys_luref(atim.seconds));
+    assert(0   == ccsys_luref(atim.nanoseconds));
+    assert(456 == ccsys_luref(mtim.seconds));
+    assert(0   == ccsys_luref(mtim.nanoseconds));
+  @}
+
+  cce_run_cleanup_handlers(L);
+@}
+@end example
 
 @c page
 @node fs temp

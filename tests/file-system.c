@@ -1782,7 +1782,7 @@ test_9_4 (cce_destination_t upper_L)
 
 
 /** --------------------------------------------------------------------
- ** Users and groups: changing file mode.
+ ** File system: changing file mode.
  ** ----------------------------------------------------------------- */
 
 void
@@ -1939,7 +1939,7 @@ test_10_3 (cce_destination_t upper_L)
 
 
 /** --------------------------------------------------------------------
- ** Users and groups: testing access permissions.
+ ** File system: testing access permissions.
  ** ----------------------------------------------------------------- */
 
 void
@@ -2065,7 +2065,7 @@ test_11_2 (cce_destination_t upper_L)
 
 
 /** --------------------------------------------------------------------
- ** Users and groups: truncate a file to a specified length.
+ ** File system: truncate a file to a specified length.
  ** ----------------------------------------------------------------- */
 
 void
@@ -2201,6 +2201,405 @@ test_12_2 (cce_destination_t upper_L)
 }
 
 
+/** --------------------------------------------------------------------
+ ** File system: setting and getting the file times.
+ ** ----------------------------------------------------------------- */
+
+void
+test_13_1 (cce_destination_t upper_L)
+/* Testing "ccsys_utimes()".*/
+{
+#if (defined HAVE_UTIMES)
+  cce_location_t	L[1];
+  cce_cleanup_handler_t	filename_H[1];
+
+  if (cce_location(L)) {
+    if (1) { fprintf(stderr, "%s: %s\n", __func__, cce_condition_static_message(cce_condition(L))); }
+    cce_run_error_handlers_raise(L, upper_L);
+  } else {
+    char const *	filename = "name.ext";
+
+    /* Create the file. */
+    {
+      ccsys_open_mode_t		mode;
+      ccsys_open_flags_t	flags;
+
+      flags.data = CCSYS_O_CREAT | CCSYS_O_RDWR;
+      mode.data  = CCSYS_S_IRUSR | CCSYS_S_IWUSR;
+      ccsys_touch(L, filename, flags, mode);
+      ccsys_handler_remove_init(L, filename_H, filename);
+    }
+
+    /* Set the times. */
+    {
+      ccsys_timeval_t	T[2];
+
+      T[0].seconds.data		= 123;
+      T[0].microseconds.data	= 0;
+      T[1].seconds.data		= 456;
+      T[1].microseconds.data	= 0;
+
+      ccsys_utimes(L, filename, T);
+    }
+
+    /* Validate the times. */
+    {
+      ccsys_stat_t	S[1];
+      ccsys_timespec_t	atim;
+      ccsys_timespec_t	mtim;
+
+      ccsys_stat(L, filename, S);
+      atim = ccsys_ref_stat_st_atim(S);
+      mtim = ccsys_ref_stat_st_mtim(S);
+      cctests_assert(L, 123 == ccsys_luref(atim.seconds));
+      cctests_assert(L, 0   == ccsys_luref(atim.nanoseconds));
+      cctests_assert(L, 456 == ccsys_luref(mtim.seconds));
+      cctests_assert(L, 0   == ccsys_luref(mtim.nanoseconds));
+      if (1) {
+	fprintf(stderr, "%s: atim.seconds=%lu\n",	__func__, ccsys_luref(atim.seconds));
+	fprintf(stderr, "%s: atim.nanoseconds=%lu\n",	__func__, ccsys_luref(atim.nanoseconds));
+	fprintf(stderr, "%s: mtim.seconds=%lu\n",	__func__, ccsys_luref(mtim.seconds));
+	fprintf(stderr, "%s: mtim.nanoseconds=%lu\n",	__func__, ccsys_luref(mtim.nanoseconds));
+      }
+    }
+
+    cce_run_cleanup_handlers(L);
+  }
+#endif
+}
+
+void
+test_13_2 (cce_destination_t upper_L)
+/* Testing "ccsys_lutimes()".*/
+{
+#if (defined HAVE_LUTIMES)
+  cce_location_t	L[1];
+  cce_cleanup_handler_t	filename_H[1];
+  cce_cleanup_handler_t	linkname_H[1];
+
+  if (cce_location(L)) {
+    if (1) { fprintf(stderr, "%s: %s\n", __func__, cce_condition_static_message(cce_condition(L))); }
+    cce_run_error_handlers_raise(L, upper_L);
+  } else {
+    char const *	filename = "name.ext";
+    char const *	linkname = "link.ext";
+
+    /* Create the file. */
+    {
+      ccsys_open_mode_t		mode;
+      ccsys_open_flags_t	flags;
+
+      flags.data = CCSYS_O_CREAT | CCSYS_O_RDWR;
+      mode.data  = CCSYS_S_IRUSR | CCSYS_S_IWUSR;
+      ccsys_touch(L, filename, flags, mode);
+      ccsys_handler_remove_init(L, filename_H, filename);
+    }
+
+    /* Create the link. */
+    {
+      ccsys_symlink(L, filename, linkname);
+      ccsys_handler_remove_init(L, linkname_H, linkname);
+    }
+
+    /* Set the times. */
+    {
+      ccsys_timeval_t	T[2];
+
+      T[0].seconds.data		= 123;
+      T[0].microseconds.data	= 0;
+      T[1].seconds.data		= 456;
+      T[1].microseconds.data	= 0;
+
+      ccsys_lutimes(L, linkname, T);
+    }
+
+    /* Validate the times. */
+    {
+      ccsys_stat_t	S[1];
+      ccsys_timespec_t	atim;
+      ccsys_timespec_t	mtim;
+
+      ccsys_lstat(L, linkname, S);
+      atim = ccsys_ref_stat_st_atim(S);
+      mtim = ccsys_ref_stat_st_mtim(S);
+      cctests_assert(L, 123 == ccsys_luref(atim.seconds));
+      cctests_assert(L, 0   == ccsys_luref(atim.nanoseconds));
+      cctests_assert(L, 456 == ccsys_luref(mtim.seconds));
+      cctests_assert(L, 0   == ccsys_luref(mtim.nanoseconds));
+      if (1) {
+	fprintf(stderr, "%s: atim.seconds=%lu\n",	__func__, ccsys_luref(atim.seconds));
+	fprintf(stderr, "%s: atim.nanoseconds=%lu\n",	__func__, ccsys_luref(atim.nanoseconds));
+	fprintf(stderr, "%s: mtim.seconds=%lu\n",	__func__, ccsys_luref(mtim.seconds));
+	fprintf(stderr, "%s: mtim.nanoseconds=%lu\n",	__func__, ccsys_luref(mtim.nanoseconds));
+      }
+    }
+
+    cce_run_cleanup_handlers(L);
+  }
+#endif
+}
+
+void
+test_13_3 (cce_destination_t upper_L)
+/* Testing "ccsys_futimes()".*/
+{
+#if (defined HAVE_FUTIMES)
+  cce_location_t	L[1];
+  cce_cleanup_handler_t	filename_H[1];
+  cce_cleanup_handler_t	filedes_H[1];
+
+  if (cce_location(L)) {
+    if (1) { fprintf(stderr, "%s: %s\n", __func__, cce_condition_static_message(cce_condition(L))); }
+    cce_run_error_handlers_raise(L, upper_L);
+  } else {
+    char const *	filename = "name.ext";
+    ccsys_fd_t		fd;
+
+    /* Create the file. */
+    {
+      ccsys_open_mode_t		mode;
+      ccsys_open_flags_t	flags;
+
+      flags.data = CCSYS_O_CREAT | CCSYS_O_RDWR;
+      mode.data  = CCSYS_S_IRUSR | CCSYS_S_IWUSR;
+      fd = ccsys_open(L, filename, flags, mode);
+      ccsys_handler_filedes_init(L, filedes_H, fd);
+      ccsys_handler_remove_init(L, filename_H, filename);
+    }
+
+    /* Set the times. */
+    {
+      ccsys_timeval_t	T[2];
+
+      T[0].seconds.data		= 123;
+      T[0].microseconds.data	= 0;
+      T[1].seconds.data		= 456;
+      T[1].microseconds.data	= 0;
+
+      ccsys_futimes(L, fd, T);
+    }
+
+    /* Validate the times. */
+    {
+      ccsys_stat_t	S[1];
+      ccsys_timespec_t	atim;
+      ccsys_timespec_t	mtim;
+
+      ccsys_fstat(L, fd, S);
+      atim = ccsys_ref_stat_st_atim(S);
+      mtim = ccsys_ref_stat_st_mtim(S);
+      cctests_assert(L, 123 == ccsys_luref(atim.seconds));
+      cctests_assert(L, 0   == ccsys_luref(atim.nanoseconds));
+      cctests_assert(L, 456 == ccsys_luref(mtim.seconds));
+      cctests_assert(L, 0   == ccsys_luref(mtim.nanoseconds));
+      if (1) {
+	fprintf(stderr, "%s: atim.seconds=%lu\n",	__func__, ccsys_luref(atim.seconds));
+	fprintf(stderr, "%s: atim.nanoseconds=%lu\n",	__func__, ccsys_luref(atim.nanoseconds));
+	fprintf(stderr, "%s: mtim.seconds=%lu\n",	__func__, ccsys_luref(mtim.seconds));
+	fprintf(stderr, "%s: mtim.nanoseconds=%lu\n",	__func__, ccsys_luref(mtim.nanoseconds));
+      }
+    }
+
+    cce_run_cleanup_handlers(L);
+  }
+#endif
+}
+
+void
+test_13_4 (cce_destination_t upper_L)
+/* Testing "ccsys_futimesat()".*/
+{
+#if (defined HAVE_FUTIMESAT)
+  cce_location_t	L[1];
+  cce_cleanup_handler_t	filename_H[1];
+
+  if (cce_location(L)) {
+    if (1) { fprintf(stderr, "%s: %s\n", __func__, cce_condition_static_message(cce_condition(L))); }
+    cce_run_error_handlers_raise(L, upper_L);
+  } else {
+    char const *	filename = "name.ext";
+
+    /* Create the file. */
+    {
+      ccsys_open_mode_t		mode;
+      ccsys_open_flags_t	flags;
+
+      flags.data = CCSYS_O_CREAT | CCSYS_O_RDWR;
+      mode.data  = CCSYS_S_IRUSR | CCSYS_S_IWUSR;
+      ccsys_touch(L, filename, flags, mode);
+      ccsys_handler_remove_init(L, filename_H, filename);
+    }
+
+    /* Set the times. */
+    {
+      ccsys_timeval_t	T[2];
+
+      T[0].seconds.data		= 123;
+      T[0].microseconds.data	= 0;
+      T[1].seconds.data		= 456;
+      T[1].microseconds.data	= 0;
+
+      ccsys_futimesat(L, CCSYS_AT_FDCWD, filename, T);
+    }
+
+    /* Validate the times. */
+    {
+      ccsys_stat_t	S[1];
+      ccsys_timespec_t	atim;
+      ccsys_timespec_t	mtim;
+
+      ccsys_stat(L, filename, S);
+      atim = ccsys_ref_stat_st_atim(S);
+      mtim = ccsys_ref_stat_st_mtim(S);
+      cctests_assert(L, 123 == ccsys_luref(atim.seconds));
+      cctests_assert(L, 0   == ccsys_luref(atim.nanoseconds));
+      cctests_assert(L, 456 == ccsys_luref(mtim.seconds));
+      cctests_assert(L, 0   == ccsys_luref(mtim.nanoseconds));
+      if (1) {
+	fprintf(stderr, "%s: atim.seconds=%lu\n",	__func__, ccsys_luref(atim.seconds));
+	fprintf(stderr, "%s: atim.nanoseconds=%lu\n",	__func__, ccsys_luref(atim.nanoseconds));
+	fprintf(stderr, "%s: mtim.seconds=%lu\n",	__func__, ccsys_luref(mtim.seconds));
+	fprintf(stderr, "%s: mtim.nanoseconds=%lu\n",	__func__, ccsys_luref(mtim.nanoseconds));
+      }
+    }
+
+    cce_run_cleanup_handlers(L);
+  }
+#endif
+}
+
+void
+test_13_5 (cce_destination_t upper_L)
+/* Testing "ccsys_utimensat()".*/
+{
+#if (defined HAVE_UTIMENSAT)
+  cce_location_t	L[1];
+  cce_cleanup_handler_t	filename_H[1];
+
+  if (cce_location(L)) {
+    if (1) { fprintf(stderr, "%s: %s\n", __func__, cce_condition_static_message(cce_condition(L))); }
+    cce_run_error_handlers_raise(L, upper_L);
+  } else {
+    char const *	filename = "name.ext";
+
+    /* Create the file. */
+    {
+      ccsys_open_mode_t		mode;
+      ccsys_open_flags_t	flags;
+
+      flags.data = CCSYS_O_CREAT | CCSYS_O_RDWR;
+      mode.data  = CCSYS_S_IRUSR | CCSYS_S_IWUSR;
+      ccsys_touch(L, filename, flags, mode);
+      ccsys_handler_remove_init(L, filename_H, filename);
+    }
+
+    /* Set the times. */
+    {
+      ccsys_timespec_t		T[2];
+      ccsys_utimensat_flags_t	flags;
+
+      T[0].seconds.data		= 123;
+      T[0].nanoseconds.data	= 0;
+      T[1].seconds.data		= 456;
+      T[1].nanoseconds.data	= 0;
+
+      flags.data = 0;
+      ccsys_utimensat(L, CCSYS_AT_FDCWD, filename, T, flags);
+    }
+
+    /* Validate the times. */
+    {
+      ccsys_stat_t	S[1];
+      ccsys_timespec_t	atim;
+      ccsys_timespec_t	mtim;
+
+      ccsys_stat(L, filename, S);
+      atim = ccsys_ref_stat_st_atim(S);
+      mtim = ccsys_ref_stat_st_mtim(S);
+      cctests_assert(L, 123 == ccsys_luref(atim.seconds));
+      cctests_assert(L, 0   == ccsys_luref(atim.nanoseconds));
+      cctests_assert(L, 456 == ccsys_luref(mtim.seconds));
+      cctests_assert(L, 0   == ccsys_luref(mtim.nanoseconds));
+      if (1) {
+	fprintf(stderr, "%s: atim.seconds=%lu\n",	__func__, ccsys_luref(atim.seconds));
+	fprintf(stderr, "%s: atim.nanoseconds=%lu\n",	__func__, ccsys_luref(atim.nanoseconds));
+	fprintf(stderr, "%s: mtim.seconds=%lu\n",	__func__, ccsys_luref(mtim.seconds));
+	fprintf(stderr, "%s: mtim.nanoseconds=%lu\n",	__func__, ccsys_luref(mtim.nanoseconds));
+      }
+    }
+
+    cce_run_cleanup_handlers(L);
+  }
+#endif
+}
+
+void
+test_13_6 (cce_destination_t upper_L)
+/* Testing "ccsys_futimens()".*/
+{
+#if (defined HAVE_FUTIMENS)
+  cce_location_t	L[1];
+  cce_cleanup_handler_t	filename_H[1];
+  cce_cleanup_handler_t	filedes_H[1];
+
+  if (cce_location(L)) {
+    if (1) { fprintf(stderr, "%s: %s\n", __func__, cce_condition_static_message(cce_condition(L))); }
+    cce_run_error_handlers_raise(L, upper_L);
+  } else {
+    char const *	filename = "name.ext";
+    ccsys_fd_t		fd;
+
+    /* Create the file. */
+    {
+      ccsys_open_mode_t		mode;
+      ccsys_open_flags_t	flags;
+
+      flags.data = CCSYS_O_CREAT | CCSYS_O_RDWR;
+      mode.data  = CCSYS_S_IRUSR | CCSYS_S_IWUSR;
+      fd = ccsys_open(L, filename, flags, mode);
+      ccsys_handler_filedes_init(L, filedes_H, fd);
+      ccsys_handler_remove_init(L, filename_H, filename);
+    }
+
+    /* Set the times. */
+    {
+      ccsys_timespec_t	T[2];
+
+      T[0].seconds.data		= 123;
+      T[0].nanoseconds.data	= 0;
+      T[1].seconds.data		= 456;
+      T[1].nanoseconds.data	= 0;
+
+      ccsys_futimens(L, fd, T);
+    }
+
+    /* Validate the times. */
+    {
+      ccsys_stat_t	S[1];
+      ccsys_timespec_t	atim;
+      ccsys_timespec_t	mtim;
+
+      ccsys_stat(L, filename, S);
+      atim = ccsys_ref_stat_st_atim(S);
+      mtim = ccsys_ref_stat_st_mtim(S);
+      cctests_assert(L, 123 == ccsys_luref(atim.seconds));
+      cctests_assert(L, 0   == ccsys_luref(atim.nanoseconds));
+      cctests_assert(L, 456 == ccsys_luref(mtim.seconds));
+      cctests_assert(L, 0   == ccsys_luref(mtim.nanoseconds));
+      if (1) {
+	fprintf(stderr, "%s: atim.seconds=%lu\n",	__func__, ccsys_luref(atim.seconds));
+	fprintf(stderr, "%s: atim.nanoseconds=%lu\n",	__func__, ccsys_luref(atim.nanoseconds));
+	fprintf(stderr, "%s: mtim.seconds=%lu\n",	__func__, ccsys_luref(mtim.seconds));
+	fprintf(stderr, "%s: mtim.nanoseconds=%lu\n",	__func__, ccsys_luref(mtim.nanoseconds));
+      }
+    }
+
+    cce_run_cleanup_handlers(L);
+  }
+#endif
+}
+
+
 int
 main (void)
 {
@@ -2304,6 +2703,17 @@ main (void)
     {
       cctests_run(test_12_1);
       cctests_run(test_12_2);
+    }
+    cctests_end_group();
+
+    cctests_begin_group("setting and getting the file times");
+    {
+      cctests_run(test_13_1);
+      cctests_run(test_13_2);
+      cctests_run(test_13_3);
+      cctests_run(test_13_4);
+      cctests_run(test_13_5);
+      cctests_run(test_13_6);
     }
     cctests_end_group();
   }

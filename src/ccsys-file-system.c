@@ -61,9 +61,6 @@
 #ifdef HAVE_UNISTD_H
 #  include <unistd.h>
 #endif
-#ifdef HAVE_UTIME_H
-#  include <utime.h>
-#endif
 
 
 /** --------------------------------------------------------------------
@@ -1381,53 +1378,81 @@ ccsys_ftruncate (cce_location_t * L, ccsys_fd_t filedes, ccsys_off_t length)
  ** File system: file times.
  ** ----------------------------------------------------------------- */
 
-#ifdef HAVE_UTIME
-void
-ccsys_utime (cce_location_t * L, char const * pathname, const ccsys_utimbuf_t * _times)
-{
-  struct utimbuf *	times = (struct utimbuf *)_times;
-  int			rv;
-  errno = 0;
-  rv = utime(pathname, times);
-  if (-1 == rv) {
-    cce_raise(L, cce_condition_new_errno_clear());
-  }
-}
-#endif
-
 #ifdef HAVE_UTIMES
 void
-ccsys_utimes (cce_location_t * L, char const * pathname, const ccsys_timeval_t TVP[2])
+ccsys_utimes (cce_location_t * L, char const * pathname, ccsys_timeval_t const T[2])
 {
   int	rv;
   errno = 0;
-  rv = utimes(pathname, (const struct timeval *)TVP);
+  rv = utimes(pathname, (struct timeval const *)T);
   if (-1 == rv) {
     cce_raise(L, cce_condition_new_errno_clear());
   }
 }
 #endif
 
-#if ((defined HAVE_LUTIMES) && (0 == CCSYS_ON_DARWIN))
+#ifdef HAVE_UTIMENSAT
 void
-ccsys_lutimes (cce_location_t * L, char const * pathname, const ccsys_timeval_t TVP[2])
+ccsys_utimensat (cce_destination_t L, ccsys_dirfd_t dirfd, char const * pathname,
+		 ccsys_timespec_t const T[2], ccsys_utimensat_flags_t flags)
 {
   int	rv;
   errno = 0;
-  rv = lutimes(pathname, (const struct timeval *)TVP);
+  rv = utimensat(dirfd.data, pathname, (struct timespec const *)T, flags.data);
   if (-1 == rv) {
     cce_raise(L, cce_condition_new_errno_clear());
   }
 }
 #endif
 
-#if ((defined HAVE_FUTIMES) && (0 == CCSYS_ON_DARWIN))
+#ifdef HAVE_FUTIMENS
 void
-ccsys_futimes (cce_location_t * L, ccsys_fd_t filedes, const ccsys_timeval_t TVP[2])
+ccsys_futimens (cce_destination_t L, ccsys_fd_t fd, ccsys_timespec_t const T[2])
 {
   int	rv;
   errno = 0;
-  rv = futimes(filedes.data, (const struct timeval *)TVP);
+  rv = futimens(fd.data, (struct timespec const *)T);
+  if (-1 == rv) {
+    cce_raise(L, cce_condition_new_errno_clear());
+  }
+}
+#endif
+
+/* ------------------------------------------------------------------ */
+
+#if ((defined HAVE_LUTIMES) && (1 == CCSYS_ON_LINUX))
+void
+ccsys_lutimes (cce_location_t * L, char const * pathname,  ccsys_timeval_t const T[2])
+{
+  int	rv;
+  errno = 0;
+  rv = lutimes(pathname, (const struct timeval *)T);
+  if (-1 == rv) {
+    cce_raise(L, cce_condition_new_errno_clear());
+  }
+}
+#endif
+
+#if ((defined HAVE_FUTIMES) && (1 == CCSYS_ON_LINUX))
+void
+ccsys_futimes (cce_location_t * L, ccsys_fd_t filedes,  ccsys_timeval_t const T[2])
+{
+  int	rv;
+  errno = 0;
+  rv = futimes(filedes.data, (const struct timeval *)T);
+  if (-1 == rv) {
+    cce_raise(L, cce_condition_new_errno_clear());
+  }
+}
+#endif
+
+#if ((defined HAVE_FUTIMESAT) && (1 == CCSYS_ON_LINUX))
+void
+ccsys_futimesat (cce_destination_t L, ccsys_dirfd_t dirfd, char const * pathname, ccsys_timeval_t const T[2])
+{
+  int	rv;
+  errno = 0;
+  rv = futimesat(dirfd.data, pathname, (struct timeval const *)T);
   if (-1 == rv) {
     cce_raise(L, cce_condition_new_errno_clear());
   }

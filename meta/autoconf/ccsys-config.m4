@@ -175,12 +175,6 @@ AC_DEFUN([CCSYS_UNISTD_HEADER],[
 #endif
 ])
 
-AC_DEFUN([CCSYS_UTIME_HEADER],[
-#ifdef HAVE_UTIME_H
-#  include <utime.h>
-#endif
-])
-
 AC_DEFUN([CCSYS_WAIT_HEADER],[
 #ifdef HAVE_WAIT_H
 #  include <wait.h>

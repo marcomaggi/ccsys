@@ -113,7 +113,7 @@ AM_PROG_AS
 AC_PROG_CC
 AM_PROG_CC_C_O
 AC_HEADER_STDC
-AC_CHECK_HEADERS([assert.h errno.h stdint.h stddef.h setjmp.h memory.h limits.h utime.h fcntl.h dirent.h time.h])
+AC_CHECK_HEADERS([assert.h errno.h stdint.h stddef.h setjmp.h memory.h limits.h fcntl.h dirent.h time.h])
 AC_CHECK_HEADERS([grp.h])
 AC_CHECK_HEADERS([sys/syscall.h sys/select.h sys/stat.h sys/time.h sys/types.h sys/uio.h sys/mman.h sys/wait.h])
 AC_CHECK_HEADERS([netdb.h netinet/in.h arpa/inet.h sys/socket.h sys/un.h])
@@ -152,7 +152,7 @@ AC_CHECK_FUNCS([link linkat symlink symlinkat readlink readlinkat realpath unlin
 AC_CHECK_FUNCS([rename renameat renameat2])
 AC_CHECK_FUNCS([chown fchown lchown fchownat])
 AC_CHECK_FUNCS([chmod fchmod fchmodat access faccessat])
-AC_CHECK_FUNCS([utime utimes])
+AC_CHECK_FUNCS([utimes utimensat futimens])
 AC_CHECK_FUNCS([truncate ftruncate])
 AC_CHECK_FUNCS([mkstemp])
 AC_CHECK_FUNCS([bind getsockname inet_network socket shutdown socketpair connect listen accept getpeername])
@@ -167,7 +167,7 @@ AC_CHECK_FUNCS([mkdtemp mremap madvise inet_aton])
 dnl AC_CHECK_FUNCS([gethostbyname_r gethostbyname2_r gethostbyaddr_r])
 
 dnl Linux stuff
-AC_CHECK_FUNCS([lutimes futimes])
+AC_CHECK_FUNCS([lutimes futimes futimesat])
 
 AC_CACHE_SAVE
 
@@ -226,8 +226,6 @@ CCSYS_STRUCT_FIELD([STRUCT_STAT_ST_CTIME_USEC],  [struct stat],[st_ctime_usec], 
 CCSYS_STRUCT_FIELD([STRUCT_STAT_ST_ATIM],   [struct stat],[st_atim],   [CCSYS_SYS_STAT_HEADER])
 CCSYS_STRUCT_FIELD([STRUCT_STAT_ST_MTIM],   [struct stat],[st_mtim],   [CCSYS_SYS_STAT_HEADER])
 CCSYS_STRUCT_FIELD([STRUCT_STAT_ST_CTIM],   [struct stat],[st_ctim],   [CCSYS_SYS_STAT_HEADER])
-
-CCSYS_SIZEOF([STRUCT_UTIMBUF],[struct utimbuf],[CCSYS_UTIME_HEADER])
 
 CCSYS_SIZEOF([SIGSET_T],[sigset_t],[CCSYS_SYS_SELECT_HEADER])
 
@@ -481,6 +479,9 @@ dnl page
 CCSYS_VALUEOF([CCSYS_L_CUSERID],[L_cuserid],[
 #include <stdio.h>
 ])
+
+CCSYS_VALUEOF([CCSYS_UTIME_NOW], [UTIME_NOW], [CCSYS_SYS_STAT_HEADER])
+CCSYS_VALUEOF([CCSYS_UTIME_OMIT],[UTIME_OMIT],[CCSYS_SYS_STAT_HEADER])
 
 # Open modes.
 #
