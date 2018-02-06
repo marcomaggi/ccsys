@@ -120,6 +120,7 @@ AC_CHECK_HEADERS([netdb.h netinet/in.h arpa/inet.h sys/socket.h sys/un.h])
 AC_CHECK_HEADERS([signal.h pwd.h grp.h])
 AC_CHECK_HEADERS([linux/fs.h])
 AC_HEADER_STDBOOL
+dnl AC_CHECK_HEADERS([search.h])
 
 dnl The  documentation of GNU  Autoconf states that AC_PROG_CC  sets the
 dnl variable "GCC" to "yes" if the selected compiler is GCC.
@@ -132,6 +133,7 @@ dnl page
 
 AC_FUNC_MALLOC
 
+AC_CHECK_FUNCS([getenv setenv unsetenv clearenv])
 AC_CHECK_FUNCS([mlock munlock mlockall munlockall])
 AC_CHECK_FUNCS([mmap munmap msync mprotect])
 AC_CHECK_FUNCS([getuid getgid geteuid getegid setuid seteuid setreuid setgid setegid setregid])
@@ -162,7 +164,7 @@ AC_CHECK_FUNCS([isatty])
 
 dnl GNU C library stuff
 
-dnl AC_CHECK_HEADERS([search.h])
+AC_CHECK_FUNCS([secure_getenv])
 AC_CHECK_FUNCS([mremap madvise inet_aton])
 AC_CHECK_FUNCS([mkdtemp mkstemps mkostemp mkostemps])
 dnl AC_CHECK_FUNCS([gethostbyname_r gethostbyname2_r gethostbyaddr_r])
