@@ -1474,12 +1474,12 @@ CCSYS_NSIG
 The following symbols are defined in the header file @file{ccsys.h}.
 
 
-@deftypefun {char const *} ccsys_getenv (cce_destination_t L, char const * name)
+@deftypefun {char const *} ccsys_getenv (cce_destination_t @var{L}, char const * @var{name})
 Wrapper for @cfunc{getenv}; @manpage{getenv, Get an environment variable}.
 @end deftypefun
 
 
-@deftypefun {char const *} ccsys_secure_getenv (cce_destination_t L, char const * name)
+@deftypefun {char const *} ccsys_secure_getenv (cce_destination_t @var{L}, char const * @var{name})
 Wrapper for @cfunc{secure_getenv}; @manpage{secure_getenv, Get an environment variable}.
 
 @quotation
@@ -1488,24 +1488,176 @@ Wrapper for @cfunc{secure_getenv}; @manpage{secure_getenv, Get an environment va
 @end deftypefun
 
 
-@deftypefun void ccsys_setenv (cce_destination_t L, char const * name, char const * value, bool
-replace)
+@deftypefun void ccsys_setenv (cce_destination_t @var{L}, char const * @var{name}, char const * @var{value}, bool @var{replace})
 Wrapper for @cfunc{setenv}; @manpage{setenv, Change or add an environment variable}.
 @end deftypefun
 
 
-@deftypefun void ccsys_unsetenv (cce_destination_t L, char const * name)
+@deftypefun void ccsys_unsetenv (cce_destination_t @var{L}, char const * @var{name})
 Wrapper for @cfunc{unsetenv}; @manpage{unsetenv, Change or add an environment variable}.
 @end deftypefun
 
 
-@deftypefun void ccsys_clearenv (cce_destination_t L)
+@deftypefun void ccsys_putenv (cce_destination_t @var{L}, char const * @var{assignment})
+Wrapper for @cfunc{putenv}; @manpage{putenv, Change or add an environment variable}.
+@end deftypefun
+
+
+@deftypefun void ccsys_clearenv (cce_destination_t @var{L})
 Wrapper for @cfunc{clearenv}; @manpage{clearenv, Clear the environment}.
 
 @quotation
 @strong{NOTE} This function is an extension implemented by the @gnu{} C Library.
 @end quotation
 @end deftypefun
+
+@menu
+* prog env one::                Using @cfunc{ccsys_getenv}.
+* prog env two::                Using @cfunc{ccsys_secure_getenv}.
+* prog env three::              Using @cfunc{ccsys_setenv}.
+* prog env four::               Using @cfunc{ccsys_putenv}.
+* prog env five::               Using @cfunc{ccsys_unsetenv}.
+@end menu
+
+@c page
+@node prog env one
+@subsection Using @cfunc{ccsys_getenv}
+
+
+As usage example of @cfunc{ccsys_getenv} see the following code.
+
+@example
+cce_location_t        L[1];
+
+if (cce_location(L)) @{
+  cce_run_error_handlers_final(L);
+@} else @{
+  char const *        path;
+
+  path = ccsys_getenv(L, "PATH");
+  assert(NULL != path);
+
+  cce_run_cleanup_handlers(L);
+@}
+@end example
+
+@c page
+@node prog env two
+@subsection Using @cfunc{ccsys_secure_getenv}
+
+
+As usage example of @cfunc{ccsys_secure_getenv} see the following code.
+
+@example
+cce_location_t        L[1];
+
+if (cce_location(L)) @{
+  cce_run_error_handlers_final(L);
+@} else @{
+  char const *        path;
+
+  path = ccsys_secure_getenv(L, "PATH");
+  assert(NULL != path);
+
+  cce_run_cleanup_handlers(L);
+@}
+@end example
+
+@c page
+@node prog env three
+@subsection Using @cfunc{ccsys_setenv}
+
+
+As usage example of @cfunc{ccsys_setenv} see the following code.
+
+@example
+cce_location_t        L[1];
+
+if (cce_location(L)) @{
+  cce_run_error_handlers_final(L);
+@} else @{
+  char const *        ciao;
+
+  @{
+    ccsys_setenv(L, "CIAO", "123", true);
+
+    ciao = ccsys_getenv(L, "CIAO");
+    assert(NULL != ciao);
+    assert(0 == strncmp("123", ciao, strlen("123")));
+  @}
+
+  /* Call setenv without overwriting. */
+  @{
+    ccsys_setenv(L, "CIAO", "456", false);
+
+    ciao = ccsys_getenv(L, "CIAO");
+    assert(NULL != ciao);
+    assert(0 == strncmp("123", ciao, strlen("123")));
+  @}
+
+  /* Call setenv overwriting. */
+  @{
+    ccsys_setenv(L, "CIAO", "789", true);
+
+    ciao = ccsys_getenv(L, "CIAO");
+    assert(NULL != ciao);
+    assert(0 == strncmp("789", ciao, strlen("123")));
+  @}
+
+  cce_run_cleanup_handlers(L);
+@}
+@end example
+
+@c page
+@node prog env four
+@subsection Using @cfunc{ccsys_putenv}
+
+
+As usage example of @cfunc{ccsys_putenv} see the following code.
+
+@example
+cce_location_t        L[1];
+
+if (cce_location(L)) @{
+  cce_run_error_handlers_final(L);
+@} else @{
+  char const *        hey;
+
+  @{
+    ccsys_putenv(L, "HEY=123");
+
+    hey = ccsys_getenv(L, "HEY");
+    assert(NULL != hey);
+    assert(0 == strncmp("123", hey, strlen("123")));
+  @}
+
+  cce_run_cleanup_handlers(L);
+@}
+@end example
+
+@c page
+@node prog env five
+@subsection Using @cfunc{ccsys_unsetenv}
+
+
+As usage example of @cfunc{ccsys_unsetenv} see the following code.
+
+@example
+cce_location_t        L[1];
+
+if (cce_location(L)) @{
+  cce_run_error_handlers_final(L);
+@} else @{
+  char const *        ciao;
+
+  ccsys_setenv(L, "CIAO", "123", true);
+  ccsys_unsetenv(L, "CIAO");
+  ciao = ccsys_getenv(L, "CIAO");
+  assert(NULL == ciao);
+
+  cce_run_cleanup_handlers(L);
+@}
+@end example
 
 @c page
 @node memory

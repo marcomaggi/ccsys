@@ -77,7 +77,7 @@ ccsys_setenv (cce_destination_t L, char const * name, char const * value, bool r
   int	rv;
   errno = 0;
   rv = setenv(name,value,(int)replace);
-  if (-1 == rv) {
+  if (0 != rv) {
     cce_raise(L, cce_condition_new_errno_clear());
   }
 }
@@ -90,7 +90,20 @@ ccsys_unsetenv (cce_destination_t L, char const * name)
   int	rv;
   errno = 0;
   rv = unsetenv(name);
-  if (-1 == rv) {
+  if (0 != rv) {
+    cce_raise(L, cce_condition_new_errno_clear());
+  }
+}
+#endif
+
+#ifdef HAVE_PUTENV
+void
+ccsys_putenv (cce_destination_t L, char const * assignment)
+{
+  int	rv;
+  errno = 0;
+  rv = putenv((char *)assignment);
+  if (0 != rv) {
     cce_raise(L, cce_condition_new_errno_clear());
   }
 }
@@ -103,7 +116,7 @@ ccsys_clearenv (cce_destination_t L)
   int	rv;
   errno = 0;
   rv = clearenv();
-  if (-1 == rv) {
+  if (0 != rv) {
     cce_raise(L, cce_condition_new_errno_clear());
   }
 }

@@ -133,7 +133,7 @@ dnl page
 
 AC_FUNC_MALLOC
 
-AC_CHECK_FUNCS([getenv setenv unsetenv clearenv])
+AC_CHECK_FUNCS([getenv setenv unsetenv putenv clearenv])
 AC_CHECK_FUNCS([mlock munlock mlockall munlockall])
 AC_CHECK_FUNCS([mmap munmap msync mprotect])
 AC_CHECK_FUNCS([getuid getgid geteuid getegid setuid seteuid setreuid setgid setegid setregid])
