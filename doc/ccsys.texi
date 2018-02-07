@@ -660,10 +660,18 @@ combination of the constants of type @objtype{ccsys_waitpid_options_enum_t};
 @end deftp
 
 
-@anchor{ccsys_sygnum_t}
+@anchor{ccsys_signum_t}
 @deftp {Semantic Type} ccsys_signum_t
 Type of exact integers representing interprocess signal numbers.  It is meant to be one of the
 constants of type @objtype{ccsys_signum_enum_t}; @ref{ccsys_signum_enum_t, Enumerated constants}.
+@end deftp
+
+
+@anchor{ccsys_getauxval_type_t}
+@deftp {Semantic Type} ccsys_getauxval_type_flags_t
+Type of exact integers representing items in the auxiliary vector.  It is meant to be one of the
+constants of type @objtype{ccsys_getauxval_type_flags_t}; @ref{ccsys_getauxval_type_flags_t,
+Enumerated constants}.
 @end deftp
 
 @c page
@@ -714,6 +722,51 @@ Expand into:
 
 
 The following symbols are defined in the header file @file{ccsys.h}.
+
+
+@EnumeratedConstant{CCSYS_AT_BASE}
+@EnumeratedConstant{CCSYS_AT_BASE_PLATFORM}
+@EnumeratedConstant{CCSYS_AT_CLKTCK}
+@EnumeratedConstant{CCSYS_AT_DCACHEBSIZE}
+@EnumeratedConstant{CCSYS_AT_EGID}
+@EnumeratedConstant{CCSYS_AT_ENTRY}
+@EnumeratedConstant{CCSYS_AT_EUID}
+@EnumeratedConstant{CCSYS_AT_EXECFD}
+@EnumeratedConstant{CCSYS_AT_EXECFN}
+@EnumeratedConstant{CCSYS_AT_FLAGS}
+@EnumeratedConstant{CCSYS_AT_FPUCW}
+@EnumeratedConstant{CCSYS_AT_GID}
+@EnumeratedConstant{CCSYS_AT_HWCAP}
+@EnumeratedConstant{CCSYS_AT_HWCAP2}
+@EnumeratedConstant{CCSYS_AT_ICACHEBSIZE}
+@EnumeratedConstant{CCSYS_AT_PAGESZ}
+@EnumeratedConstant{CCSYS_AT_PHDR}
+@EnumeratedConstant{CCSYS_AT_PHENT}
+@EnumeratedConstant{CCSYS_AT_PHNUM}
+@EnumeratedConstant{CCSYS_AT_PLATFORM}
+@EnumeratedConstant{CCSYS_AT_RANDOM}
+@EnumeratedConstant{CCSYS_AT_SECURE}
+@EnumeratedConstant{CCSYS_AT_SYSINFO}
+@EnumeratedConstant{CCSYS_AT_SYSINFO_EHDR}
+@EnumeratedConstant{CCSYS_AT_UCACHEBSIZE}
+@EnumeratedConstant{CCSYS_AT_UID}
+@anchor{ccsys_getauxval_type_flags_t}
+@deftp {Enum Typedef} ccsys_getauxval_type_flags_t
+Constants to select items from the auxiliary vector.  These constants are meant to be used as
+arguments in calls to @cfunc{ccsys_getauxval}.  It defines the following constants:
+
+@example
+CCSYS_AT_BASE           CCSYS_AT_BASE_PLATFORM  CCSYS_AT_CLKTCK
+CCSYS_AT_DCACHEBSIZE    CCSYS_AT_EGID           CCSYS_AT_ENTRY
+CCSYS_AT_EUID           CCSYS_AT_EXECFD         CCSYS_AT_EXECFN
+CCSYS_AT_FLAGS          CCSYS_AT_FPUCW          CCSYS_AT_GID
+CCSYS_AT_HWCAP          CCSYS_AT_HWCAP2         CCSYS_AT_ICACHEBSIZE
+CCSYS_AT_PAGESZ         CCSYS_AT_PHDR           CCSYS_AT_PHENT
+CCSYS_AT_PHNUM          CCSYS_AT_PLATFORM       CCSYS_AT_RANDOM
+CCSYS_AT_SECURE         CCSYS_AT_SYSINFO        CCSYS_AT_SYSINFO_EHDR
+CCSYS_AT_UCACHEBSIZE    CCSYS_AT_UID
+@end example
+@end deftp
 
 
 @EnumeratedConstant{CCSYS_PATH_MAX}
@@ -1464,6 +1517,7 @@ CCSYS_NSIG
 
 @menu
 * prog env::                    Environment variables.
+* prog auxval::                 Retrieving the auxiliary vector.
 @end menu
 
 @c page
@@ -1655,6 +1709,47 @@ if (cce_location(L)) @{
   ciao = ccsys_getenv(L, "CIAO");
   assert(NULL == ciao);
 
+  cce_run_cleanup_handlers(L);
+@}
+@end example
+
+@c page
+@node prog auxval
+@section Retrieving the auxiliary vector
+
+
+The following symbols are defined in the header file @file{ccsys.h}.
+
+
+@deftypefun {unsigned long} ccsys_getauxval (cce_destination_t @var{L}, ccsys_getauxval_type_t @var{type})
+Wrapper for @cfunc{getauxval}; @manpage{getauxval, Retrieving the auxiliary vector}.
+
+@quotation
+@strong{NOTE} This function is a @gnu{} C Library extension.
+@end quotation
+@end deftypefun
+
+
+As usage example of @cfunc{ccsys_getauxval} see the following code.
+
+@example
+if (cce_location(L)) @{
+  if (cce_condition_is_errno(cce_condition(L)) &&
+      (CCSYS_ENOENT ==
+        cce_ref_condition_errno_errnum(cce_condition(L)))) @{
+    /* The item is not in the auxiliary vector.  Fine. */
+    cce_run_cleanup_handlers(L);
+  @} else @{
+    cce_run_error_handlers_raise(L, upper_L);
+  @}
+@} else @{
+  ccsys_getauxval_type_t  type;
+  unsigned long           rv;
+
+  type.data = CCSYS_AT_BASE;
+  rv = ccsys_getauxval(L, type);
+
+  fprintf(stderr, "AT_BASE=%lu\n", rv);
   cce_run_cleanup_handlers(L);
 @}
 @end example

@@ -31,9 +31,9 @@
  ** ----------------------------------------------------------------- */
 
 #include "ccsys-internals.h"
-/* #ifdef HAVE_DIRENT_H */
-/* #  include <dirent.h> */
-/* #endif */
+#ifdef HAVE_SYS_AUXV_H
+#  include <sys/auxv.h>
+#endif
 
 
 /** --------------------------------------------------------------------
@@ -118,6 +118,26 @@ ccsys_clearenv (cce_destination_t L)
   rv = clearenv();
   if (0 != rv) {
     cce_raise(L, cce_condition_new_errno_clear());
+  }
+}
+#endif
+
+
+/** --------------------------------------------------------------------
+ ** Basic system/program interface: retrieving the auxiliary vector.
+ ** ----------------------------------------------------------------- */
+
+#ifdef HAVE_GETAUXVAL
+unsigned long
+ccsys_getauxval (cce_destination_t L, ccsys_getauxval_type_t type)
+{
+  unsigned long		rv;
+  errno = 0;
+  rv = getauxval(type.data);
+  if ((0 == rv) && (0 != errno)) {
+    cce_raise(L, cce_condition_new_errno_clear());
+  } else {
+    return rv;
   }
 }
 #endif

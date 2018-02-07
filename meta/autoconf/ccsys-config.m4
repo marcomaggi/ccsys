@@ -133,6 +133,12 @@ AC_DEFUN([CCSYS_STDLIB_HEADER],[
 #endif
 ])
 
+AC_DEFUN([CCSYS_SYS_AUXV_HEADER],[
+#ifdef HAVE_SYS_AUXV_H
+#  include <sys/auxv.h>
+#endif
+])
+
 AC_DEFUN([CCSYS_SYS_TYPES_HEADER],[
 #ifdef HAVE_SYS_TYPES_H
 #  include <sys/types.h>
@@ -307,7 +313,8 @@ AC_DEFUN([CCSYS_MAYBE_ENUM_DEF],
    AS_VAR_SET(CCSYS_ENUM_DEF_$1)
    AS_VAR_IF(ccsys_cv_valueof_$1,[-1],
      [AS_VAR_SET(CCSYS_ENUM_DEF_$1,["/* undefined $1 */"])],
-     [AS_VAR_SET(CCSYS_ENUM_DEF_$1,["$1=$ccsys_cv_valueof_$1[],"])])
+     [AS_VAR_SET(CCSYS_ENUM_DEF_$1,["#define $1_MACRO $1
+  $1=$ccsys_cv_valueof_$1[],"])])
    AC_SUBST([CCSYS_ENUM_DEF_$1])])
 
 dnl page
