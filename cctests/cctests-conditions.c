@@ -7,7 +7,7 @@
 
 
 
-  Copyright (C) 2017 Marco Maggi <marco.maggi-ipsu@poste.it>
+  Copyright (C) 2017, 2018 Marco Maggi <marco.maggi-ipsu@poste.it>
 
   This is free software; you  can redistribute it and/or modify it under
   the terms of the GNU Lesser General Public License as published by the
@@ -133,6 +133,44 @@ cce_condition_t const *
 cctests_condition_new_success (void)
 {
   return (cce_condition_t *)&cctests_condition_success_stru;
+}
+
+
+/** --------------------------------------------------------------------
+ ** Exceptional condition descriptor: test skipped.
+ ** ----------------------------------------------------------------- */
+
+static cce_condition_static_message_fun_t	cctests_condition_static_message_skipped;
+
+static cctests_descriptor_skipped_t const cctests_descriptor_skipped_stru = {
+  .descriptor.parent		= &cctests_descriptor_base_stru.descriptor,
+  .descriptor.delete		= NULL,
+  .descriptor.final		= NULL,
+  .descriptor.static_message	= cctests_condition_static_message_skipped
+};
+
+cctests_descriptor_skipped_t const * const cctests_descriptor_skipped_ptr = &cctests_descriptor_skipped_stru;
+
+/* This struct type has no dynamic fields, so there is only one instance
+   of this struct type.  We allocate it statically. */
+static cctests_condition_skipped_t const cctests_condition_skipped_stru = {
+  .base.root.condition.descriptor	= &cctests_descriptor_skipped_stru.descriptor
+};
+
+/* ------------------------------------------------------------------ */
+
+char const *
+cctests_condition_static_message_skipped (cce_condition_t const * C CCTESTS_UNUSED)
+{
+  return "CCTests test skipped";
+}
+
+/* ------------------------------------------------------------------ */
+
+cce_condition_t const *
+cctests_condition_new_skipped (void)
+{
+  return (cce_condition_t *)&cctests_condition_skipped_stru;
 }
 
 

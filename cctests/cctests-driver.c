@@ -247,6 +247,13 @@ cctests_p_run (char const * const test_func_name, cctests_fun_t * const fun)
     if (cce_location(L)) {
       if (cctests_condition_is_success(cce_condition(L))) {
 	cctests_successful_func = true;
+      } else if (cctests_condition_is_skipped(cce_condition(L))) {
+	cctests_successful_func = true;
+	if (cctests_log_stream_isatty()) {
+	  fprintf(cctests_log_stream, "CCTests: \033[36;1mskipped\033[0m test function: %s\n", test_func_name);
+	} else {
+	  fprintf(cctests_log_stream, "CCTests: skipped test function: %s\n", test_func_name);
+	}
       } else if (cctests_condition_is_signal(cce_condition(L))) {
 	cctests_all_test_passed  = false;
 	cctests_successful_group = false;

@@ -108,6 +108,7 @@ typedef void cctests_fun_t (cce_destination_t L);
 
 CCTESTS_STRUCT_TYPEDEF(cctests_descriptor_base_t);
 CCTESTS_STRUCT_TYPEDEF(cctests_descriptor_success_t);
+CCTESTS_STRUCT_TYPEDEF(cctests_descriptor_skipped_t);
 CCTESTS_STRUCT_TYPEDEF(cctests_descriptor_failure_t);
 CCTESTS_STRUCT_TYPEDEF(cctests_descriptor_assertion_t);
 CCTESTS_STRUCT_TYPEDEF(cctests_descriptor_unreachable_t);
@@ -124,6 +125,7 @@ CCTESTS_STRUCT_TYPEDEF(cctests_descriptor_regex_compilation_error_t);
 
 CCTESTS_STRUCT_TYPEDEF(cctests_condition_base_t);
 CCTESTS_STRUCT_TYPEDEF(cctests_condition_success_t);
+CCTESTS_STRUCT_TYPEDEF(cctests_condition_skipped_t);
 CCTESTS_STRUCT_TYPEDEF(cctests_condition_failure_t);
 CCTESTS_STRUCT_TYPEDEF(cctests_condition_assertion_t);
 CCTESTS_STRUCT_TYPEDEF(cctests_condition_unreachable_t);
@@ -216,6 +218,38 @@ static inline bool
 cctests_condition_is_success (cce_condition_t const * C)
 {
   return cce_is_condition(C, &(cctests_descriptor_success_ptr->descriptor));
+}
+
+
+/** --------------------------------------------------------------------
+ ** Condition objects: test skipped.
+ ** ----------------------------------------------------------------- */
+
+struct cctests_descriptor_skipped_t {
+  cce_descriptor_t	descriptor;
+};
+
+struct cctests_condition_skipped_t {
+  cctests_condition_base_t	base;
+};
+
+cctests_decl cctests_descriptor_skipped_t const * const cctests_descriptor_skipped_ptr;
+
+__attribute__((__nonnull__((1)),,__always_inline__))
+static inline void
+cctests_condition_init_skipped (cctests_condition_skipped_t * C)
+{
+  cctests_condition_init_base(&(C->base));
+}
+
+cctests_decl cce_condition_t const * cctests_condition_new_skipped (void)
+  __attribute__((__const__,__pure__,__returns_nonnull__));
+
+__attribute__((__pure__,__nonnull__(1),__always_inline__))
+static inline bool
+cctests_condition_is_skipped (cce_condition_t const * C)
+{
+  return cce_is_condition(C, &(cctests_descriptor_skipped_ptr->descriptor));
 }
 
 
@@ -563,6 +597,13 @@ cctests_decl bool cctests_latest_func_completed_successfully (void);
  ** ----------------------------------------------------------------- */
 
 cctests_decl cce_destination_t	cctests_location;
+
+__attribute__((__always_inline__))
+static inline void
+cctests_skip (void)
+{
+  cce_raise(cctests_location, cctests_condition_new_skipped());
+}
 
 #define CCTESTS_GET_ASSERT_MACRO(_1,_2,NAME,...)	NAME
 #define cctests_assert(...)	CCTESTS_GET_ASSERT_MACRO(__VA_ARGS__,cctests_m_assert_ex,cctests_m_assert)(__VA_ARGS__)
