@@ -135,6 +135,7 @@ dnl page
 AC_FUNC_MALLOC
 
 AC_CHECK_FUNCS([getenv setenv unsetenv putenv clearenv])
+AC_CHECK_FUNCS([exit _exit atexit abort])
 AC_CHECK_FUNCS([mlock munlock mlockall munlockall])
 AC_CHECK_FUNCS([mmap munmap msync mprotect])
 AC_CHECK_FUNCS([getuid getgid geteuid getegid setuid seteuid setreuid setgid setegid setregid])
@@ -160,7 +161,7 @@ AC_CHECK_FUNCS([truncate ftruncate])
 AC_CHECK_FUNCS([mkstemp])
 AC_CHECK_FUNCS([bind getsockname inet_network socket shutdown socketpair connect listen accept getpeername])
 AC_CHECK_FUNCS([send recv sendto recvfrom getsockopt setsockopt])
-AC_CHECK_FUNCS([system exit _exit fork execv execve execvp waitpid])
+AC_CHECK_FUNCS([system fork execv execve execvp waitpid])
 AC_CHECK_FUNCS([isatty])
 
 dnl GNU C library stuff

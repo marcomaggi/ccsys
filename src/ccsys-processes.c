@@ -41,27 +41,6 @@
 
 
 /** --------------------------------------------------------------------
- ** Headers.
- ** ----------------------------------------------------------------- */
-
-#ifdef HAVE_EXIT
-void
-ccsys_exit (ccsys_exit_status_t status)
-{
-  exit(status.data);
-}
-#endif
-
-#ifdef HAVE__EXIT
-void
-ccsys__exit (ccsys_exit_status_t status)
-{
-  _exit(status.data);
-}
-#endif
-
-
-/** --------------------------------------------------------------------
  ** Running processes.
  ** ----------------------------------------------------------------- */
 

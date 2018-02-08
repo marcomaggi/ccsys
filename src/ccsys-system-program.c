@@ -142,4 +142,46 @@ ccsys_getauxval (cce_destination_t L, ccsys_getauxval_type_t type)
 }
 #endif
 
+
+/** --------------------------------------------------------------------
+ ** Basic system/program interface: terminating the program.
+ ** ----------------------------------------------------------------- */
+
+#ifdef HAVE_EXIT
+void
+ccsys_exit (ccsys_exit_status_t status)
+{
+  exit(status.data);
+}
+#endif
+
+#ifdef HAVE__EXIT
+void
+ccsys__exit (ccsys_exit_status_t status)
+{
+  _exit(status.data);
+}
+#endif
+
+#ifdef HAVE_ABORT
+void
+ccsys_abort (void)
+{
+  abort();
+}
+#endif
+
+#ifdef HAVE_ATEXIT
+void
+ccsys_atexit (cce_destination_t L, ccsys_atexit_func_t * func)
+{
+  int	rv;
+  errno = 0;
+  rv = atexit(func);
+  if (0 != rv) {
+    cce_raise(L, cce_condition_new_errno_clear());
+  }
+}
+#endif
+
 /* end of file */

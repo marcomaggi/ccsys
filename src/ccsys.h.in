@@ -826,7 +826,7 @@ ccsys_decl int		ccsys_version_interface_age	(void)
 
 
 /** --------------------------------------------------------------------
- ** Basic program/system interface.
+ ** Basic program/system interface: environment variables.
  ** ----------------------------------------------------------------- */
 
 ccsys_decl char const * ccsys_getenv (cce_destination_t L, char const * name)
@@ -847,10 +847,34 @@ ccsys_decl void ccsys_putenv (cce_destination_t L, char const * assignment)
 ccsys_decl void ccsys_clearenv (cce_destination_t L)
   __attribute__((__nonnull__(1)));
 
-/* ------------------------------------------------------------------ */
+
+/** --------------------------------------------------------------------
+ ** Basic program/system interface: auxiliary vector.
+ ** ----------------------------------------------------------------- */
 
 ccsys_decl unsigned long ccsys_getauxval (cce_destination_t L, ccsys_getauxval_type_t type)
   __attribute__((__nonnull__(1)));
+
+
+/** --------------------------------------------------------------------
+ ** Basic program/system interface: terminating the program.
+ ** ----------------------------------------------------------------- */
+
+ccsys_decl void ccsys_exit (ccsys_exit_status_t status)
+  __attribute__((__noreturn__));
+
+ccsys_decl void ccsys__exit (ccsys_exit_status_t status)
+  __attribute__((__noreturn__));
+
+ccsys_decl void ccsys_abort (void)
+  __attribute__((__noreturn__));
+
+/* ------------------------------------------------------------------ */
+
+typedef void ccsys_atexit_func_t (void);
+
+ccsys_decl void ccsys_atexit (cce_destination_t L, ccsys_atexit_func_t * func)
+  __attribute__((__nonnull__(1,2)));
 
 
 /** --------------------------------------------------------------------
@@ -1940,14 +1964,6 @@ ccsys_in_child_after_fork (ccsys_pid_t pid)
 {
   return (pid.data)? false : true;
 }
-
-/* ------------------------------------------------------------------ */
-
-ccsys_decl void ccsys_exit (ccsys_exit_status_t status)
-  __attribute__((__noreturn__));
-
-ccsys_decl void ccsys__exit (ccsys_exit_status_t status)
-  __attribute__((__noreturn__));
 
 /* ------------------------------------------------------------------ */
 

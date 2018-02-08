@@ -1518,6 +1518,7 @@ CCSYS_NSIG
 @menu
 * prog env::                    Environment variables.
 * prog auxval::                 Retrieving the auxiliary vector.
+* prog exit::                   Program termination.
 @end menu
 
 @c page
@@ -1753,6 +1754,40 @@ if (cce_location(L)) @{
   cce_run_cleanup_handlers(L);
 @}
 @end example
+
+@c page
+@node prog exit
+@section Program termination
+
+
+The following symbols are defined in the header file @file{ccsys.h}.
+
+
+@deftypefun void ccsys_exit (ccsys_exit_status_t @var{status})
+Wrapper for @cfunc{exit}; @manpage{exit, Cause normal process termination}.
+@end deftypefun
+
+
+@deftypefun void ccsys__exit (ccsys_exit_status_t @var{status})
+Wrapper for @cfunc{_exit}; @manpage{_exit, Terminate the calling process}.
+@end deftypefun
+
+
+@deftypefun void ccsys_abort (void)
+Wrapper for @cfunc{abort}; @manpage{abort, Cause abnormal process termination}.
+@end deftypefun
+
+
+@deftypefn {Prototype Typedef} void ccsys_atexit_func_t (void)
+Type of arguments to @cfunc{ccsys_atexit}.
+@end deftypefn
+
+
+@deftypefun void ccsys_atexit (cce_destination_t @var{L}, ccsys_atexit_func_t * @var{func})
+Wrapper for @cfunc{exit}; @manpage{exit, Register a function to be called at normal process
+termination}.
+@end deftypefun
+
 
 @c page
 @node memory
@@ -8082,29 +8117,11 @@ Wrapper for @cfunc{setsockopt}.
 
 
 @menu
-* process exiting::             Exiting the current process.
 * process system::              Executing subprocesses through the shell.
 * process forking::             Forking the current process.
 * process executing::           Executing a subprocess.
 * process waiting::             Waiting for a subprocess.
 @end menu
-
-@c page
-@node process exiting
-@section Exiting the current process
-
-
-The following symbols are defined in the header file @file{ccsys.h}.
-
-
-@deftypefun void ccsys_exit (ccsys_exit_status_t @var{status})
-Wrapper for @cfunc{exit}; @manpage{exit, Cause normal process termination}.
-@end deftypefun
-
-
-@deftypefun void ccsys__exit (ccsys_exit_status_t @var{status})
-Wrapper for @cfunc{_exit}; @manpage{_exit, Terminate the calling process}.
-@end deftypefun
 
 @c page
 @node process system
