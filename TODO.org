@@ -1,6 +1,9 @@
 * Input/output functions
 ** ioctl
 ** fcntl
+* System/program interface
+** getopts
+** argp_parse
 * Unix standard
 ** sysconf
 ** pathconf
