@@ -47,6 +47,7 @@ libccsys_la_SOURCES	= \
 	src/ccsys-processes.c		\
 	src/ccsys-networking.c		\
 	src/ccsys-time.c		\
+	src/ccsys-signals.c		\
 	src/ccsys-version.c
 
 #page
@@ -82,7 +83,8 @@ check_PROGRAMS	= \
 	tests/users-groups			\
 	tests/input-output			\
 	tests/file-system			\
-	tests/processes
+	tests/processes				\
+	tests/signals
 
 TESTS				= $(check_PROGRAMS)
 
@@ -112,6 +114,9 @@ tests_file_system_LDADD		= $(ccsys_tests_ldadd)
 
 tests_processes_CPPFLAGS	= $(ccsys_tests_cppflags)
 tests_processes_LDADD		= $(ccsys_tests_ldadd)
+
+tests_signals_CPPFLAGS		= $(ccsys_tests_cppflags)
+tests_signals_LDADD		= $(ccsys_tests_ldadd)
 
 ## --------------------------------------------------------------------
 

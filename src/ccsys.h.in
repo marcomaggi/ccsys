@@ -2066,6 +2066,31 @@ ccsys_decl void ccsys_setsockopt (cce_destination_t L, ccsys_fd_t socket, int le
 
 
 /** --------------------------------------------------------------------
+ ** Interprocess signals.
+ ** ----------------------------------------------------------------- */
+
+ccsys_decl void ccsys_signal_bub_init (void)
+  __attribute__((leaf));
+
+ccsys_decl void ccsys_signal_bub_final (void)
+  __attribute__((leaf));
+
+ccsys_decl void ccsys_signal_bub_acquire (void)
+  __attribute__((leaf));
+
+ccsys_decl bool ccsys_signal_bub_delivered (ccsys_signum_t signum)
+  __attribute__((leaf));
+
+/* ------------------------------------------------------------------ */
+
+ccsys_decl void ccsys_raise (cce_destination_t L, ccsys_signum_t signum)
+  __attribute__((__nonnull__(1)));
+
+ccsys_decl void ccsys_kill (cce_destination_t L, ccsys_pid_t pid, ccsys_signum_t signum)
+  __attribute__((__nonnull__(1)));
+
+
+/** --------------------------------------------------------------------
  ** Done.
  ** ----------------------------------------------------------------- */
 

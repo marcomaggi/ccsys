@@ -163,6 +163,7 @@ AC_CHECK_FUNCS([bind getsockname inet_network socket shutdown socketpair connect
 AC_CHECK_FUNCS([send recv sendto recvfrom getsockopt setsockopt])
 AC_CHECK_FUNCS([system fork execv execve execvp waitpid])
 AC_CHECK_FUNCS([isatty])
+AC_CHECK_FUNCS([raise kill])
 
 dnl GNU C library stuff
 

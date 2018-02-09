@@ -132,6 +132,7 @@ included in the section entitled ``@gnu{} Free Documentation License''.
 * sockets::                     Socket system calls.
 * process::                     Process system calls.
 * time::                        Time handling.
+* signals::                     Interprocess signals.
 
 Appendices
 
@@ -8350,6 +8351,104 @@ The number of seconds.
 The number of nanoseconds.
 @end table
 @end deftp
+
+@c page
+@node signals
+@chapter Interprocess signals
+
+
+@menu
+* signals bub::                 Receiving delivered signals.
+* signals raising::             Delivering signals.
+@end menu
+
+@c page
+@node signals bub
+@section Receiving delivered signals
+
+
+@value{PACKAGE} supports interprocess signals through the block/unblock (@bub{}) @api{}: a
+simplified interface to detect the arrival of signals; if it does not suit the application's model,
+we should just ignore it.
+
+The following functions operate on global variables that are private to @value{PACKAGE}.  This makes
+the @api{} multithreading @strong{unsafe}.
+
+The following symbols are defined in the header file @file{ccsys.h}.
+
+
+@deftypefun void ccsys_signal_bub_init (void)
+Initialise the @bub{} @api{}, enabling signal handling.  Block all the signals and register a
+handler for each.
+
+For all the signals, the function @cfunc{sigaction} is called with a reference to @objtype{struct
+sigaction} in which the field @code{.sa_flags} has the following flags set: @code{SA_RESTART},
+@code{SA_NOCLDSTOP}.
+@end deftypefun
+
+
+@deftypefun void ccsys_signal_bub_final (void)
+Finalise the @bub{} @api{}, disabling signal handling.  Set all the handlers to @code{SIG_IGN}, then
+unblock the signals.
+@end deftypefun
+
+
+@deftypefun void ccsys_signal_bub_acquire (void)
+Unblock then block all the signals.  This causes blocked signals to be delivered.
+@end deftypefun
+
+
+@deftypefun bool ccsys_signal_bub_delivered (ccsys_signum_t @var{signum})
+Return @true{} if the signal @var{signum} was delivered to this process since the last call to
+@cfunc{ccsys_signal_bub_acquire}, @cfunc{ccsys_signal_bub_final} or
+@cfunc{ccsys_signal_bub_delivered} with this value of @var{signum}.  Calling this function clears
+the internal flag for signal @var{signum}.  If the return value is @false{}: the signal was not
+delivered.
+
+@strong{NOTE} We need to remember that it is not possible to reliably determine the number of
+signals of a kind sent to a process, because in some cases multiple signals are merged together.
+@end deftypefun
+
+
+As usage example of the @bub{} @api{} see the following code.
+
+@example
+cce_location_t        L[1];
+
+ccsys_signal_bub_init();
+
+if (cce_location(L)) @{
+  cce_run_error_handlers_final(L);
+@} else @{
+  ccsys_signum_t      signum;
+  bool                flag;
+
+  signum.data = CCSYS_SIGUSR1;
+  ccsys_raise(L, signum);
+  ccsys_signal_bub_acquire();
+  flag = ccsys_signal_bub_delivered(signum);
+  cctests_assert(L, true == flag);
+
+  cce_run_cleanup_handlers(L);
+@}
+@end example
+
+@c page
+@node signals raising
+@section Delivering signals
+
+
+The following symbols are defined in the header file @file{ccsys.h}.
+
+
+@deftypefun void ccsys_raise (cce_destination_t @var{L}, ccsys_signum_t @var{signum})
+Wrapper for @cfunc{raise}, @manpage{raise, Send a signal to the caller}.
+@end deftypefun
+
+
+@deftypefun void ccsys_kill (cce_destination_t @var{L}, ccsys_pid_t @var{pid}, ccsys_signum_t @var{signum})
+Wrapper for @cfunc{kill}, @manpage{kill, Send a signal to a process}.
+@end deftypefun
 
 @c page
 @c ------------------------------------------------------------
