@@ -8132,7 +8132,7 @@ The following symbols are defined in the header file @file{ccsys.h}.
 
 
 @deftypefun int ccsys_system (cce_destination_t @var{L}, char const * @var{command})
-Wrapper for @cfunc{system}.
+Wrapper for @cfunc{system}; @manpage{system, Execute a shell command}.
 @end deftypefun
 
 @c page
