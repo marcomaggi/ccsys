@@ -48,6 +48,7 @@ libccsys_la_SOURCES	= \
 	src/ccsys-networking.c		\
 	src/ccsys-time.c		\
 	src/ccsys-signals.c		\
+	src/ccsys-sleeping.c		\
 	src/ccsys-version.c
 
 #page

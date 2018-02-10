@@ -619,9 +619,16 @@ cctests_decl void cctests_p_assert (cce_destination_t L, char const * const expr
  ** Calling a function in a subprocess.
  ** ----------------------------------------------------------------- */
 
+typedef void cctests_parent_process_function_t (cce_destination_t L, int64_t child_pid);
 typedef void cctests_child_process_function_t (cce_destination_t L);
 
-cctests_decl void cctests_call_in_forked_process (cce_destination_t L, cctests_child_process_function_t * child_function);
+cctests_decl void cctests_call_in_forked_process (cce_destination_t L, cctests_child_process_function_t * child_function)
+  __attribute__((__nonnull__(1,2)));
+
+cctests_decl void cctests_with_parent_and_child_process (cce_destination_t L,
+							 cctests_parent_process_function_t * parent_function,
+							 cctests_child_process_function_t * child_function)
+  __attribute__((__nonnull__(1,2,3)));
 
 
 /** --------------------------------------------------------------------

@@ -133,6 +133,7 @@ included in the section entitled ``@gnu{} Free Documentation License''.
 * process::                     Process system calls.
 * time::                        Time handling.
 * signals::                     Interprocess signals.
+* sleeping::                    Sleeping.
 
 Appendices
 
@@ -8448,6 +8449,18 @@ Wrapper for @cfunc{raise}, @manpage{raise, Send a signal to the caller}.
 
 @deftypefun void ccsys_kill (cce_destination_t @var{L}, ccsys_pid_t @var{pid}, ccsys_signum_t @var{signum})
 Wrapper for @cfunc{kill}, @manpage{kill, Send a signal to a process}.
+@end deftypefun
+
+@c page
+@node sleeping
+@chapter Sleeping
+
+
+The following symbols are defined in the header file @file{ccsys.h}.
+
+
+@deftypefun ccsys_seconds_t ccsys_sleep (ccsys_seconds_t @var{seconds})
+Wrapper for @cfunc{sleep}; @manpage{sleep, Sleep for the specified number of seconds}.
 @end deftypefun
 
 @c page

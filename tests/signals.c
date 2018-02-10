@@ -119,6 +119,57 @@ test_1_3 (cce_destination_t upper_L)
 }
 
 
+/** --------------------------------------------------------------------
+ ** Interprocess signals: sending signals.
+ ** ----------------------------------------------------------------- */
+
+static void
+test_2_1_parent (cce_destination_t L, int64_t child_pid)
+{
+  ccsys_pid_t		pid = { .data = child_pid };
+  ccsys_signum_t	signum;
+
+  signum.data = CCSYS_SIGUSR1;
+  ccsys_kill(L, pid, signum);
+}
+
+static void
+test_2_1_child (cce_destination_t L)
+{
+  {
+    ccsys_seconds_t	one = { .data = 1 };
+    ccsys_sleep(one);
+  }
+  {
+    ccsys_signum_t	signum;
+    bool		flag;
+
+    signum.data = CCSYS_SIGUSR1;
+    ccsys_signal_bub_acquire();
+    flag = ccsys_signal_bub_delivered(signum);
+    cctests_assert(L, true == flag);
+  }
+}
+
+void
+test_2_1 (cce_destination_t upper_L)
+/* Send a signal to a subprocess". */
+{
+#if (defined HAVE_SIGNAL_H)
+  cce_location_t	L[1];
+
+  if (cce_location(L)) {
+    cce_run_error_handlers_raise(L, upper_L);
+  } else {
+    cctests_with_parent_and_child_process(L, test_2_1_parent, test_2_1_child);
+    cce_run_cleanup_handlers(L);
+  }
+#else
+  cctests_skip();
+#endif
+}
+
+
 int
 main (void)
 {
@@ -130,6 +181,12 @@ main (void)
       cctests_run(test_1_1);
       cctests_run(test_1_2);
       cctests_run(test_1_3);
+    }
+    cctests_end_group();
+
+    cctests_begin_group("sending signals");
+    {
+      cctests_run(test_2_1);
     }
     cctests_end_group();
   }
