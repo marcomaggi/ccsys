@@ -35,6 +35,9 @@
 #ifdef HAVE_UNISTD_H
 #  include <unistd.h>
 #endif
+#ifdef HAVE_TIME_H
+#  include <time.h>
+#endif
 
 
 /** --------------------------------------------------------------------
@@ -50,6 +53,42 @@ ccsys_sleep (ccsys_seconds_t seconds)
   rv = sleep(ccsys_dref(seconds));
   leftover.data = rv;
   return leftover;
+}
+#endif
+
+#ifdef HAVE_NANOSLEEP
+ccsys_timespec_t
+ccsys_nanosleep (cce_destination_t L, ccsys_timespec_t const requested)
+{
+  struct timespec	requested_ts = {
+    .tv_sec	= (time_t) ccsys_lref(requested.seconds),
+    .tv_nsec	=          ccsys_lref(requested.nanoseconds)
+  };
+  struct timespec	leftover_ts  = {
+    .tv_sec	= (time_t) 0,
+    .tv_nsec	= 0
+  };
+  int			rv;
+  errno = 0;
+  rv = nanosleep(&requested_ts, &leftover_ts);
+  if (0 == rv) {
+    /* Success. */
+    ccsys_timespec_t	leftover = {
+      .seconds.data	= 0,
+      .nanoseconds.data	= 0
+    };
+    return leftover;
+  } else if ((-1 == rv) && (CCSYS_EINTR == errno)) {
+    /* The call was interrupted by a signal handler. */
+    ccsys_timespec_t	leftover = {
+      .seconds.data	= (ccsys_time_unit_t)(leftover_ts.tv_sec),
+      .nanoseconds.data	= (ccsys_time_unit_t)(leftover_ts.tv_nsec)
+    };
+    return leftover;
+  } else {
+    /* Failure. */
+    cce_raise(L, cce_condition_new_errno_clear());
+  }
 }
 #endif
 

@@ -85,7 +85,8 @@ check_PROGRAMS	= \
 	tests/input-output			\
 	tests/file-system			\
 	tests/processes				\
-	tests/signals
+	tests/signals				\
+	tests/sleeping
 
 TESTS				= $(check_PROGRAMS)
 
@@ -118,6 +119,9 @@ tests_processes_LDADD		= $(ccsys_tests_ldadd)
 
 tests_signals_CPPFLAGS		= $(ccsys_tests_cppflags)
 tests_signals_LDADD		= $(ccsys_tests_ldadd)
+
+tests_sleeping_CPPFLAGS		= $(ccsys_tests_cppflags)
+tests_sleeping_LDADD		= $(ccsys_tests_ldadd)
 
 ## --------------------------------------------------------------------
 

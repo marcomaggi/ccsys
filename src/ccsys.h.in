@@ -329,6 +329,24 @@ ccsys_p_set_nanoseconds (ccsys_nanoseconds_t * S, ccsys_time_unit_t N)
   S->data = N;
 }
 
+/* ------------------------------------------------------------------ */
+
+__attribute__((__always_inline__,__const__))
+static inline bool
+ccsys_timeval_is_zero (ccsys_timeval_t T)
+{
+  return ((0 == T.seconds.data) && (0 == T.microseconds.data))? true : false;
+}
+
+/* ------------------------------------------------------------------ */
+
+__attribute__((__always_inline__,__const__))
+static inline bool
+ccsys_timespec_is_zero (ccsys_timespec_t T)
+{
+  return ((0 == T.seconds.data) && (0 == T.nanoseconds.data))? true : false;
+}
+
 
 /** --------------------------------------------------------------------
  ** System constants.
@@ -2095,6 +2113,8 @@ ccsys_decl void ccsys_kill (cce_destination_t L, ccsys_pid_t pid, ccsys_signum_t
  ** ----------------------------------------------------------------- */
 
 ccsys_decl ccsys_seconds_t ccsys_sleep (ccsys_seconds_t seconds);
+
+ccsys_decl ccsys_timespec_t ccsys_nanosleep (cce_destination_t L, ccsys_timespec_t requested);
 
 
 /** --------------------------------------------------------------------

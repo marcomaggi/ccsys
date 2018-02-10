@@ -8353,6 +8353,16 @@ The number of nanoseconds.
 @end table
 @end deftp
 
+@c ------------------------------------------------------------------------
+
+@subsubheading Predicates
+
+
+@deftypefun bool ccsys_timeval_is_zero (ccsys_timeval_t @var{T})
+@deftypefunx bool ccsys_timespec_is_zero (ccsys_timespec_t @var{T})
+Return @true{} if @var{T} represents a zero time; otherwise return @false{}.
+@end deftypefun
+
 @c page
 @node signals
 @chapter Interprocess signals
@@ -8461,6 +8471,24 @@ The following symbols are defined in the header file @file{ccsys.h}.
 
 @deftypefun ccsys_seconds_t ccsys_sleep (ccsys_seconds_t @var{seconds})
 Wrapper for @cfunc{sleep}; @manpage{sleep, Sleep for the specified number of seconds}.
+@end deftypefun
+
+
+@deftypefun ccsys_timespec_t ccsys_nanosleep (cce_destination_t @var{L}, ccsys_timespec_t @var{requested})
+Wrapper for @cfunc{nanosleep}; @manpage{nanosleep, High--resolution sleep}.  Sleep for the
+@var{requested} amount of time, then:
+
+@itemize
+@item
+If the call was successful: return a time structure representing zero.
+
+@item
+If the call was interrupted by a signal handler: return a time structure representing the leftover
+time.
+
+@item
+If the call fails: raise an exception.
+@end itemize
 @end deftypefun
 
 @c page
