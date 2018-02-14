@@ -38,17 +38,18 @@ libccsys_la_CPPFLAGS	= $(CCEXCEPTIONS_CFLAGS)
 libccsys_la_LDFLAGS	= -version-info $(ccsys_CURRENT):$(ccsys_REVISION):$(ccsys_AGE) \
 			  $(CCEXCEPTIONS_LIBS)
 libccsys_la_SOURCES	= \
-	src/ccsys-internals.h		\
-	src/ccsys-system-program.c	\
-	src/ccsys-memory.c		\
-	src/ccsys-users-groups.c	\
-	src/ccsys-input-output.c	\
-	src/ccsys-file-system.c		\
-	src/ccsys-processes.c		\
-	src/ccsys-networking.c		\
-	src/ccsys-time.c		\
-	src/ccsys-signals.c		\
-	src/ccsys-sleeping.c		\
+	src/ccsys-internals.h			\
+	src/ccsys-system-program.c		\
+	src/ccsys-memory.c			\
+	src/ccsys-users-groups.c		\
+	src/ccsys-input-output.c		\
+	src/ccsys-file-system.c			\
+	src/ccsys-processes.c			\
+	src/ccsys-networking.c			\
+	src/ccsys-time.c			\
+	src/ccsys-signals.c			\
+	src/ccsys-sleeping.c			\
+	src/ccsys-resources-limitations.c	\
 	src/ccsys-version.c
 
 #page
@@ -86,7 +87,8 @@ check_PROGRAMS	= \
 	tests/file-system			\
 	tests/processes				\
 	tests/signals				\
-	tests/sleeping
+	tests/sleeping				\
+	tests/resources-limitations
 
 TESTS				= $(check_PROGRAMS)
 
@@ -122,6 +124,9 @@ tests_signals_LDADD		= $(ccsys_tests_ldadd)
 
 tests_sleeping_CPPFLAGS		= $(ccsys_tests_cppflags)
 tests_sleeping_LDADD		= $(ccsys_tests_ldadd)
+
+tests_resources_limitations_CPPFLAGS	= $(ccsys_tests_cppflags)
+tests_resources_limitations_LDADD	= $(ccsys_tests_ldadd)
 
 ## --------------------------------------------------------------------
 
