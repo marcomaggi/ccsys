@@ -1799,7 +1799,9 @@ termination}.
 
 @menu
 * res sysconf::                 System configuration parameters.
+* res confstr::                 Configuration string parameters.
 * res pathconf::                Configuration values for files.
+* res getrusage::               Resources usage.
 @end menu
 
 @c page
@@ -2131,6 +2133,50 @@ CCSYS__SC_IPV6                          CCSYS__SC_RAW_SOCKETS
 @end deftp
 
 @c page
+@node res confstr
+@section Configuration string parameters
+
+
+The following symbols are defined in the header file @file{ccsys.h}.
+
+
+@deftypefun long ccsys_confstr (cce_destination_t @var{L}, ccsys_confstr_flag_enum_t @var{name}, char * @var{bufptr}, size_t @var{buflen})
+Wrapper for @cfunc{confstr}; @manpage{confstr, Get configuration dependent string variables}.
+@end deftypefun
+
+
+@EnumeratedConstant{CCSYS__CS_GNU_LIBC_VERSION}
+@EnumeratedConstant{CCSYS__CS_GNU_LIBPTHREAD_VERSION}
+@EnumeratedConstant{CCSYS__CS_PATH}
+@EnumeratedConstant{CCSYS__CS_LFS_CFLAGS}
+@EnumeratedConstant{CCSYS__CS_LFS_LDFLAGS}
+@EnumeratedConstant{CCSYS__CS_LFS_LIBS}
+@EnumeratedConstant{CCSYS__CS_LFS_LINTFLAGS}
+@EnumeratedConstant{CCSYS__CS_LFS64_CFLAGS}
+@EnumeratedConstant{CCSYS__CS_LFS64_LDFLAGS}
+@EnumeratedConstant{CCSYS__CS_LFS64_LIBS}
+@EnumeratedConstant{CCSYS__CS_LFS64_LINTFLAGS}
+@anchor{ccsys_confstr_flag_enum_t}
+@deftp {Enum Typedef} ccsys_confstr_flag_enum_t
+Enumeration of constants for the function @cfunc{ccsys_confstr}.  It defines the following
+constants:
+
+@example
+CCSYS__CS_GNU_LIBC_VERSION
+CCSYS__CS_GNU_LIBPTHREAD_VERSION
+CCSYS__CS_PATH
+CCSYS__CS_LFS_CFLAGS
+CCSYS__CS_LFS_LDFLAGS
+CCSYS__CS_LFS_LIBS
+CCSYS__CS_LFS_LINTFLAGS
+CCSYS__CS_LFS64_CFLAGS
+CCSYS__CS_LFS64_LDFLAGS
+CCSYS__CS_LFS64_LIBS
+CCSYS__CS_LFS64_LINTFLAGS
+@end example
+@end deftp
+
+@c page
 @node res pathconf
 @section Configuration values for files
 
@@ -2181,6 +2227,224 @@ CCSYS__PC_REC_MAX_XFER_SIZE     CCSYS__PC_REC_MIN_XFER_SIZE
 CCSYS__PC_REC_XFER_ALIGN
 @end example
 @end deftp
+
+@c page
+@node res getrusage
+@section Resources usage
+
+
+@deftp {Struct Typedef} ccsys_rusage_t
+Wrapper for @objtype{struct rusage}.
+@end deftp
+
+
+@deftypefun void ccsys_getrusage (cce_destination_t @var{L}, ccsys_getrusage_who_enum_t @var{who}, ccsys_rusage_t * @var{S})
+Wrapper for @cfunc{getrusage}; @manpage{getrusage, Get resources usage}.
+@end deftypefun
+
+
+@EnumeratedConstant{CCSYS_RUSAGE_SELF}
+@EnumeratedConstant{CCSYS_RUSAGE_CHILDREN}
+@EnumeratedConstant{CCSYS_RUSAGE_THREAD}
+@anchor{ccsys_getrusage_who_enum_t}
+@deftp {Enum Typedef} ccsys_getrusage_who_enum_t
+Enumeration of constants for the function @cfunc{ccsys_getrusage}.  It defines the following
+constants:
+
+@example
+CCSYS_RUSAGE_SELF
+CCSYS_RUSAGE_CHILDREN
+CCSYS_RUSAGE_THREAD
+@end example
+@end deftp
+
+@c ------------------------------------------------------------------------
+
+@subsubheading Feature macros
+
+
+@defmac CCSYS_HAVE_STRUCT_RUSAGE_RU_UTIME
+Always defined.  Expands to @code{1} if @objtype{struct rusage} has the field @code{ru_utime};
+otherwise it expands to @code{0}.
+@end defmac
+
+
+@defmac CCSYS_HAVE_STRUCT_RUSAGE_RU_STIME
+Always defined.  Expands to @code{1} if @objtype{struct rusage} has the field @code{ru_stime};
+otherwise it expands to @code{0}.
+@end defmac
+
+
+@defmac CCSYS_HAVE_STRUCT_RUSAGE_RU_MAXRSS
+Always defined.  Expands to @code{1} if @objtype{struct rusage} has the field @code{ru_maxrss};
+otherwise it expands to @code{0}.
+@end defmac
+
+
+@defmac CCSYS_HAVE_STRUCT_RUSAGE_RU_IXRSS
+Always defined.  Expands to @code{1} if @objtype{struct rusage} has the field @code{ru_ixrss};
+otherwise it expands to @code{0}.
+@end defmac
+
+
+@defmac CCSYS_HAVE_STRUCT_RUSAGE_RU_IDRSS
+Always defined.  Expands to @code{1} if @objtype{struct rusage} has the field @code{ru_idrss};
+otherwise it expands to @code{0}.
+@end defmac
+
+
+@defmac CCSYS_HAVE_STRUCT_RUSAGE_RU_ISRSS
+Always defined.  Expands to @code{1} if @objtype{struct rusage} has the field @code{ru_isrss};
+otherwise it expands to @code{0}.
+@end defmac
+
+
+@defmac CCSYS_HAVE_STRUCT_RUSAGE_RU_MINFLT
+Always defined.  Expands to @code{1} if @objtype{struct rusage} has the field @code{ru_minflt};
+otherwise it expands to @code{0}.
+@end defmac
+
+
+@defmac CCSYS_HAVE_STRUCT_RUSAGE_RU_MAJFLT
+Always defined.  Expands to @code{1} if @objtype{struct rusage} has the field @code{ru_majflt};
+otherwise it expands to @code{0}.
+@end defmac
+
+
+@defmac CCSYS_HAVE_STRUCT_RUSAGE_RU_NSWAP
+Always defined.  Expands to @code{1} if @objtype{struct rusage} has the field @code{ru_nswap};
+otherwise it expands to @code{0}.
+@end defmac
+
+
+@defmac CCSYS_HAVE_STRUCT_RUSAGE_RU_INBLOCK
+Always defined.  Expands to @code{1} if @objtype{struct rusage} has the field @code{ru_inblock};
+otherwise it expands to @code{0}.
+@end defmac
+
+
+@defmac CCSYS_HAVE_STRUCT_RUSAGE_RU_OUBLOCK
+Always defined.  Expands to @code{1} if @objtype{struct rusage} has the field @code{ru_oublock};
+otherwise it expands to @code{0}.
+@end defmac
+
+
+@defmac CCSYS_HAVE_STRUCT_RUSAGE_RU_MSGSND
+Always defined.  Expands to @code{1} if @objtype{struct rusage} has the field @code{ru_msgsnd};
+otherwise it expands to @code{0}.
+@end defmac
+
+
+@defmac CCSYS_HAVE_STRUCT_RUSAGE_RU_MSGRCV
+Always defined.  Expands to @code{1} if @objtype{struct rusage} has the field @code{ru_msgrcv};
+otherwise it expands to @code{0}.
+@end defmac
+
+
+@defmac CCSYS_HAVE_STRUCT_RUSAGE_RU_NSIGNALS
+Always defined.  Expands to @code{1} if @objtype{struct rusage} has the field @code{ru_nsignals};
+otherwise it expands to @code{0}.
+@end defmac
+
+
+@defmac CCSYS_HAVE_STRUCT_RUSAGE_RU_NVCSW
+Always defined.  Expands to @code{1} if @objtype{struct rusage} has the field @code{ru_nvcsw};
+otherwise it expands to @code{0}.
+@end defmac
+
+
+@defmac CCSYS_HAVE_STRUCT_RUSAGE_RU_NIVCSW
+Always defined.  Expands to @code{1} if @objtype{struct rusage} has the field @code{ru_nivcsw};
+otherwise it expands to @code{0}.
+@end defmac
+
+@c ------------------------------------------------------------------------
+
+@subsubheading Field accessors
+
+
+The following field accessors are defined only if @objtype{struct rusage} has the associated field;
+otherwise they are not implemented.
+
+
+@deftypefun ccsys_timeval_t ccsys_ref_rusage_ru_utime (ccsys_rusage_t const * @var{S})
+Getter for the field @code{ru_utime} of @var{S}.
+@end deftypefun
+
+
+@deftypefun ccsys_timeval_t ccsys_ref_rusage_ru_stime (ccsys_rusage_t const * @var{S})
+Getter for the field @code{ru_stime} of @var{S}.
+@end deftypefun
+
+
+@deftypefun long ccsys_ref_rusage_ru_maxrss (ccsys_rusage_t const * @var{S})
+Getter for the field @code{ru_maxrss} of @var{S}.
+@end deftypefun
+
+
+@deftypefun long ccsys_ref_rusage_ru_ixrss (ccsys_rusage_t const * @var{S})
+Getter for the field @code{ru_ixrss} of @var{S}.
+@end deftypefun
+
+
+@deftypefun long ccsys_ref_rusage_ru_idrss (ccsys_rusage_t const * @var{S})
+Getter for the field @code{ru_idrss} of @var{S}.
+@end deftypefun
+
+
+@deftypefun long ccsys_ref_rusage_ru_isrss (ccsys_rusage_t const * @var{S})
+Getter for the field @code{ru_isrss} of @var{S}.
+@end deftypefun
+
+
+@deftypefun long ccsys_ref_rusage_ru_minflt (ccsys_rusage_t const * @var{S})
+Getter for the field @code{ru_minflt} of @var{S}.
+@end deftypefun
+
+
+@deftypefun long ccsys_ref_rusage_ru_majflt (ccsys_rusage_t const * @var{S})
+Getter for the field @code{ru_majflt} of @var{S}.
+@end deftypefun
+
+
+@deftypefun long ccsys_ref_rusage_ru_nswap (ccsys_rusage_t const * @var{S})
+Getter for the field @code{ru_nswap} of @var{S}.
+@end deftypefun
+
+
+@deftypefun long ccsys_ref_rusage_ru_inblock (ccsys_rusage_t const * @var{S})
+Getter for the field @code{ru_inblock} of @var{S}.
+@end deftypefun
+
+
+@deftypefun long ccsys_ref_rusage_ru_oublock (ccsys_rusage_t const * @var{S})
+Getter for the field @code{ru_oublock} of @var{S}.
+@end deftypefun
+
+
+@deftypefun long ccsys_ref_rusage_ru_msgsnd (ccsys_rusage_t const * @var{S})
+Getter for the field @code{ru_msgsnd} of @var{S}.
+@end deftypefun
+
+
+@deftypefun long ccsys_ref_rusage_ru_msgrcv (ccsys_rusage_t const * @var{S})
+Getter for the field @code{ru_msgrcv} of @var{S}.
+@end deftypefun
+
+
+@deftypefun long ccsys_ref_rusage_ru_nsignals (ccsys_rusage_t const * @var{S})
+Getter for the field @code{ru_nsignals} of @var{S}.
+@end deftypefun
+
+
+@deftypefun long ccsys_ref_rusage_ru_nvcsw (ccsys_rusage_t const * @var{S})
+Getter for the field @code{ru_nvcsw} of @var{S}.
+@end deftypefun
+
+
+@deftypefun long ccsys_ref_rusage_ru_nivcsw (ccsys_rusage_t const * @var{S})
+Getter for the field @code{ru_nivcsw} of @var{S}.
+@end deftypefun
 
 @c page
 @node memory

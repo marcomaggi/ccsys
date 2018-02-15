@@ -157,6 +157,12 @@ AC_DEFUN([CCSYS_SYS_UIO_HEADER],[
 #endif
 ])
 
+AC_DEFUN([CCSYS_SYS_RESOURCE_HEADER],[
+#ifdef HAVE_SYS_RESOURCE_H
+#  include <sys/resource.h>
+#endif
+])
+
 AC_DEFUN([CCSYS_SYS_STAT_HEADER],[
 #ifdef HAVE_SYS_STAT_H
 #  include <sys/stat.h>
