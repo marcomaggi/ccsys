@@ -2233,6 +2233,9 @@ CCSYS__PC_REC_XFER_ALIGN
 @section Resources usage
 
 
+The following symbols are defined in the header file @file{ccsys.h}.
+
+
 @deftp {Struct Typedef} ccsys_rusage_t
 Wrapper for @objtype{struct rusage}.
 @end deftp
@@ -2258,9 +2261,19 @@ CCSYS_RUSAGE_THREAD
 @end example
 @end deftp
 
-@c ------------------------------------------------------------------------
 
-@subsubheading Feature macros
+@menu
+* res getrusage features::      Feature macros for @objtype{ccsys_rusage_t}.
+* res getrusage accessors::     Field accessors for @objtype{ccsys_rusage_t}.
+* res getrusage one::           Using @cfunc{ccsys_getrusage}.
+@end menu
+
+@c page
+@node res getrusage features
+@subsection Feature macros for @objtype{ccsys_rusage_t}
+
+
+The following symbols are defined in the header file @file{ccsys.h}.
 
 
 @defmac CCSYS_HAVE_STRUCT_RUSAGE_RU_UTIME
@@ -2358,13 +2371,14 @@ Always defined.  Expands to @code{1} if @objtype{struct rusage} has the field @c
 otherwise it expands to @code{0}.
 @end defmac
 
-@c ------------------------------------------------------------------------
-
-@subsubheading Field accessors
+@c page
+@node res getrusage accessors
+@subsection Field accessors for @objtype{ccsys_rusage_t}
 
 
 The following field accessors are defined only if @objtype{struct rusage} has the associated field;
-otherwise they are not implemented.
+otherwise they are not implemented.  The following symbols are defined in the header file
+@file{ccsys.h}.
 
 
 @deftypefun ccsys_timeval_t ccsys_ref_rusage_ru_utime (ccsys_rusage_t const * @var{S})
@@ -2445,6 +2459,109 @@ Getter for the field @code{ru_nvcsw} of @var{S}.
 @deftypefun long ccsys_ref_rusage_ru_nivcsw (ccsys_rusage_t const * @var{S})
 Getter for the field @code{ru_nivcsw} of @var{S}.
 @end deftypefun
+
+@c page
+@node res getrusage one
+@subsection Using @cfunc{ccsys_getrusage}
+
+
+As usage example for @cfunc{ccsys_getrusage} see the following code.
+
+@example
+cce_location_t        L[1];
+
+if (cce_location(L)) @{
+  cce_run_error_handlers_final(L);
+@} else @{
+  ccsys_rusage_t      S[1];
+
+  ccsys_getrusage(L, CCSYS_RUSAGE_SELF, S);
+
+  if (CCSYS_HAVE_STRUCT_RUSAGE_RU_UTIME) @{
+    ccsys_timeval_t   F = ccsys_ref_rusage_ru_utime(S);
+    printf("ru_utime.tv_sec  = %lu\n", ccsys_luref(F.seconds));
+    printf("ru_utime.tv_usec = %lu\n", ccsys_luref(F.microseconds));
+  @}
+
+  if (CCSYS_HAVE_STRUCT_RUSAGE_RU_STIME) @{
+    ccsys_timeval_t   F = ccsys_ref_rusage_ru_stime(S);
+    printf("ru_stime.tv_sec  = %lu\n", ccsys_luref(F.seconds));
+    printf("ru_stime.tv_usec = %lu\n", ccsys_luref(F.microseconds));
+  @}
+
+  if (CCSYS_HAVE_STRUCT_RUSAGE_RU_MAXRSS) @{
+    long      F = ccsys_ref_rusage_ru_maxrss(S);
+    printf("ru_maxrss = %ld\n", F);
+  @}
+
+  if (CCSYS_HAVE_STRUCT_RUSAGE_RU_IXRSS) @{
+    long      F = ccsys_ref_rusage_ru_ixrss(S);
+    printf("ru_maxrss = %ld\n", F);
+  @}
+
+  if (CCSYS_HAVE_STRUCT_RUSAGE_RU_IDRSS) @{
+    long      F = ccsys_ref_rusage_ru_idrss(S);
+    printf("ru_maxrss = %ld\n", F);
+  @}
+
+  if (CCSYS_HAVE_STRUCT_RUSAGE_RU_ISRSS) @{
+    long      F = ccsys_ref_rusage_ru_isrss(S);
+    printf("ru_isrss = %ld\n", F);
+  @}
+
+  if (CCSYS_HAVE_STRUCT_RUSAGE_RU_MINFLT) @{
+    long      F = ccsys_ref_rusage_ru_minflt(S);
+    printf("ru_minflt = %ld\n", F);
+  @}
+
+  if (CCSYS_HAVE_STRUCT_RUSAGE_RU_MAJFLT) @{
+    long      F = ccsys_ref_rusage_ru_majflt(S);
+    printf("ru_majflt = %ld\n", F);
+  @}
+
+  if (CCSYS_HAVE_STRUCT_RUSAGE_RU_NSWAP) @{
+    long      F = ccsys_ref_rusage_ru_nswap(S);
+    printf("ru_nswap = %ld\n", F);
+  @}
+
+  if (CCSYS_HAVE_STRUCT_RUSAGE_RU_INBLOCK) @{
+    long      F = ccsys_ref_rusage_ru_inblock(S);
+    printf("ru_inblock = %ld\n", F);
+  @}
+
+  if (CCSYS_HAVE_STRUCT_RUSAGE_RU_OUBLOCK) @{
+    long      F = ccsys_ref_rusage_ru_oublock(S);
+    printf("ru_oublock = %ld\n", F);
+  @}
+
+  if (CCSYS_HAVE_STRUCT_RUSAGE_RU_MSGSND) @{
+    long      F = ccsys_ref_rusage_ru_msgsnd(S);
+    printf("ru_msgsnd = %ld\n", F);
+  @}
+
+  if (CCSYS_HAVE_STRUCT_RUSAGE_RU_MSGRCV) @{
+    long      F = ccsys_ref_rusage_ru_msgrcv(S);
+    printf("ru_msgrcv = %ld\n", F);
+  @}
+
+  if (CCSYS_HAVE_STRUCT_RUSAGE_RU_NSIGNALS) @{
+    long      F = ccsys_ref_rusage_ru_nsignals(S);
+    printf("ru_nsignals = %ld\n", F);
+  @}
+
+  if (CCSYS_HAVE_STRUCT_RUSAGE_RU_NVCSW) @{
+    long      F = ccsys_ref_rusage_ru_nvcsw(S);
+    printf("ru_nvcsw = %ld\n", F);
+  @}
+
+  if (CCSYS_HAVE_STRUCT_RUSAGE_RU_NIVCSW) @{
+    long      F = ccsys_ref_rusage_ru_nivcsw(S);
+    printf("ru_nivcsw = %ld\n", F);
+  @}
+
+  cce_run_cleanup_handlers(L);
+@}
+@end example
 
 @c page
 @node memory
