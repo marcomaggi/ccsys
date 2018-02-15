@@ -55,4 +55,34 @@ ccsys_sysconf (cce_destination_t L, ccsys_sysconf_flag_enum_t name)
 }
 #endif
 
+#ifdef HAVE_PATHCONF
+long
+ccsys_pathconf (cce_destination_t L, char const * pathname, ccsys_pathconf_flag_enum_t name)
+{
+  long	rv;
+  errno = 0;
+  rv = pathconf(pathname, name);
+  if (-1 == rv) {
+    cce_raise(L, cce_condition_new_errno_clear());
+  } else {
+    return rv;
+  }
+}
+#endif
+
+#ifdef HAVE_FPATHCONF
+long
+ccsys_fpathconf (cce_destination_t L, ccsys_fd_t fd, ccsys_pathconf_flag_enum_t name)
+{
+  long	rv;
+  errno = 0;
+  rv = fpathconf(fd.data, name);
+  if (-1 == rv) {
+    cce_raise(L, cce_condition_new_errno_clear());
+  } else {
+    return rv;
+  }
+}
+#endif
+
 /* end of file */

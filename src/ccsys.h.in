@@ -1106,9 +1106,39 @@ enum ccsys_sysconf_flag_enum_t {
 @CCSYS_ENUM_DEF_CCSYS__SC_XOPEN_XPG4@
 };
 
-typedef enum ccsys_sysconf_flag_enum_t		ccsys_sysconf_flag_enum_t;
+enum ccsys_pathconf_flag_enum_t {
+@CCSYS_ENUM_DEF_CCSYS__PC_LINK_MAX@
+@CCSYS_ENUM_DEF_CCSYS__PC_MAX_CANON@
+@CCSYS_ENUM_DEF_CCSYS__PC_MAX_INPUT@
+@CCSYS_ENUM_DEF_CCSYS__PC_NAME_MAX@
+@CCSYS_ENUM_DEF_CCSYS__PC_PATH_MAX@
+@CCSYS_ENUM_DEF_CCSYS__PC_PIPE_BUF@
+@CCSYS_ENUM_DEF_CCSYS__PC_CHOWN_RESTRICTED@
+@CCSYS_ENUM_DEF_CCSYS__PC_NO_TRUNC@
+@CCSYS_ENUM_DEF_CCSYS__PC_VDISABLE@
+@CCSYS_ENUM_DEF_CCSYS__PC_SYNC_IO@
+@CCSYS_ENUM_DEF_CCSYS__PC_ASYNC_IO@
+@CCSYS_ENUM_DEF_CCSYS__PC_PRIO_IO@
+@CCSYS_ENUM_DEF_CCSYS__PC_FILESIZEBITS@
+@CCSYS_ENUM_DEF_CCSYS__PC_REC_INCR_XFER_SIZE@
+@CCSYS_ENUM_DEF_CCSYS__PC_REC_MAX_XFER_SIZE@
+@CCSYS_ENUM_DEF_CCSYS__PC_REC_MIN_XFER_SIZE@
+@CCSYS_ENUM_DEF_CCSYS__PC_REC_XFER_ALIGN@
+};
 
-ccsys_decl long ccsys_sysconf (cce_destination_t L, ccsys_sysconf_flag_enum_t name);
+typedef enum ccsys_sysconf_flag_enum_t		ccsys_sysconf_flag_enum_t;
+typedef enum ccsys_pathconf_flag_enum_t		ccsys_pathconf_flag_enum_t;
+
+/* ------------------------------------------------------------------ */
+
+ccsys_decl long ccsys_sysconf (cce_destination_t L, ccsys_sysconf_flag_enum_t name)
+  __attribute__((__nonnull__(1)));
+
+ccsys_decl long ccsys_pathconf (cce_destination_t L, char const * pathname, ccsys_pathconf_flag_enum_t name)
+  __attribute__((__nonnull__(1,2)));
+
+ccsys_decl long ccsys_fpathconf (cce_destination_t L, ccsys_fd_t fd, ccsys_pathconf_flag_enum_t name)
+  __attribute__((__nonnull__(1)));
 
 
 /** --------------------------------------------------------------------

@@ -125,6 +125,7 @@ included in the section entitled ``@gnu{} Free Documentation License''.
 * semantic::                    Semantic types.
 * enums::                       Enumerated constants.
 * prog::                        Basic program/system interface.
+* res::                         Resources and limitations.
 * memory::                      Memory allocation, locking, mapping.
 * users::                       Users and groups system calls.
 * io::                          Input/output system calls.
@@ -1790,6 +1791,396 @@ Wrapper for @cfunc{exit}; @manpage{exit, Register a function to be called at nor
 termination}.
 @end deftypefun
 
+
+@c page
+@node res
+@chapter Resources and limitations
+
+
+@menu
+* res sysconf::                 System configuration parameters.
+* res pathconf::                Configuration values for files.
+@end menu
+
+@c page
+@node res sysconf
+@section System configuration parameters
+
+
+The following symbols are defined in the header file @file{ccsys.h}.
+
+
+@deftypefun long ccsys_sysconf (cce_destination_t @var{L}, ccsys_sysconf_flag_enum_t @var{name})
+Wrapper for @cfunc{sysconf}; @manpage{sysconf, Get configuration information at run time}.
+@end deftypefun
+
+
+@EnumeratedConstant{CCSYS__SC_ARG_MAX}
+@EnumeratedConstant{CCSYS__SC_CHILD_MAX}
+@EnumeratedConstant{CCSYS__SC_CLK_TCK}
+@EnumeratedConstant{CCSYS__SC_NGROUPS_MAX}
+@EnumeratedConstant{CCSYS__SC_OPEN_MAX}
+@EnumeratedConstant{CCSYS__SC_STREAM_MAX}
+@EnumeratedConstant{CCSYS__SC_TZNAME_MAX}
+@EnumeratedConstant{CCSYS__SC_JOB_CONTROL}
+@EnumeratedConstant{CCSYS__SC_SAVED_IDS}
+@EnumeratedConstant{CCSYS__SC_REALTIME_SIGNALS}
+@EnumeratedConstant{CCSYS__SC_PRIORITY_SCHEDULING}
+@EnumeratedConstant{CCSYS__SC_TIMERS}
+@EnumeratedConstant{CCSYS__SC_ASYNCHRONOUS_IO}
+@EnumeratedConstant{CCSYS__SC_PRIORITIZED_IO}
+@EnumeratedConstant{CCSYS__SC_SYNCHRONIZED_IO}
+@EnumeratedConstant{CCSYS__SC_FSYNC}
+@EnumeratedConstant{CCSYS__SC_MAPPED_FILES}
+@EnumeratedConstant{CCSYS__SC_MEMLOCK}
+@EnumeratedConstant{CCSYS__SC_MEMLOCK_RANGE}
+@EnumeratedConstant{CCSYS__SC_MEMORY_PROTECTION}
+@EnumeratedConstant{CCSYS__SC_MESSAGE_PASSING}
+@EnumeratedConstant{CCSYS__SC_SEMAPHORES}
+@EnumeratedConstant{CCSYS__SC_SHARED_MEMORY_OBJECTS}
+@EnumeratedConstant{CCSYS__SC_AIO_LISTIO_MAX}
+@EnumeratedConstant{CCSYS__SC_AIO_MAX}
+@EnumeratedConstant{CCSYS__SC_AIO_PRIO_DELTA_MAX}
+@EnumeratedConstant{CCSYS__SC_DELAYTIMER_MAX}
+@EnumeratedConstant{CCSYS__SC_MQ_OPEN_MAX}
+@EnumeratedConstant{CCSYS__SC_MQ_PRIO_MAX}
+@EnumeratedConstant{CCSYS__SC_VERSION}
+@EnumeratedConstant{CCSYS__SC_PAGESIZE}
+@EnumeratedConstant{CCSYS__SC_PAGE_SIZE}
+@EnumeratedConstant{CCSYS__SC_RTSIG_MAX}
+@EnumeratedConstant{CCSYS__SC_SEM_NSEMS_MAX}
+@EnumeratedConstant{CCSYS__SC_SEM_VALUE_MAX}
+@EnumeratedConstant{CCSYS__SC_SIGQUEUE_MAX}
+@EnumeratedConstant{CCSYS__SC_TIMER_MAX}
+@EnumeratedConstant{CCSYS__SC_BC_BASE_MAX}
+@EnumeratedConstant{CCSYS__SC_BC_DIM_MAX}
+@EnumeratedConstant{CCSYS__SC_BC_SCALE_MAX}
+@EnumeratedConstant{CCSYS__SC_BC_STRING_MAX}
+@EnumeratedConstant{CCSYS__SC_COLL_WEIGHTS_MAX}
+@EnumeratedConstant{CCSYS__SC_EQUIV_CLASS_MAX}
+@EnumeratedConstant{CCSYS__SC_EXPR_NEST_MAX}
+@EnumeratedConstant{CCSYS__SC_LINE_MAX}
+@EnumeratedConstant{CCSYS__SC_RE_DUP_MAX}
+@EnumeratedConstant{CCSYS__SC_CHARCLASS_NAME_MAX}
+@EnumeratedConstant{CCSYS__SC_2_VERSION}
+@EnumeratedConstant{CCSYS__SC_2_C_BIND}
+@EnumeratedConstant{CCSYS__SC_2_C_DEV}
+@EnumeratedConstant{CCSYS__SC_2_FORT_DEV}
+@EnumeratedConstant{CCSYS__SC_2_FORT_RUN}
+@EnumeratedConstant{CCSYS__SC_2_SW_DEV}
+@EnumeratedConstant{CCSYS__SC_2_LOCALEDEF}
+@EnumeratedConstant{CCSYS__SC_PII}
+@EnumeratedConstant{CCSYS__SC_PII_XTI}
+@EnumeratedConstant{CCSYS__SC_PII_SOCKET}
+@EnumeratedConstant{CCSYS__SC_PII_INTERNET}
+@EnumeratedConstant{CCSYS__SC_PII_OSI}
+@EnumeratedConstant{CCSYS__SC_POLL}
+@EnumeratedConstant{CCSYS__SC_SELECT}
+@EnumeratedConstant{CCSYS__SC_UIO_MAXIOV}
+@EnumeratedConstant{CCSYS__SC_IOV_MAX}
+@EnumeratedConstant{CCSYS__SC_PII_INTERNET_STREAM}
+@EnumeratedConstant{CCSYS__SC_PII_INTERNET_DGRAM}
+@EnumeratedConstant{CCSYS__SC_PII_OSI_COTS}
+@EnumeratedConstant{CCSYS__SC_PII_OSI_CLTS}
+@EnumeratedConstant{CCSYS__SC_PII_OSI_M}
+@EnumeratedConstant{CCSYS__SC_T_IOV_MAX}
+@EnumeratedConstant{CCSYS__SC_THREADS}
+@EnumeratedConstant{CCSYS__SC_THREAD_SAFE_FUNCTIONS}
+@EnumeratedConstant{CCSYS__SC_GETGR_R_SIZE_MAX}
+@EnumeratedConstant{CCSYS__SC_GETPW_R_SIZE_MAX}
+@EnumeratedConstant{CCSYS__SC_LOGIN_NAME_MAX}
+@EnumeratedConstant{CCSYS__SC_TTY_NAME_MAX}
+@EnumeratedConstant{CCSYS__SC_THREAD_DESTRUCTOR_ITERATIONS}
+@EnumeratedConstant{CCSYS__SC_THREAD_KEYS_MAX}
+@EnumeratedConstant{CCSYS__SC_THREAD_STACK_MIN}
+@EnumeratedConstant{CCSYS__SC_THREAD_THREADS_MAX}
+@EnumeratedConstant{CCSYS__SC_THREAD_ATTR_STACKADDR}
+@EnumeratedConstant{CCSYS__SC_THREAD_ATTR_STACKSIZE}
+@EnumeratedConstant{CCSYS__SC_THREAD_PRIORITY_SCHEDULING}
+@EnumeratedConstant{CCSYS__SC_THREAD_PRIO_INHERIT}
+@EnumeratedConstant{CCSYS__SC_THREAD_PRIO_PROTECT}
+@EnumeratedConstant{CCSYS__SC_THREAD_PROCESS_SHARED}
+@EnumeratedConstant{CCSYS__SC_NPROCESSORS_CONF}
+@EnumeratedConstant{CCSYS__SC_NPROCESSORS_ONLN}
+@EnumeratedConstant{CCSYS__SC_PHYS_PAGES}
+@EnumeratedConstant{CCSYS__SC_AVPHYS_PAGES}
+@EnumeratedConstant{CCSYS__SC_ATEXIT_MAX}
+@EnumeratedConstant{CCSYS__SC_PASS_MAX}
+@EnumeratedConstant{CCSYS__SC_XOPEN_VERSION}
+@EnumeratedConstant{CCSYS__SC_XOPEN_XCU_VERSION}
+@EnumeratedConstant{CCSYS__SC_XOPEN_UNIX}
+@EnumeratedConstant{CCSYS__SC_XOPEN_CRYPT}
+@EnumeratedConstant{CCSYS__SC_XOPEN_ENH_I18N}
+@EnumeratedConstant{CCSYS__SC_XOPEN_SHM}
+@EnumeratedConstant{CCSYS__SC_2_CHAR_TERM}
+@EnumeratedConstant{CCSYS__SC_2_C_VERSION}
+@EnumeratedConstant{CCSYS__SC_2_UPE}
+@EnumeratedConstant{CCSYS__SC_XOPEN_XPG2}
+@EnumeratedConstant{CCSYS__SC_XOPEN_XPG3}
+@EnumeratedConstant{CCSYS__SC_XOPEN_XPG4}
+@EnumeratedConstant{CCSYS__SC_CHAR_BIT}
+@EnumeratedConstant{CCSYS__SC_CHAR_MAX}
+@EnumeratedConstant{CCSYS__SC_CHAR_MIN}
+@EnumeratedConstant{CCSYS__SC_INT_MAX}
+@EnumeratedConstant{CCSYS__SC_INT_MIN}
+@EnumeratedConstant{CCSYS__SC_LONG_BIT}
+@EnumeratedConstant{CCSYS__SC_WORD_BIT}
+@EnumeratedConstant{CCSYS__SC_MB_LEN_MAX}
+@EnumeratedConstant{CCSYS__SC_NZERO}
+@EnumeratedConstant{CCSYS__SC_SSIZE_MAX}
+@EnumeratedConstant{CCSYS__SC_SCHAR_MAX}
+@EnumeratedConstant{CCSYS__SC_SCHAR_MIN}
+@EnumeratedConstant{CCSYS__SC_SHRT_MAX}
+@EnumeratedConstant{CCSYS__SC_SHRT_MIN}
+@EnumeratedConstant{CCSYS__SC_UCHAR_MAX}
+@EnumeratedConstant{CCSYS__SC_UINT_MAX}
+@EnumeratedConstant{CCSYS__SC_ULONG_MAX}
+@EnumeratedConstant{CCSYS__SC_USHRT_MAX}
+@EnumeratedConstant{CCSYS__SC_NL_ARGMAX}
+@EnumeratedConstant{CCSYS__SC_NL_LANGMAX}
+@EnumeratedConstant{CCSYS__SC_NL_MSGMAX}
+@EnumeratedConstant{CCSYS__SC_NL_NMAX}
+@EnumeratedConstant{CCSYS__SC_NL_SETMAX}
+@EnumeratedConstant{CCSYS__SC_NL_TEXTMAX}
+@EnumeratedConstant{CCSYS__SC_XBS5_ILP32_OFF32}
+@EnumeratedConstant{CCSYS__SC_XBS5_ILP32_OFFBIG}
+@EnumeratedConstant{CCSYS__SC_XBS5_LP64_OFF64}
+@EnumeratedConstant{CCSYS__SC_XBS5_LPBIG_OFFBIG}
+@EnumeratedConstant{CCSYS__SC_XOPEN_LEGACY}
+@EnumeratedConstant{CCSYS__SC_XOPEN_REALTIME}
+@EnumeratedConstant{CCSYS__SC_XOPEN_REALTIME_THREADS}
+@EnumeratedConstant{CCSYS__SC_ADVISORY_INFO}
+@EnumeratedConstant{CCSYS__SC_BARRIERS}
+@EnumeratedConstant{CCSYS__SC_BASE}
+@EnumeratedConstant{CCSYS__SC_C_LANG_SUPPORT}
+@EnumeratedConstant{CCSYS__SC_C_LANG_SUPPORT_R}
+@EnumeratedConstant{CCSYS__SC_CLOCK_SELECTION}
+@EnumeratedConstant{CCSYS__SC_CPUTIME}
+@EnumeratedConstant{CCSYS__SC_THREAD_CPUTIME}
+@EnumeratedConstant{CCSYS__SC_DEVICE_IO}
+@EnumeratedConstant{CCSYS__SC_DEVICE_SPECIFIC}
+@EnumeratedConstant{CCSYS__SC_DEVICE_SPECIFIC_R}
+@EnumeratedConstant{CCSYS__SC_FD_MGMT}
+@EnumeratedConstant{CCSYS__SC_FIFO}
+@EnumeratedConstant{CCSYS__SC_PIPE}
+@EnumeratedConstant{CCSYS__SC_FILE_ATTRIBUTES}
+@EnumeratedConstant{CCSYS__SC_FILE_LOCKING}
+@EnumeratedConstant{CCSYS__SC_FILE_SYSTEM}
+@EnumeratedConstant{CCSYS__SC_MONOTONIC_CLOCK}
+@EnumeratedConstant{CCSYS__SC_MULTI_PROCESS}
+@EnumeratedConstant{CCSYS__SC_SINGLE_PROCESS}
+@EnumeratedConstant{CCSYS__SC_NETWORKING}
+@EnumeratedConstant{CCSYS__SC_READER_WRITER_LOCKS}
+@EnumeratedConstant{CCSYS__SC_SPIN_LOCKS}
+@EnumeratedConstant{CCSYS__SC_REGEXP}
+@EnumeratedConstant{CCSYS__SC_REGEX_VERSION}
+@EnumeratedConstant{CCSYS__SC_SHELL}
+@EnumeratedConstant{CCSYS__SC_SIGNALS}
+@EnumeratedConstant{CCSYS__SC_SPAWN}
+@EnumeratedConstant{CCSYS__SC_SPORADIC_SERVER}
+@EnumeratedConstant{CCSYS__SC_THREAD_SPORADIC_SERVER}
+@EnumeratedConstant{CCSYS__SC_SYSTEM_DATABASE}
+@EnumeratedConstant{CCSYS__SC_SYSTEM_DATABASE_R}
+@EnumeratedConstant{CCSYS__SC_TIMEOUTS}
+@EnumeratedConstant{CCSYS__SC_TYPED_MEMORY_OBJECTS}
+@EnumeratedConstant{CCSYS__SC_USER_GROUPS}
+@EnumeratedConstant{CCSYS__SC_USER_GROUPS_R}
+@EnumeratedConstant{CCSYS__SC_2_PBS}
+@EnumeratedConstant{CCSYS__SC_2_PBS_ACCOUNTING}
+@EnumeratedConstant{CCSYS__SC_2_PBS_LOCATE}
+@EnumeratedConstant{CCSYS__SC_2_PBS_MESSAGE}
+@EnumeratedConstant{CCSYS__SC_2_PBS_TRACK}
+@EnumeratedConstant{CCSYS__SC_SYMLOOP_MAX}
+@EnumeratedConstant{CCSYS__SC_STREAMS}
+@EnumeratedConstant{CCSYS__SC_2_PBS_CHECKPOINT}
+@EnumeratedConstant{CCSYS__SC_V6_ILP32_OFF32}
+@EnumeratedConstant{CCSYS__SC_V6_ILP32_OFFBIG}
+@EnumeratedConstant{CCSYS__SC_V6_LP64_OFF64}
+@EnumeratedConstant{CCSYS__SC_V6_LPBIG_OFFBIG}
+@EnumeratedConstant{CCSYS__SC_HOST_NAME_MAX}
+@EnumeratedConstant{CCSYS__SC_TRACE}
+@EnumeratedConstant{CCSYS__SC_TRACE_EVENT_FILTER}
+@EnumeratedConstant{CCSYS__SC_TRACE_INHERIT}
+@EnumeratedConstant{CCSYS__SC_TRACE_LOG}
+@EnumeratedConstant{CCSYS__SC_LEVEL1_ICACHE_SIZE}
+@EnumeratedConstant{CCSYS__SC_LEVEL1_ICACHE_ASSOC}
+@EnumeratedConstant{CCSYS__SC_LEVEL1_ICACHE_LINESIZE}
+@EnumeratedConstant{CCSYS__SC_LEVEL1_DCACHE_SIZE}
+@EnumeratedConstant{CCSYS__SC_LEVEL1_DCACHE_ASSOC}
+@EnumeratedConstant{CCSYS__SC_LEVEL1_DCACHE_LINESIZE}
+@EnumeratedConstant{CCSYS__SC_LEVEL2_CACHE_SIZE}
+@EnumeratedConstant{CCSYS__SC_LEVEL2_CACHE_ASSOC}
+@EnumeratedConstant{CCSYS__SC_LEVEL2_CACHE_LINESIZE}
+@EnumeratedConstant{CCSYS__SC_LEVEL3_CACHE_SIZE}
+@EnumeratedConstant{CCSYS__SC_LEVEL3_CACHE_ASSOC}
+@EnumeratedConstant{CCSYS__SC_LEVEL3_CACHE_LINESIZE}
+@EnumeratedConstant{CCSYS__SC_LEVEL4_CACHE_SIZE}
+@EnumeratedConstant{CCSYS__SC_LEVEL4_CACHE_ASSOC}
+@EnumeratedConstant{CCSYS__SC_LEVEL4_CACHE_LINESIZE}
+@EnumeratedConstant{CCSYS__SC_IPV6}
+@EnumeratedConstant{CCSYS__SC_RAW_SOCKETS}
+@anchor{ccsys_sysconf_flag_enum_t}
+@deftp {Enum Typedef} ccsys_sysconf_flag_enum_t
+Enumeration of constants for the function @cfunc{ccsys_sysconf}.  It defines the following
+constants:
+
+@example
+CCSYS__SC_ARG_MAX                       CCSYS__SC_CHILD_MAX
+CCSYS__SC_CLK_TCK                       CCSYS__SC_NGROUPS_MAX
+CCSYS__SC_OPEN_MAX                      CCSYS__SC_STREAM_MAX
+CCSYS__SC_TZNAME_MAX                    CCSYS__SC_JOB_CONTROL
+CCSYS__SC_SAVED_IDS                     CCSYS__SC_REALTIME_SIGNALS
+CCSYS__SC_PRIORITY_SCHEDULING           CCSYS__SC_TIMERS
+CCSYS__SC_ASYNCHRONOUS_IO               CCSYS__SC_PRIORITIZED_IO
+CCSYS__SC_SYNCHRONIZED_IO               CCSYS__SC_FSYNC
+CCSYS__SC_MAPPED_FILES                  CCSYS__SC_MEMLOCK
+CCSYS__SC_MEMLOCK_RANGE                 CCSYS__SC_MEMORY_PROTECTION
+CCSYS__SC_MESSAGE_PASSING               CCSYS__SC_SEMAPHORES
+CCSYS__SC_SHARED_MEMORY_OBJECTS         CCSYS__SC_AIO_LISTIO_MAX
+CCSYS__SC_AIO_MAX                       CCSYS__SC_AIO_PRIO_DELTA_MAX
+CCSYS__SC_DELAYTIMER_MAX                CCSYS__SC_MQ_OPEN_MAX
+CCSYS__SC_MQ_PRIO_MAX                   CCSYS__SC_VERSION
+CCSYS__SC_PAGESIZE                      CCSYS__SC_PAGE_SIZE
+CCSYS__SC_RTSIG_MAX                     CCSYS__SC_SEM_NSEMS_MAX
+CCSYS__SC_SEM_VALUE_MAX                 CCSYS__SC_SIGQUEUE_MAX
+CCSYS__SC_TIMER_MAX                     CCSYS__SC_BC_BASE_MAX
+CCSYS__SC_BC_DIM_MAX                    CCSYS__SC_BC_SCALE_MAX
+CCSYS__SC_BC_STRING_MAX                 CCSYS__SC_COLL_WEIGHTS_MAX
+CCSYS__SC_EQUIV_CLASS_MAX               CCSYS__SC_EXPR_NEST_MAX
+CCSYS__SC_LINE_MAX                      CCSYS__SC_RE_DUP_MAX
+CCSYS__SC_CHARCLASS_NAME_MAX            CCSYS__SC_2_VERSION
+CCSYS__SC_2_C_BIND                      CCSYS__SC_2_C_DEV
+CCSYS__SC_2_FORT_DEV                    CCSYS__SC_2_FORT_RUN
+CCSYS__SC_2_SW_DEV                      CCSYS__SC_2_LOCALEDEF
+CCSYS__SC_PII                           CCSYS__SC_PII_XTI
+CCSYS__SC_PII_SOCKET                    CCSYS__SC_PII_INTERNET
+CCSYS__SC_PII_OSI                       CCSYS__SC_POLL
+CCSYS__SC_SELECT                        CCSYS__SC_UIO_MAXIOV
+CCSYS__SC_IOV_MAX                       CCSYS__SC_PII_INTERNET_STREAM
+CCSYS__SC_PII_INTERNET_DGRAM            CCSYS__SC_PII_OSI_COTS
+CCSYS__SC_PII_OSI_CLTS                  CCSYS__SC_PII_OSI_M
+CCSYS__SC_T_IOV_MAX                     CCSYS__SC_THREADS
+CCSYS__SC_THREAD_SAFE_FUNCTIONS         CCSYS__SC_GETGR_R_SIZE_MAX
+CCSYS__SC_GETPW_R_SIZE_MAX              CCSYS__SC_LOGIN_NAME_MAX
+CCSYS__SC_TTY_NAME_MAX                  CCSYS__SC_THREAD_DESTRUCTOR_ITERATIONS
+CCSYS__SC_THREAD_KEYS_MAX               CCSYS__SC_THREAD_STACK_MIN
+CCSYS__SC_THREAD_THREADS_MAX            CCSYS__SC_THREAD_ATTR_STACKADDR
+CCSYS__SC_THREAD_ATTR_STACKSIZE         CCSYS__SC_THREAD_PRIORITY_SCHEDULING
+CCSYS__SC_THREAD_PRIO_INHERIT           CCSYS__SC_THREAD_PRIO_PROTECT
+CCSYS__SC_THREAD_PROCESS_SHARED         CCSYS__SC_NPROCESSORS_CONF
+CCSYS__SC_NPROCESSORS_ONLN              CCSYS__SC_PHYS_PAGES
+CCSYS__SC_AVPHYS_PAGES                  CCSYS__SC_ATEXIT_MAX
+CCSYS__SC_PASS_MAX                      CCSYS__SC_XOPEN_VERSION
+CCSYS__SC_XOPEN_XCU_VERSION             CCSYS__SC_XOPEN_UNIX
+CCSYS__SC_XOPEN_CRYPT                   CCSYS__SC_XOPEN_ENH_I18N
+CCSYS__SC_XOPEN_SHM                     CCSYS__SC_2_CHAR_TERM
+CCSYS__SC_2_C_VERSION                   CCSYS__SC_2_UPE
+CCSYS__SC_XOPEN_XPG2                    CCSYS__SC_XOPEN_XPG3
+CCSYS__SC_XOPEN_XPG4                    CCSYS__SC_CHAR_BIT
+CCSYS__SC_CHAR_MAX                      CCSYS__SC_CHAR_MIN
+CCSYS__SC_INT_MAX                       CCSYS__SC_INT_MIN
+CCSYS__SC_LONG_BIT                      CCSYS__SC_WORD_BIT
+CCSYS__SC_MB_LEN_MAX                    CCSYS__SC_NZERO
+CCSYS__SC_SSIZE_MAX                     CCSYS__SC_SCHAR_MAX
+CCSYS__SC_SCHAR_MIN                     CCSYS__SC_SHRT_MAX
+CCSYS__SC_SHRT_MIN                      CCSYS__SC_UCHAR_MAX
+CCSYS__SC_UINT_MAX                      CCSYS__SC_ULONG_MAX
+CCSYS__SC_USHRT_MAX                     CCSYS__SC_NL_ARGMAX
+CCSYS__SC_NL_LANGMAX                    CCSYS__SC_NL_MSGMAX
+CCSYS__SC_NL_NMAX                       CCSYS__SC_NL_SETMAX
+CCSYS__SC_NL_TEXTMAX                    CCSYS__SC_XBS5_ILP32_OFF32
+CCSYS__SC_XBS5_ILP32_OFFBIG             CCSYS__SC_XBS5_LP64_OFF64
+CCSYS__SC_XBS5_LPBIG_OFFBIG             CCSYS__SC_XOPEN_LEGACY
+CCSYS__SC_XOPEN_REALTIME                CCSYS__SC_XOPEN_REALTIME_THREADS
+CCSYS__SC_ADVISORY_INFO                 CCSYS__SC_BARRIERS
+CCSYS__SC_BASE                          CCSYS__SC_C_LANG_SUPPORT
+CCSYS__SC_C_LANG_SUPPORT_R              CCSYS__SC_CLOCK_SELECTION
+CCSYS__SC_CPUTIME                       CCSYS__SC_THREAD_CPUTIME
+CCSYS__SC_DEVICE_IO                     CCSYS__SC_DEVICE_SPECIFIC
+CCSYS__SC_DEVICE_SPECIFIC_R             CCSYS__SC_FD_MGMT
+CCSYS__SC_FIFO                          CCSYS__SC_PIPE
+CCSYS__SC_FILE_ATTRIBUTES               CCSYS__SC_FILE_LOCKING
+CCSYS__SC_FILE_SYSTEM                   CCSYS__SC_MONOTONIC_CLOCK
+CCSYS__SC_MULTI_PROCESS                 CCSYS__SC_SINGLE_PROCESS
+CCSYS__SC_NETWORKING                    CCSYS__SC_READER_WRITER_LOCKS
+CCSYS__SC_SPIN_LOCKS                    CCSYS__SC_REGEXP
+CCSYS__SC_REGEX_VERSION                 CCSYS__SC_SHELL
+CCSYS__SC_SIGNALS                       CCSYS__SC_SPAWN
+CCSYS__SC_SPORADIC_SERVER               CCSYS__SC_THREAD_SPORADIC_SERVER
+CCSYS__SC_SYSTEM_DATABASE               CCSYS__SC_SYSTEM_DATABASE_R
+CCSYS__SC_TIMEOUTS                      CCSYS__SC_TYPED_MEMORY_OBJECTS
+CCSYS__SC_USER_GROUPS                   CCSYS__SC_USER_GROUPS_R
+CCSYS__SC_2_PBS                         CCSYS__SC_2_PBS_ACCOUNTING
+CCSYS__SC_2_PBS_LOCATE                  CCSYS__SC_2_PBS_MESSAGE
+CCSYS__SC_2_PBS_TRACK                   CCSYS__SC_SYMLOOP_MAX
+CCSYS__SC_STREAMS                       CCSYS__SC_2_PBS_CHECKPOINT
+CCSYS__SC_V6_ILP32_OFF32                CCSYS__SC_V6_ILP32_OFFBIG
+CCSYS__SC_V6_LP64_OFF64                 CCSYS__SC_V6_LPBIG_OFFBIG
+CCSYS__SC_HOST_NAME_MAX                 CCSYS__SC_TRACE
+CCSYS__SC_TRACE_EVENT_FILTER            CCSYS__SC_TRACE_INHERIT
+CCSYS__SC_TRACE_LOG                     CCSYS__SC_LEVEL1_ICACHE_SIZE
+CCSYS__SC_LEVEL1_ICACHE_ASSOC           CCSYS__SC_LEVEL1_ICACHE_LINESIZE
+CCSYS__SC_LEVEL1_DCACHE_SIZE            CCSYS__SC_LEVEL1_DCACHE_ASSOC
+CCSYS__SC_LEVEL1_DCACHE_LINESIZE        CCSYS__SC_LEVEL2_CACHE_SIZE
+CCSYS__SC_LEVEL2_CACHE_ASSOC            CCSYS__SC_LEVEL2_CACHE_LINESIZE
+CCSYS__SC_LEVEL3_CACHE_SIZE             CCSYS__SC_LEVEL3_CACHE_ASSOC
+CCSYS__SC_LEVEL3_CACHE_LINESIZE         CCSYS__SC_LEVEL4_CACHE_SIZE
+CCSYS__SC_LEVEL4_CACHE_ASSOC            CCSYS__SC_LEVEL4_CACHE_LINESIZE
+CCSYS__SC_IPV6                          CCSYS__SC_RAW_SOCKETS
+@end example
+@end deftp
+
+@c page
+@node res pathconf
+@section Configuration values for files
+
+
+The following symbols are defined in the header file @file{ccsys.h}.
+
+
+@deftypefun long ccsys_pathconf (cce_destination_t @var{L}, char const * @var{pathname}, ccsys_pathconf_flag_enum_t @var{name})
+Wrapper for @cfunc{pathconf}; @manpage{pathconf, Get configuration values for files}.
+@end deftypefun
+
+
+@deftypefun long ccsys_fpathconf (cce_destination_t @var{L}, ccsys_fd_t @var{fd}, ccsys_pathconf_flag_enum_t @var{name})
+Wrapper for @cfunc{fpathconf}; @manpage{fpathconf, Get configuration values for files}.
+@end deftypefun
+
+
+@EnumeratedConstant{CCSYS__PC_LINK_MAX}
+@EnumeratedConstant{CCSYS__PC_MAX_CANON}
+@EnumeratedConstant{CCSYS__PC_MAX_INPUT}
+@EnumeratedConstant{CCSYS__PC_NAME_MAX}
+@EnumeratedConstant{CCSYS__PC_PATH_MAX}
+@EnumeratedConstant{CCSYS__PC_PIPE_BUF}
+@EnumeratedConstant{CCSYS__PC_CHOWN_RESTRICTED}
+@EnumeratedConstant{CCSYS__PC_NO_TRUNC}
+@EnumeratedConstant{CCSYS__PC_VDISABLE}
+@EnumeratedConstant{CCSYS__PC_SYNC_IO}
+@EnumeratedConstant{CCSYS__PC_ASYNC_IO}
+@EnumeratedConstant{CCSYS__PC_PRIO_IO}
+@EnumeratedConstant{CCSYS__PC_FILESIZEBITS}
+@EnumeratedConstant{CCSYS__PC_REC_INCR_XFER_SIZE}
+@EnumeratedConstant{CCSYS__PC_REC_MAX_XFER_SIZE}
+@EnumeratedConstant{CCSYS__PC_REC_MIN_XFER_SIZE}
+@EnumeratedConstant{CCSYS__PC_REC_XFER_ALIGN}
+@deftp {Enum Typedef} ccsys_pathconf_flag_enum_t
+Enumeration of constants for the function @cfunc{ccsys_pathconf}.  It defines the following
+constants:
+
+@example
+CCSYS__PC_LINK_MAX              CCSYS__PC_MAX_CANON
+CCSYS__PC_MAX_INPUT             CCSYS__PC_NAME_MAX
+CCSYS__PC_PATH_MAX              CCSYS__PC_PIPE_BUF
+CCSYS__PC_CHOWN_RESTRICTED      CCSYS__PC_NO_TRUNC
+CCSYS__PC_VDISABLE              CCSYS__PC_SYNC_IO
+CCSYS__PC_ASYNC_IO              CCSYS__PC_PRIO_IO
+CCSYS__PC_FILESIZEBITS          CCSYS__PC_REC_INCR_XFER_SIZE
+CCSYS__PC_REC_MAX_XFER_SIZE     CCSYS__PC_REC_MIN_XFER_SIZE
+CCSYS__PC_REC_XFER_ALIGN
+@end example
+@end deftp
 
 @c page
 @node memory
