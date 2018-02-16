@@ -348,7 +348,7 @@ test_4_1 (cce_destination_t upper_L)
   {
     ccsys_dev_t	F = { .data = ++i };
     ccsys_set_stat_st_dev(&S, F);
-    cctests_assert(upper_L, i == ccsys_lref(ccsys_ref_stat_st_dev(&S)));
+    cctests_assert(upper_L, i == ccsys_ldref(ccsys_ref_stat_st_dev(&S)));
   }
 #endif
 
@@ -356,7 +356,7 @@ test_4_1 (cce_destination_t upper_L)
   {
     ccsys_ino_t	F = { .data = ++i };
     ccsys_set_stat_st_ino(&S, F);
-    cctests_assert(upper_L, i == ccsys_lref(ccsys_ref_stat_st_ino(&S)));
+    cctests_assert(upper_L, i == ccsys_ldref(ccsys_ref_stat_st_ino(&S)));
   }
 #endif
 
@@ -364,7 +364,7 @@ test_4_1 (cce_destination_t upper_L)
   {
     ccsys_stat_mode_t	F = { .data = ++i };
     ccsys_set_stat_st_mode(&S, F);
-    cctests_assert(upper_L, i == ccsys_lref(ccsys_ref_stat_st_mode(&S)));
+    cctests_assert(upper_L, i == ccsys_ldref(ccsys_ref_stat_st_mode(&S)));
   }
 #endif
 
@@ -372,7 +372,7 @@ test_4_1 (cce_destination_t upper_L)
   {
     ccsys_nlink_t	F = { .data = ++i };
     ccsys_set_stat_st_nlink(&S, F);
-    cctests_assert(upper_L, i == ccsys_lref(ccsys_ref_stat_st_nlink(&S)));
+    cctests_assert(upper_L, i == ccsys_ldref(ccsys_ref_stat_st_nlink(&S)));
   }
 #endif
 
@@ -380,7 +380,7 @@ test_4_1 (cce_destination_t upper_L)
   {
     ccsys_uid_t	F = { .data = ++i };
     ccsys_set_stat_st_uid(&S, F);
-    cctests_assert(upper_L, i == ccsys_lref(ccsys_ref_stat_st_uid(&S)));
+    cctests_assert(upper_L, i == ccsys_ldref(ccsys_ref_stat_st_uid(&S)));
   }
 #endif
 
@@ -388,7 +388,7 @@ test_4_1 (cce_destination_t upper_L)
   {
     ccsys_gid_t	F = { .data = ++i };
     ccsys_set_stat_st_gid(&S, F);
-    cctests_assert(upper_L, i == ccsys_lref(ccsys_ref_stat_st_gid(&S)));
+    cctests_assert(upper_L, i == ccsys_ldref(ccsys_ref_stat_st_gid(&S)));
   }
 #endif
 
@@ -396,7 +396,7 @@ test_4_1 (cce_destination_t upper_L)
   {
     ccsys_dev_t	F = { .data = ++i };
     ccsys_set_stat_st_rdev(&S, F);
-    cctests_assert(upper_L, i == ccsys_lref(ccsys_ref_stat_st_rdev(&S)));
+    cctests_assert(upper_L, i == ccsys_ldref(ccsys_ref_stat_st_rdev(&S)));
   }
 #endif
 
@@ -404,7 +404,7 @@ test_4_1 (cce_destination_t upper_L)
   {
     ccsys_off_t	F = { .data = ++i };
     ccsys_set_stat_st_size(&S, F);
-    cctests_assert(upper_L, i == ccsys_lref(ccsys_ref_stat_st_size(&S)));
+    cctests_assert(upper_L, i == ccsys_ldref(ccsys_ref_stat_st_size(&S)));
   }
 #endif
 
@@ -412,7 +412,7 @@ test_4_1 (cce_destination_t upper_L)
   {
     ccsys_blksize_t	F = { .data = ++i };
     ccsys_set_stat_st_blksize(&S, F);
-    cctests_assert(upper_L, i == ccsys_lref(ccsys_ref_stat_st_blksize(&S)));
+    cctests_assert(upper_L, i == ccsys_ldref(ccsys_ref_stat_st_blksize(&S)));
   }
 #endif
 
@@ -420,7 +420,7 @@ test_4_1 (cce_destination_t upper_L)
   {
     ccsys_blkcnt_t	F = { .data = ++i };
     ccsys_set_stat_st_blocks(&S, F);
-    cctests_assert(upper_L, i == ccsys_lref(ccsys_ref_stat_st_blocks(&S)));
+    cctests_assert(upper_L, i == ccsys_ldref(ccsys_ref_stat_st_blocks(&S)));
   }
 #endif
 
@@ -436,9 +436,9 @@ test_4_1 (cce_destination_t upper_L)
       fprintf(stderr, "%s: st_atime=%ld\n", __func__, T2.seconds.data);
       fprintf(stderr, "%s: st_atime_usec=%ld\n", __func__, T2.microseconds.data);
     }
-    cctests_assert(upper_L,   i == ccsys_lref(T2.seconds));
+    cctests_assert(upper_L,   i == ccsys_ldref(T2.seconds));
 #if (1 == CCSYS_HAVE_STRUCT_STAT_ST_ATIME_USEC)
-    cctests_assert(upper_L, 1+i == ccsys_lref(T2.microseconds));
+    cctests_assert(upper_L, 1+i == ccsys_ldref(T2.microseconds));
 #endif
   }
 #endif
@@ -455,9 +455,9 @@ test_4_1 (cce_destination_t upper_L)
       fprintf(stderr, "%s: st_mtime=%ld\n", __func__, T2.seconds.data);
       fprintf(stderr, "%s: st_mtime_usec=%ld\n", __func__, T2.microseconds.data);
     }
-    cctests_assert(upper_L,   i == ccsys_lref(T2.seconds));
+    cctests_assert(upper_L,   i == ccsys_ldref(T2.seconds));
 #if (1 == CCSYS_HAVE_STRUCT_STAT_ST_MTIME_USEC)
-    cctests_assert(upper_L, 1+i == ccsys_lref(T2.microseconds));
+    cctests_assert(upper_L, 1+i == ccsys_ldref(T2.microseconds));
 #endif
   }
 #endif
@@ -474,9 +474,9 @@ test_4_1 (cce_destination_t upper_L)
       fprintf(stderr, "%s: st_ctime=%ld\n", __func__, T2.seconds.data);
       fprintf(stderr, "%s: st_ctime_usec=%ld\n", __func__, T2.microseconds.data);
     }
-    cctests_assert(upper_L,   i == ccsys_lref(T2.seconds));
+    cctests_assert(upper_L,   i == ccsys_ldref(T2.seconds));
 #if (1 == CCSYS_HAVE_STRUCT_STAT_ST_CTIME_USEC)
-    cctests_assert(upper_L, 1+i == ccsys_lref(T2.microseconds));
+    cctests_assert(upper_L, 1+i == ccsys_ldref(T2.microseconds));
 #endif
   }
 #endif
@@ -518,34 +518,34 @@ test_4_2 (cce_destination_t upper_L)
 
       cctests_assert(L, true == ccsys_stat(L, filename, &S));
 #if (1 == CCSYS_HAVE_STRUCT_STAT_ST_DEV)
-      fprintf(stderr, "%s: st_dev=%lu\n", __func__, ccsys_lref(ccsys_ref_stat_st_dev(&S)));
+      fprintf(stderr, "%s: st_dev=%lu\n", __func__, ccsys_ldref(ccsys_ref_stat_st_dev(&S)));
 #endif
 #if (1 == CCSYS_HAVE_STRUCT_STAT_ST_INO)
-      fprintf(stderr, "%s: st_ino=%lu\n", __func__, ccsys_lref(ccsys_ref_stat_st_ino(&S)));
+      fprintf(stderr, "%s: st_ino=%lu\n", __func__, ccsys_ldref(ccsys_ref_stat_st_ino(&S)));
 #endif
 #if (1 == CCSYS_HAVE_STRUCT_STAT_ST_MODE)
-      fprintf(stderr, "%s: st_mode=%lu\n", __func__, ccsys_lref(ccsys_ref_stat_st_mode(&S)));
+      fprintf(stderr, "%s: st_mode=%lu\n", __func__, ccsys_ldref(ccsys_ref_stat_st_mode(&S)));
 #endif
 #if (1 == CCSYS_HAVE_STRUCT_STAT_ST_NLINK)
-      fprintf(stderr, "%s: st_nlink=%lu\n", __func__, ccsys_lref(ccsys_ref_stat_st_nlink(&S)));
+      fprintf(stderr, "%s: st_nlink=%lu\n", __func__, ccsys_ldref(ccsys_ref_stat_st_nlink(&S)));
 #endif
 #if (1 == CCSYS_HAVE_STRUCT_STAT_ST_UID)
-      fprintf(stderr, "%s: st_uid=%lu\n", __func__, ccsys_lref(ccsys_ref_stat_st_uid(&S)));
+      fprintf(stderr, "%s: st_uid=%lu\n", __func__, ccsys_ldref(ccsys_ref_stat_st_uid(&S)));
 #endif
 #if (1 == CCSYS_HAVE_STRUCT_STAT_ST_GID)
-      fprintf(stderr, "%s: st_gid=%lu\n", __func__, ccsys_lref(ccsys_ref_stat_st_gid(&S)));
+      fprintf(stderr, "%s: st_gid=%lu\n", __func__, ccsys_ldref(ccsys_ref_stat_st_gid(&S)));
 #endif
 #if (1 == CCSYS_HAVE_STRUCT_STAT_ST_RDEV)
-      fprintf(stderr, "%s: st_rdev=%lu\n", __func__, ccsys_lref(ccsys_ref_stat_st_rdev(&S)));
+      fprintf(stderr, "%s: st_rdev=%lu\n", __func__, ccsys_ldref(ccsys_ref_stat_st_rdev(&S)));
 #endif
 #if (1 == CCSYS_HAVE_STRUCT_STAT_ST_SIZE)
-      fprintf(stderr, "%s: st_size=%lu\n", __func__, ccsys_lref(ccsys_ref_stat_st_size(&S)));
+      fprintf(stderr, "%s: st_size=%lu\n", __func__, ccsys_ldref(ccsys_ref_stat_st_size(&S)));
 #endif
 #if (1 == CCSYS_HAVE_STRUCT_STAT_ST_BLKSIZE)
-      fprintf(stderr, "%s: st_blksize=%lu\n", __func__, ccsys_lref(ccsys_ref_stat_st_blksize(&S)));
+      fprintf(stderr, "%s: st_blksize=%lu\n", __func__, ccsys_ldref(ccsys_ref_stat_st_blksize(&S)));
 #endif
 #if (1 == CCSYS_HAVE_STRUCT_STAT_ST_BLOCKS)
-      fprintf(stderr, "%s: st_blocks=%lu\n", __func__, ccsys_lref(ccsys_ref_stat_st_blocks(&S)));
+      fprintf(stderr, "%s: st_blocks=%lu\n", __func__, ccsys_ldref(ccsys_ref_stat_st_blocks(&S)));
 #endif
 #if (1 == CCSYS_HAVE_STRUCT_STAT_ST_ATIME)
       {
@@ -730,34 +730,34 @@ test_4_4 (cce_destination_t upper_L)
       cctests_assert(L, true == ccsys_fstatat(L, dirfd, filename, &S, flags));
 
 #if (1 == CCSYS_HAVE_STRUCT_STAT_ST_DEV)
-      fprintf(stderr, "%s: st_dev=%lu\n", __func__, ccsys_lref(ccsys_ref_stat_st_dev(&S)));
+      fprintf(stderr, "%s: st_dev=%lu\n", __func__, ccsys_ldref(ccsys_ref_stat_st_dev(&S)));
 #endif
 #if (1 == CCSYS_HAVE_STRUCT_STAT_ST_INO)
-      fprintf(stderr, "%s: st_ino=%lu\n", __func__, ccsys_lref(ccsys_ref_stat_st_ino(&S)));
+      fprintf(stderr, "%s: st_ino=%lu\n", __func__, ccsys_ldref(ccsys_ref_stat_st_ino(&S)));
 #endif
 #if (1 == CCSYS_HAVE_STRUCT_STAT_ST_MODE)
-      fprintf(stderr, "%s: st_mode=%lu\n", __func__, ccsys_lref(ccsys_ref_stat_st_mode(&S)));
+      fprintf(stderr, "%s: st_mode=%lu\n", __func__, ccsys_ldref(ccsys_ref_stat_st_mode(&S)));
 #endif
 #if (1 == CCSYS_HAVE_STRUCT_STAT_ST_NLINK)
-      fprintf(stderr, "%s: st_nlink=%lu\n", __func__, ccsys_lref(ccsys_ref_stat_st_nlink(&S)));
+      fprintf(stderr, "%s: st_nlink=%lu\n", __func__, ccsys_ldref(ccsys_ref_stat_st_nlink(&S)));
 #endif
 #if (1 == CCSYS_HAVE_STRUCT_STAT_ST_UID)
-      fprintf(stderr, "%s: st_uid=%lu\n", __func__, ccsys_lref(ccsys_ref_stat_st_uid(&S)));
+      fprintf(stderr, "%s: st_uid=%lu\n", __func__, ccsys_ldref(ccsys_ref_stat_st_uid(&S)));
 #endif
 #if (1 == CCSYS_HAVE_STRUCT_STAT_ST_GID)
-      fprintf(stderr, "%s: st_gid=%lu\n", __func__, ccsys_lref(ccsys_ref_stat_st_gid(&S)));
+      fprintf(stderr, "%s: st_gid=%lu\n", __func__, ccsys_ldref(ccsys_ref_stat_st_gid(&S)));
 #endif
 #if (1 == CCSYS_HAVE_STRUCT_STAT_ST_RDEV)
-      fprintf(stderr, "%s: st_rdev=%lu\n", __func__, ccsys_lref(ccsys_ref_stat_st_rdev(&S)));
+      fprintf(stderr, "%s: st_rdev=%lu\n", __func__, ccsys_ldref(ccsys_ref_stat_st_rdev(&S)));
 #endif
 #if (1 == CCSYS_HAVE_STRUCT_STAT_ST_SIZE)
-      fprintf(stderr, "%s: st_size=%lu\n", __func__, ccsys_lref(ccsys_ref_stat_st_size(&S)));
+      fprintf(stderr, "%s: st_size=%lu\n", __func__, ccsys_ldref(ccsys_ref_stat_st_size(&S)));
 #endif
 #if (1 == CCSYS_HAVE_STRUCT_STAT_ST_BLKSIZE)
-      fprintf(stderr, "%s: st_blksize=%lu\n", __func__, ccsys_lref(ccsys_ref_stat_st_blksize(&S)));
+      fprintf(stderr, "%s: st_blksize=%lu\n", __func__, ccsys_ldref(ccsys_ref_stat_st_blksize(&S)));
 #endif
 #if (1 == CCSYS_HAVE_STRUCT_STAT_ST_BLOCKS)
-      fprintf(stderr, "%s: st_blocks=%lu\n", __func__, ccsys_lref(ccsys_ref_stat_st_blocks(&S)));
+      fprintf(stderr, "%s: st_blocks=%lu\n", __func__, ccsys_ldref(ccsys_ref_stat_st_blocks(&S)));
 #endif
 #if (1 == CCSYS_HAVE_STRUCT_STAT_ST_ATIME)
       {

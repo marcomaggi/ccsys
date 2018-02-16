@@ -130,7 +130,7 @@ extern "C" {
 
 #define ccsys_dref(D)		((int)		((D).data))
 #define ccsys_uref(D)		((unsigned int)	((D).data))
-#define ccsys_lref(D)		((long)		((D).data))
+#define ccsys_ldref(D)		((long)		((D).data))
 #define ccsys_luref(D)		((unsigned long)((D).data))
 
 /* ------------------------------------------------------------------ */
@@ -164,6 +164,7 @@ typedef struct ccsys_open_flags_t		ccsys_open_flags_t;
 typedef struct ccsys_open_mode_t		ccsys_open_mode_t;
 typedef struct ccsys_pid_t			ccsys_pid_t;
 typedef struct ccsys_renameat2_flags_t		ccsys_renameat2_flags_t;
+typedef struct ccsys_rlim_t			ccsys_rlim_t;
 typedef struct ccsys_scatter_gather_flags_t	ccsys_scatter_gather_flags_t;
 typedef struct ccsys_signum_t			ccsys_signum_t;
 typedef struct ccsys_socket_namespace_t		ccsys_socket_namespace_t;
@@ -207,6 +208,7 @@ struct ccsys_open_flags_t		{ int				data; };
 struct ccsys_open_mode_t		{ @CCSYS_TYPE_MODE_T@		data; };
 struct ccsys_pid_t			{ @CCSYS_TYPE_PID_T@		data; };
 struct ccsys_renameat2_flags_t		{ int				data; };
+struct ccsys_rlim_t			{ @CCSYS_TYPE_RLIM_T@		data; };
 struct ccsys_scatter_gather_flags_t	{ @CCSYS_TYPE_PID_T@		data; };
 struct ccsys_signum_t			{ int				data; };
 struct ccsys_socket_namespace_t		{ int				data; };
@@ -239,6 +241,7 @@ typedef struct ccsys_hostent_t			ccsys_hostent_t;
 typedef struct ccsys_in_addr_t			ccsys_in_addr_t;
 typedef struct ccsys_iovec_t			ccsys_iovec_t;
 typedef struct ccsys_passwd_t			ccsys_passwd_t;
+typedef struct ccsys_rlimit_t			ccsys_rlimit_t;
 typedef struct ccsys_rusage_t			ccsys_rusage_t;
 typedef struct ccsys_sigset_t			ccsys_sigset_t;
 typedef struct ccsys_sockaddr_in6_t		ccsys_sockaddr_in6_t;
@@ -255,6 +258,7 @@ struct ccsys_hostent_t		{ uint8_t data[@SIZEOF_STRUCT_HOSTENT@]; };
 struct ccsys_in_addr_t		{ uint8_t data[@SIZEOF_STRUCT_IN_ADDR@]; };
 struct ccsys_iovec_t		{ uint8_t data[@SIZEOF_STRUCT_IOVEC@]; };
 struct ccsys_passwd_t		{ uint8_t data[@SIZEOF_STRUCT_PASSWD@]; };
+struct ccsys_rlimit_t		{ uint8_t data[@SIZEOF_STRUCT_RLIMIT@]; };
 struct ccsys_rusage_t		{ uint8_t data[@SIZEOF_STRUCT_RUSAGE@]; };
 struct ccsys_sigset_t		{ uint8_t data[@SIZEOF_SIGSET_T@]; };
 struct ccsys_sockaddr_in6_t	{ uint8_t data[@SIZEOF_STRUCT_SOCKADDR_IN6@]; };
@@ -1213,12 +1217,45 @@ enum ccsys_getrusage_who_enum_t {
 
 typedef enum ccsys_getrusage_who_enum_t		ccsys_getrusage_who_enum_t;
 
-/* ------------------------------------------------------------------ */
-
 ccsys_decl void ccsys_getrusage (cce_destination_t L, ccsys_getrusage_who_enum_t who, ccsys_rusage_t * S)
   __attribute__((__nonnull__(1,3)));
 
-/* getrlimit */
+
+/** --------------------------------------------------------------------
+ ** Resources and limitations: resources limit.
+ ** ----------------------------------------------------------------- */
+
+#define CCSYS_HAVE_STRUCT_RLIMIT_RLIM_CUR	@CCSYS_HAVE_STRUCT_RLIMIT_RLIM_CUR@
+#define CCSYS_HAVE_STRUCT_RLIMIT_RLIM_MAX	@CCSYS_HAVE_STRUCT_RLIMIT_RLIM_MAX@
+
+CCSYS_STRUCT_GETTER(rlimit_rlim_cur,	ccsys_rlimit_t, ccsys_rlim_t)
+CCSYS_STRUCT_GETTER(rlimit_rlim_max,	ccsys_rlimit_t, ccsys_rlim_t)
+
+enum ccsys_getrlimit_resource_enum_t {
+@CCSYS_ENUM_DEF_CCSYS_RLIMIT_AS@
+@CCSYS_ENUM_DEF_CCSYS_RLIMIT_CORE@
+@CCSYS_ENUM_DEF_CCSYS_RLIMIT_CPU@
+@CCSYS_ENUM_DEF_CCSYS_RLIMIT_DATA@
+@CCSYS_ENUM_DEF_CCSYS_RLIMIT_FSIZE@
+@CCSYS_ENUM_DEF_CCSYS_RLIMIT_LOCKS@
+@CCSYS_ENUM_DEF_CCSYS_RLIMIT_MEMLOCK@
+@CCSYS_ENUM_DEF_CCSYS_RLIMIT_MSGQUEUE@
+@CCSYS_ENUM_DEF_CCSYS_RLIMIT_NICE@
+@CCSYS_ENUM_DEF_CCSYS_RLIMIT_NOFILE@
+@CCSYS_ENUM_DEF_CCSYS_RLIMIT_NPROC@
+@CCSYS_ENUM_DEF_CCSYS_RLIMIT_RSS@
+@CCSYS_ENUM_DEF_CCSYS_RLIMIT_RTPRIO@
+@CCSYS_ENUM_DEF_CCSYS_RLIMIT_RTTIME@
+@CCSYS_ENUM_DEF_CCSYS_RLIMIT_SIGPENDING@
+@CCSYS_ENUM_DEF_CCSYS_RLIMIT_STACK@
+};
+
+static ccsys_rlim_t const CCSYS_RLIMIT_INFINITY = { .data = @VALUEOF_CCSYS_RLIMIT_INFINITY@ };
+
+typedef enum ccsys_getrlimit_resource_enum_t	ccsys_getrlimit_resource_enum_t;
+
+ccsys_decl void ccsys_getrlimit (cce_destination_t L, ccsys_getrlimit_resource_enum_t resource, ccsys_rlimit_t * S)
+  __attribute__((__nonnull__(1,3)));
 
 /* setrlimit */
 

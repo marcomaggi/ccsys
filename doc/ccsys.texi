@@ -701,7 +701,7 @@ Expand into:
 @end deftypefn
 
 
-@deftypefn {Preprocessor Macro} {long} ccsys_lref (struct @var{D})
+@deftypefn {Preprocessor Macro} {long} ccsys_ldref (struct @var{D})
 Helper macro that extracts a value from a semantic type and casts it to an @code{long}.  Expand into:
 
 @example
@@ -1802,6 +1802,7 @@ termination}.
 * res confstr::                 Configuration string parameters.
 * res pathconf::                Configuration values for files.
 * res getrusage::               Resources usage.
+* res getrlimit::               Resources limits.
 @end menu
 
 @c page
@@ -2557,6 +2558,136 @@ if (cce_location(L)) @{
   if (CCSYS_HAVE_STRUCT_RUSAGE_RU_NIVCSW) @{
     long      F = ccsys_ref_rusage_ru_nivcsw(S);
     printf("ru_nivcsw = %ld\n", F);
+  @}
+
+  cce_run_cleanup_handlers(L);
+@}
+@end example
+
+@c page
+@node res getrlimit
+@section Resources limits
+
+
+The following symbols are defined in the header file @file{ccsys.h}.
+
+
+@deftp {Struct Typedef} ccsys_rlimit_t
+Wrapper for @objtype{struct rlimit}.
+@end deftp
+
+
+@deftypefun void ccsys_getrlimit (cce_destination_t @var{L}, ccsys_getrlimit_resource_enum_t @var{who}, ccsys_rlimit_t * @var{S})
+Wrapper for @cfunc{getrlimit}; @manpage{getrlimit, Get resources limit}.
+@end deftypefun
+
+
+@EnumeratedConstant{CCSYS_RLIMIT_AS}
+@EnumeratedConstant{CCSYS_RLIMIT_CORE}
+@EnumeratedConstant{CCSYS_RLIMIT_CPU}
+@EnumeratedConstant{CCSYS_RLIMIT_DATA}
+@EnumeratedConstant{CCSYS_RLIMIT_FSIZE}
+@EnumeratedConstant{CCSYS_RLIMIT_LOCKS}
+@EnumeratedConstant{CCSYS_RLIMIT_MEMLOCK}
+@EnumeratedConstant{CCSYS_RLIMIT_MSGQUEUE}
+@EnumeratedConstant{CCSYS_RLIMIT_NICE}
+@EnumeratedConstant{CCSYS_RLIMIT_NOFILE}
+@EnumeratedConstant{CCSYS_RLIMIT_NPROC}
+@EnumeratedConstant{CCSYS_RLIMIT_RSS}
+@EnumeratedConstant{CCSYS_RLIMIT_RTPRIO}
+@EnumeratedConstant{CCSYS_RLIMIT_RTTIME}
+@EnumeratedConstant{CCSYS_RLIMIT_SIGPENDING}
+@EnumeratedConstant{CCSYS_RLIMIT_STACK}
+@anchor{ccsys_getrlimit_resource_enum_t}
+@deftp {Enum Typedef} ccsys_getrlimit_resource_enum_t
+Enumeration of constants for the function @cfunc{ccsys_getrlimit}.  It defines the following
+constants:
+
+@example
+CCSYS_RLIMIT_AS         CCSYS_RLIMIT_CORE       CCSYS_RLIMIT_CPU
+CCSYS_RLIMIT_DATA       CCSYS_RLIMIT_FSIZE      CCSYS_RLIMIT_LOCKS
+CCSYS_RLIMIT_MEMLOCK    CCSYS_RLIMIT_MSGQUEUE   CCSYS_RLIMIT_NICE
+CCSYS_RLIMIT_NOFILE     CCSYS_RLIMIT_NPROC      CCSYS_RLIMIT_RSS
+CCSYS_RLIMIT_RTPRIO     CCSYS_RLIMIT_RTTIME     CCSYS_RLIMIT_SIGPENDING
+CCSYS_RLIMIT_STACK
+@end example
+@end deftp
+
+
+@menu
+* res getrlimit features::      Feature macros for @objtype{ccsys_rlimit_t}.
+* res getrlimit accessors::     Field accessors for @objtype{ccsys_rlimit_t}.
+* res getrlimit one::           Using @cfunc{ccsys_getrlimit}.
+@end menu
+
+@c page
+@node res getrlimit features
+@subsection Feature macros for @objtype{ccsys_rlimit_t}
+
+
+The following symbols are defined in the header file @file{ccsys.h}.
+
+
+@defmac CCSYS_HAVE_STRUCT_RLIMIT_RLIM_CUR
+Always defined.  Expands to @code{1} if @objtype{struct rlimit} has the field @code{rlim_cur};
+otherwise it expands to @code{0}.
+@end defmac
+
+
+@defmac CCSYS_HAVE_STRUCT_RLIMIT_RLIM_MAX
+Always defined.  Expands to @code{1} if @objtype{struct rlimit} has the field @code{rlim_max};
+otherwise it expands to @code{0}.
+@end defmac
+
+@c page
+@node res getrlimit accessors
+@subsection Field accessors for @objtype{ccsys_rlimit_t}
+
+
+The following field accessors are defined only if @objtype{struct rlimit} has the associated field;
+otherwise they are not implemented.  The following symbols are defined in the header file
+@file{ccsys.h}.
+
+
+@deftp {Struct Typedef} ccsys_rlim_t
+Struct type wrapper for @objtype{rlim_t}.
+@end deftp
+
+
+@defvr Constant {ccsys_rlim_t const} CCSYS_RLIMIT_INFINITY
+Constant wrapper for @code{RLIMIT_INFINITY}.
+@end defvr
+
+
+@deftypefun ccsys_rlim_t ccsys_ref_rlimit_rlim_cur (ccsys_rlimit_t const * @var{S})
+Getter for the field @code{rlim_cur} of @var{S}.
+@end deftypefun
+
+
+@deftypefun ccsys_rlim_t ccsys_ref_rlimit_rlim_max (ccsys_rlimit_t const * @var{S})
+Getter for the field @code{rlim_max} of @var{S}.
+@end deftypefun
+
+@c page
+@node res getrlimit one
+@subsection Using @cfunc{ccsys_getrlimit}
+
+
+As usage example for @cfunc{ccsys_getrlimit} see the following code.
+
+@example
+cce_location_t        L[1];
+
+if (cce_location(L)) @{
+  cce_run_error_handlers_final(L);
+@} else @{
+  ccsys_rlimit_t      S[1];
+
+  if (CCSYS_RLIMIT_AS_MACRO) @{
+    ccsys_getrlimit(L, CCSYS_RLIMIT_AS, S);
+    printf("CCSYS_RLIMIT_AS: cur=%lu, max=%lu\n",
+           ccsys_luref(ccsys_ref_rlimit_rlim_cur(S)),
+           ccsys_luref(ccsys_ref_rlimit_rlim_max(S)));
   @}
 
   cce_run_cleanup_handlers(L);
@@ -7280,34 +7411,34 @@ if (cce_location(L)) @{
 
     ccsys_stat(L, filename, &S);
 #if (1 == CCSYS_HAVE_STRUCT_STAT_ST_DEV)
-    printf("st_dev=%lu\n", ccsys_lref(ccsys_ref_stat_st_dev(&S)));
+    printf("st_dev=%lu\n", ccsys_ldref(ccsys_ref_stat_st_dev(&S)));
 #endif
 #if (1 == CCSYS_HAVE_STRUCT_STAT_ST_INO)
-    printf("st_ino=%lu\n", ccsys_lref(ccsys_ref_stat_st_ino(&S)));
+    printf("st_ino=%lu\n", ccsys_ldref(ccsys_ref_stat_st_ino(&S)));
 #endif
 #if (1 == CCSYS_HAVE_STRUCT_STAT_ST_MODE)
-    printf("st_mode=%lu\n", ccsys_lref(ccsys_ref_stat_st_mode(&S)));
+    printf("st_mode=%lu\n", ccsys_ldref(ccsys_ref_stat_st_mode(&S)));
 #endif
 #if (1 == CCSYS_HAVE_STRUCT_STAT_ST_NLINK)
-    printf("st_nlink=%lu\n", ccsys_lref(ccsys_ref_stat_st_nlink(&S)));
+    printf("st_nlink=%lu\n", ccsys_ldref(ccsys_ref_stat_st_nlink(&S)));
 #endif
 #if (1 == CCSYS_HAVE_STRUCT_STAT_ST_UID)
-    printf("st_uid=%lu\n", ccsys_lref(ccsys_ref_stat_st_uid(&S)));
+    printf("st_uid=%lu\n", ccsys_ldref(ccsys_ref_stat_st_uid(&S)));
 #endif
 #if (1 == CCSYS_HAVE_STRUCT_STAT_ST_GID)
-    printf("st_gid=%lu\n", ccsys_lref(ccsys_ref_stat_st_gid(&S)));
+    printf("st_gid=%lu\n", ccsys_ldref(ccsys_ref_stat_st_gid(&S)));
 #endif
 #if (1 == CCSYS_HAVE_STRUCT_STAT_ST_RDEV)
-    printf("st_rdev=%lu\n", ccsys_lref(ccsys_ref_stat_st_rdev(&S)));
+    printf("st_rdev=%lu\n", ccsys_ldref(ccsys_ref_stat_st_rdev(&S)));
 #endif
 #if (1 == CCSYS_HAVE_STRUCT_STAT_ST_SIZE)
-    printf("st_size=%lu\n", ccsys_lref(ccsys_ref_stat_st_size(&S)));
+    printf("st_size=%lu\n", ccsys_ldref(ccsys_ref_stat_st_size(&S)));
 #endif
 #if (1 == CCSYS_HAVE_STRUCT_STAT_ST_BLKSIZE)
-    printf("st_blksize=%lu\n", ccsys_lref(ccsys_ref_stat_st_blksize(&S)));
+    printf("st_blksize=%lu\n", ccsys_ldref(ccsys_ref_stat_st_blksize(&S)));
 #endif
 #if (1 == CCSYS_HAVE_STRUCT_STAT_ST_BLOCKS)
-    printf("st_blocks=%lu\n", ccsys_lref(ccsys_ref_stat_st_blocks(&S)));
+    printf("st_blocks=%lu\n", ccsys_ldref(ccsys_ref_stat_st_blocks(&S)));
 #endif
 #if (1 == CCSYS_HAVE_STRUCT_STAT_ST_ATIME)
     @{
@@ -7398,34 +7529,34 @@ if (cce_location(L)) @{
     ccsys_fstatat(L, dirfd, filename, &S, flags);
 
 #if (1 == CCSYS_HAVE_STRUCT_STAT_ST_DEV)
-    printf("st_dev=%lu\n", ccsys_lref(ccsys_ref_stat_st_dev(&S)));
+    printf("st_dev=%lu\n", ccsys_ldref(ccsys_ref_stat_st_dev(&S)));
 #endif
 #if (1 == CCSYS_HAVE_STRUCT_STAT_ST_INO)
-    printf("st_ino=%lu\n", ccsys_lref(ccsys_ref_stat_st_ino(&S)));
+    printf("st_ino=%lu\n", ccsys_ldref(ccsys_ref_stat_st_ino(&S)));
 #endif
 #if (1 == CCSYS_HAVE_STRUCT_STAT_ST_MODE)
-    printf("st_mode=%lu\n", ccsys_lref(ccsys_ref_stat_st_mode(&S)));
+    printf("st_mode=%lu\n", ccsys_ldref(ccsys_ref_stat_st_mode(&S)));
 #endif
 #if (1 == CCSYS_HAVE_STRUCT_STAT_ST_NLINK)
-    printf("st_nlink=%lu\n", ccsys_lref(ccsys_ref_stat_st_nlink(&S)));
+    printf("st_nlink=%lu\n", ccsys_ldref(ccsys_ref_stat_st_nlink(&S)));
 #endif
 #if (1 == CCSYS_HAVE_STRUCT_STAT_ST_UID)
-    printf("st_uid=%lu\n", ccsys_lref(ccsys_ref_stat_st_uid(&S)));
+    printf("st_uid=%lu\n", ccsys_ldref(ccsys_ref_stat_st_uid(&S)));
 #endif
 #if (1 == CCSYS_HAVE_STRUCT_STAT_ST_GID)
-    printf("st_gid=%lu\n", ccsys_lref(ccsys_ref_stat_st_gid(&S)));
+    printf("st_gid=%lu\n", ccsys_ldref(ccsys_ref_stat_st_gid(&S)));
 #endif
 #if (1 == CCSYS_HAVE_STRUCT_STAT_ST_RDEV)
-    printf("st_rdev=%lu\n", ccsys_lref(ccsys_ref_stat_st_rdev(&S)));
+    printf("st_rdev=%lu\n", ccsys_ldref(ccsys_ref_stat_st_rdev(&S)));
 #endif
 #if (1 == CCSYS_HAVE_STRUCT_STAT_ST_SIZE)
-    printf("st_size=%lu\n", ccsys_lref(ccsys_ref_stat_st_size(&S)));
+    printf("st_size=%lu\n", ccsys_ldref(ccsys_ref_stat_st_size(&S)));
 #endif
 #if (1 == CCSYS_HAVE_STRUCT_STAT_ST_BLKSIZE)
-    printf("st_blksize=%lu\n", ccsys_lref(ccsys_ref_stat_st_blksize(&S)));
+    printf("st_blksize=%lu\n", ccsys_ldref(ccsys_ref_stat_st_blksize(&S)));
 #endif
 #if (1 == CCSYS_HAVE_STRUCT_STAT_ST_BLOCKS)
-    printf("st_blocks=%lu\n", ccsys_lref(ccsys_ref_stat_st_blocks(&S)));
+    printf("st_blocks=%lu\n", ccsys_ldref(ccsys_ref_stat_st_blocks(&S)));
 #endif
 #if (1 == CCSYS_HAVE_STRUCT_STAT_ST_ATIME)
     @{

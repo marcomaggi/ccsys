@@ -303,6 +303,174 @@ test_3_1 (cce_destination_t upper_L)
 }
 
 
+/** --------------------------------------------------------------------
+ ** Resources limits.
+ ** ----------------------------------------------------------------- */
+
+void
+test_4_1 (cce_destination_t upper_L)
+/* Test for "ccsys_getrlimit()"". */
+{
+#if (defined HAVE_GETRLIMIT)
+  cce_location_t	L[1];
+
+  if (cce_location(L)) {
+    cce_run_error_handlers_raise(L, upper_L);
+  } else {
+    ccsys_rlimit_t	S[1];
+
+    if (CCSYS_RLIMIT_AS_MACRO) {
+      ccsys_getrlimit(L, CCSYS_RLIMIT_AS, S);
+      if (1) {
+	fprintf(stderr, "%s: CCSYS_RLIMIT_AS: cur=%lu, max=%lu\n", __func__,
+		ccsys_luref(ccsys_ref_rlimit_rlim_cur(S)),
+		ccsys_luref(ccsys_ref_rlimit_rlim_max(S)));
+      }
+    }
+
+    if (CCSYS_RLIMIT_CORE_MACRO) {
+      ccsys_getrlimit(L, CCSYS_RLIMIT_CORE, S);
+      if (1) {
+	fprintf(stderr, "%s: CCSYS_RLIMIT_CORE: cur=%lu, max=%lu\n", __func__,
+		ccsys_luref(ccsys_ref_rlimit_rlim_cur(S)),
+		ccsys_luref(ccsys_ref_rlimit_rlim_max(S)));
+      }
+    }
+
+    if (CCSYS_RLIMIT_CPU_MACRO) {
+      ccsys_getrlimit(L, CCSYS_RLIMIT_CPU, S);
+      if (1) {
+	fprintf(stderr, "%s: CCSYS_RLIMIT_CPU: cur=%lu, max=%lu\n", __func__,
+		ccsys_luref(ccsys_ref_rlimit_rlim_cur(S)),
+		ccsys_luref(ccsys_ref_rlimit_rlim_max(S)));
+      }
+    }
+
+    if (CCSYS_RLIMIT_DATA_MACRO) {
+      ccsys_getrlimit(L, CCSYS_RLIMIT_DATA, S);
+      if (1) {
+	fprintf(stderr, "%s: CCSYS_RLIMIT_DATA: cur=%lu, max=%lu\n", __func__,
+		ccsys_luref(ccsys_ref_rlimit_rlim_cur(S)),
+		ccsys_luref(ccsys_ref_rlimit_rlim_max(S)));
+      }
+    }
+
+    if (CCSYS_RLIMIT_FSIZE_MACRO) {
+      ccsys_getrlimit(L, CCSYS_RLIMIT_FSIZE, S);
+      if (1) {
+	fprintf(stderr, "%s: CCSYS_RLIMIT_FSIZE: cur=%lu, max=%lu\n", __func__,
+		ccsys_luref(ccsys_ref_rlimit_rlim_cur(S)),
+		ccsys_luref(ccsys_ref_rlimit_rlim_max(S)));
+      }
+    }
+
+    if (CCSYS_RLIMIT_LOCKS_MACRO) {
+      ccsys_getrlimit(L, CCSYS_RLIMIT_LOCKS, S);
+      if (1) {
+	fprintf(stderr, "%s: CCSYS_RLIMIT_LOCKS: cur=%lu, max=%lu\n", __func__,
+		ccsys_luref(ccsys_ref_rlimit_rlim_cur(S)),
+		ccsys_luref(ccsys_ref_rlimit_rlim_max(S)));
+      }
+    }
+
+    if (CCSYS_RLIMIT_MEMLOCK_MACRO) {
+      ccsys_getrlimit(L, CCSYS_RLIMIT_MEMLOCK, S);
+      if (1) {
+	fprintf(stderr, "%s: CCSYS_RLIMIT_MEMLOCK: cur=%lu, max=%lu\n", __func__,
+		ccsys_luref(ccsys_ref_rlimit_rlim_cur(S)),
+		ccsys_luref(ccsys_ref_rlimit_rlim_max(S)));
+      }
+    }
+
+    if (CCSYS_RLIMIT_MSGQUEUE_MACRO) {
+      ccsys_getrlimit(L, CCSYS_RLIMIT_MSGQUEUE, S);
+      if (1) {
+	fprintf(stderr, "%s: CCSYS_RLIMIT_MSGQUEUE: cur=%lu, max=%lu\n", __func__,
+		ccsys_luref(ccsys_ref_rlimit_rlim_cur(S)),
+		ccsys_luref(ccsys_ref_rlimit_rlim_max(S)));
+      }
+    }
+
+    if (CCSYS_RLIMIT_NICE_MACRO) {
+      ccsys_getrlimit(L, CCSYS_RLIMIT_NICE, S);
+      if (1) {
+	fprintf(stderr, "%s: CCSYS_RLIMIT_NICE: cur=%lu, max=%lu\n", __func__,
+		ccsys_luref(ccsys_ref_rlimit_rlim_cur(S)),
+		ccsys_luref(ccsys_ref_rlimit_rlim_max(S)));
+      }
+    }
+
+    if (CCSYS_RLIMIT_NOFILE_MACRO) {
+      ccsys_getrlimit(L, CCSYS_RLIMIT_NOFILE, S);
+      if (1) {
+	fprintf(stderr, "%s: CCSYS_RLIMIT_NOFILE: cur=%lu, max=%lu\n", __func__,
+		ccsys_luref(ccsys_ref_rlimit_rlim_cur(S)),
+		ccsys_luref(ccsys_ref_rlimit_rlim_max(S)));
+      }
+    }
+
+    if (CCSYS_RLIMIT_NPROC_MACRO) {
+      ccsys_getrlimit(L, CCSYS_RLIMIT_NPROC, S);
+      if (1) {
+	fprintf(stderr, "%s: CCSYS_RLIMIT_NPROC: cur=%lu, max=%lu\n", __func__,
+		ccsys_luref(ccsys_ref_rlimit_rlim_cur(S)),
+		ccsys_luref(ccsys_ref_rlimit_rlim_max(S)));
+      }
+    }
+
+    if (CCSYS_RLIMIT_RSS_MACRO) {
+      ccsys_getrlimit(L, CCSYS_RLIMIT_RSS, S);
+      if (1) {
+	fprintf(stderr, "%s: CCSYS_RLIMIT_RSS: cur=%lu, max=%lu\n", __func__,
+		ccsys_luref(ccsys_ref_rlimit_rlim_cur(S)),
+		ccsys_luref(ccsys_ref_rlimit_rlim_max(S)));
+      }
+    }
+
+    if (CCSYS_RLIMIT_RTPRIO_MACRO) {
+      ccsys_getrlimit(L, CCSYS_RLIMIT_RTPRIO, S);
+      if (1) {
+	fprintf(stderr, "%s: CCSYS_RLIMIT_RTPRIO: cur=%lu, max=%lu\n", __func__,
+		ccsys_luref(ccsys_ref_rlimit_rlim_cur(S)),
+		ccsys_luref(ccsys_ref_rlimit_rlim_max(S)));
+      }
+    }
+
+    if (CCSYS_RLIMIT_RTTIME_MACRO) {
+      ccsys_getrlimit(L, CCSYS_RLIMIT_RTTIME, S);
+      if (1) {
+	fprintf(stderr, "%s: CCSYS_RLIMIT_RTTIME: cur=%lu, max=%lu\n", __func__,
+		ccsys_luref(ccsys_ref_rlimit_rlim_cur(S)),
+		ccsys_luref(ccsys_ref_rlimit_rlim_max(S)));
+      }
+    }
+
+    if (CCSYS_RLIMIT_SIGPENDING_MACRO) {
+      ccsys_getrlimit(L, CCSYS_RLIMIT_SIGPENDING, S);
+      if (1) {
+	fprintf(stderr, "%s: CCSYS_RLIMIT_SIGPENDING: cur=%lu, max=%lu\n", __func__,
+		ccsys_luref(ccsys_ref_rlimit_rlim_cur(S)),
+		ccsys_luref(ccsys_ref_rlimit_rlim_max(S)));
+      }
+    }
+
+    if (CCSYS_RLIMIT_STACK_MACRO) {
+      ccsys_getrlimit(L, CCSYS_RLIMIT_STACK, S);
+      if (1) {
+	fprintf(stderr, "%s: CCSYS_RLIMIT_STACK: cur=%lu, max=%lu\n", __func__,
+		ccsys_luref(ccsys_ref_rlimit_rlim_cur(S)),
+		ccsys_luref(ccsys_ref_rlimit_rlim_max(S)));
+      }
+    }
+
+    cce_run_cleanup_handlers(L);
+  }
+#else
+  cctests_skip();
+#endif
+}
+
+
 int
 main (void)
 {
@@ -325,6 +493,12 @@ main (void)
     cctests_begin_group("resources usage");
     {
       cctests_run(test_3_1);
+    }
+    cctests_end_group();
+
+    cctests_begin_group("resources limits");
+    {
+      cctests_run(test_4_1);
     }
     cctests_end_group();
   }

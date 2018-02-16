@@ -230,5 +230,44 @@ CCSYS_STRUCT_RUSAGE_GETTER_LONG(ru_nvcsw)
 CCSYS_STRUCT_RUSAGE_GETTER_LONG(ru_nivcsw)
 #endif
 
+
+/** --------------------------------------------------------------------
+ ** Resources and limitations: resources limits.
+ ** ----------------------------------------------------------------- */
+
+#ifdef HAVE_GETRLIMIT
+void
+ccsys_getrlimit (cce_destination_t L, ccsys_getrlimit_resource_enum_t resource, ccsys_rlimit_t * S)
+{
+  int	rv;
+  errno = 0;
+  rv = getrlimit((int)resource, (struct rlimit *) S);
+  if (-1 == rv) {
+    cce_raise(L, cce_condition_new_errno_clear());
+  }
+}
+#endif
+
+/* ------------------------------------------------------------------ */
+
+#if (1 == CCSYS_HAVE_STRUCT_RLIMIT_RLIM_CUR)
+ccsys_rlim_t
+ccsys_ref_rlimit_rlim_cur (ccsys_rlimit_t const * const S)
+{
+  CCSYS_PC(struct rlimit const, D, S);
+  ccsys_rlim_t	F = { .data = D->rlim_cur };
+  return F;
+}
+#endif
+
+#if (1 == CCSYS_HAVE_STRUCT_RLIMIT_RLIM_MAX)
+ccsys_rlim_t
+ccsys_ref_rlimit_rlim_max (ccsys_rlimit_t const * const S)
+{
+  CCSYS_PC(struct rlimit const, D, S);
+  ccsys_rlim_t	F = { .data = D->rlim_max };
+  return F;
+}
+#endif
 
 /* end of file */

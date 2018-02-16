@@ -61,8 +61,8 @@ ccsys_timespec_t
 ccsys_nanosleep (cce_destination_t L, ccsys_timespec_t const requested)
 {
   struct timespec	requested_ts = {
-    .tv_sec	= (time_t) ccsys_lref(requested.seconds),
-    .tv_nsec	=          ccsys_lref(requested.nanoseconds)
+    .tv_sec	= (time_t) ccsys_ldref(requested.seconds),
+    .tv_nsec	=          ccsys_ldref(requested.nanoseconds)
   };
   struct timespec	leftover_ts  = {
     .tv_sec	= (time_t) 0,
