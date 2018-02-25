@@ -207,7 +207,7 @@ cctests_begin_group (char const * const test_group_name)
       if (cctests_log_stream_isatty()) {
 	fprintf(cctests_log_stream, "CCTests: \033[33;1mskip group\033[0m: %s\n", cctests_test_group_name);
       } else {
-	fprintf(cctests_log_stream, "CCTests: \033[33;1mskip group\033[0m: %s\n", cctests_test_group_name);
+	fprintf(cctests_log_stream, "CCTests: skip group: %s\n", cctests_test_group_name);
       }
       run_tests_in_group	= false;
     }
