@@ -1,5 +1,5 @@
 -*- coding: utf-8-unix -*-
-Subject: [announce] Ccsys revision 0.1.0-devel.0
+Subject: [announce] CCSys revision 0.1.0-devel.0
 
 				 CCSys
 				 =====
@@ -8,6 +8,9 @@ Subject: [announce] Ccsys revision 0.1.0-devel.0
 This package  installs a  standard C11  language library;  it implements
 adapters  for POSIX  system  functions to  convert  the error  reporting
 mechanism to the use of the library CCExceptions.
+
+  This package  depends on  the package  CCExceptions, at  least version
+0.6.4-devel.3.
 
   The package  makes use  of the  GNU Autotools  and it  is tested  on a
 GNU+Linux system.  It is distributed under the GNU Lesser General Public

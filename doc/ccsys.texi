@@ -37,6 +37,8 @@
 
 @c ------------------------------------------------------------
 
+@set CCEXCEPTIONS_VERSION       0.6.4-devel.3
+
 @set GITHUB_URL                 @url{http://github.com/marcomaggi/@value{PACKAGE_NICKNAME}}
 @set BITBUCKET_URL              @url{https://bitbucket.org/marcomaggi/@value{PACKAGE_NICKNAME}}
 @set DOWNLOAD_URL               @url{https://bitbucket.org/marcomaggi/@value{PACKAGE_NICKNAME}/downloads}
@@ -51,6 +53,8 @@
 This document describes version @value{VERSION} of @value{PACKAGE}, a standard C11 language library;
 it implements adapters for @posix{} system functions to convert the error reporting mechanism to the
 use of the library CCExceptions.
+
+This package depends on the package CCExceptions, at least version @value{CCEXCEPTIONS_VERSION}.
 
 The package is distributed under the terms of the @gnu{} Lesser General Public License (@lgpl{}).
 
