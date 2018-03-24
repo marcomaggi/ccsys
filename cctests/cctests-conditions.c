@@ -175,6 +175,40 @@ cctests_condition_new_skipped (void)
 
 
 /** --------------------------------------------------------------------
+ ** Exceptional condition descriptor: expected failure.
+ ** ----------------------------------------------------------------- */
+
+static cce_condition_static_message_fun_t	cctests_condition_static_message_expected_failure;
+
+static cctests_descriptor_expected_failure_t const cctests_descriptor_expected_failure_stru = {
+  .descriptor.parent		= &cctests_descriptor_failure_stru.descriptor,
+  .descriptor.delete		= NULL,
+  .descriptor.final		= NULL,
+  .descriptor.static_message	= cctests_condition_static_message_expected_failure
+};
+
+cctests_descriptor_expected_failure_t const * const cctests_descriptor_expected_failure_ptr = &cctests_descriptor_expected_failure_stru;
+
+/* This struct type has no dynamic fields, so there is only one instance
+   of this struct type.  We allocate it statically. */
+static cctests_condition_expected_failure_t const cctests_condition_expected_failure_stru = {
+  .failure.base.root.condition.descriptor	= &cctests_descriptor_expected_failure_stru.descriptor
+};
+
+cce_condition_t const *
+cctests_condition_new_expected_failure (void)
+{
+  return (cce_condition_t *)&cctests_condition_expected_failure_stru;
+}
+
+char const *
+cctests_condition_static_message_expected_failure (cce_condition_t const * C CCTESTS_UNUSED)
+{
+  return "CCTests exception expected failure";
+}
+
+
+/** --------------------------------------------------------------------
  ** Exceptional condition descriptor: failed assertion.
  ** ----------------------------------------------------------------- */
 
@@ -527,6 +561,128 @@ cctests_condition_new_regex_compilation_error (cce_destination_t L, int errcode)
   cce_condition_init((cce_condition_t *)C, &cctests_descriptor_regex_compilation_error_stru.descriptor);
   cctests_condition_init_regex_compilation_error(C, errcode);
   return (cce_condition_t *)C;
+}
+
+
+/** --------------------------------------------------------------------
+ ** Exceptional condition descriptor: child failure.
+ ** ----------------------------------------------------------------- */
+
+static cce_condition_static_message_fun_t	cctests_condition_static_message_child_failure;
+
+static cctests_descriptor_child_failure_t const cctests_descriptor_child_failure_stru = {
+  .descriptor.parent		= &cctests_descriptor_failure_stru.descriptor,
+  .descriptor.delete		= NULL,
+  .descriptor.final		= NULL,
+  .descriptor.static_message	= cctests_condition_static_message_child_failure
+};
+
+cctests_descriptor_child_failure_t const * const cctests_descriptor_child_failure_ptr = &cctests_descriptor_child_failure_stru;
+
+/* This struct type has no dynamic fields, so there is only one instance
+   of this struct type.  We allocate it statically. */
+static cctests_condition_child_failure_t const cctests_condition_child_failure_stru = {
+  .failure.base.root.condition.descriptor	= &cctests_descriptor_child_failure_stru.descriptor
+};
+
+void
+cctests_condition_init_child_failure (cctests_condition_child_failure_t * C)
+{
+  cctests_condition_init_failure(&(C->failure));
+}
+
+cce_condition_t const *
+cctests_condition_new_child_failure (void)
+{
+  return (cce_condition_t *)&cctests_condition_child_failure_stru;
+}
+
+char const *
+cctests_condition_static_message_child_failure (cce_condition_t const * C CCTESTS_UNUSED)
+{
+  return "CCTests exception child failure";
+}
+
+
+/** --------------------------------------------------------------------
+ ** Exceptional condition descriptor: child failure, abnormal termination.
+ ** ----------------------------------------------------------------- */
+
+static cce_condition_static_message_fun_t	cctests_condition_static_message_child_abnormal_termination;
+
+static cctests_descriptor_child_abnormal_termination_t const cctests_descriptor_child_abnormal_termination_stru = {
+  .descriptor.parent		= &cctests_descriptor_child_failure_stru.descriptor,
+  .descriptor.delete		= NULL,
+  .descriptor.final		= NULL,
+  .descriptor.static_message	= cctests_condition_static_message_child_abnormal_termination
+};
+
+cctests_descriptor_child_abnormal_termination_t const * const cctests_descriptor_child_abnormal_termination_ptr =
+  &cctests_descriptor_child_abnormal_termination_stru;
+
+/* This struct type has no dynamic fields, so there is only one instance
+   of this struct type.  We allocate it statically. */
+static cctests_condition_child_abnormal_termination_t const cctests_condition_child_abnormal_termination_stru = {
+  .child_failure.failure.base.root.condition.descriptor	= &cctests_descriptor_child_abnormal_termination_stru.descriptor
+};
+
+void
+cctests_condition_init_child_abnormal_termination (cctests_condition_child_abnormal_termination_t * C)
+{
+  cctests_condition_init_child_failure(&(C->child_failure));
+}
+
+cce_condition_t const *
+cctests_condition_new_child_abnormal_termination (void)
+{
+  return (cce_condition_t *)&cctests_condition_child_abnormal_termination_stru;
+}
+
+char const *
+cctests_condition_static_message_child_abnormal_termination (cce_condition_t const * C CCTESTS_UNUSED)
+{
+  return "CCTests exception child failure: abnormal termination";
+}
+
+
+/** --------------------------------------------------------------------
+ ** Exceptional condition descriptor: child failure, failure exit status.
+ ** ----------------------------------------------------------------- */
+
+static cce_condition_static_message_fun_t	cctests_condition_static_message_child_failure_exit_status;
+
+static cctests_descriptor_child_failure_exit_status_t const cctests_descriptor_child_failure_exit_status_stru = {
+  .descriptor.parent		= &cctests_descriptor_child_failure_stru.descriptor,
+  .descriptor.delete		= NULL,
+  .descriptor.final		= NULL,
+  .descriptor.static_message	= cctests_condition_static_message_child_failure_exit_status
+};
+
+cctests_descriptor_child_failure_exit_status_t const * const cctests_descriptor_child_failure_exit_status_ptr =
+  &cctests_descriptor_child_failure_exit_status_stru;
+
+/* This struct type has no dynamic fields, so there is only one instance
+   of this struct type.  We allocate it statically. */
+static cctests_condition_child_failure_exit_status_t const cctests_condition_child_failure_exit_status_stru = {
+  .child_failure.failure.base.root.condition.descriptor	= &cctests_descriptor_child_failure_exit_status_stru.descriptor
+};
+
+void
+cctests_condition_init_child_failure_exit_status (cctests_condition_child_failure_exit_status_t * C)
+{
+  cctests_condition_init_child_failure(&(C->child_failure));
+}
+
+cce_condition_t const *
+cctests_condition_new_child_failure_exit_status (void)
+{
+  return (cce_condition_t *)&cctests_condition_child_failure_exit_status_stru;
+}
+
+char const *
+cctests_condition_static_message_child_failure_exit_status (cce_condition_t const * C CCTESTS_UNUSED)
+{
+  return "CCTests exception child failure: failure exit status";
 }
 
 

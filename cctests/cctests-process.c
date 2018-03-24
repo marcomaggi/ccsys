@@ -62,8 +62,12 @@ cctests_call_in_forked_process (cce_destination_t L, cctests_child_process_funct
     int		wstatus = 0;
 
     waitpid(pid, &wstatus, options);
-    cctests_assert(L, WIFEXITED(wstatus));
-    cctests_assert(L, 0 == WEXITSTATUS(wstatus));
+    if (! WIFEXITED(wstatus)) {
+      cce_raise(L, cctests_condition_new_child_abnormal_termination());
+    }
+    if (0 != WEXITSTATUS(wstatus)) {
+      cce_raise(L, cctests_condition_new_child_failure_exit_status());
+    }
   } else {
     cce_location_t	inner_L[1];
     volatile int	status;
@@ -72,7 +76,7 @@ cctests_call_in_forked_process (cce_destination_t L, cctests_child_process_funct
       status = EXIT_FAILURE;
       cce_run_error_handlers_final(inner_L);
     } else {
-      child_function(L);
+      child_function(inner_L);
       status = EXIT_SUCCESS;
       cce_run_cleanup_handlers(inner_L);
     }
@@ -107,41 +111,43 @@ cctests_with_parent_and_child_process (cce_destination_t upper_L,
 
   pid = fork();
   if (0 != pid) {
-    /* Here we are in the parent. */
-    cce_location_t	L[1];
+    /* Here we are in the parent.  Run the parent function. */
+    {
+      cce_location_t	L[1];
 
-    if (cce_location(L)) {
-      /* The  parent function  raised an  exception.  Now  wait for  the
-	 child process. */
-      {
+      if (cce_location(L)) {
+	/* The parent  function raised an  exception.  Now wait  for the
+	   child  process.   When  the  parent fails:  we  ignore  child
+	   failures. */
 	int	options = 0;
 	int	wstatus = 0;
 
 	waitpid(pid, &wstatus, options);
-	cctests_assert(upper_L, WIFEXITED(wstatus));
-	cctests_assert(upper_L, 0 == WEXITSTATUS(wstatus));
+	cce_run_error_handlers_raise(L, upper_L);
+      } else {
+	parent_function(L, (int64_t)pid);
+	cce_run_cleanup_handlers(L);
       }
+    }
 
-      cce_run_error_handlers_raise(L, upper_L);
-    } else {
-      parent_function(L, (int64_t)pid);
+    /* The parent  function terminated  successfully.  Now wait  for the
+       child process. */
+    {
+      int	options = 0;
+      int	wstatus = 0;
 
-      /* The parent function terminated  successfully.  Now wait for the
-	 child process. */
-      {
-	int	options = 0;
-	int	wstatus = 0;
-
-	waitpid(pid, &wstatus, options);
-	cctests_assert(L, WIFEXITED(wstatus));
-	cctests_assert(L, 0 == WEXITSTATUS(wstatus));
+      waitpid(pid, &wstatus, options);
+      if (! WIFEXITED(wstatus)) {
+	cce_raise(upper_L, cctests_condition_new_child_abnormal_termination());
       }
-      cce_run_cleanup_handlers(L);
+      if (0 != WEXITSTATUS(wstatus)) {
+	cce_raise(upper_L, cctests_condition_new_child_failure_exit_status());
+      }
     }
   } else {
     /* Here we are in the child. */
     cce_location_t	inner_L[1];
-    volatile int	status;
+    int volatile	status;
 
     if (cce_location(inner_L)) {
       status = EXIT_FAILURE;
