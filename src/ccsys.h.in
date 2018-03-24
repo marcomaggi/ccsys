@@ -108,10 +108,10 @@ extern "C" {
 
 /* ------------------------------------------------------------------ */
 
-#define CCSYS_ON_LINUX		@CCSYS_ON_LINUX@
-#define CCSYS_ON_BSD		@CCSYS_ON_BSD@
-#define CCSYS_ON_CYGWIN		@CCSYS_ON_CYGWIN@
-#define CCSYS_ON_DARWIN		@CCSYS_ON_DARWIN@
+#define CCSYS_ON_LINUX		@MMUX_ON_LINUX@
+#define CCSYS_ON_BSD		@MMUX_ON_BSD@
+#define CCSYS_ON_CYGWIN		@MMUX_ON_CYGWIN@
+#define CCSYS_ON_DARWIN		@MMUX_ON_DARWIN@
 
 
 /** --------------------------------------------------------------------

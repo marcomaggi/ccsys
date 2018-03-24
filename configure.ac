@@ -46,37 +46,6 @@ LT_PREREQ([2.4])
 LT_INIT
 
 dnl page
-#### configuration
-
-AS_VAR_SET([CCSYS_ON_LINUX], [0])
-AS_VAR_SET([CCSYS_ON_BSD],   [0])
-AS_VAR_SET([CCSYS_ON_CYGWIN],[0])
-AS_VAR_SET([CCSYS_ON_DARWIN],[0])
-
-AS_CASE("$target_os",
-  [*linux*],
-  [AS_VAR_SET([CCSYS_ON_LINUX],[1])
-   AC_MSG_NOTICE([detected OS: linux])],
-  [*bsd*],
-  [AS_VAR_SET([CCSYS_ON_BSD],[1])
-   AC_MSG_NOTICE([detected OS: BSD])],
-  [*cygwin*],
-  [AS_VAR_SET([CCSYS_ON_CYGWIN],[1])
-   AC_MSG_NOTICE([detected OS: CYGWIN])],
-  [*darwin*],
-  [AS_VAR_SET([CCSYS_ON_CYGWIN],[1])
-   AC_MSG_NOTICE([detected OS: DARWIN])])
-AM_CONDITIONAL([ON_LINUX], [test "x$CCSYS_ON_LINUX"  = x1])
-AM_CONDITIONAL([ON_BSD],   [test "x$CCSYS_ON_BSD"    = x1])
-AM_CONDITIONAL([ON_CYGWIN],[test "x$CCSYS_ON_CYGWIN" = x1])
-AM_CONDITIONAL([ON_DARWIN],[test "x$CCSYS_ON_DARWIN" = x1])
-
-AC_SUBST([CCSYS_ON_LINUX], [$CCSYS_ON_LINUX])
-AC_SUBST([CCSYS_ON_BSD],   [$CCSYS_ON_BSD])
-AC_SUBST([CCSYS_ON_CYGWIN],[$CCSYS_ON_CYGWIN])
-AC_SUBST([CCSYS_ON_DARWIN],[$CCSYS_ON_DARWIN])
-
-dnl page
 #### libraries interface version
 
 MMUX_LIBTOOL_LIBRARY_VERSIONS([ccsys],1,0,0)
