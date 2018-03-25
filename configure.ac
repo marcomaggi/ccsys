@@ -60,7 +60,7 @@ dnl page
 #### external libraries
 
 MMUX_CHECK_PKG_CONFIG_MACROS
-PKG_CHECK_MODULES([CCEXCEPTIONS],[ccexceptions >= 0.6.4])
+PKG_CHECK_MODULES([CCEXCEPTIONS],[ccexceptions >= 0.7.1])
 
 AC_CACHE_SAVE
 

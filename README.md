@@ -11,6 +11,9 @@ This package  installs a  standard C11  language library;  it implements
 adapters  for POSIX  system  functions to  convert  the error  reporting
 mechanism to the use of the library CCExceptions.
 
+This  package depends  on  the package  CCExceptions,  at least  version
+`0.7.1-beta.1`.
+
 The  package makes  use of  the  GNU Autotools  and  it is  tested on  a
 GNU+Linux system.
 

@@ -37,7 +37,7 @@
 
 @c ------------------------------------------------------------
 
-@set CCEXCEPTIONS_VERSION       0.6.4-devel.3
+@set CCEXCEPTIONS_VERSION       0.7.1-beta.1
 
 @set GITHUB_URL                 @url{http://github.com/marcomaggi/@value{PACKAGE_NICKNAME}}
 @set BITBUCKET_URL              @url{https://bitbucket.org/marcomaggi/@value{PACKAGE_NICKNAME}}

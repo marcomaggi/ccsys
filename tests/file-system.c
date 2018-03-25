@@ -33,11 +33,19 @@ void
 test_1_1_1 (cce_destination_t upper_L)
 /* Acquire the current working directory with "ccsys_getcwd()". */
 {
-  size_t	len = CCSYS_PATH_MAX;
-  char		buf[len];
+  cce_location_t	L[1];
 
-  ccsys_getcwd(upper_L, buf, len);
-  if (0) { fprintf(stderr, "%s: current working directory: %s\n", __func__, buf); }
+  if (cce_location(L)) {
+    if (1) { fprintf(stderr, "%s: %s\n", __func__, cce_condition_static_message(cce_condition(L))); }
+    cce_run_error_handlers_raise(L, upper_L);
+  } else {
+    size_t	len = CCSYS_PATH_MAX;
+    char	buf[len];
+
+    ccsys_getcwd(L, buf, len);
+    if (0) { fprintf(stderr, "%s: current working directory: %s\n", __func__, buf); }
+    cce_run_cleanup_handlers(L);
+  }
 }
 
 void
@@ -46,9 +54,10 @@ test_1_1_2 (cce_destination_t upper_L)
    with a buffer too small. */
 {
   cce_location_t	L[1];
-  volatile size_t	len = 1;
+  size_t volatile	len = 1;
 
-  if (CCE_EXCEPT == cce_location(L)) {
+  if (cce_location(L)) {
+    if (0) { fprintf(stderr, "%s: outer: %s\n", __func__, cce_condition_static_message(cce_condition(L))); }
     cce_run_error_handlers_raise(L, upper_L);
   } else {
     cce_location_t	inner_L[1];
@@ -57,15 +66,13 @@ test_1_1_2 (cce_destination_t upper_L)
       if (cce_condition_is_errno(cce_condition(inner_L))) {
 	if (CCSYS_ERANGE == cce_ref_condition_errno_errnum(cce_condition(inner_L))) {
 	  len *= 2;
-	  cce_retry(L);
+	  cce_retry(inner_L);
 	}
       }
       cce_run_error_handlers_raise(inner_L, L);
     } else {
       char	buf[len];
-      if (0) { fprintf(stderr, "%s: trying length: %lu\n", __func__, len); }
       ccsys_getcwd(inner_L, buf, len);
-      if (0) { fprintf(stderr, "%s: current working directory: %s\n", __func__, buf); }
       cce_run_cleanup_handlers(inner_L);
     }
     cce_run_cleanup_handlers(L);
