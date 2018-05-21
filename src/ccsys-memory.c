@@ -255,11 +255,11 @@ cce_handler_malloc_function (const cce_condition_t * C CCE_UNUSED, cce_handler_t
 }
 
 void
-ccsys_cleanup_handler_malloc_init (cce_location_t * L, cce_handler_t * H, void * pointer)
+ccsys_clean_handler_malloc_init (cce_location_t * L, cce_handler_t * H, void * pointer)
 {
   H->function	= cce_handler_malloc_function;
   H->pointer	= pointer;
-  cce_register_cleanup_handler(L, H);
+  cce_register_clean_handler(L, H);
 }
 
 void
@@ -276,10 +276,10 @@ ccsys_error_handler_malloc_init (cce_location_t * L, cce_handler_t * H, void * p
  ** ----------------------------------------------------------------- */
 
 void *
-ccsys_malloc_guarded_cleanup (cce_location_t * L, cce_cleanup_handler_t * P_H, size_t size)
+ccsys_malloc_guarded_clean (cce_location_t * L, cce_clean_handler_t * P_H, size_t size)
 {
   void *	P = ccsys_malloc(L, size);
-  cce_cleanup_handler_malloc_init(L, &(P_H->handler), P);
+  cce_clean_handler_malloc_init(L, &(P_H->handler), P);
   return P;
 }
 
@@ -294,7 +294,7 @@ ccsys_malloc_guarded_error (cce_location_t * L, cce_error_handler_t * P_H, size_
 /* ------------------------------------------------------------------ */
 
 void *
-ccsys_realloc_guarded_cleanup (cce_location_t * L, cce_cleanup_handler_t * P_H, void * old_P, size_t newsize)
+ccsys_realloc_guarded_clean (cce_location_t * L, cce_clean_handler_t * P_H, void * old_P, size_t newsize)
 {
   if (P_H->handler.pointer == old_P) {
     void *	P = ccsys_realloc(L, old_P, newsize);
@@ -320,10 +320,10 @@ ccsys_realloc_guarded_error (cce_location_t * L, cce_error_handler_t * P_H, void
 /* ------------------------------------------------------------------ */
 
 void *
-ccsys_calloc_guarded_cleanup (cce_location_t * L, cce_cleanup_handler_t * P_H, size_t count, size_t eltsize)
+ccsys_calloc_guarded_clean (cce_location_t * L, cce_clean_handler_t * P_H, size_t count, size_t eltsize)
 {
   void *	P = ccsys_calloc(L, count, eltsize);
-  cce_cleanup_handler_malloc_init(L, &(P_H->handler), P);
+  cce_clean_handler_malloc_init(L, &(P_H->handler), P);
   return P;
 }
 

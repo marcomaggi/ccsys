@@ -41,7 +41,7 @@
 void
 test_handler_malloc (void)
 {
-  /* No error.  Cleanup call. */
+  /* No error.  Clean call. */
   {
     cce_location_t	L[1];
     cce_handler_t	H[1];
@@ -54,8 +54,8 @@ test_handler_malloc (void)
       error_flag = true;
     } else {
       P = ccsys_malloc(L, 4096);
-      ccsys_cleanup_handler_malloc_init(L, H, P);
-      cce_run_cleanup_handlers(L);
+      ccsys_clean_handler_malloc_init(L, H, P);
+      cce_run_clean_handlers(L);
       done_flag = true;
     }
     assert(false == error_flag);
@@ -74,9 +74,9 @@ test_handler_malloc (void)
       error_flag = true;
     } else {
       P = ccsys_malloc(L, 4096);
-      ccsys_cleanup_handler_malloc_init(L, H, P);
+      ccsys_clean_handler_malloc_init(L, H, P);
       cce_raise(L, cce_condition_new_unknown());
-      cce_run_cleanup_handlers(L);
+      cce_run_clean_handlers(L);
       done_flag = true;
     }
     assert(true  == error_flag);
@@ -88,7 +88,7 @@ test_handler_malloc (void)
 void
 test_handler_filedes (void)
 {
-  /* No error.  Cleanup call. */
+  /* No error.  Clean call. */
   {
     cce_location_t	L[1];
     cce_handler_t	H[1];
@@ -102,8 +102,8 @@ test_handler_filedes (void)
       ccsys_open_flags_t	flags = { .data = CCSYS_O_CREAT };
       ccsys_open_mode_t		mode  = { .data = CCSYS_S_IRWXU };
       ccsys_fd_t		fd   = ccsys_open(L, "name.ext", flags, mode);
-      ccsys_cleanup_handler_filedes_init(L, H, fd);
-      cce_run_cleanup_handlers(L);
+      ccsys_clean_handler_filedes_init(L, H, fd);
+      cce_run_clean_handlers(L);
       done_flag = true;
     }
     remove("name.ext");
@@ -124,9 +124,9 @@ test_handler_filedes (void)
       ccsys_open_flags_t	flags = { .data = CCSYS_O_CREAT };
       ccsys_open_mode_t		mode = { .data = CCSYS_S_IRWXU };
       ccsys_fd_t		fd   = ccsys_open(L, "name.ext", flags, mode);
-      ccsys_cleanup_handler_filedes_init(L, H, fd);
+      ccsys_clean_handler_filedes_init(L, H, fd);
       cce_raise(L, cce_condition_new_unknown());
-      cce_run_cleanup_handlers(L);
+      cce_run_clean_handlers(L);
       done_flag = true;
     }
     remove("name.ext");
@@ -139,7 +139,7 @@ test_handler_filedes (void)
 void
 test_handler_pipedes (void)
 {
-  /* No error.  Cleanup call. */
+  /* No error.  Clean call. */
   {
     cce_location_t	L[1];
     cce_handler_t	H[1];
@@ -152,8 +152,8 @@ test_handler_pipedes (void)
     } else {
       ccsys_fd_t	pipedes[2];
       ccsys_pipe(L, pipedes);
-      ccsys_cleanup_handler_pipedes_init(L, H, pipedes);
-      cce_run_cleanup_handlers(L);
+      ccsys_clean_handler_pipedes_init(L, H, pipedes);
+      cce_run_clean_handlers(L);
       done_flag = true;
     }
     assert(false == error_flag);
@@ -172,9 +172,9 @@ test_handler_pipedes (void)
     } else {
       ccsys_fd_t	pipedes[2];
       ccsys_pipe(L, pipedes);
-      ccsys_cleanup_handler_pipedes_init(L, H, pipedes);
+      ccsys_clean_handler_pipedes_init(L, H, pipedes);
       cce_raise(L, cce_condition_new_unknown());
-      cce_run_cleanup_handlers(L);
+      cce_run_clean_handlers(L);
       done_flag = true;
     }
     assert(true  == error_flag);
@@ -186,7 +186,7 @@ test_handler_pipedes (void)
 void
 test_handler_remove (void)
 {
-  /* No error.  Cleanup call. */
+  /* No error.  Clean call. */
   {
     cce_location_t	L[1];
     cce_handler_t	filedes_H[1];
@@ -201,9 +201,9 @@ test_handler_remove (void)
       ccsys_open_flags_t	flags = { .data = CCSYS_O_CREAT };
       ccsys_open_mode_t	mode = { .data = CCSYS_S_IRUSR|CCSYS_S_IWUSR };
       ccsys_fd_t	fd = ccsys_open(L, "name.ext", flags, mode);
-      ccsys_cleanup_handler_filedes_init(L, filedes_H, fd);
-      ccsys_cleanup_handler_remove_init(L, remove_H, "name.ext");
-      cce_run_cleanup_handlers(L);
+      ccsys_clean_handler_filedes_init(L, filedes_H, fd);
+      ccsys_clean_handler_remove_init(L, remove_H, "name.ext");
+      cce_run_clean_handlers(L);
       done_flag = true;
     }
     assert(false == error_flag);
@@ -224,10 +224,10 @@ test_handler_remove (void)
       ccsys_open_flags_t	flags = { .data = CCSYS_O_CREAT };
       ccsys_open_mode_t	mode = { .data = CCSYS_S_IRUSR|CCSYS_S_IWUSR };
       ccsys_fd_t	fd   = ccsys_open(L, "name.ext", flags, mode);
-      ccsys_cleanup_handler_filedes_init(L, filedes_H, fd);
-      ccsys_cleanup_handler_remove_init(L, remove_H, "name.ext");
+      ccsys_clean_handler_filedes_init(L, filedes_H, fd);
+      ccsys_clean_handler_remove_init(L, remove_H, "name.ext");
       cce_raise(L, cce_condition_new_unknown());
-      cce_run_cleanup_handlers(L);
+      cce_run_clean_handlers(L);
       done_flag = true;
     }
     assert(true  == error_flag);
@@ -239,7 +239,7 @@ test_handler_remove (void)
 void
 test_handler_rmdir (void)
 {
-  /* No error.  Cleanup call. */
+  /* No error.  Clean call. */
   {
     cce_location_t	L[1];
     cce_handler_t	rmdir_H[1];
@@ -252,8 +252,8 @@ test_handler_rmdir (void)
     } else {
       ccsys_open_mode_t	mode = { .data = 0 };
       ccsys_mkdir(L, "name.d", mode);
-      ccsys_cleanup_handler_rmdir_init(L, rmdir_H, "name.d");
-      cce_run_cleanup_handlers(L);
+      ccsys_clean_handler_rmdir_init(L, rmdir_H, "name.d");
+      cce_run_clean_handlers(L);
       done_flag = true;
     }
     assert(false == error_flag);
@@ -272,9 +272,9 @@ test_handler_rmdir (void)
     } else {
       ccsys_open_mode_t	mode = { .data = 0 };
       ccsys_mkdir(L, "name.d", mode);
-      ccsys_cleanup_handler_rmdir_init(L, rmdir_H, "name.d");
+      ccsys_clean_handler_rmdir_init(L, rmdir_H, "name.d");
       cce_raise(L, cce_condition_new_unknown());
-      cce_run_cleanup_handlers(L);
+      cce_run_clean_handlers(L);
       done_flag = true;
     }
     assert(true  == error_flag);

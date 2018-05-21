@@ -35,7 +35,7 @@ test_1_1 (cce_destination_t upper_L)
 /* Open a file with "ccsys_open()". */
 {
   cce_location_t	  L[1];
-  cce_cleanup_handler_t   H[1];
+  cce_clean_handler_t   H[1];
 
   if (cce_location(L)) {
     cce_run_error_handlers_raise(L, upper_L);
@@ -51,7 +51,7 @@ test_1_1 (cce_destination_t upper_L)
     ccsys_handler_filedes_init(L, H, fd);
     cctests_assert(L, 0 != fd.data);
     ccsys_remove(L, filename);
-    cce_run_cleanup_handlers(L);
+    cce_run_clean_handlers(L);
   }
 }
 
@@ -62,9 +62,9 @@ test_2_1 (cce_destination_t upper_L)
 /* Open a file with "ccsys_openat()". */
 {
   cce_location_t		L[1];
-  cce_cleanup_handler_t		dir_H[1];
-  cce_cleanup_handler_t		dirstream_H[1];
-  cce_cleanup_handler_t		file_H[1];
+  cce_clean_handler_t		dir_H[1];
+  cce_clean_handler_t		dirstream_H[1];
+  cce_clean_handler_t		file_H[1];
 
   if (cce_location(L)) {
     fprintf(stderr, "%s: %s\n", __func__, cce_condition_static_message(cce_condition(L)));
@@ -109,7 +109,7 @@ test_2_1 (cce_destination_t upper_L)
       ccsys_unlinkat(L, dirfd, filename, flags);
     }
 
-    cce_run_cleanup_handlers(L);
+    cce_run_clean_handlers(L);
   }
 }
 
@@ -123,7 +123,7 @@ test_3_1 (cce_destination_t upper_L)
 /* Open a pipe with "ccsys_pipe()". */
 {
   cce_location_t	  L[1];
-  cce_cleanup_handler_t   H[1];
+  cce_clean_handler_t   H[1];
 
   if (cce_location(L)) {
     cce_run_error_handlers_raise(L, upper_L);
@@ -155,7 +155,7 @@ test_3_1 (cce_destination_t upper_L)
       cctests_assert(L, 0 == strncmp(buf, "0123456789", N));
     }
 
-    cce_run_cleanup_handlers(L);
+    cce_run_clean_handlers(L);
   }
 }
 
@@ -164,7 +164,7 @@ test_3_2 (cce_destination_t upper_L)
 /* Open a pipe with "ccsys_pipe2()". */
 {
   cce_location_t	  L[1];
-  cce_cleanup_handler_t   H[1];
+  cce_clean_handler_t   H[1];
 
   if (cce_location(L)) {
     cce_run_error_handlers_raise(L, upper_L);
@@ -198,7 +198,7 @@ test_3_2 (cce_destination_t upper_L)
       cctests_assert(L, 0 == strncmp(buf, "0123456789", N));
     }
 
-    cce_run_cleanup_handlers(L);
+    cce_run_clean_handlers(L);
   }
 }
 
@@ -215,7 +215,7 @@ test_4_1 (cce_destination_t upper_L)
 /* Open a FIFO with "ccsys_mkfifo()". */
 {
   cce_location_t	L[1];
-  cce_cleanup_handler_t	fifo_H[1];
+  cce_clean_handler_t	fifo_H[1];
 
   if (cce_location(L)) {
     cce_run_error_handlers_raise(L, upper_L);
@@ -251,7 +251,7 @@ test_4_1 (cce_destination_t upper_L)
 	 FIFO then exit. */
       test_4_1_child(fifoname);
     }
-    cce_run_cleanup_handlers(L);
+    cce_run_clean_handlers(L);
   }
 }
 
@@ -259,7 +259,7 @@ void
 test_4_1_parent (cce_destination_t upper_L, char const * fifoname)
 {
   cce_location_t	L[1];
-  cce_cleanup_handler_t	infd_H[1];
+  cce_clean_handler_t	infd_H[1];
   ccsys_fd_t		infd;
 
   if (cce_location(L)) {
@@ -289,7 +289,7 @@ test_4_1_parent (cce_destination_t upper_L, char const * fifoname)
       if (0) { fprintf(stderr, "%s: read input='%s' \n", __func__, inbuf); }
     }
 
-    cce_run_cleanup_handlers(L);
+    cce_run_clean_handlers(L);
   }
 }
 
@@ -298,7 +298,7 @@ test_4_1_child  (char const * fifoname)
 {
   cce_location_t	L[1];
   ccsys_fd_t		oufd;
-  cce_cleanup_handler_t	oufd_H[1];
+  cce_clean_handler_t	oufd_H[1];
 
   if (cce_location(L)) {
     cce_run_error_handlers_final(L);
@@ -322,7 +322,7 @@ test_4_1_child  (char const * fifoname)
       if (0) { fprintf(stderr, "%s: writing to %s\n", __func__, fifoname); }
       ccsys_write(L, oufd, oubuf, len);
     }
-    cce_run_cleanup_handlers(L);
+    cce_run_clean_handlers(L);
   }
 
   /* Terminate the child process. */
@@ -346,9 +346,9 @@ test_4_2 (cce_destination_t upper_L)
 /* Open a FIFO with "ccsys_mkfifo()". */
 {
   cce_location_t	L[1];
-  cce_cleanup_handler_t	dir_H[1];
-  cce_cleanup_handler_t	dirstream_H[1];
-  cce_cleanup_handler_t	fifo_H[1];
+  cce_clean_handler_t	dir_H[1];
+  cce_clean_handler_t	dirstream_H[1];
+  cce_clean_handler_t	fifo_H[1];
   ccsys_at_link_t	fifo_unlink_data;
 
   if (cce_location(L)) {
@@ -407,7 +407,7 @@ test_4_2 (cce_destination_t upper_L)
 	 FIFO then exit. */
       test_4_2_child(dirfd, fifoname);
     }
-    cce_run_cleanup_handlers(L);
+    cce_run_clean_handlers(L);
   }
 }
 
@@ -415,7 +415,7 @@ void
 test_4_2_parent (cce_destination_t upper_L, ccsys_dirfd_t dirfd, char const * fifoname)
 {
   cce_location_t	L[1];
-  cce_cleanup_handler_t	infd_H[1];
+  cce_clean_handler_t	infd_H[1];
   ccsys_fd_t		infd;
 
   if (cce_location(L)) {
@@ -445,7 +445,7 @@ test_4_2_parent (cce_destination_t upper_L, ccsys_dirfd_t dirfd, char const * fi
       if (0) { fprintf(stderr, "%s: read input='%s' \n", __func__, inbuf); }
     }
 
-    cce_run_cleanup_handlers(L);
+    cce_run_clean_handlers(L);
   }
 }
 
@@ -454,7 +454,7 @@ test_4_2_child (ccsys_dirfd_t dirfd, char const * fifoname)
 {
   cce_location_t	L[1];
   ccsys_fd_t		oufd;
-  cce_cleanup_handler_t	oufd_H[1];
+  cce_clean_handler_t	oufd_H[1];
 
   if (cce_location(L)) {
     cce_run_error_handlers_final(L);
@@ -478,7 +478,7 @@ test_4_2_child (ccsys_dirfd_t dirfd, char const * fifoname)
       if (0) { fprintf(stderr, "%s: writing to %s\n", __func__, fifoname); }
       ccsys_write(L, oufd, oubuf, len);
     }
-    cce_run_cleanup_handlers(L);
+    cce_run_clean_handlers(L);
   }
 
   /* Terminate the child process. */
@@ -513,7 +513,7 @@ test_5_1 (cce_destination_t upper_L)
     fd = ccsys_open(L, filename, flags, mode);
     ccsys_close(L, fd);
     ccsys_remove(L, filename);
-    cce_run_cleanup_handlers(L);
+    cce_run_clean_handlers(L);
   }
 }
 
@@ -528,8 +528,8 @@ test_6_1 (cce_destination_t upper_L)
    remove the file. */
 {
   cce_location_t	  L[1];
-  cce_cleanup_handler_t   filedes_H[1];
-  cce_cleanup_handler_t   file_H[1];
+  cce_clean_handler_t   filedes_H[1];
+  cce_clean_handler_t   file_H[1];
 
   if (cce_location(L)) {
     cce_run_error_handlers_raise(L, upper_L);
@@ -586,7 +586,7 @@ test_6_1 (cce_destination_t upper_L)
       }
     }
 
-    cce_run_cleanup_handlers(L);
+    cce_run_clean_handlers(L);
   }
 }
 
@@ -602,8 +602,8 @@ test_6_2 (cce_destination_t upper_L)
 {
 #if ((defined HAVE_PREAD) && (defined HAVE_PWRITE))
   cce_location_t	  L[1];
-  cce_cleanup_handler_t   filedes_H[1];
-  cce_cleanup_handler_t   file_H[1];
+  cce_clean_handler_t   filedes_H[1];
+  cce_clean_handler_t   file_H[1];
 
   if (cce_location(L)) {
     cce_run_error_handlers_raise(L, upper_L);
@@ -654,7 +654,7 @@ test_6_2 (cce_destination_t upper_L)
       }
     }
 
-    cce_run_cleanup_handlers(L);
+    cce_run_clean_handlers(L);
   }
 #endif
 }
@@ -671,8 +671,8 @@ test_7_1 (cce_destination_t upper_L)
 {
 #if ((defined HAVE_READV) && (defined HAVE_WRITEV))
   cce_location_t	  L[1];
-  cce_cleanup_handler_t   filedes_H[1];
-  cce_cleanup_handler_t   file_H[1];
+  cce_clean_handler_t   filedes_H[1];
+  cce_clean_handler_t   file_H[1];
 
   if (cce_location(L)) {
     cce_run_error_handlers_raise(L, upper_L);
@@ -752,7 +752,7 @@ test_7_1 (cce_destination_t upper_L)
       }
     }
 
-    cce_run_cleanup_handlers(L);
+    cce_run_clean_handlers(L);
   }
 #endif
 }
@@ -769,8 +769,8 @@ test_7_2 (cce_destination_t upper_L)
 {
 #if ((defined HAVE_PREADV) && (defined HAVE_PWRITEV))
   cce_location_t	  L[1];
-  cce_cleanup_handler_t   filedes_H[1];
-  cce_cleanup_handler_t   file_H[1];
+  cce_clean_handler_t   filedes_H[1];
+  cce_clean_handler_t   file_H[1];
 
   if (cce_location(L)) {
     cce_run_error_handlers_raise(L, upper_L);
@@ -844,7 +844,7 @@ test_7_2 (cce_destination_t upper_L)
       }
     }
 
-    cce_run_cleanup_handlers(L);
+    cce_run_clean_handlers(L);
   }
 #endif
 }
@@ -861,8 +861,8 @@ test_8_1 (cce_destination_t upper_L)
 {
 #if ((defined HAVE_DUP) && (defined HAVE_PREAD) && (defined HAVE_PWRITE))
   cce_location_t	  L[1];
-  cce_cleanup_handler_t   filedes_H[1];
-  cce_cleanup_handler_t   file_H[1];
+  cce_clean_handler_t   filedes_H[1];
+  cce_clean_handler_t   file_H[1];
 
   if (cce_location(L)) {
     fprintf(stderr, "%s: %s\n", __func__, cce_condition_static_message(cce_condition(L)));
@@ -912,7 +912,7 @@ test_8_1 (cce_destination_t upper_L)
       cctests_assert(L, 0 == strncmp(inbuf, checkbuf, len));
     }
 
-    cce_run_cleanup_handlers(L);
+    cce_run_clean_handlers(L);
   }
 #endif
 }
@@ -929,8 +929,8 @@ test_8_2 (cce_destination_t upper_L)
 {
 #if ((defined HAVE_DUP2) && (defined HAVE_PREAD) && (defined HAVE_PWRITE))
   cce_location_t	  L[1];
-  cce_cleanup_handler_t   filedes_H[1];
-  cce_cleanup_handler_t   file_H[1];
+  cce_clean_handler_t   filedes_H[1];
+  cce_clean_handler_t   file_H[1];
 
   if (cce_location(L)) {
     fprintf(stderr, "%s: %s\n", __func__, cce_condition_static_message(cce_condition(L)));
@@ -982,7 +982,7 @@ test_8_2 (cce_destination_t upper_L)
       cctests_assert(L, 0 == strncmp(inbuf, checkbuf, len));
     }
 
-    cce_run_cleanup_handlers(L);
+    cce_run_clean_handlers(L);
   }
 #endif
 }
@@ -999,8 +999,8 @@ test_8_3 (cce_destination_t upper_L)
 {
 #if ((defined HAVE_DUP3) && (defined HAVE_PREAD) && (defined HAVE_PWRITE))
   cce_location_t	  L[1];
-  cce_cleanup_handler_t   filedes_H[1];
-  cce_cleanup_handler_t   file_H[1];
+  cce_clean_handler_t   filedes_H[1];
+  cce_clean_handler_t   file_H[1];
 
   if (cce_location(L)) {
     fprintf(stderr, "%s: %s\n", __func__, cce_condition_static_message(cce_condition(L)));
@@ -1055,7 +1055,7 @@ test_8_3 (cce_destination_t upper_L)
       cctests_assert(L, 0 == strncmp(inbuf, checkbuf, len));
     }
 
-    cce_run_cleanup_handlers(L);
+    cce_run_clean_handlers(L);
   }
 #endif
 }
@@ -1089,7 +1089,7 @@ test_9_1 (cce_destination_t upper_L)
       ccsys_handler_pipedes_init(L, forwards_H, forwards);
       ccsys_pipe(L, backwards);
       ccsys_handler_pipedes_init(L, backwards_H, backwards);
-      cce_run_cleanup_handlers(L);
+      cce_run_clean_handlers(L);
     }
 
     /* Here the  pipes have been  allocated.  Now split them  into their
@@ -1130,7 +1130,7 @@ test_9_1 (cce_destination_t upper_L)
 	  ccsys__exit(status);
 	}
       }
-      cce_run_cleanup_handlers(L);
+      cce_run_clean_handlers(L);
     }
   }
 }
@@ -1139,8 +1139,8 @@ void
 test_9_1_parent (cce_destination_t upper_L, ccsys_fd_t infd, ccsys_fd_t oufd)
 {
   cce_location_t	L[1];
-  cce_cleanup_handler_t	infd_H[1];
-  cce_cleanup_handler_t	oufd_H[1];
+  cce_clean_handler_t	infd_H[1];
+  cce_clean_handler_t	oufd_H[1];
 
   if (cce_location(L)) {
     cce_run_error_handlers_raise(L, upper_L);
@@ -1200,7 +1200,7 @@ test_9_1_parent (cce_destination_t upper_L, ccsys_fd_t infd, ccsys_fd_t oufd)
       cctests_assert(L, 0 == strncmp(buf, "hello parent", N));
     }
 
-    cce_run_cleanup_handlers(L);
+    cce_run_clean_handlers(L);
   }
 }
 
@@ -1208,8 +1208,8 @@ void
 test_9_1_child (ccsys_fd_t infd, ccsys_fd_t oufd)
 {
   cce_location_t	L[1];
-  cce_cleanup_handler_t	infd_H[1];
-  cce_cleanup_handler_t	oufd_H[1];
+  cce_clean_handler_t	infd_H[1];
+  cce_clean_handler_t	oufd_H[1];
 
   if (cce_location(L)) {
     cce_run_error_handlers_final(L);
@@ -1269,7 +1269,7 @@ test_9_1_child (ccsys_fd_t infd, ccsys_fd_t oufd)
       cctests_assert(L, N == len);
     }
 
-    cce_run_cleanup_handlers(L);
+    cce_run_clean_handlers(L);
   }
 }
 
@@ -1302,7 +1302,7 @@ test_9_2 (cce_destination_t upper_L)
       ccsys_handler_pipedes_init(L, forwards_H, forwards);
       ccsys_pipe(L, backwards);
       ccsys_handler_pipedes_init(L, backwards_H, backwards);
-      cce_run_cleanup_handlers(L);
+      cce_run_clean_handlers(L);
     }
 
     /* Here the  pipes have been  allocated.  Now split them  into their
@@ -1343,7 +1343,7 @@ test_9_2 (cce_destination_t upper_L)
 	  ccsys__exit(status);
 	}
       }
-      cce_run_cleanup_handlers(L);
+      cce_run_clean_handlers(L);
     }
   }
 }
@@ -1352,8 +1352,8 @@ void
 test_9_2_parent (cce_destination_t upper_L, ccsys_fd_t infd, ccsys_fd_t oufd)
 {
   cce_location_t	L[1];
-  cce_cleanup_handler_t	infd_H[1];
-  cce_cleanup_handler_t	oufd_H[1];
+  cce_clean_handler_t	infd_H[1];
+  cce_clean_handler_t	oufd_H[1];
 
   if (cce_location(L)) {
     cce_run_error_handlers_raise(L, upper_L);
@@ -1415,7 +1415,7 @@ test_9_2_parent (cce_destination_t upper_L, ccsys_fd_t infd, ccsys_fd_t oufd)
       cctests_assert(L, 0 == strncmp(buf, "hello parent", N));
     }
 
-    cce_run_cleanup_handlers(L);
+    cce_run_clean_handlers(L);
   }
 }
 
@@ -1423,8 +1423,8 @@ void
 test_9_2_child (ccsys_fd_t infd, ccsys_fd_t oufd)
 {
   cce_location_t	L[1];
-  cce_cleanup_handler_t	infd_H[1];
-  cce_cleanup_handler_t	oufd_H[1];
+  cce_clean_handler_t	infd_H[1];
+  cce_clean_handler_t	oufd_H[1];
 
   if (cce_location(L)) {
     cce_run_error_handlers_final(L);
@@ -1486,7 +1486,7 @@ test_9_2_child (ccsys_fd_t infd, ccsys_fd_t oufd)
       cctests_assert(L, N == len);
     }
 
-    cce_run_cleanup_handlers(L);
+    cce_run_clean_handlers(L);
   }
 }
 
@@ -1499,8 +1499,8 @@ void
 test_10_1 (cce_destination_t upper_L)
 {
   cce_location_t	L[1];
-  cce_cleanup_handler_t	stream_H[1];
-  cce_cleanup_handler_t	filename_H[1];
+  cce_clean_handler_t	stream_H[1];
+  cce_clean_handler_t	filename_H[1];
 
   if (cce_location(L)) {
     if (1) { fprintf(stderr, "%s: %s\n", __func__, cce_condition_static_message(cce_condition(L))); }
@@ -1575,7 +1575,7 @@ test_10_1 (cce_destination_t upper_L)
 	cctests_assert(L, 0 == offset);
       }
     }
-    cce_run_cleanup_handlers(L);
+    cce_run_clean_handlers(L);
   }
 }
 
@@ -1583,7 +1583,7 @@ void
 test_10_2 (cce_destination_t upper_L)
 {
   cce_location_t	L[1];
-  cce_cleanup_handler_t	filename_H[1];
+  cce_clean_handler_t	filename_H[1];
 
   if (cce_location(L)) {
     if (1) { fprintf(stderr, "%s: %s\n", __func__, cce_condition_static_message(cce_condition(L))); }
@@ -1612,7 +1612,7 @@ test_10_2 (cce_destination_t upper_L)
     /* Close the stream. */
     ccsys_fclose(L, stream);
 
-    cce_run_cleanup_handlers(L);
+    cce_run_clean_handlers(L);
   }
 }
 

@@ -176,11 +176,11 @@ cce_handler_dirstream_function (const cce_condition_t * C CCE_UNUSED, cce_handle
 }
 
 void
-ccsys_cleanup_handler_dirstream_init (cce_location_t * L, cce_handler_t * H, ccsys_dir_t * dirstream)
+ccsys_clean_handler_dirstream_init (cce_location_t * L, cce_handler_t * H, ccsys_dir_t * dirstream)
 {
   H->function	= cce_handler_dirstream_function;
   H->pointer	= dirstream;
-  cce_register_cleanup_handler(L, H);
+  cce_register_clean_handler(L, H);
 }
 
 void
@@ -888,11 +888,11 @@ cce_handler_rmdir_function (const cce_condition_t * C CCE_UNUSED, cce_handler_t 
 }
 
 void
-ccsys_cleanup_handler_rmdir_init (cce_location_t * L, cce_handler_t * H, char const * pathname)
+ccsys_clean_handler_rmdir_init (cce_location_t * L, cce_handler_t * H, char const * pathname)
 {
   H->function	= cce_handler_rmdir_function;
   H->pathname	= (char *)pathname;
-  cce_register_cleanup_handler(L, H);
+  cce_register_clean_handler(L, H);
 }
 
 void
@@ -1143,11 +1143,11 @@ cce_handler_unlinkat_function (const cce_condition_t * C CCE_UNUSED, cce_handler
 }
 
 void
-ccsys_cleanup_handler_unlinkat_init (cce_location_t * L, cce_handler_t * H, ccsys_at_link_t * lnk)
+ccsys_clean_handler_unlinkat_init (cce_location_t * L, cce_handler_t * H, ccsys_at_link_t * lnk)
 {
   H->function	= cce_handler_unlinkat_function;
   H->pointer	= lnk;
-  cce_register_cleanup_handler(L, H);
+  cce_register_clean_handler(L, H);
 }
 
 void
@@ -1190,11 +1190,11 @@ cce_handler_remove_function (const cce_condition_t * C CCE_UNUSED, cce_handler_t
 }
 
 void
-ccsys_cleanup_handler_remove_init (cce_location_t * L, cce_handler_t * H, char const * pathname)
+ccsys_clean_handler_remove_init (cce_location_t * L, cce_handler_t * H, char const * pathname)
 {
   H->function	= cce_handler_remove_function;
   H->pathname	= (char *)pathname;
-  cce_register_cleanup_handler(L, H);
+  cce_register_clean_handler(L, H);
 }
 
 void

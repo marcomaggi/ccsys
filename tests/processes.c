@@ -42,7 +42,7 @@ test_1_1 (cce_destination_t upper_L)
   } else {
     ccsys_system(L, "whoami");
 
-    cce_run_cleanup_handlers(L);
+    cce_run_clean_handlers(L);
   }
 #else
   cctests_skip();

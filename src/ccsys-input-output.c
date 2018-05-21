@@ -758,11 +758,11 @@ cce_handler_filedes_function (cce_condition_t const * C CCE_UNUSED, cce_handler_
 }
 
 void
-ccsys_cleanup_handler_filedes_init (cce_location_t * L, cce_handler_t * H, ccsys_fd_t filedes)
+ccsys_clean_handler_filedes_init (cce_location_t * L, cce_handler_t * H, ccsys_fd_t filedes)
 {
   H->function	= cce_handler_filedes_function;
   H->filedes	= filedes.data;
-  cce_register_cleanup_handler(L, H);
+  cce_register_clean_handler(L, H);
 }
 
 void
@@ -787,11 +787,11 @@ cce_handler_stream_function (cce_condition_t const * C CCE_UNUSED, cce_handler_t
 }
 
 void
-ccsys_cleanup_handler_stream_init (cce_location_t * L, cce_handler_t * H, ccsys_file_t file)
+ccsys_clean_handler_stream_init (cce_location_t * L, cce_handler_t * H, ccsys_file_t file)
 {
   H->function	= cce_handler_stream_function;
   H->pointer	= file.data;
-  cce_register_cleanup_handler(L, H);
+  cce_register_clean_handler(L, H);
 }
 
 void
@@ -816,11 +816,11 @@ cce_handler_dirfd_function (cce_condition_t const * C CCE_UNUSED, cce_handler_t 
 }
 
 void
-ccsys_cleanup_handler_dirfd_init (cce_location_t * L, cce_handler_t * H, ccsys_dirfd_t dirfd)
+ccsys_clean_handler_dirfd_init (cce_location_t * L, cce_handler_t * H, ccsys_dirfd_t dirfd)
 {
   H->function	= cce_handler_dirfd_function;
   H->filedes	= dirfd.data;
-  cce_register_cleanup_handler(L, H);
+  cce_register_clean_handler(L, H);
 }
 
 void
@@ -848,12 +848,12 @@ cce_handler_pipedes_function (cce_condition_t const * C CCE_UNUSED, cce_handler_
 }
 
 void
-ccsys_cleanup_handler_pipedes_init (cce_location_t * L, cce_handler_t * H, ccsys_fd_t pipedes[2])
+ccsys_clean_handler_pipedes_init (cce_location_t * L, cce_handler_t * H, ccsys_fd_t pipedes[2])
 {
   H->function	= cce_handler_pipedes_function;
   H->pipedes[0]	= pipedes[0].data;
   H->pipedes[1]	= pipedes[1].data;
-  cce_register_cleanup_handler(L, H);
+  cce_register_clean_handler(L, H);
 }
 
 void

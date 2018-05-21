@@ -732,10 +732,10 @@ cce_handler_endpwent_function (const cce_condition_t * C CCSYS_UNUSED, cce_handl
 }
 
 void
-ccsys_cleanup_handler_endpwent_init (cce_location_t * L, cce_handler_t * H)
+ccsys_clean_handler_endpwent_init (cce_location_t * L, cce_handler_t * H)
 {
   H->function	= cce_handler_endpwent_function;
-  cce_register_cleanup_handler(L, H);
+  cce_register_clean_handler(L, H);
 }
 
 void
@@ -761,10 +761,10 @@ cce_handler_endgrent_function (const cce_condition_t * C CCSYS_UNUSED, cce_handl
 }
 
 void
-ccsys_cleanup_handler_endgrent_init (cce_location_t * L, cce_handler_t * H)
+ccsys_clean_handler_endgrent_init (cce_location_t * L, cce_handler_t * H)
 {
   H->function	= cce_handler_endgrent_function;
-  cce_register_cleanup_handler(L, H);
+  cce_register_clean_handler(L, H);
 }
 
 void

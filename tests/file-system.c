@@ -44,7 +44,7 @@ test_1_1_1 (cce_destination_t upper_L)
 
     ccsys_getcwd(L, buf, len);
     if (0) { fprintf(stderr, "%s: current working directory: %s\n", __func__, buf); }
-    cce_run_cleanup_handlers(L);
+    cce_run_clean_handlers(L);
   }
 }
 
@@ -64,7 +64,7 @@ test_1_1_2 (cce_destination_t upper_L)
 
     if (cce_location(inner_L)) {
       if (cce_condition_is_errno(cce_condition(inner_L))) {
-	if (CCSYS_ERANGE == cce_ref_condition_errno_errnum(cce_condition(inner_L))) {
+	if (CCSYS_ERANGE == cce_condition_ref_errno_errnum(cce_condition(inner_L))) {
 	  len *= 2;
 	  cce_retry(inner_L);
 	}
@@ -73,9 +73,9 @@ test_1_1_2 (cce_destination_t upper_L)
     } else {
       char	buf[len];
       ccsys_getcwd(inner_L, buf, len);
-      cce_run_cleanup_handlers(inner_L);
+      cce_run_clean_handlers(inner_L);
     }
-    cce_run_cleanup_handlers(L);
+    cce_run_clean_handlers(L);
   }
 }
 
@@ -99,7 +99,7 @@ test_1_2 (cce_destination_t upper_L)
 {
 #if (defined HAVE_GET_CURRENT_DIR_NAME)
   cce_location_t	L[1];
-  cce_cleanup_handler_t	H[1];
+  cce_clean_handler_t	H[1];
 
   if (cce_location(L)) {
     cce_run_error_handlers_raise(L, upper_L);
@@ -110,7 +110,7 @@ test_1_2 (cce_destination_t upper_L)
     ccsys_handler_malloc_init(L, H, buf);
 
     if (0) { fprintf(stderr, "%s: current working directory: %s\n", __func__, buf); }
-    cce_run_cleanup_handlers(L);
+    cce_run_clean_handlers(L);
   }
 #endif
 }
@@ -151,7 +151,7 @@ test_1_3 (cce_destination_t upper_L)
     cce_run_error_handlers_raise(L, upper_L);
   } else {
     cctests_call_in_forked_process(L, test_1_3_child);
-    cce_run_cleanup_handlers(L);
+    cce_run_clean_handlers(L);
   }
 #endif
 }
@@ -166,7 +166,7 @@ test_1_4_child (cce_destination_t upper_L)
 {
 #if (defined HAVE_FCHDIR)
   cce_location_t	L[1];
-  cce_cleanup_handler_t	dirstream_H[1];
+  cce_clean_handler_t	dirstream_H[1];
 
   if (cce_location(L)) {
     cce_run_error_handlers_raise(L, upper_L);
@@ -189,7 +189,7 @@ test_1_4_child (cce_destination_t upper_L)
       if (0) { fprintf(stderr, "%s: current working directory: %s\n", __func__, buf); }
     }
 #endif
-    cce_run_cleanup_handlers(L);
+    cce_run_clean_handlers(L);
   }
 #endif
 }
@@ -208,7 +208,7 @@ test_1_4 (cce_destination_t upper_L)
     cce_run_error_handlers_raise(L, upper_L);
   } else {
     cctests_call_in_forked_process(L, test_1_4_child);
-    cce_run_cleanup_handlers(L);
+    cce_run_clean_handlers(L);
   }
 #endif
 }
@@ -222,7 +222,7 @@ void
 test_2_1 (cce_destination_t upper_L)
 {
   cce_location_t          L[1];
-  cce_cleanup_handler_t   dirstream_H[1];
+  cce_clean_handler_t   dirstream_H[1];
   char const *            pathname = "./";
 
   if (cce_location(L)) {
@@ -239,7 +239,7 @@ test_2_1 (cce_destination_t upper_L)
       if (0) { printf("%s\n", ccsys_ref_dirent_d_name(direntry)); }
       fflush(stdout);
     }
-    cce_run_cleanup_handlers(L);
+    cce_run_clean_handlers(L);
   }
 }
 
@@ -252,7 +252,7 @@ void
 test_3_1 (cce_destination_t upper_L)
 {
   cce_location_t          L[1];
-  cce_cleanup_handler_t   dirname_H[1];
+  cce_clean_handler_t   dirname_H[1];
   char const *            dirname = "name.d";
 
   if (cce_location(L)) {
@@ -263,7 +263,7 @@ test_3_1 (cce_destination_t upper_L)
     mode.data = CCSYS_S_IRWXU;
     ccsys_mkdir(L, dirname, mode);
     ccsys_handler_rmdir_init(L, dirname_H, dirname);
-    cce_run_cleanup_handlers(L);
+    cce_run_clean_handlers(L);
   }
 }
 
@@ -281,7 +281,7 @@ test_3_2 (cce_destination_t upper_L)
     mode.data = CCSYS_S_IRWXU;
     ccsys_mkdir(L, dirname, mode);
     ccsys_rmdir(L, dirname);
-    cce_run_cleanup_handlers(L);
+    cce_run_clean_handlers(L);
   }
 }
 
@@ -290,8 +290,8 @@ test_3_3 (cce_destination_t upper_L)
 /* Create a diirectory with "ccsys_mkdirat()". */
 {
   cce_location_t	L[1];
-  cce_cleanup_handler_t	dirname1_H[1];
-  cce_cleanup_handler_t	filedes_H[1];
+  cce_clean_handler_t	dirname1_H[1];
+  cce_clean_handler_t	filedes_H[1];
 
   if (cce_location(L)) {
     if (0) { fprintf(stderr, "%s: %s\n", __func__, cce_condition_static_message(cce_condition(L))); }
@@ -336,7 +336,7 @@ test_3_3 (cce_destination_t upper_L)
       ccsys_unlinkat(L, dirfd1, dirname2, flags);
     }
 
-    cce_run_cleanup_handlers(L);
+    cce_run_clean_handlers(L);
   }
 }
 
@@ -498,8 +498,8 @@ void
 test_4_2 (cce_destination_t upper_L)
 {
   cce_location_t	  L[1];
-  cce_cleanup_handler_t   filename_H[1];
-  cce_cleanup_handler_t   filedes_H[1];
+  cce_clean_handler_t   filename_H[1];
+  cce_clean_handler_t   filedes_H[1];
 
   if (cce_location(L)) {
     cce_run_error_handlers_raise(L, upper_L);
@@ -577,7 +577,7 @@ test_4_2 (cce_destination_t upper_L)
 #endif
     }
 
-    cce_run_cleanup_handlers(L);
+    cce_run_clean_handlers(L);
   }
 }
 
@@ -590,8 +590,8 @@ void
 test_4_3 (cce_destination_t upper_L)
 {
   cce_location_t	  L[1];
-  cce_cleanup_handler_t	  filename_H[1];
-  cce_cleanup_handler_t	  filedes_H[1];
+  cce_clean_handler_t	  filename_H[1];
+  cce_clean_handler_t	  filedes_H[1];
 
   if (cce_location(L)) {
     cce_run_error_handlers_raise(L, upper_L);
@@ -669,7 +669,7 @@ test_4_3 (cce_destination_t upper_L)
 #endif
     }
 
-    cce_run_cleanup_handlers(L);
+    cce_run_clean_handlers(L);
   }
 }
 
@@ -684,8 +684,8 @@ test_4_4 (cce_destination_t upper_L)
   cce_location_t	L[1];
   cce_handler_t		dirname_H[1];
   cce_handler_t		dir_H[1];
-  cce_cleanup_handler_t	filename_H[1];
-  cce_cleanup_handler_t	filedes_H[1];
+  cce_clean_handler_t	filename_H[1];
+  cce_clean_handler_t	filedes_H[1];
   ccsys_at_link_t	lnk;
 
   if (cce_location(L)) {
@@ -700,7 +700,7 @@ test_4_4 (cce_destination_t upper_L)
     {
       ccsys_open_mode_t	mode  = { .data = CCSYS_S_IRWXU };
       ccsys_mkdir(L, dirname, mode);
-      ccsys_cleanup_handler_rmdir_init(L, dirname_H, dirname);
+      ccsys_clean_handler_rmdir_init(L, dirname_H, dirname);
     }
 
     /* Open the parent directory.  The descriptor in "dirfd" is released
@@ -709,7 +709,7 @@ test_4_4 (cce_destination_t upper_L)
       ccsys_dir_t *	dir;
 
       dir = ccsys_opendir(L, dirname);
-      ccsys_cleanup_handler_dirstream_init(L, dir_H, dir);
+      ccsys_clean_handler_dirstream_init(L, dir_H, dir);
       dirfd = ccsys_dirfd(L, dir);
     }
 
@@ -789,7 +789,7 @@ test_4_4 (cce_destination_t upper_L)
 #endif
     }
 
-    cce_run_cleanup_handlers(L);
+    cce_run_clean_handlers(L);
   }
 }
 
@@ -802,8 +802,8 @@ void
 test_4_5 (cce_destination_t upper_L)
 {
   cce_location_t	  L[1];
-  cce_cleanup_handler_t   filename_H[1];
-  cce_cleanup_handler_t   filedes_H[1];
+  cce_clean_handler_t   filename_H[1];
+  cce_clean_handler_t   filedes_H[1];
 
   if (cce_location(L)) {
     cce_run_error_handlers_raise(L, upper_L);
@@ -882,7 +882,7 @@ test_4_5 (cce_destination_t upper_L)
 #endif
     }
 
-    cce_run_cleanup_handlers(L);
+    cce_run_clean_handlers(L);
   }
 }
 
@@ -895,9 +895,9 @@ void
 test_5_1 (cce_destination_t upper_L)
 {
   cce_location_t	L[1];
-  cce_cleanup_handler_t	filename_H[1];
-  cce_cleanup_handler_t	filedes_H[1];
-  cce_cleanup_handler_t	linkname_H[1];
+  cce_clean_handler_t	filename_H[1];
+  cce_clean_handler_t	filedes_H[1];
+  cce_clean_handler_t	linkname_H[1];
 
   if (cce_location(L)) {
     cce_run_error_handlers_raise(L, upper_L);
@@ -932,7 +932,7 @@ test_5_1 (cce_destination_t upper_L)
       cctests_assert(L, ccsys_s_isreg(ccsys_ref_stat_st_mode(S)));
     }
 
-    cce_run_cleanup_handlers(L);
+    cce_run_clean_handlers(L);
   }
 }
 
@@ -945,9 +945,9 @@ void
 test_5_2 (cce_destination_t upper_L)
 {
   cce_location_t	L[1];
-  cce_cleanup_handler_t	filename_H[1];
-  cce_cleanup_handler_t	filedes_H[1];
-  cce_cleanup_handler_t	linkname_H[1];
+  cce_clean_handler_t	filename_H[1];
+  cce_clean_handler_t	filedes_H[1];
+  cce_clean_handler_t	linkname_H[1];
 
   if (cce_location(L)) {
     cce_run_error_handlers_raise(L, upper_L);
@@ -982,7 +982,7 @@ test_5_2 (cce_destination_t upper_L)
       cctests_assert(L, ccsys_s_islnk(ccsys_ref_stat_st_mode(S)));
     }
 
-    cce_run_cleanup_handlers(L);
+    cce_run_clean_handlers(L);
   }
 }
 
@@ -996,9 +996,9 @@ test_5_3_1 (cce_destination_t upper_L)
 {
   cce_location_t	L[1];
   cce_handler_t		dir_H[1];
-  cce_cleanup_handler_t	filename_H[1];
-  cce_cleanup_handler_t	filedes_H[1];
-  cce_cleanup_handler_t	linkname_H[1];
+  cce_clean_handler_t	filename_H[1];
+  cce_clean_handler_t	filedes_H[1];
+  cce_clean_handler_t	linkname_H[1];
 
   if (cce_location(L)) {
     cce_run_error_handlers_raise(L, upper_L);
@@ -1016,7 +1016,7 @@ test_5_3_1 (cce_destination_t upper_L)
 
       ccsys_getcwd(L, dirname, CCSYS_PATH_MAX);
       dir = ccsys_opendir(L, dirname);
-      ccsys_cleanup_handler_dirstream_init(L, dir_H, dir);
+      ccsys_clean_handler_dirstream_init(L, dir_H, dir);
       dirfd = ccsys_dirfd(L, dir);
     }
 
@@ -1050,7 +1050,7 @@ test_5_3_1 (cce_destination_t upper_L)
       cctests_assert(L, ccsys_s_isreg(ccsys_ref_stat_st_mode(S)));
     }
 
-    cce_run_cleanup_handlers(L);
+    cce_run_clean_handlers(L);
   }
 }
 
@@ -1063,8 +1063,8 @@ void
 test_5_3_2 (cce_destination_t upper_L)
 {
   cce_location_t	L[1];
-  cce_cleanup_handler_t	filename_H[1];
-  cce_cleanup_handler_t	linkname_H[1];
+  cce_clean_handler_t	filename_H[1];
+  cce_clean_handler_t	linkname_H[1];
 
   if (cce_location(L)) {
     if (0) { fprintf(stderr, "%s: %s\n", __func__, cce_condition_static_message(cce_condition(L))); }
@@ -1101,7 +1101,7 @@ test_5_3_2 (cce_destination_t upper_L)
       cctests_assert(L, ccsys_s_isreg(ccsys_ref_stat_st_mode(S)));
     }
 
-    cce_run_cleanup_handlers(L);
+    cce_run_clean_handlers(L);
   }
 }
 
@@ -1115,9 +1115,9 @@ test_5_4_1 (cce_destination_t upper_L)
 {
   cce_location_t	L[1];
   cce_handler_t		dir_H[1];
-  cce_cleanup_handler_t	filename_H[1];
-  cce_cleanup_handler_t	filedes_H[1];
-  cce_cleanup_handler_t	linkname_H[1];
+  cce_clean_handler_t	filename_H[1];
+  cce_clean_handler_t	filedes_H[1];
+  cce_clean_handler_t	linkname_H[1];
 
   if (cce_location(L)) {
     cce_run_error_handlers_raise(L, upper_L);
@@ -1135,7 +1135,7 @@ test_5_4_1 (cce_destination_t upper_L)
 
       ccsys_getcwd(L, dirname, CCSYS_PATH_MAX);
       dir = ccsys_opendir(L, dirname);
-      ccsys_cleanup_handler_dirstream_init(L, dir_H, dir);
+      ccsys_clean_handler_dirstream_init(L, dir_H, dir);
       dirfd = ccsys_dirfd(L, dir);
     }
 
@@ -1166,7 +1166,7 @@ test_5_4_1 (cce_destination_t upper_L)
       cctests_assert(L, ccsys_s_islnk(ccsys_ref_stat_st_mode(S)));
     }
 
-    cce_run_cleanup_handlers(L);
+    cce_run_clean_handlers(L);
   }
 }
 
@@ -1179,8 +1179,8 @@ void
 test_5_4_2 (cce_destination_t upper_L)
 {
   cce_location_t	L[1];
-  cce_cleanup_handler_t	filename_H[1];
-  cce_cleanup_handler_t	linkname_H[1];
+  cce_clean_handler_t	filename_H[1];
+  cce_clean_handler_t	linkname_H[1];
 
   if (cce_location(L)) {
     cce_run_error_handlers_raise(L, upper_L);
@@ -1213,7 +1213,7 @@ test_5_4_2 (cce_destination_t upper_L)
       cctests_assert(L, ccsys_s_islnk(ccsys_ref_stat_st_mode(S)));
     }
 
-    cce_run_cleanup_handlers(L);
+    cce_run_clean_handlers(L);
   }
 }
 
@@ -1226,8 +1226,8 @@ void
 test_6_1 (cce_destination_t upper_L)
 {
   cce_location_t	L[1];
-  cce_cleanup_handler_t	filename_H[1];
-  cce_cleanup_handler_t	linkname_H[1];
+  cce_clean_handler_t	filename_H[1];
+  cce_clean_handler_t	linkname_H[1];
 
   if (cce_location(L)) {
     if (1) { fprintf(stderr, "%s: %s\n", __func__, cce_condition_static_message(cce_condition(L))); }
@@ -1263,7 +1263,7 @@ test_6_1 (cce_destination_t upper_L)
       if (1) { fprintf(stderr, "%s: %s\n", __func__, realname); }
     }
 
-    cce_run_cleanup_handlers(L);
+    cce_run_clean_handlers(L);
   }
 }
 
@@ -1276,8 +1276,8 @@ void
 test_6_2 (cce_destination_t upper_L)
 {
   cce_location_t	L[1];
-  cce_cleanup_handler_t	filename_H[1];
-  cce_cleanup_handler_t	linkname_H[1];
+  cce_clean_handler_t	filename_H[1];
+  cce_clean_handler_t	linkname_H[1];
 
   if (cce_location(L)) {
     if (1) { fprintf(stderr, "%s: %s\n", __func__, cce_condition_static_message(cce_condition(L))); }
@@ -1313,7 +1313,7 @@ test_6_2 (cce_destination_t upper_L)
       if (1) { fprintf(stderr, "%s: %s\n", __func__, realname); }
     }
 
-    cce_run_cleanup_handlers(L);
+    cce_run_clean_handlers(L);
   }
 }
 
@@ -1326,7 +1326,7 @@ void
 test_6_3_1 (cce_destination_t upper_L)
 {
   cce_location_t	L[1];
-  cce_cleanup_handler_t	filename_H[1];
+  cce_clean_handler_t	filename_H[1];
 
   if (cce_location(L)) {
     if (1) { fprintf(stderr, "%s: %s\n", __func__, cce_condition_static_message(cce_condition(L))); }
@@ -1353,7 +1353,7 @@ test_6_3_1 (cce_destination_t upper_L)
       if (1) { fprintf(stderr, "%s: %s\n", __func__, realname); }
     }
 
-    cce_run_cleanup_handlers(L);
+    cce_run_clean_handlers(L);
   }
 }
 
@@ -1366,8 +1366,8 @@ void
 test_6_3_2 (cce_destination_t upper_L)
 {
   cce_location_t	L[1];
-  cce_cleanup_handler_t	filename_H[1];
-  cce_cleanup_handler_t	realname_H[1];
+  cce_clean_handler_t	filename_H[1];
+  cce_clean_handler_t	realname_H[1];
 
   if (cce_location(L)) {
     if (1) { fprintf(stderr, "%s: %s\n", __func__, cce_condition_static_message(cce_condition(L))); }
@@ -1395,7 +1395,7 @@ test_6_3_2 (cce_destination_t upper_L)
       if (1) { fprintf(stderr, "%s: %s\n", __func__, realname); }
     }
 
-    cce_run_cleanup_handlers(L);
+    cce_run_clean_handlers(L);
   }
 }
 
@@ -1408,7 +1408,7 @@ void
 test_7_1 (cce_destination_t upper_L)
 {
   cce_location_t	L[1];
-  cce_cleanup_handler_t	filename_H[1];
+  cce_clean_handler_t	filename_H[1];
 
   if (cce_location(L)) {
     if (1) { fprintf(stderr, "%s: %s\n", __func__, cce_condition_static_message(cce_condition(L))); }
@@ -1435,7 +1435,7 @@ test_7_1 (cce_destination_t upper_L)
       cctests_assert(L, false == ccsys_stat(L, filename, S));
     }
 
-    cce_run_cleanup_handlers(L);
+    cce_run_clean_handlers(L);
   }
 }
 
@@ -1448,7 +1448,7 @@ void
 test_7_2 (cce_destination_t upper_L)
 {
   cce_location_t	L[1];
-  cce_cleanup_handler_t	filename_H[1];
+  cce_clean_handler_t	filename_H[1];
 
   if (cce_location(L)) {
     if (1) { fprintf(stderr, "%s: %s\n", __func__, cce_condition_static_message(cce_condition(L))); }
@@ -1477,7 +1477,7 @@ test_7_2 (cce_destination_t upper_L)
       cctests_assert(L, false == ccsys_stat(L, filename, S));
     }
 
-    cce_run_cleanup_handlers(L);
+    cce_run_clean_handlers(L);
   }
 }
 
@@ -1490,8 +1490,8 @@ void
 test_8_1 (cce_destination_t upper_L)
 {
   cce_location_t	L[1];
-  cce_cleanup_handler_t	filename_H[1];
-  cce_cleanup_handler_t	newname_H[1];
+  cce_clean_handler_t	filename_H[1];
+  cce_clean_handler_t	newname_H[1];
 
   if (cce_location(L)) {
     if (1) { fprintf(stderr, "%s: %s\n", __func__, cce_condition_static_message(cce_condition(L))); }
@@ -1519,7 +1519,7 @@ test_8_1 (cce_destination_t upper_L)
       cctests_assert(L, true  == ccsys_pathname_isreg(L, newname));
     }
 
-    cce_run_cleanup_handlers(L);
+    cce_run_clean_handlers(L);
   }
 }
 
@@ -1532,8 +1532,8 @@ void
 test_8_2 (cce_destination_t upper_L)
 {
   cce_location_t	L[1];
-  cce_cleanup_handler_t	filename_H[1];
-  cce_cleanup_handler_t	newname_H[1];
+  cce_clean_handler_t	filename_H[1];
+  cce_clean_handler_t	newname_H[1];
 
   if (cce_location(L)) {
     if (1) { fprintf(stderr, "%s: %s\n", __func__, cce_condition_static_message(cce_condition(L))); }
@@ -1561,7 +1561,7 @@ test_8_2 (cce_destination_t upper_L)
       cctests_assert(L, true  == ccsys_pathname_isreg(L, newname));
     }
 
-    cce_run_cleanup_handlers(L);
+    cce_run_clean_handlers(L);
   }
 }
 
@@ -1575,8 +1575,8 @@ test_8_3 (cce_destination_t upper_L CCSYS_UNUSED)
 {
 #if (1 == CCSYS_ON_LINUX)
   cce_location_t	L[1];
-  cce_cleanup_handler_t	filename_H[1];
-  cce_cleanup_handler_t	newname_H[1];
+  cce_clean_handler_t	filename_H[1];
+  cce_clean_handler_t	newname_H[1];
 
   fprintf(stderr, "%s: running test for renameat2()\n", __func__);
 
@@ -1609,7 +1609,7 @@ test_8_3 (cce_destination_t upper_L CCSYS_UNUSED)
       cctests_assert(L, true  == ccsys_pathname_isreg(L, newname));
     }
 
-    cce_run_cleanup_handlers(L);
+    cce_run_clean_handlers(L);
   }
 #else
   fprintf(stderr, "%s: undefined renameat2()\n", __func__);
@@ -1625,7 +1625,7 @@ void
 test_9_1 (cce_destination_t upper_L CCSYS_UNUSED)
 {
   cce_location_t	L[1];
-  cce_cleanup_handler_t	filename_H[1];
+  cce_clean_handler_t	filename_H[1];
 
   if (cce_location(L)) {
     cce_run_error_handlers_raise(L, upper_L);
@@ -1651,7 +1651,7 @@ test_9_1 (cce_destination_t upper_L CCSYS_UNUSED)
       ccsys_chown(L, filename, uid, gid);
     }
 
-    cce_run_cleanup_handlers(L);
+    cce_run_clean_handlers(L);
   }
 }
 
@@ -1664,8 +1664,8 @@ void
 test_9_2 (cce_destination_t upper_L)
 {
   cce_location_t	L[1];
-  cce_cleanup_handler_t	filename_H[1];
-  cce_cleanup_handler_t	linkname_H[1];
+  cce_clean_handler_t	filename_H[1];
+  cce_clean_handler_t	linkname_H[1];
 
   if (cce_location(L)) {
     cce_run_error_handlers_raise(L, upper_L);
@@ -1698,7 +1698,7 @@ test_9_2 (cce_destination_t upper_L)
       ccsys_lchown(L, linkname, uid, gid);
     }
 
-    cce_run_cleanup_handlers(L);
+    cce_run_clean_handlers(L);
   }
 }
 
@@ -1711,8 +1711,8 @@ void
 test_9_3 (cce_destination_t upper_L)
 {
   cce_location_t	L[1];
-  cce_cleanup_handler_t	filedes_H[1];
-  cce_cleanup_handler_t	filename_H[1];
+  cce_clean_handler_t	filedes_H[1];
+  cce_clean_handler_t	filename_H[1];
 
   if (cce_location(L)) {
     if (1) { fprintf(stderr, "%s: %s\n", __func__, cce_condition_static_message(cce_condition(L))); }
@@ -1741,7 +1741,7 @@ test_9_3 (cce_destination_t upper_L)
       ccsys_fchown(L, fd, uid, gid);
     }
 
-    cce_run_cleanup_handlers(L);
+    cce_run_clean_handlers(L);
   }
 }
 
@@ -1754,7 +1754,7 @@ void
 test_9_4 (cce_destination_t upper_L)
 {
   cce_location_t	L[1];
-  cce_cleanup_handler_t	filename_H[1];
+  cce_clean_handler_t	filename_H[1];
 
   if (cce_location(L)) {
     if (1) { fprintf(stderr, "%s: %s\n", __func__, cce_condition_static_message(cce_condition(L))); }
@@ -1783,7 +1783,7 @@ test_9_4 (cce_destination_t upper_L)
       ccsys_fchownat(L, CCSYS_AT_FDCWD, filename, uid, gid, flags);
     }
 
-    cce_run_cleanup_handlers(L);
+    cce_run_clean_handlers(L);
   }
 }
 
@@ -1798,7 +1798,7 @@ test_10_1 (cce_destination_t upper_L)
 {
 #if (defined HAVE_CHMOD)
   cce_location_t	L[1];
-  cce_cleanup_handler_t	filename_H[1];
+  cce_clean_handler_t	filename_H[1];
 
   if (cce_location(L)) {
     if (1) { fprintf(stderr, "%s: %s\n", __func__, cce_condition_static_message(cce_condition(L))); }
@@ -1836,7 +1836,7 @@ test_10_1 (cce_destination_t upper_L)
       cctests_assert(L, CCSYS_S_IRWXU == (CCSYS_S_IRWXU & mode.data));
     }
 
-    cce_run_cleanup_handlers(L);
+    cce_run_clean_handlers(L);
   }
 #endif
 }
@@ -1847,8 +1847,8 @@ test_10_2 (cce_destination_t upper_L)
 {
 #if (defined HAVE_FCHMOD)
   cce_location_t	L[1];
-  cce_cleanup_handler_t	filename_H[1];
-  cce_cleanup_handler_t	filedes_H[1];
+  cce_clean_handler_t	filename_H[1];
+  cce_clean_handler_t	filedes_H[1];
 
   if (cce_location(L)) {
     if (1) { fprintf(stderr, "%s: %s\n", __func__, cce_condition_static_message(cce_condition(L))); }
@@ -1888,7 +1888,7 @@ test_10_2 (cce_destination_t upper_L)
       cctests_assert(L, CCSYS_S_IRWXU == (CCSYS_S_IRWXU & mode.data));
     }
 
-    cce_run_cleanup_handlers(L);
+    cce_run_clean_handlers(L);
   }
 #endif
 }
@@ -1899,7 +1899,7 @@ test_10_3 (cce_destination_t upper_L)
 {
 #if (defined HAVE_FCHMODAT)
   cce_location_t	L[1];
-  cce_cleanup_handler_t	filename_H[1];
+  cce_clean_handler_t	filename_H[1];
 
   if (cce_location(L)) {
     if (1) { fprintf(stderr, "%s: %s\n", __func__, cce_condition_static_message(cce_condition(L))); }
@@ -1939,7 +1939,7 @@ test_10_3 (cce_destination_t upper_L)
       cctests_assert(L, CCSYS_S_IRWXU == (CCSYS_S_IRWXU & mode.data));
     }
 
-    cce_run_cleanup_handlers(L);
+    cce_run_clean_handlers(L);
   }
 #endif
 }
@@ -1955,7 +1955,7 @@ test_11_1 (cce_destination_t upper_L)
 {
 #if (defined HAVE_ACCESS)
   cce_location_t	L[1];
-  cce_cleanup_handler_t	filename_H[1];
+  cce_clean_handler_t	filename_H[1];
 
   if (cce_location(L)) {
     if (1) { fprintf(stderr, "%s: %s\n", __func__, cce_condition_static_message(cce_condition(L))); }
@@ -2003,7 +2003,7 @@ test_11_1 (cce_destination_t upper_L)
       cctests_assert(L, false == ccsys_access(L, filename, mode));
     }
 
-    cce_run_cleanup_handlers(L);
+    cce_run_clean_handlers(L);
   }
 #endif
 }
@@ -2014,7 +2014,7 @@ test_11_2 (cce_destination_t upper_L)
 {
 #if (defined HAVE_FACCESSAT)
   cce_location_t	L[1];
-  cce_cleanup_handler_t	filename_H[1];
+  cce_clean_handler_t	filename_H[1];
 
   if (cce_location(L)) {
     if (1) { fprintf(stderr, "%s: %s\n", __func__, cce_condition_static_message(cce_condition(L))); }
@@ -2065,7 +2065,7 @@ test_11_2 (cce_destination_t upper_L)
       cctests_assert(L, false == ccsys_faccessat(L, CCSYS_AT_FDCWD, filename, mode, flags));
     }
 
-    cce_run_cleanup_handlers(L);
+    cce_run_clean_handlers(L);
   }
 #endif
 }
@@ -2081,8 +2081,8 @@ test_12_1 (cce_destination_t upper_L)
 {
 #if (defined HAVE_TRUNCATE)
   cce_location_t	L[1];
-  cce_cleanup_handler_t	filename_H[1];
-  cce_cleanup_handler_t	filedes_H[1];
+  cce_clean_handler_t	filename_H[1];
+  cce_clean_handler_t	filedes_H[1];
 
   if (cce_location(L)) {
     if (1) { fprintf(stderr, "%s: %s\n", __func__, cce_condition_static_message(cce_condition(L))); }
@@ -2136,7 +2136,7 @@ test_12_1 (cce_destination_t upper_L)
       cctests_assert(L, 100 == ccsys_luref(ccsys_ref_stat_st_size(S)));
     }
 
-    cce_run_cleanup_handlers(L);
+    cce_run_clean_handlers(L);
   }
 #endif
 }
@@ -2147,8 +2147,8 @@ test_12_2 (cce_destination_t upper_L)
 {
 #if (defined HAVE_FTRUNCATE)
   cce_location_t	L[1];
-  cce_cleanup_handler_t	filename_H[1];
-  cce_cleanup_handler_t	filedes_H[1];
+  cce_clean_handler_t	filename_H[1];
+  cce_clean_handler_t	filedes_H[1];
 
   if (cce_location(L)) {
     if (1) { fprintf(stderr, "%s: %s\n", __func__, cce_condition_static_message(cce_condition(L))); }
@@ -2202,7 +2202,7 @@ test_12_2 (cce_destination_t upper_L)
       cctests_assert(L, 101 == ccsys_luref(ccsys_ref_stat_st_size(S)));
     }
 
-    cce_run_cleanup_handlers(L);
+    cce_run_clean_handlers(L);
   }
 #endif
 }
@@ -2218,7 +2218,7 @@ test_13_1 (cce_destination_t upper_L)
 {
 #if (defined HAVE_UTIMES)
   cce_location_t	L[1];
-  cce_cleanup_handler_t	filename_H[1];
+  cce_clean_handler_t	filename_H[1];
 
   if (cce_location(L)) {
     if (1) { fprintf(stderr, "%s: %s\n", __func__, cce_condition_static_message(cce_condition(L))); }
@@ -2270,7 +2270,7 @@ test_13_1 (cce_destination_t upper_L)
       }
     }
 
-    cce_run_cleanup_handlers(L);
+    cce_run_clean_handlers(L);
   }
 #endif
 }
@@ -2281,8 +2281,8 @@ test_13_2 (cce_destination_t upper_L)
 {
 #if (defined HAVE_LUTIMES)
   cce_location_t	L[1];
-  cce_cleanup_handler_t	filename_H[1];
-  cce_cleanup_handler_t	linkname_H[1];
+  cce_clean_handler_t	filename_H[1];
+  cce_clean_handler_t	linkname_H[1];
 
   if (cce_location(L)) {
     if (1) { fprintf(stderr, "%s: %s\n", __func__, cce_condition_static_message(cce_condition(L))); }
@@ -2341,7 +2341,7 @@ test_13_2 (cce_destination_t upper_L)
       }
     }
 
-    cce_run_cleanup_handlers(L);
+    cce_run_clean_handlers(L);
   }
 #endif
 }
@@ -2352,8 +2352,8 @@ test_13_3 (cce_destination_t upper_L)
 {
 #if (defined HAVE_FUTIMES)
   cce_location_t	L[1];
-  cce_cleanup_handler_t	filename_H[1];
-  cce_cleanup_handler_t	filedes_H[1];
+  cce_clean_handler_t	filename_H[1];
+  cce_clean_handler_t	filedes_H[1];
 
   if (cce_location(L)) {
     if (1) { fprintf(stderr, "%s: %s\n", __func__, cce_condition_static_message(cce_condition(L))); }
@@ -2407,7 +2407,7 @@ test_13_3 (cce_destination_t upper_L)
       }
     }
 
-    cce_run_cleanup_handlers(L);
+    cce_run_clean_handlers(L);
   }
 #endif
 }
@@ -2418,7 +2418,7 @@ test_13_4 (cce_destination_t upper_L)
 {
 #if (defined HAVE_FUTIMESAT)
   cce_location_t	L[1];
-  cce_cleanup_handler_t	filename_H[1];
+  cce_clean_handler_t	filename_H[1];
 
   if (cce_location(L)) {
     if (1) { fprintf(stderr, "%s: %s\n", __func__, cce_condition_static_message(cce_condition(L))); }
@@ -2470,7 +2470,7 @@ test_13_4 (cce_destination_t upper_L)
       }
     }
 
-    cce_run_cleanup_handlers(L);
+    cce_run_clean_handlers(L);
   }
 #endif
 }
@@ -2481,7 +2481,7 @@ test_13_5 (cce_destination_t upper_L)
 {
 #if (defined HAVE_UTIMENSAT)
   cce_location_t	L[1];
-  cce_cleanup_handler_t	filename_H[1];
+  cce_clean_handler_t	filename_H[1];
 
   if (cce_location(L)) {
     if (1) { fprintf(stderr, "%s: %s\n", __func__, cce_condition_static_message(cce_condition(L))); }
@@ -2535,7 +2535,7 @@ test_13_5 (cce_destination_t upper_L)
       }
     }
 
-    cce_run_cleanup_handlers(L);
+    cce_run_clean_handlers(L);
   }
 #endif
 }
@@ -2546,8 +2546,8 @@ test_13_6 (cce_destination_t upper_L)
 {
 #if (defined HAVE_FUTIMENS)
   cce_location_t	L[1];
-  cce_cleanup_handler_t	filename_H[1];
-  cce_cleanup_handler_t	filedes_H[1];
+  cce_clean_handler_t	filename_H[1];
+  cce_clean_handler_t	filedes_H[1];
 
   if (cce_location(L)) {
     if (1) { fprintf(stderr, "%s: %s\n", __func__, cce_condition_static_message(cce_condition(L))); }
@@ -2601,7 +2601,7 @@ test_13_6 (cce_destination_t upper_L)
       }
     }
 
-    cce_run_cleanup_handlers(L);
+    cce_run_clean_handlers(L);
   }
 #endif
 }
@@ -2617,8 +2617,8 @@ test_14_1 (cce_destination_t upper_L)
 {
 #if (defined HAVE_MKSTEMP)
   cce_location_t	L[1];
-  cce_cleanup_handler_t	filename_H[1];
-  cce_cleanup_handler_t	filedes_H[1];
+  cce_clean_handler_t	filename_H[1];
+  cce_clean_handler_t	filedes_H[1];
 
   if (cce_location(L)) {
     if (1) { fprintf(stderr, "%s: %s\n", __func__, cce_condition_static_message(cce_condition(L))); }
@@ -2641,7 +2641,7 @@ test_14_1 (cce_destination_t upper_L)
       if (1) { fprintf(stderr, "%s: tempname=%s\n", __func__, filename); }
     }
 
-    cce_run_cleanup_handlers(L);
+    cce_run_clean_handlers(L);
   }
 #endif
 }
@@ -2652,8 +2652,8 @@ test_14_2 (cce_destination_t upper_L)
 {
 #if (defined HAVE_MKOSTEMP)
   cce_location_t	L[1];
-  cce_cleanup_handler_t	filename_H[1];
-  cce_cleanup_handler_t	filedes_H[1];
+  cce_clean_handler_t	filename_H[1];
+  cce_clean_handler_t	filedes_H[1];
 
   if (cce_location(L)) {
     if (1) { fprintf(stderr, "%s: %s\n", __func__, cce_condition_static_message(cce_condition(L))); }
@@ -2678,7 +2678,7 @@ test_14_2 (cce_destination_t upper_L)
       if (1) { fprintf(stderr, "%s: tempname=%s\n", __func__, filename); }
     }
 
-    cce_run_cleanup_handlers(L);
+    cce_run_clean_handlers(L);
   }
 #endif
 }
@@ -2689,8 +2689,8 @@ test_14_3 (cce_destination_t upper_L)
 {
 #if (defined HAVE_MKSTEMPS)
   cce_location_t	L[1];
-  cce_cleanup_handler_t	filename_H[1];
-  cce_cleanup_handler_t	filedes_H[1];
+  cce_clean_handler_t	filename_H[1];
+  cce_clean_handler_t	filedes_H[1];
 
   if (cce_location(L)) {
     if (1) { fprintf(stderr, "%s: %s\n", __func__, cce_condition_static_message(cce_condition(L))); }
@@ -2713,7 +2713,7 @@ test_14_3 (cce_destination_t upper_L)
       if (1) { fprintf(stderr, "%s: tempname=%s\n", __func__, filename); }
     }
 
-    cce_run_cleanup_handlers(L);
+    cce_run_clean_handlers(L);
   }
 #endif
 }
@@ -2724,8 +2724,8 @@ test_14_4 (cce_destination_t upper_L)
 {
 #if (defined HAVE_MKOSTEMPS)
   cce_location_t	L[1];
-  cce_cleanup_handler_t	filename_H[1];
-  cce_cleanup_handler_t	filedes_H[1];
+  cce_clean_handler_t	filename_H[1];
+  cce_clean_handler_t	filedes_H[1];
 
   if (cce_location(L)) {
     if (1) { fprintf(stderr, "%s: %s\n", __func__, cce_condition_static_message(cce_condition(L))); }
@@ -2750,7 +2750,7 @@ test_14_4 (cce_destination_t upper_L)
       if (1) { fprintf(stderr, "%s: tempname=%s\n", __func__, filename); }
     }
 
-    cce_run_cleanup_handlers(L);
+    cce_run_clean_handlers(L);
   }
 #endif
 }
@@ -2766,7 +2766,7 @@ test_15_1 (cce_destination_t upper_L)
 {
 #if (defined HAVE_MKDTEMP)
   cce_location_t	L[1];
-  cce_cleanup_handler_t	dirname_H[1];
+  cce_clean_handler_t	dirname_H[1];
 
   if (cce_location(L)) {
     if (1) { fprintf(stderr, "%s: %s\n", __func__, cce_condition_static_message(cce_condition(L))); }
@@ -2786,7 +2786,7 @@ test_15_1 (cce_destination_t upper_L)
       if (1) { fprintf(stderr, "%s: tempname=%s\n", __func__, dirname); }
     }
 
-    cce_run_cleanup_handlers(L);
+    cce_run_clean_handlers(L);
   }
 #endif
 }

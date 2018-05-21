@@ -45,7 +45,7 @@ test_1_1 (cce_destination_t upper_L)
     rv = ccsys_sysconf(L, CCSYS__SC_PAGESIZE);
     if (1) { fprintf(stderr, "%s: CCSYS__SC_PAGESIZE=%lu\n", __func__, rv); }
 
-    cce_run_cleanup_handlers(L);
+    cce_run_clean_handlers(L);
   }
 #else
   cctests_skip();
@@ -73,7 +73,7 @@ test_1_2 (cce_destination_t upper_L)
 
     cctests_assert(L, 0 < rv);
 
-    cce_run_cleanup_handlers(L);
+    cce_run_clean_handlers(L);
   }
 #else
   cctests_skip();
@@ -91,7 +91,7 @@ test_2_1 (cce_destination_t upper_L)
 {
 #if (defined HAVE_PATHCONF)
   cce_location_t	L[1];
-  cce_cleanup_handler_t	filename_H[1];
+  cce_clean_handler_t	filename_H[1];
 
   if (cce_location(L)) {
     cce_run_error_handlers_raise(L, upper_L);
@@ -115,7 +115,7 @@ test_2_1 (cce_destination_t upper_L)
       if (1) { fprintf(stderr, "%s: CCSYS__PC_PATH_MAX=%lu\n", __func__, rv); }
     }
 
-    cce_run_cleanup_handlers(L);
+    cce_run_clean_handlers(L);
   }
 #else
   cctests_skip();
@@ -128,8 +128,8 @@ test_2_2 (cce_destination_t upper_L)
 {
 #if (defined HAVE_FPATHCONF)
   cce_location_t	L[1];
-  cce_cleanup_handler_t	filename_H[1];
-  cce_cleanup_handler_t	filedes_H[1];
+  cce_clean_handler_t	filename_H[1];
+  cce_clean_handler_t	filedes_H[1];
 
   if (cce_location(L)) {
     cce_run_error_handlers_raise(L, upper_L);
@@ -155,7 +155,7 @@ test_2_2 (cce_destination_t upper_L)
       if (1) { fprintf(stderr, "%s: CCSYS__PC_PATH_MAX=%lu\n", __func__, rv); }
     }
 
-    cce_run_cleanup_handlers(L);
+    cce_run_clean_handlers(L);
   }
 #else
   cctests_skip();
@@ -295,7 +295,7 @@ test_3_1 (cce_destination_t upper_L)
       }
     }
 
-    cce_run_cleanup_handlers(L);
+    cce_run_clean_handlers(L);
   }
 #else
   cctests_skip();
@@ -463,7 +463,7 @@ test_4_1 (cce_destination_t upper_L)
       }
     }
 
-    cce_run_cleanup_handlers(L);
+    cce_run_clean_handlers(L);
   }
 #else
   cctests_skip();

@@ -49,7 +49,7 @@ test_1_1 (cce_destination_t upper_L)
     flag = ccsys_signal_bub_delivered(signum);
     cctests_assert(L, true == flag);
 
-    cce_run_cleanup_handlers(L);
+    cce_run_clean_handlers(L);
   }
 #else
   cctests_skip();
@@ -78,7 +78,7 @@ test_1_2 (cce_destination_t upper_L)
     flag = ccsys_signal_bub_delivered(signum);
     cctests_assert(L, true == flag);
 
-    cce_run_cleanup_handlers(L);
+    cce_run_clean_handlers(L);
   }
 #else
   cctests_skip();
@@ -111,7 +111,7 @@ test_1_3 (cce_destination_t upper_L)
     cctests_assert(L, true == flag1);
     cctests_assert(L, true == flag2);
 
-    cce_run_cleanup_handlers(L);
+    cce_run_clean_handlers(L);
   }
 #else
   cctests_skip();
@@ -162,7 +162,7 @@ test_2_1 (cce_destination_t upper_L)
     cce_run_error_handlers_raise(L, upper_L);
   } else {
     cctests_with_parent_and_child_process(L, test_2_1_parent, test_2_1_child);
-    cce_run_cleanup_handlers(L);
+    cce_run_clean_handlers(L);
   }
 #else
   cctests_skip();

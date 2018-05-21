@@ -57,25 +57,15 @@ AS_VAR_SET([SLACKSTUFF_PACKAGE_VERSION],[0.1d0.0])
 AC_SUBST([SLACKSTUFF_PACKAGE_VERSION])
 
 dnl page
-#### external libraries
-
-MMUX_CHECK_PKG_CONFIG_MACROS
-PKG_CHECK_MODULES([CCEXCEPTIONS],[ccexceptions >= 0.7.1])
-
-AC_CACHE_SAVE
-
-dnl page
 #### basic system inspection
 
 MMUX_CHECK_TARGET_OS
 
 AC_LANG([C])
 MMUX_LANG_C11
-AC_PROG_CC_C99
 AC_SUBST(AX_CFLAGS)
 
 AM_PROG_AS
-AC_PROG_CC
 AM_PROG_CC_C_O
 AC_HEADER_STDC
 AC_CHECK_HEADERS([assert.h errno.h stdint.h stddef.h setjmp.h memory.h limits.h fcntl.h dirent.h time.h])
@@ -91,6 +81,17 @@ dnl AC_CHECK_HEADERS([search.h])
 dnl The  documentation of GNU  Autoconf states that AC_PROG_CC  sets the
 dnl variable "GCC" to "yes" if the selected compiler is GCC.
 AM_CONDITIONAL([WANT_GCC],[test "x$GCC" = xyes])
+
+AC_CACHE_SAVE
+
+dnl page
+#### external libraries
+
+MMUX_CHECK_PKG_CONFIG_MACROS
+PKG_CHECK_MODULES([CCEXCEPTIONS],[ccexceptions >= 0.8.0])
+PKG_CHECK_MODULES([CCTESTS],[cctests >= 0.1.0],,[AC_MSG_WARN([package CCTests not found])])
+
+AM_CONDITIONAL([MMUX_TESTING_ENABLED],[test -n "$CCTESTS_LIBS"])
 
 AC_CACHE_SAVE
 

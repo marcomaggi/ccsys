@@ -98,7 +98,7 @@ test_2_1 (cce_destination_t upper_L)
     uid = ccsys_getuid();
     ccsys_setuid(L, uid);
 
-    cce_run_cleanup_handlers(L);
+    cce_run_clean_handlers(L);
   }
 #endif
 }
@@ -118,7 +118,7 @@ test_2_2 (cce_destination_t upper_L)
     uid = ccsys_geteuid();
     ccsys_seteuid(L, uid);
 
-    cce_run_cleanup_handlers(L);
+    cce_run_clean_handlers(L);
   }
 #endif
 }
@@ -139,7 +139,7 @@ test_2_3 (cce_destination_t upper_L)
     euid = ccsys_geteuid();
     ccsys_setreuid(L, ruid, euid);
 
-    cce_run_cleanup_handlers(L);
+    cce_run_clean_handlers(L);
   }
 #endif
 }
@@ -164,7 +164,7 @@ test_3_1 (cce_destination_t upper_L)
     gid = ccsys_getgid();
     ccsys_setgid(L, gid);
 
-    cce_run_cleanup_handlers(L);
+    cce_run_clean_handlers(L);
   }
 #endif
 }
@@ -184,7 +184,7 @@ test_3_2 (cce_destination_t upper_L)
     gid = ccsys_getegid();
     ccsys_setegid(L, gid);
 
-    cce_run_cleanup_handlers(L);
+    cce_run_clean_handlers(L);
   }
 #endif
 }
@@ -205,7 +205,7 @@ test_3_3 (cce_destination_t upper_L)
     egid = ccsys_getegid();
     ccsys_setregid(L, rgid, egid);
 
-    cce_run_cleanup_handlers(L);
+    cce_run_clean_handlers(L);
   }
 #endif
 }
@@ -239,7 +239,7 @@ test_4_1 (cce_destination_t upper_L)
 	fprintf(stderr, "%s: groups[%d]=%d\n", __func__, i, groups[i].data);
       }
     }
-    cce_run_cleanup_handlers(L);
+    cce_run_clean_handlers(L);
   }
 #endif
 }
@@ -254,7 +254,7 @@ test_4_2 (cce_destination_t upper_L)
   if (cce_location(L)) {
     if (0) { fprintf(stderr, "%s: %s\n", __func__, cce_condition_static_message(cce_condition(L))); }
     if (cce_condition_is_errno(cce_condition(L))) {
-      if (CCSYS_EPERM == cce_ref_condition_errno_errnum(cce_condition(L))) {
+      if (CCSYS_EPERM == cce_condition_ref_errno_errnum(cce_condition(L))) {
 	fprintf(stderr, "%s: no permissions to set groups, but it's OK\n", __func__);
       } else {
 	cce_run_error_handlers_raise(L, upper_L);
@@ -275,7 +275,7 @@ test_4_2 (cce_destination_t upper_L)
 
       ccsys_setgroups(L, ngroups, groups);
     }
-    cce_run_cleanup_handlers(L);
+    cce_run_clean_handlers(L);
   }
 #endif
 }
@@ -290,7 +290,7 @@ test_4_3 (cce_destination_t upper_L)
   if (cce_location(L)) {
     if (0) { fprintf(stderr, "%s: %s\n", __func__, cce_condition_static_message(cce_condition(L))); }
     if (cce_condition_is_errno(cce_condition(L))) {
-      if (CCSYS_EPERM == cce_ref_condition_errno_errnum(cce_condition(L))) {
+      if (CCSYS_EPERM == cce_condition_ref_errno_errnum(cce_condition(L))) {
 	fprintf(stderr, "%s: no permissions to set groups, but it's OK\n", __func__);
       } else {
 	cce_run_error_handlers_raise(L, upper_L);
@@ -305,7 +305,7 @@ test_4_3 (cce_destination_t upper_L)
     gid = ccsys_getgid();
     ccsys_initgroups(L, username, gid);
 
-    cce_run_cleanup_handlers(L);
+    cce_run_clean_handlers(L);
   }
 #endif
 }
@@ -339,7 +339,7 @@ test_4_4 (cce_destination_t upper_L)
 	fprintf(stderr, "%s: groups[%d]=%d\n", __func__, i, groups[i].data);
       }
     }
-    cce_run_cleanup_handlers(L);
+    cce_run_clean_handlers(L);
   }
 #endif
 }
@@ -358,7 +358,7 @@ test_5_1 (cce_destination_t upper_L)
   if (cce_location(L)) {
     if (1) { fprintf(stderr, "%s: %s\n", __func__, cce_condition_static_message(cce_condition(L))); }
     if (cce_condition_is_errno(cce_condition(L))) {
-      if (CCSYS_ENOTTY == cce_ref_condition_errno_errnum(cce_condition(L))) {
+      if (CCSYS_ENOTTY == cce_condition_ref_errno_errnum(cce_condition(L))) {
 	/* This may  happen (I think)  when running the test  suite with
 	   GNU Automake's Parallel Test  Harness.  (Marco Maggi; Jan 29,
 	   2018) */
@@ -376,7 +376,7 @@ test_5_1 (cce_destination_t upper_L)
     ccsys_getlogin_r(L, username, maxlen);
     if (1) { fprintf(stderr, "%s: login user=%s\n", __func__, username); }
 
-    cce_run_cleanup_handlers(L);
+    cce_run_clean_handlers(L);
   }
 #endif
 }
@@ -422,7 +422,7 @@ test_6_1 (cce_destination_t upper_L)
     fprintf(stderr, "%s: pw_shell=%s\n",	__func__, ccsys_ref_passwd_pw_shell(S));
 #endif
 
-    cce_run_cleanup_handlers(L);
+    cce_run_clean_handlers(L);
   }
 #endif
 }
@@ -464,7 +464,7 @@ test_6_2 (cce_destination_t upper_L)
     fprintf(stderr, "%s: pw_shell=%s\n",	__func__, ccsys_ref_passwd_pw_shell(B));
 #endif
 
-    cce_run_cleanup_handlers(L);
+    cce_run_clean_handlers(L);
   }
 #endif
 }
@@ -510,7 +510,7 @@ test_6_3 (cce_destination_t upper_L)
     fprintf(stderr, "%s: pw_shell=%s\n",	__func__, ccsys_ref_passwd_pw_shell(R));
 #endif
 
-    cce_run_cleanup_handlers(L);
+    cce_run_clean_handlers(L);
   }
 #endif
 }
@@ -558,7 +558,7 @@ test_6_4 (cce_destination_t upper_L)
     fprintf(stderr, "%s: pw_shell=%s\n",	__func__, ccsys_ref_passwd_pw_shell(R));
 #endif
 
-    cce_run_cleanup_handlers(L);
+    cce_run_clean_handlers(L);
   }
 #endif
 }
@@ -574,7 +574,7 @@ test_7_1 (cce_destination_t upper_L)
 {
 #if ((defined HAVE_SETPWENT) && (defined HAVE_ENDPWENT) && (defined HAVE_GETPWENT))
   cce_location_t	L[1];
-  cce_cleanup_handler_t	endpwent_H[1];
+  cce_clean_handler_t	endpwent_H[1];
 
   if (cce_location(L)) {
     if (1) { fprintf(stderr, "%s: %s\n", __func__, cce_condition_static_message(cce_condition(L))); }
@@ -595,7 +595,7 @@ test_7_1 (cce_destination_t upper_L)
       }
     }
 
-    cce_run_cleanup_handlers(L);
+    cce_run_clean_handlers(L);
   }
 #endif
 }
@@ -635,7 +635,7 @@ test_8_1 (cce_destination_t upper_L)
     }
 #endif
 
-    cce_run_cleanup_handlers(L);
+    cce_run_clean_handlers(L);
   }
 #endif
 }
@@ -671,7 +671,7 @@ test_8_2 (cce_destination_t upper_L)
     }
 #endif
 
-    cce_run_cleanup_handlers(L);
+    cce_run_clean_handlers(L);
   }
 #endif
 }
@@ -711,7 +711,7 @@ test_8_3 (cce_destination_t upper_L)
     }
 #endif
 
-    cce_run_cleanup_handlers(L);
+    cce_run_clean_handlers(L);
   }
 #endif
 }
@@ -753,7 +753,7 @@ test_8_4 (cce_destination_t upper_L)
     }
 #endif
 
-    cce_run_cleanup_handlers(L);
+    cce_run_clean_handlers(L);
   }
 #endif
 }
@@ -769,7 +769,7 @@ test_9_1 (cce_destination_t upper_L)
 {
 #if ((defined HAVE_SETGRENT) && (defined HAVE_ENDGRENT) && (defined HAVE_GETGRENT))
   cce_location_t	L[1];
-  cce_cleanup_handler_t	endgrent_H[1];
+  cce_clean_handler_t	endgrent_H[1];
 
   if (cce_location(L)) {
     if (1) { fprintf(stderr, "%s: %s\n", __func__, cce_condition_static_message(cce_condition(L))); }
@@ -792,7 +792,7 @@ test_9_1 (cce_destination_t upper_L)
       }
     }
 
-    cce_run_cleanup_handlers(L);
+    cce_run_clean_handlers(L);
   }
 #endif
 }

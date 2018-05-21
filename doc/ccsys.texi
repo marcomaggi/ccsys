@@ -37,7 +37,7 @@
 
 @c ------------------------------------------------------------
 
-@set CCEXCEPTIONS_VERSION       0.7.1-beta.1
+@set CCEXCEPTIONS_VERSION       0.8.0
 
 @set GITHUB_URL                 @url{http://github.com/marcomaggi/@value{PACKAGE_NICKNAME}}
 @set BITBUCKET_URL              @url{https://bitbucket.org/marcomaggi/@value{PACKAGE_NICKNAME}}
@@ -1599,7 +1599,7 @@ if (cce_location(L)) @{
   path = ccsys_getenv(L, "PATH");
   assert(NULL != path);
 
-  cce_run_cleanup_handlers(L);
+  cce_run_clean_handlers(L);
 @}
 @end example
 
@@ -1621,7 +1621,7 @@ if (cce_location(L)) @{
   path = ccsys_secure_getenv(L, "PATH");
   assert(NULL != path);
 
-  cce_run_cleanup_handlers(L);
+  cce_run_clean_handlers(L);
 @}
 @end example
 
@@ -1666,7 +1666,7 @@ if (cce_location(L)) @{
     assert(0 == strncmp("789", ciao, strlen("123")));
   @}
 
-  cce_run_cleanup_handlers(L);
+  cce_run_clean_handlers(L);
 @}
 @end example
 
@@ -1693,7 +1693,7 @@ if (cce_location(L)) @{
     assert(0 == strncmp("123", hey, strlen("123")));
   @}
 
-  cce_run_cleanup_handlers(L);
+  cce_run_clean_handlers(L);
 @}
 @end example
 
@@ -1717,7 +1717,7 @@ if (cce_location(L)) @{
   ciao = ccsys_getenv(L, "CIAO");
   assert(NULL == ciao);
 
-  cce_run_cleanup_handlers(L);
+  cce_run_clean_handlers(L);
 @}
 @end example
 
@@ -1746,7 +1746,7 @@ if (cce_location(L)) @{
       (CCSYS_ENOENT ==
         cce_ref_condition_errno_errnum(cce_condition(L)))) @{
     /* The item is not in the auxiliary vector.  Fine. */
-    cce_run_cleanup_handlers(L);
+    cce_run_clean_handlers(L);
   @} else @{
     cce_run_error_handlers_raise(L, upper_L);
   @}
@@ -1758,7 +1758,7 @@ if (cce_location(L)) @{
   rv = ccsys_getauxval(L, type);
 
   fprintf(stderr, "AT_BASE=%lu\n", rv);
-  cce_run_cleanup_handlers(L);
+  cce_run_clean_handlers(L);
 @}
 @end example
 
@@ -2564,7 +2564,7 @@ if (cce_location(L)) @{
     printf("ru_nivcsw = %ld\n", F);
   @}
 
-  cce_run_cleanup_handlers(L);
+  cce_run_clean_handlers(L);
 @}
 @end example
 
@@ -2694,7 +2694,7 @@ if (cce_location(L)) @{
            ccsys_luref(ccsys_ref_rlimit_rlim_max(S)));
   @}
 
-  cce_run_cleanup_handlers(L);
+  cce_run_clean_handlers(L);
 @}
 @end example
 
@@ -2756,29 +2756,29 @@ if (cce_location(L)) @{
   cce_run_error_handlers_final(L);
 @} else @{
   void *        P = ccsys_malloc(L, 4096);
-  ccsys_cleanup_handler_malloc_init(L, P_H, P);
-  cce_run_cleanup_handlers(L);
+  ccsys_clean_handler_malloc_init(L, P_H, P);
+  cce_run_clean_handlers(L);
 @}
 @end example
 
 The following symbols are defined in the header file @file{ccsys.h}.
 
 
-@deftypefun void ccsys_cleanup_handler_malloc_init (cce_destination_t @var{L}, cce_handler_t * @var{H}, void * @var{P})
+@deftypefun void ccsys_clean_handler_malloc_init (cce_destination_t @var{L}, cce_handler_t * @var{H}, void * @var{P})
 @deftypefunx void ccsys_error_handler_malloc_init (cce_destination_t @var{L}, cce_handler_t * @var{H}, void * @var{P})
-Register @var{H} as cleanup or error handler in the context of @var{L}.  The handler function will
+Register @var{H} as clean or error handler in the context of @var{L}.  The handler function will
 release the memory block referenced by @var{P} using the standard function @cfunc{free}.
 @end deftypefun
 
 
-@deftypefn {Preprocessor Macro} void ccsys_handler_malloc_init (cce_destination_t @var{L}, cce_cleanup_handler_t * @var{P_H}, void * @var{P})
+@deftypefn {Preprocessor Macro} void ccsys_handler_malloc_init (cce_destination_t @var{L}, cce_clean_handler_t * @var{P_H}, void * @var{P})
 @deftypefnx {Preprocessor Macro} void ccsys_handler_malloc_init (cce_destination_t @var{L}, cce_error_handler_t * @var{P_H}, void * @var{P})
 This preprocessor macro uses @code{_Generic} to dispatch the call according to the type of the
 pointer @var{P_H}; if the type is:
 
 @table @code
-@item cce_cleanup_handler_t
-The macro expands into a call to @cfunc{ccsys_cleanup_handler_malloc_init}.
+@item cce_clean_handler_t
+The macro expands into a call to @cfunc{ccsys_clean_handler_malloc_init}.
 
 @item cce_error_handler_t
 The macro expands into a call to @cfunc{ccsys_error_handler_malloc_init}.
@@ -2790,11 +2790,11 @@ The macro expands into a call to @cfunc{ccsys_error_handler_malloc_init}.
 @section Guarded allocation: @cfunc{malloc}
 
 
-To allocate memory using a cleanup handler with a guarded function, we can do:
+To allocate memory using a clean handler with a guarded function, we can do:
 
 @example
 cce_location_t          L[1];
-cce_cleanup_handler_t   P_H[1];
+cce_clean_handler_t   P_H[1];
 
 if (cce_location(L)) @{
   cce_run_error_handlers_final(L);
@@ -2802,7 +2802,7 @@ if (cce_location(L)) @{
   void *  P = ccsys_malloc_guarded(L, P_H, 1024);
 
   /* Do something with P. */
-  cce_run_cleanup_handlers(L);
+  cce_run_clean_handlers(L);
 @}
 @end example
 
@@ -2819,14 +2819,14 @@ if (cce_location(L)) @{
   void *  P = ccsys_malloc_guarded(L, P_H, 1024);
 
   /* Do something with P. */
-  cce_run_cleanup_handlers(L);
+  cce_run_clean_handlers(L);
 @}
 @end example
 
 The following symbols are defined in the header file @file{ccsys.h}.
 
 
-@deftypefun {void *} ccsys_malloc_guarded_cleanup (cce_destination_t @var{L}, cce_cleanup_handler_t * @var{P_H}, size_t @var{size})
+@deftypefun {void *} ccsys_malloc_guarded_clean (cce_destination_t @var{L}, cce_clean_handler_t * @var{P_H}, size_t @var{size})
 Like @cfunc{ccsys_malloc}, but register the resulting pointer in the handler referenced by
 @var{P_H}.
 @end deftypefun
@@ -2838,14 +2838,14 @@ Like @cfunc{ccsys_malloc}, but register the resulting pointer in the handler ref
 @end deftypefun
 
 
-@deftypefn {Preprocessor Macro} {void *} ccsys_malloc_guarded (cce_destination_t @var{L}, cce_cleanup_handler_t * @var{P_H}, size_t @var{size})
+@deftypefn {Preprocessor Macro} {void *} ccsys_malloc_guarded (cce_destination_t @var{L}, cce_clean_handler_t * @var{P_H}, size_t @var{size})
 @deftypefnx {Preprocessor Macro} {void *} ccsys_malloc_guarded (cce_destination_t @var{L}, cce_error_handler_t * @var{P_H}, size_t @var{size})
 This preprocessor macro uses @code{_Generic} to dispatch the call according to the type of the
 pointer @var{P_H}; if the type is:
 
 @table @code
-@item cce_cleanup_handler_t
-The macro expands into a call to @cfunc{ccsys_malloc_guarded_cleanup}.
+@item cce_clean_handler_t
+The macro expands into a call to @cfunc{ccsys_malloc_guarded_clean}.
 
 @item cce_error_handler_t
 The macro expands into a call to @cfunc{ccsys_malloc_guarded_error}.
@@ -2860,7 +2860,7 @@ The macro expands into a call to @cfunc{ccsys_malloc_guarded_error}.
 The following symbols are defined in the header file @file{ccsys.h}.
 
 
-@deftypefun {void *} ccsys_calloc_guarded_cleanup (cce_destination_t @var{L}, cce_cleanup_handler_t * @var{P_H}, size_t @var{count}, size_t @var{eltsize})
+@deftypefun {void *} ccsys_calloc_guarded_clean (cce_destination_t @var{L}, cce_clean_handler_t * @var{P_H}, size_t @var{count}, size_t @var{eltsize})
 Like @cfunc{ccsys_calloc}, but register the resulting pointer in the handler referenced by
 @var{P_H}.
 @end deftypefun
@@ -2872,14 +2872,14 @@ Like @cfunc{ccsys_calloc}, but register the resulting pointer in the handler ref
 @end deftypefun
 
 
-@deftypefn {Preprocessor Macro} {void *} ccsys_calloc_guarded (cce_destination_t @var{L}, cce_cleanup_handler_t * @var{P_H}, size_t @var{count}, size_t @var{eltsize})
+@deftypefn {Preprocessor Macro} {void *} ccsys_calloc_guarded (cce_destination_t @var{L}, cce_clean_handler_t * @var{P_H}, size_t @var{count}, size_t @var{eltsize})
 @deftypefnx {Preprocessor Macro} {void *} ccsys_calloc_guarded (cce_destination_t @var{L}, cce_error_handler_t * @var{P_H}, size_t @var{count}, size_t @var{eltsize})
 This preprocessor macro uses @code{_Generic} to dispatch the call according to the type of the
 pointer @var{P_H}; if the type is:
 
 @table @code
-@item cce_cleanup_handler_t
-The macro expands into a call to @cfunc{ccsys_calloc_guarded_cleanup}.
+@item cce_clean_handler_t
+The macro expands into a call to @cfunc{ccsys_calloc_guarded_clean}.
 
 @item cce_error_handler_t
 The macro expands into a call to @cfunc{ccsys_calloc_guarded_error}.
@@ -2894,7 +2894,7 @@ The macro expands into a call to @cfunc{ccsys_calloc_guarded_error}.
 The following symbols are defined in the header file @file{ccsys.h}.
 
 
-@deftypefun {void *} ccsys_realloc_guarded_cleanup (cce_destination_t @var{L}, cce_cleanup_handler_t * @var{P_H}, void * @var{old_P}, size_t @var{newsize})
+@deftypefun {void *} ccsys_realloc_guarded_clean (cce_destination_t @var{L}, cce_clean_handler_t * @var{P_H}, void * @var{old_P}, size_t @var{newsize})
 Like @cfunc{ccsys_realloc}, but register the resulting pointer in the handler referenced by
 @var{P_H}.  The handler is updated to reference the new memory pointer.  If, upon entering this
 function, the handler @var{P_H} does not reference the pointer @var{old_P}: raise an exception by
@@ -2912,14 +2912,14 @@ performing a non--local exit to @var{L}, with condition object of type
 @end deftypefun
 
 
-@deftypefn {Preprocessor Macro} {void *} ccsys_realloc_guarded (cce_destination_t @var{L}, cce_cleanup_handler_t * @var{P_H}, void * @var{old_P}, size_t @var{newsize})
+@deftypefn {Preprocessor Macro} {void *} ccsys_realloc_guarded (cce_destination_t @var{L}, cce_clean_handler_t * @var{P_H}, void * @var{old_P}, size_t @var{newsize})
 @deftypefnx {Preprocessor Macro} {void *} ccsys_realloc_guarded (cce_destination_t @var{L}, cce_error_handler_t * @var{P_H}, void * @var{old_P}, size_t @var{newsize})
 This preprocessor macro uses @code{_Generic} to dispatch the call according to the type of the
 pointer @var{P_H}; if the type is:
 
 @table @code
-@item cce_cleanup_handler_t
-The macro expands into a call to @cfunc{ccsys_realloc_guarded_cleanup}.
+@item cce_clean_handler_t
+The macro expands into a call to @cfunc{ccsys_realloc_guarded_clean}.
 
 @item cce_error_handler_t
 The macro expands into a call to @cfunc{ccsys_realloc_guarded_error}.
@@ -3175,7 +3175,7 @@ if (cce_location(L)) @{
       printf("groups[%d]=%d\n", i, groups[i].data);
     @}
   @}
-  cce_run_cleanup_handlers(L);
+  cce_run_clean_handlers(L);
 @}
 @end example
 
@@ -3208,7 +3208,7 @@ if (cce_location(L)) @{
       printf("groups[%d]=%d\n", i, groups[i].data);
     @}
   @}
-  cce_run_cleanup_handlers(L);
+  cce_run_clean_handlers(L);
 @}
 @end example
 
@@ -3252,7 +3252,7 @@ if (cce_location(L)) @{
 
   ccsys_getlogin_r(L, username, maxlen);
   printf("login user=%s\n", username);
-  cce_run_cleanup_handlers(L);
+  cce_run_clean_handlers(L);
 @}
 @end example
 
@@ -3448,7 +3448,7 @@ if (cce_location(L)) @{
   fprint("pw_dir=%s\n",    ccsys_ref_passwd_pw_dir(S));
   fprint("pw_shell=%s\n",  ccsys_ref_passwd_pw_shell(S));
 
-  cce_run_cleanup_handlers(L);
+  cce_run_clean_handlers(L);
 @}
 @end example
 
@@ -3477,7 +3477,7 @@ if (cce_location(L)) @{
   fprint("pw_dir=%s\n",    ccsys_ref_passwd_pw_dir(S));
   fprint("pw_shell=%s\n",  ccsys_ref_passwd_pw_shell(S));
 
-  cce_run_cleanup_handlers(L);
+  cce_run_clean_handlers(L);
 @}
 @end example
 
@@ -3511,7 +3511,7 @@ if (cce_location(L)) @{
   fprint("pw_dir=%s\n",    ccsys_ref_passwd_pw_dir(S));
   fprint("pw_shell=%s\n",  ccsys_ref_passwd_pw_shell(S));
 
-  cce_run_cleanup_handlers(L);
+  cce_run_clean_handlers(L);
 @}
 @end example
 
@@ -3545,7 +3545,7 @@ if (cce_location(L)) @{
   fprint("pw_dir=%s\n",    ccsys_ref_passwd_pw_dir(S));
   fprint("pw_shell=%s\n",  ccsys_ref_passwd_pw_shell(S));
 
-  cce_run_cleanup_handlers(L);
+  cce_run_clean_handlers(L);
 @}
 @end example
 
@@ -3573,21 +3573,21 @@ Wrapper for @cfunc{getpwent}; @manpage{getpwent, Get password file entry}.
 
 @c ------------------------------------------------------------------------
 
-@deftypefun void ccsys_cleanup_handler_endpwent_init (cce_destination_t @var{L}, cce_handler_t * @var{H})
+@deftypefun void ccsys_clean_handler_endpwent_init (cce_destination_t @var{L}, cce_handler_t * @var{H})
 @deftypefunx void ccsys_error_handler_endpwent_init (cce_destination_t @var{L}, cce_handler_t * @var{H})
-Register @var{H} as cleanup or error handler in the context of @var{L}.  The handler function will
+Register @var{H} as clean or error handler in the context of @var{L}.  The handler function will
 reset the users database pointer using the standard function @cfunc{endpwent}.
 @end deftypefun
 
 
-@deftypefn {Preprocessor Macro} void ccsys_handler_endpwent_init (cce_destination_t @var{L}, cce_cleanup_handler_t * @var{P_H})
+@deftypefn {Preprocessor Macro} void ccsys_handler_endpwent_init (cce_destination_t @var{L}, cce_clean_handler_t * @var{P_H})
 @deftypefnx {Preprocessor Macro} void ccsys_handler_endpwent_init (cce_destination_t @var{L}, cce_error_handler_t * @var{P_H})
 This preprocessor macro uses @code{_Generic} to dispatch the call according to the type of the
 pointer @var{P_H}; if the type is:
 
 @table @code
-@item cce_cleanup_handler_t
-The macro expands into a call to @cfunc{ccsys_cleanup_handler_endpwent_init}.
+@item cce_clean_handler_t
+The macro expands into a call to @cfunc{ccsys_clean_handler_endpwent_init}.
 
 @item cce_error_handler_t
 The macro expands into a call to @cfunc{ccsys_error_handler_endpwent_init}.
@@ -3608,7 +3608,7 @@ As usage example of @cfunc{ccsys_getpwent} see the following code.
 
 @example
 cce_location_t        L[1];
-cce_cleanup_handler_t endpwent_H[1];
+cce_clean_handler_t endpwent_H[1];
 
 if (cce_location(L)) @{
   cce_run_error_handlers_final(L);
@@ -3622,7 +3622,7 @@ if (cce_location(L)) @{
     printf("pw_name=%s\n", ccsys_ref_passwd_pw_name(S));
   @}
 
-  cce_run_cleanup_handlers(L);
+  cce_run_clean_handlers(L);
 @}
 @end example
 
@@ -3759,21 +3759,21 @@ Wrapper for @cfunc{getgrent}; @manpage{getgrent, Get group file entry}.
 
 @c ------------------------------------------------------------------------
 
-@deftypefun void ccsys_cleanup_handler_endgrent_init (cce_destination_t @var{L}, cce_handler_t * @var{H})
+@deftypefun void ccsys_clean_handler_endgrent_init (cce_destination_t @var{L}, cce_handler_t * @var{H})
 @deftypefunx void ccsys_error_handler_endgrent_init (cce_destination_t @var{L}, cce_handler_t * @var{H})
-Register @var{H} as cleanup or error handler in the context of @var{L}.  The handler function will
+Register @var{H} as clean or error handler in the context of @var{L}.  The handler function will
 reset the users database pointer using the standard function @cfunc{endgrent}.
 @end deftypefun
 
 
-@deftypefn {Preprocessor Macro} void ccsys_handler_endgrent_init (cce_destination_t @var{L}, cce_cleanup_handler_t * @var{P_H})
+@deftypefn {Preprocessor Macro} void ccsys_handler_endgrent_init (cce_destination_t @var{L}, cce_clean_handler_t * @var{P_H})
 @deftypefnx {Preprocessor Macro} void ccsys_handler_endgrent_init (cce_destination_t @var{L}, cce_error_handler_t * @var{P_H})
 This preprocessor macro uses @code{_Generic} to dispatch the call according to the type of the
 pointer @var{P_H}; if the type is:
 
 @table @code
-@item cce_cleanup_handler_t
-The macro expands into a call to @cfunc{ccsys_cleanup_handler_endgrent_init}.
+@item cce_clean_handler_t
+The macro expands into a call to @cfunc{ccsys_clean_handler_endgrent_init}.
 
 @item cce_error_handler_t
 The macro expands into a call to @cfunc{ccsys_error_handler_endgrent_init}.
@@ -3914,9 +3914,9 @@ We can use  @cfunc{ccsys_openat} as follows:
 
 @example
 cce_location_t          L[1];
-cce_cleanup_handler_t   dir_H[1];
-cce_cleanup_handler_t   dirstream_H[1];
-cce_cleanup_handler_t   file_H[1];
+cce_clean_handler_t   dir_H[1];
+cce_clean_handler_t   dirstream_H[1];
+cce_clean_handler_t   file_H[1];
 
 if (cce_location(L)) @{
   cce_run_error_handlers_final(L);
@@ -3966,7 +3966,7 @@ if (cce_location(L)) @{
     ccsys_unlinkat(L, dirfd, filename, flags);
   @}
 
-  cce_run_cleanup_handlers(L);
+  cce_run_clean_handlers(L);
 @}
 @end example
 
@@ -3988,14 +3988,14 @@ Wrapper for @cfunc{pipe2}.  @manpage{pipe2, Create pipes}.
 @end deftypefun
 
 @menu
-* io pipes handlers::           Pipes cleanup and error handlers.
+* io pipes handlers::           Pipes clean and error handlers.
 * io pipes one::                Using @cfunc{ccsys_pipe}.
 * io pipes two::                Using @cfunc{ccsys_pipe2}.
 @end menu
 
 @c page
 @node io pipes handlers
-@subsection Pipes cleanup and error handlers
+@subsection Pipes clean and error handlers
 
 
 We can handle file descriptors that must be released with the standard function @cfunc{close} as
@@ -4003,7 +4003,7 @@ follows:
 
 @example
 cce_location_t          L[1];
-cce_cleanup_handler_t   H[1];
+cce_clean_handler_t   H[1];
 
 if (cce_location(L)) @{
   cce_run_error_handlers_final(L);
@@ -4011,29 +4011,29 @@ if (cce_location(L)) @{
   ccsys_fd_t    pipefd[2];
   ccsys_pipe(L, pipefd);
   ccsys_handler_pipedes_init(L, H, pipefd);
-  cce_run_cleanup_handlers(L);
+  cce_run_clean_handlers(L);
 @}
 @end example
 
 The following symbols are defined in the header file @file{ccsys.h}.
 
 
-@deftypefun void ccsys_cleanup_handler_pipedes_init (cce_destination_t @var{L}, cce_handler_t * @var{H}, ccsys_fd_t @var{pipedes}[2])
+@deftypefun void ccsys_clean_handler_pipedes_init (cce_destination_t @var{L}, cce_handler_t * @var{H}, ccsys_fd_t @var{pipedes}[2])
 @deftypefunx void ccsys_error_handler_pipedes_init (cce_destination_t @var{L}, cce_handler_t * @var{H}, ccsys_fd_t @var{pipedes}[2])
-Register @var{H} as cleanup or error handler in the context of @var{L}.  The handler function will
+Register @var{H} as clean or error handler in the context of @var{L}.  The handler function will
 release the file descriptors in @var{pipedes} using the standard function @cfunc{close}; errors in
 @cfunc{close} are @strong{ignored}.
 @end deftypefun
 
 
-@deftypefn {Preprocessor Macro} void ccsys_handler_pipedes_init (cce_destination_t @var{L}, cce_cleanup_handler_t * @var{H}, ccsys_fd_t @var{pipedes}[2])
+@deftypefn {Preprocessor Macro} void ccsys_handler_pipedes_init (cce_destination_t @var{L}, cce_clean_handler_t * @var{H}, ccsys_fd_t @var{pipedes}[2])
 @deftypefnx {Preprocessor Macro} void ccsys_handler_pipedes_init (cce_destination_t @var{L}, cce_error_handler_t * @var{H}, ccsys_fd_t @var{pipedes}[2])
 This preprocessor macro uses @code{_Generic} to dispatch the call according to the type of the
 pointer @var{H}; if the type is:
 
 @table @code
-@item cce_cleanup_handler_t
-The macro expands into a call to @cfunc{ccsys_cleanup_handler_pipedes_init}.
+@item cce_clean_handler_t
+The macro expands into a call to @cfunc{ccsys_clean_handler_pipedes_init}.
 
 @item cce_error_handler_t
 The macro expands into a call to @cfunc{ccsys_error_handler_pipedes_init}.
@@ -4049,7 +4049,7 @@ As usage example of @cfunc{ccsys_pipe} see the following code.
 
 @example
 cce_location_t          L[1];
-cce_cleanup_handler_t   H[1];
+cce_clean_handler_t   H[1];
 
 if (cce_location(L)) @{
   cce_run_error_handlers_raise(L, upper_L);
@@ -4081,7 +4081,7 @@ if (cce_location(L)) @{
     assert(0 == strncmp(buf, "0123456789", N));
   @}
 
-  cce_run_cleanup_handlers(L);
+  cce_run_clean_handlers(L);
 @}
 @end example
 
@@ -4094,7 +4094,7 @@ As usage example of @cfunc{ccsys_pipe2} see the following code.
 
 @example
 cce_location_t          L[1];
-cce_cleanup_handler_t   H[1];
+cce_clean_handler_t   H[1];
 
 if (cce_location(L)) @{
   cce_run_error_handlers_raise(L, upper_L);
@@ -4128,7 +4128,7 @@ if (cce_location(L)) @{
     assert(0 == strncmp(buf, "0123456789", N));
   @}
 
-  cce_run_cleanup_handlers(L);
+  cce_run_clean_handlers(L);
 @}
 @end example
 
@@ -4193,7 +4193,7 @@ void
 sample (void)
 @{
   cce_location_t        L[1];
-  cce_cleanup_handler_t fifo_H[1];
+  cce_clean_handler_t fifo_H[1];
 
   if (cce_location(L)) @{
     cce_run_error_handlers_final(L);
@@ -4225,7 +4225,7 @@ sample (void)
       /* We are in the child process. */
       sample_child(fifoname);
     @}
-    cce_run_cleanup_handlers(L);
+    cce_run_clean_handlers(L);
   @}
 @}
 
@@ -4233,7 +4233,7 @@ void
 sample_parent (cce_destination_t upper_L, char const * fifoname)
 @{
   cce_location_t        L[1];
-  cce_cleanup_handler_t infd_H[1];
+  cce_clean_handler_t infd_H[1];
   ccsys_fd_t            infd;
 
   if (cce_location(L)) @{
@@ -4256,7 +4256,7 @@ sample_parent (cce_destination_t upper_L, char const * fifoname)
       ccsys_read (L, infd, inbuf, len);
     @}
 
-    cce_run_cleanup_handlers(L);
+    cce_run_clean_handlers(L);
   @}
 @}
 
@@ -4265,7 +4265,7 @@ sample_child  (char const * fifoname)
 @{
   cce_location_t        L[1];
   ccsys_fd_t            oufd;
-  cce_cleanup_handler_t oufd_H[1];
+  cce_clean_handler_t oufd_H[1];
 
   if (cce_location(L)) @{
     cce_run_error_handlers_final(L);
@@ -4286,7 +4286,7 @@ sample_child  (char const * fifoname)
       char *    oubuf = "0123456789";
       ccsys_write(L, oufd, oubuf, len);
     @}
-    cce_run_cleanup_handlers(L);
+    cce_run_clean_handlers(L);
   @}
 
   /* Terminate the child process. */
@@ -4333,9 +4333,9 @@ void
 sample (void)
 @{
   cce_location_t        L[1];
-  cce_cleanup_handler_t dir_H[1];
-  cce_cleanup_handler_t dirstream_H[1];
-  cce_cleanup_handler_t fifo_H[1];
+  cce_clean_handler_t dir_H[1];
+  cce_clean_handler_t dirstream_H[1];
+  cce_clean_handler_t fifo_H[1];
   ccsys_at_link_t       fifo_unlink_data;
 
   if (cce_location(L)) @{
@@ -4389,7 +4389,7 @@ sample (void)
       /* We are in the child process. */
       sample_child(dirfd, fifoname);
     @}
-    cce_run_cleanup_handlers(L);
+    cce_run_clean_handlers(L);
   @}
 @}
 
@@ -4398,7 +4398,7 @@ sample_parent (cce_destination_t upper_L,
                ccsys_dirfd_t dirfd, char const * fifoname)
 @{
   cce_location_t        L[1];
-  cce_cleanup_handler_t infd_H[1];
+  cce_clean_handler_t infd_H[1];
   ccsys_fd_t            infd;
 
   if (cce_location(L)) @{
@@ -4421,7 +4421,7 @@ sample_parent (cce_destination_t upper_L,
       ccsys_read (L, infd, inbuf, len);
     @}
 
-    cce_run_cleanup_handlers(L);
+    cce_run_clean_handlers(L);
   @}
 @}
 
@@ -4430,7 +4430,7 @@ sample_child (ccsys_dirfd_t dirfd, char const * fifoname)
 @{
   cce_location_t        L[1];
   ccsys_fd_t            oufd;
-  cce_cleanup_handler_t oufd_H[1];
+  cce_clean_handler_t oufd_H[1];
 
   if (cce_location(L)) @{
     cce_run_error_handlers_final(L);
@@ -4451,7 +4451,7 @@ sample_child (ccsys_dirfd_t dirfd, char const * fifoname)
       char *    oubuf = "0123456789";
       ccsys_write(L, oufd, oubuf, len);
     @}
-    cce_run_cleanup_handlers(L);
+    cce_run_clean_handlers(L);
   @}
 
   /* Terminate the child process. */
@@ -4484,7 +4484,7 @@ follows:
 
 @example
 cce_location_t          L[1];
-cce_cleanup_handler_t   H[1];
+cce_clean_handler_t   H[1];
 
 if (cce_location(L)) @{
   cce_run_error_handlers_raise(L, upper_L);
@@ -4500,27 +4500,27 @@ if (cce_location(L)) @{
   ccsys_handler_filedes_init(L, H, fd);
 
   /* Do something with "fd" here. */
-  cce_run_cleanup_handlers(L);
+  cce_run_clean_handlers(L);
 @}
 @end example
 
 
-@deftypefun void ccsys_cleanup_handler_filedes_init (cce_destination_t @var{L}, cce_handler_t * @var{H}, ccsys_fd_t @var{fd})
+@deftypefun void ccsys_clean_handler_filedes_init (cce_destination_t @var{L}, cce_handler_t * @var{H}, ccsys_fd_t @var{fd})
 @deftypefunx void ccsys_error_handler_filedes_init (cce_destination_t @var{L}, cce_handler_t * @var{H}, ccsys_fd_t @var{fd})
-Register @var{H} as cleanup or error handler in the context of @var{L}.  The handler function will
+Register @var{H} as clean or error handler in the context of @var{L}.  The handler function will
 release the file descriptor @var{fd} using the standard function @cfunc{close}; errors in
 @cfunc{close} are @strong{ignored}.
 @end deftypefun
 
 
-@deftypefn {Preprocessor Macro} void ccsys_handler_filedes_init (cce_destination_t @var{L}, cce_cleanup_handler_t * @var{H}, ccsys_fd_t @var{fd})
+@deftypefn {Preprocessor Macro} void ccsys_handler_filedes_init (cce_destination_t @var{L}, cce_clean_handler_t * @var{H}, ccsys_fd_t @var{fd})
 @deftypefnx {Preprocessor Macro} void ccsys_handler_filedes_init (cce_destination_t @var{L}, cce_error_handler_t * @var{H}, ccsys_fd_t @var{fd})
 This preprocessor macro uses @code{_Generic} to dispatch the call according to the type of the
 pointer @var{H}; if the type is:
 
 @table @code
-@item cce_cleanup_handler_t
-The macro expands into a call to @cfunc{ccsys_cleanup_handler_filedes_init}.
+@item cce_clean_handler_t
+The macro expands into a call to @cfunc{ccsys_clean_handler_filedes_init}.
 
 @item cce_error_handler_t
 The macro expands into a call to @cfunc{ccsys_error_handler_filedes_init}.
@@ -4582,8 +4582,8 @@ file, writes bytes to it, reads bytes from it, closes the file, removes the file
 
 @example
 cce_location_t          L[1];
-cce_cleanup_handler_t   filedes_H[1];
-cce_cleanup_handler_t   file_H[1];
+cce_clean_handler_t   filedes_H[1];
+cce_clean_handler_t   file_H[1];
 
 if (cce_location(L)) @{
   cce_run_error_handlers_raise(L, upper_L);
@@ -4630,7 +4630,7 @@ if (cce_location(L)) @{
     N = ccsys_read(L, fd, buf, len);
   @}
 
-  cce_run_cleanup_handlers(L);
+  cce_run_clean_handlers(L);
 @}
 @end example
 
@@ -4644,8 +4644,8 @@ a file, writes bytes to it, reads bytes from it, closes the file, removes the fi
 
 @example
 cce_location_t          L[1];
-cce_cleanup_handler_t   filedes_H[1];
-cce_cleanup_handler_t   file_H[1];
+cce_clean_handler_t   filedes_H[1];
+cce_clean_handler_t   file_H[1];
 
 if (cce_location(L)) @{
   cce_run_error_handlers_raise(L, upper_L);
@@ -4687,7 +4687,7 @@ if (cce_location(L)) @{
     offset.data = 0;
     N = ccsys_pread(L, fd, buf, len, offset);
   @}
-  cce_run_cleanup_handlers(L);
+  cce_run_clean_handlers(L);
 @}
 @end example
 
@@ -4793,8 +4793,8 @@ a file, writes bytes to it, reads bytes from it, closes the file, removes the fi
 
 @example
 cce_location_t          L[1];
-cce_cleanup_handler_t   filedes_H[1];
-cce_cleanup_handler_t   file_H[1];
+cce_clean_handler_t   filedes_H[1];
+cce_clean_handler_t   file_H[1];
 
 if (cce_location(L)) @{
   cce_run_error_handlers_raise(L, upper_L);
@@ -4863,7 +4863,7 @@ if (cce_location(L)) @{
     N = ccsys_readv(L, fd, vec, buf_count);
   @}
 
-  cce_run_cleanup_handlers(L);
+  cce_run_clean_handlers(L);
 @}
 @end example
 
@@ -4877,8 +4877,8 @@ opens a file, writes bytes to it, reads bytes from it, closes the file, removes 
 
 @example
 cce_location_t          L[1];
-cce_cleanup_handler_t   filedes_H[1];
-cce_cleanup_handler_t   file_H[1];
+cce_clean_handler_t   filedes_H[1];
+cce_clean_handler_t   file_H[1];
 
 if (cce_location(L)) @{
   cce_run_error_handlers_raise(L, upper_L);
@@ -4942,7 +4942,7 @@ if (cce_location(L)) @{
     N = ccsys_preadv(L, fd, vec, buf_count, offset);
   @}
 
-  cce_run_cleanup_handlers(L);
+  cce_run_clean_handlers(L);
 @}
 @end example
 
@@ -4985,8 +4985,8 @@ descriptor, writes bytes to it, reads bytes from it, closes the file, removes th
 
 @example
 cce_location_t          L[1];
-cce_cleanup_handler_t   filedes_H[1];
-cce_cleanup_handler_t   file_H[1];
+cce_clean_handler_t   filedes_H[1];
+cce_clean_handler_t   file_H[1];
 
 if (cce_location(L)) @{
   cce_run_error_handlers_raise(L, upper_L);
@@ -5029,7 +5029,7 @@ if (cce_location(L)) @{
     ccsys_pread(L, fdx, inbuf, len, offset);
    @}
 
-  cce_run_cleanup_handlers(L);
+  cce_run_clean_handlers(L);
  @}
 @end example
 
@@ -5043,8 +5043,8 @@ file descriptor, writes bytes to it, reads bytes from it, closes the file, remov
 
 @example
 cce_location_t          L[1];
-cce_cleanup_handler_t   filedes_H[1];
-cce_cleanup_handler_t   file_H[1];
+cce_clean_handler_t   filedes_H[1];
+cce_clean_handler_t   file_H[1];
 
 if (cce_location(L)) @{
   cce_run_error_handlers_raise(L, upper_L);
@@ -5091,7 +5091,7 @@ if (cce_location(L)) @{
     ccsys_pread(L, fdx, inbuf, len, offset);
   @}
 
-  cce_run_cleanup_handlers(L);
+  cce_run_clean_handlers(L);
 @}
 @end example
 
@@ -5105,8 +5105,8 @@ file descriptor, writes bytes to it, reads bytes from it, closes the file, remov
 
 @example
 cce_location_t          L[1];
-cce_cleanup_handler_t   filedes_H[1];
-cce_cleanup_handler_t   file_H[1];
+cce_clean_handler_t   filedes_H[1];
+cce_clean_handler_t   file_H[1];
 
 if (cce_location(L)) @{
   cce_run_error_handlers_raise(L, upper_L);
@@ -5156,7 +5156,7 @@ if (cce_location(L)) @{
     ccsys_pread(L, fdx, inbuf, len, offset);
   @}
 
-  cce_run_cleanup_handlers(L);
+  cce_run_clean_handlers(L);
 @}
 @end example
 
@@ -5243,7 +5243,7 @@ doit (cce_destination_t upper_L)
       ccsys_handler_pipedes_init(L, forwards_H, forwards);
       ccsys_pipe(L, backwards);
       ccsys_handler_pipedes_init(L, backwards_H, backwards);
-      cce_run_cleanup_handlers(L);
+      cce_run_clean_handlers(L);
     @}
 
     /* Here the pipes have been allocated.
@@ -5284,7 +5284,7 @@ doit (cce_destination_t upper_L)
           ccsys_exit(status);
         @}
       @}
-      cce_run_cleanup_handlers(L);
+      cce_run_clean_handlers(L);
     @}
   @}
 @}
@@ -5294,8 +5294,8 @@ doit_parent (cce_destination_t upper_L,
              ccsys_fd_t infd, ccsys_fd_t oufd)
 @{
   cce_location_t        L[1];
-  cce_cleanup_handler_t infd_H[1];
-  cce_cleanup_handler_t oufd_H[1];
+  cce_clean_handler_t infd_H[1];
+  cce_clean_handler_t oufd_H[1];
 
   if (cce_location(L)) @{
     cce_run_error_handlers_raise(L, upper_L);
@@ -5355,7 +5355,7 @@ doit_parent (cce_destination_t upper_L,
       assert(0 == strncmp(buf, "hello parent", N));
     @}
 
-    cce_run_cleanup_handlers(L);
+    cce_run_clean_handlers(L);
   @}
 @}
 
@@ -5363,8 +5363,8 @@ void
 doit_child (ccsys_fd_t infd, ccsys_fd_t oufd)
 @{
   cce_location_t        L[1];
-  cce_cleanup_handler_t infd_H[1];
-  cce_cleanup_handler_t oufd_H[1];
+  cce_clean_handler_t infd_H[1];
+  cce_clean_handler_t oufd_H[1];
 
   if (cce_location(L)) @{
     cce_run_error_handlers_final(L);
@@ -5424,7 +5424,7 @@ doit_child (ccsys_fd_t infd, ccsys_fd_t oufd)
       assert(N == len);
     @}
 
-    cce_run_cleanup_handlers(L);
+    cce_run_clean_handlers(L);
   @}
 @}
 @end smallexample
@@ -5463,7 +5463,7 @@ doit (cce_destination_t upper_L)
       ccsys_handler_pipedes_init(L, forwards_H, forwards);
       ccsys_pipe(L, backwards);
       ccsys_handler_pipedes_init(L, backwards_H, backwards);
-      cce_run_cleanup_handlers(L);
+      cce_run_clean_handlers(L);
     @}
 
     /* Here the pipes have been allocated.
@@ -5504,7 +5504,7 @@ doit (cce_destination_t upper_L)
           ccsys_exit(status);
         @}
       @}
-      cce_run_cleanup_handlers(L);
+      cce_run_clean_handlers(L);
     @}
   @}
 @}
@@ -5514,8 +5514,8 @@ doit_parent (cce_destination_t upper_L,
              ccsys_fd_t infd, ccsys_fd_t oufd)
 @{
   cce_location_t        L[1];
-  cce_cleanup_handler_t infd_H[1];
-  cce_cleanup_handler_t oufd_H[1];
+  cce_clean_handler_t infd_H[1];
+  cce_clean_handler_t oufd_H[1];
 
   if (cce_location(L)) @{
     cce_run_error_handlers_raise(L, upper_L);
@@ -5579,7 +5579,7 @@ doit_parent (cce_destination_t upper_L,
       assert(0 == strncmp(buf, "hello parent", N));
     @}
 
-    cce_run_cleanup_handlers(L);
+    cce_run_clean_handlers(L);
   @}
 @}
 
@@ -5587,8 +5587,8 @@ void
 doit_child (ccsys_fd_t infd, ccsys_fd_t oufd)
 @{
   cce_location_t        L[1];
-  cce_cleanup_handler_t infd_H[1];
-  cce_cleanup_handler_t oufd_H[1];
+  cce_clean_handler_t infd_H[1];
+  cce_clean_handler_t oufd_H[1];
 
   if (cce_location(L)) @{
     cce_run_error_handlers_final(L);
@@ -5652,7 +5652,7 @@ doit_child (ccsys_fd_t infd, ccsys_fd_t oufd)
       assert(N == len);
     @}
 
-    cce_run_cleanup_handlers(L);
+    cce_run_clean_handlers(L);
   @}
 @}
 @end smallexample
@@ -5741,22 +5741,22 @@ Wrapper for @cfunc{fclose}; @manpage{fclose, Close a stream}.
 @subsubheading Stream handlers
 
 
-@deftypefun void ccsys_cleanup_handler_stream_init (cce_destination_t @var{L}, cce_handler_t * @var{H}, ccsys_file_t @var{stream})
+@deftypefun void ccsys_clean_handler_stream_init (cce_destination_t @var{L}, cce_handler_t * @var{H}, ccsys_file_t @var{stream})
 @deftypefunx void ccsys_error_handler_stream_init (cce_destination_t @var{L}, cce_handler_t * @var{H}, ccsys_file_t @var{stream})
-Register @var{H} as cleanup or error handler in the context of @var{L}.  The handler function will
+Register @var{H} as clean or error handler in the context of @var{L}.  The handler function will
 release the stream @var{stream} using the standard function @cfunc{fclose}; errors in @cfunc{fclose}
 are @strong{ignored}.
 @end deftypefun
 
 
-@deftypefn {Preprocessor Macro} void ccsys_handler_stream_init (cce_destination_t @var{L}, cce_cleanup_handler_t * @var{H}, ccsys_file_t @var{stream})
+@deftypefn {Preprocessor Macro} void ccsys_handler_stream_init (cce_destination_t @var{L}, cce_clean_handler_t * @var{H}, ccsys_file_t @var{stream})
 @deftypefnx {Preprocessor Macro} void ccsys_handler_stream_init (cce_destination_t @var{L}, cce_error_handler_t * @var{H}, ccsys_file_t @var{stream})
 This preprocessor macro uses @code{_Generic} to dispatch the call according to the type of the
 pointer @var{H}; if the type is:
 
 @table @code
-@item cce_cleanup_handler_t
-The macro expands into a call to @cfunc{ccsys_cleanup_handler_stream_init}.
+@item cce_clean_handler_t
+The macro expands into a call to @cfunc{ccsys_clean_handler_stream_init}.
 
 @item cce_error_handler_t
 The macro expands into a call to @cfunc{ccsys_error_handler_stream_init}.
@@ -5904,7 +5904,7 @@ if (cce_location(L)) @{
   mode.data  = CCSYS_S_IRUSR | CCSYS_S_IWUSR;
   ccsys_touch(L, filename, flags, mode);
 
-  cce_run_cleanup_handlers(L);
+  cce_run_clean_handlers(L);
 @}
 @end example
 
@@ -6004,9 +6004,9 @@ if (CCE_EXCEPT == cce_location(L)) @{
 
     /* Do something with "buf" here; usually copy it into
        another buffer. */
-    cce_run_cleanup_handlers(inner_L);
+    cce_run_clean_handlers(inner_L);
   @}
-  cce_run_cleanup_handlers(L);
+  cce_run_clean_handlers(L);
 @}
 @end example
 
@@ -6028,7 +6028,7 @@ As usage example for @cfunc{ccsys_get_current_dir_name} see the following code.
 
 @example
 cce_location_t        L[1];
-cce_cleanup_handler_t H[1];
+cce_clean_handler_t H[1];
 
 if (cce_location(L)) @{
   cce_run_error_handlers_raise(L, upper_L);
@@ -6039,7 +6039,7 @@ if (cce_location(L)) @{
   ccsys_handler_malloc_init(L, H, buf);
 
   /* Do something with "buf" here. */
-  cce_run_cleanup_handlers(L);
+  cce_run_clean_handlers(L);
 @}
 @end example
 
@@ -6137,7 +6137,7 @@ closing it with @cfunc{closedir}:
 
 @example
 cce_location_t          L[1];
-cce_cleanup_handler_t   dirstream_H[1];
+cce_clean_handler_t   dirstream_H[1];
 char const *            pathname = "./";
 
 if (cce_location(L)) @{
@@ -6154,7 +6154,7 @@ if (cce_location(L)) @{
     printf("%s\n", ccsys_ref_dirent_d_name(direntry));
     fflush(stdout);
   @}
-  cce_run_cleanup_handlers(L);
+  cce_run_clean_handlers(L);
 @}
 @end example
 
@@ -6164,22 +6164,22 @@ we can use the source code of this handler as template to implement a more compl
 The following symbols are defined in the header file @file{ccsys.h}.
 
 
-@deftypefun void ccsys_cleanup_handler_dirstream_init (cce_destination_t @var{L}, cce_handler_t * @var{H}, ccsys_dir_t * @var{dirstream})
+@deftypefun void ccsys_clean_handler_dirstream_init (cce_destination_t @var{L}, cce_handler_t * @var{H}, ccsys_dir_t * @var{dirstream})
 @deftypefunx void ccsys_error_handler_dirstream_init (cce_destination_t @var{L}, cce_handler_t * @var{H}, ccsys_dir_t * @var{dirstream})
-Register @var{H} as cleanup or error handler in the context of @var{L}.  The handler function will
+Register @var{H} as clean or error handler in the context of @var{L}.  The handler function will
 finalise the directory stream using the standard function @cfunc{closedir}; errors in
 @cfunc{closedir} are @strong{ignored}.
 @end deftypefun
 
 
-@deftypefn {Preprocessor Macro} void ccsys_handler_dirstream_init (cce_destination_t @var{L}, cce_cleanup_handler_t * @var{H}, ccsys_dir_t * @var{dirstream})
+@deftypefn {Preprocessor Macro} void ccsys_handler_dirstream_init (cce_destination_t @var{L}, cce_clean_handler_t * @var{H}, ccsys_dir_t * @var{dirstream})
 @deftypefnx {Preprocessor Macro} void ccsys_handler_dirstream_init (cce_destination_t @var{L}, cce_error_handler_t * @var{H}, ccsys_dir_t * @var{dirstream})
 This preprocessor macro uses @code{_Generic} to dispatch the call according to the type of the
 pointer @var{H}; if the type is:
 
 @table @code
-@item cce_cleanup_handler_t
-The macro expands into a call to @cfunc{ccsys_cleanup_handler_dirstream_init}.
+@item cce_clean_handler_t
+The macro expands into a call to @cfunc{ccsys_clean_handler_dirstream_init}.
 
 @item cce_error_handler_t
 The macro expands into a call to @cfunc{ccsys_error_handler_dirstream_init}.
@@ -6213,7 +6213,7 @@ if (cce_location(L)) @{
 
   /* Do something with "dirfd". */
 
-  cce_run_cleanup_handlers(L);
+  cce_run_clean_handlers(L);
 @}
 @end example
 
@@ -6260,7 +6260,7 @@ follows:
 
 @example
 cce_location_t          L[1];
-cce_cleanup_handler_t   dirname_H[1];
+cce_clean_handler_t   dirname_H[1];
 
 if (cce_location(L)) @{
   cce_run_error_handlers_final(L);
@@ -6270,7 +6270,7 @@ if (cce_location(L)) @{
   mode.data = CCSYS_S_IRWXU;
   ccsys_mkdir(L, "name.d", mode);
   ccsys_handler_rmdir_init(L, dirname_H, "name.d");
-  cce_run_cleanup_handlers(L);
+  cce_run_clean_handlers(L);
 @}
 @end example
 
@@ -6280,9 +6280,9 @@ Remember that a good way to create temporary files is to use the function @cfunc
 implemented by the @gnu{} C Library.
 
 
-@deftypefun void ccsys_cleanup_handler_rmdir_init (cce_destination_t @var{L}, cce_handler_t * @var{H}, char const * @var{pathname})
+@deftypefun void ccsys_clean_handler_rmdir_init (cce_destination_t @var{L}, cce_handler_t * @var{H}, char const * @var{pathname})
 @deftypefunx void ccsys_error_handler_rmdir_init (cce_destination_t @var{L}, cce_handler_t * @var{H}, char const * @var{pathname})
-Register @var{H} as cleanup or error handler in the context of @var{L}.  The handler function will
+Register @var{H} as clean or error handler in the context of @var{L}.  The handler function will
 remove the directory whose pathname is @var{pathname} using the standard function @cfunc{rmdir};
 errors in @cfunc{rmdir} are @strong{ignored}.  The directory is removed only if it is empty.
 
@@ -6295,14 +6295,14 @@ exit to @var{L}.
 @end deftypefun
 
 
-@deftypefn {Preprocessor Macro} void ccsys_handler_rmdir_init (cce_destination_t @var{L}, cce_cleanup_handler_t * @var{H}, char const * @var{pathname})
+@deftypefn {Preprocessor Macro} void ccsys_handler_rmdir_init (cce_destination_t @var{L}, cce_clean_handler_t * @var{H}, char const * @var{pathname})
 @deftypefnx {Preprocessor Macro} void ccsys_handler_rmdir_init (cce_destination_t @var{L}, cce_error_handler_t * @var{H}, char const * @var{pathname})
 This preprocessor macro uses @code{_Generic} to dispatch the call according to the type of the
 pointer @var{H}; if the type is:
 
 @table @code
-@item cce_cleanup_handler_t
-The macro expands into a call to @cfunc{ccsys_cleanup_handler_rmdir_init}.
+@item cce_clean_handler_t
+The macro expands into a call to @cfunc{ccsys_clean_handler_rmdir_init}.
 
 @item cce_error_handler_t
 The macro expands into a call to @cfunc{ccsys_error_handler_rmdir_init}.
@@ -6333,7 +6333,7 @@ if (cce_location(L)) @{
     ccsys_open_mode_t mode;
     mode.data = CCSYS_S_IRWXU;
     ccsys_mkdir(L, dirname1, mode);
-    ccsys_cleanup_handler_rmdir_init(L, dirname1_H, dirname1);
+    ccsys_clean_handler_rmdir_init(L, dirname1_H, dirname1);
   @}
 
   /* Open the parent directory.  The descriptor in "dirfd1"
@@ -6342,7 +6342,7 @@ if (cce_location(L)) @{
     ccsys_dir_t *     dir;
 
     dir = ccsys_opendir(L, dirname1);
-    ccsys_cleanup_handler_dirstream_init(L, dir_H, dir);
+    ccsys_clean_handler_dirstream_init(L, dir_H, dir);
     dirfd1 = ccsys_dirfd(L, dir);
   @}
 
@@ -6360,7 +6360,7 @@ if (cce_location(L)) @{
     ccsys_unlinkat(L, dirfd1, dirname2, flags);
   @}
 
-  cce_run_cleanup_handlers(L);
+  cce_run_clean_handlers(L);
 @}
 @end smallexample
 
@@ -6416,8 +6416,8 @@ As usage example of @cfunc{ccsys_linkat} see the following code:
 
 @smallexample
 cce_location_t        L[1];
-cce_cleanup_handler_t filename_H[1];
-cce_cleanup_handler_t linkname_H[1];
+cce_clean_handler_t filename_H[1];
+cce_clean_handler_t linkname_H[1];
 
 if (cce_location(L)) @{
   cce_run_error_handlers_raise(L, upper_L);
@@ -6455,7 +6455,7 @@ if (cce_location(L)) @{
     assert(ccsys_s_isreg(ccsys_ref_stat_st_mode(S)));
   @}
 
-  cce_run_cleanup_handlers(L);
+  cce_run_clean_handlers(L);
 @}
 @end smallexample
 
@@ -6468,8 +6468,8 @@ As usage example of @cfunc{ccsys_symlinkat} see the following code:
 
 @smallexample
 cce_location_t        L[1];
-cce_cleanup_handler_t filename_H[1];
-cce_cleanup_handler_t linkname_H[1];
+cce_clean_handler_t filename_H[1];
+cce_clean_handler_t linkname_H[1];
 
 if (cce_location(L)) @{
   cce_run_error_handlers_raise(L, upper_L);
@@ -6504,7 +6504,7 @@ if (cce_location(L)) @{
     assert(ccsys_s_islnk(ccsys_ref_stat_st_mode(S)));
   @}
 
-  cce_run_cleanup_handlers(L);
+  cce_run_clean_handlers(L);
 @}
 @end smallexample
 
@@ -6549,8 +6549,8 @@ As usage example of @cfunc{ccsys_readlink} see the following code.
 
 @smallexample
 cce_location_t        L[1];
-cce_cleanup_handler_t filename_H[1];
-cce_cleanup_handler_t linkname_H[1];
+cce_clean_handler_t filename_H[1];
+cce_clean_handler_t linkname_H[1];
 
 if (cce_location(L)) @{
   cce_run_error_handlers_raise(L, upper_L);
@@ -6587,7 +6587,7 @@ if (cce_location(L)) @{
     /* Do something with "realname". */
   @}
 
-  cce_run_cleanup_handlers(L);
+  cce_run_clean_handlers(L);
 @}
 @end smallexample
 
@@ -6600,8 +6600,8 @@ As usage example of @cfunc{ccsys_readlinkat} see the following code.
 
 @smallexample
 cce_location_t        L[1];
-cce_cleanup_handler_t filename_H[1];
-cce_cleanup_handler_t linkname_H[1];
+cce_clean_handler_t filename_H[1];
+cce_clean_handler_t linkname_H[1];
 
 if (cce_location(L)) @{
   cce_run_error_handlers_raise(L, upper_L);
@@ -6638,7 +6638,7 @@ if (cce_location(L)) @{
     /* Do something with "realname". */
   @}
 
-  cce_run_cleanup_handlers(L);
+  cce_run_clean_handlers(L);
 @}
 @end smallexample
 
@@ -6651,7 +6651,7 @@ As usage example of @cfunc{ccsys_realpath} see the following code.
 
 @smallexample
 cce_location_t        L[1];
-cce_cleanup_handler_t filename_H[1];
+cce_clean_handler_t filename_H[1];
 
 if (cce_location(L)) @{
   cce_run_error_handlers_raise(L, upper_L);
@@ -6680,7 +6680,7 @@ if (cce_location(L)) @{
     /* Do something with "realname". */
   @}
 
-  cce_run_cleanup_handlers(L);
+  cce_run_clean_handlers(L);
 @}
 @end smallexample
 
@@ -6710,8 +6710,8 @@ We can remove temporary files with the standard function @cfunc{unlinkat} as fol
 
 @example
 cce_location_t          L[1];
-cce_cleanup_handler_t   filedes_H[1];
-cce_cleanup_handler_t   filename_H[1];
+cce_clean_handler_t   filedes_H[1];
+cce_clean_handler_t   filename_H[1];
 ccsys_at_link_t         lnk;
 
 if (cce_location(L)) @{
@@ -6738,7 +6738,7 @@ if (cce_location(L)) @{
     ccsys_handler_unlinkat_init(L, filename_H, &lnk);
   @}
 
-  cce_run_cleanup_handlers(L);
+  cce_run_clean_handlers(L);
 @}
 @end example
 
@@ -6767,22 +6767,22 @@ a file.
 @end deftp
 
 
-@deftypefun void ccsys_cleanup_handler_unlinkat_init (cce_destination_t @var{L}, cce_handler_t * @var{H}, ccsys_at_link_t * @var{lnk})
+@deftypefun void ccsys_clean_handler_unlinkat_init (cce_destination_t @var{L}, cce_handler_t * @var{H}, ccsys_at_link_t * @var{lnk})
 @deftypefunx void ccsys_error_handler_unlinkat_init (cce_destination_t @var{L}, cce_handler_t * @var{H}, ccsys_at_link_t * @var{lnk})
-Register @var{H} as cleanup or error handler in the context of @var{L}.  The handler function will
+Register @var{H} as clean or error handler in the context of @var{L}.  The handler function will
 unlink at the file whose pathname is @code{@var{lnk}->@var{pathname}} using the standard function
 @cfunc{unlinkat}; errors in @cfunc{unlinkat} are @strong{ignored}.
 @end deftypefun
 
 
-@deftypefn {Preprocessor Macro} void ccsys_handler_unlinkat_init (cce_destination_t @var{L}, cce_cleanup_handler_t * @var{H}, ccsys_at_link_t * @var{lnk})
+@deftypefn {Preprocessor Macro} void ccsys_handler_unlinkat_init (cce_destination_t @var{L}, cce_clean_handler_t * @var{H}, ccsys_at_link_t * @var{lnk})
 @deftypefnx {Preprocessor Macro} void ccsys_handler_unlinkat_init (cce_destination_t @var{L}, cce_error_handler_t * @var{H}, ccsys_at_link_t * @var{lnk})
 This preprocessor macro uses @code{_Generic} to dispatch the call according to the type of the
 pointer @var{H}; if the type is:
 
 @table @code
-@item cce_cleanup_handler_t
-The macro expands into a call to @cfunc{ccsys_cleanup_handler_unlinkat_init}.
+@item cce_clean_handler_t
+The macro expands into a call to @cfunc{ccsys_clean_handler_unlinkat_init}.
 
 @item cce_error_handler_t
 The macro expands into a call to @cfunc{ccsys_error_handler_unlinkat_init}.
@@ -6811,8 +6811,8 @@ We can remove temporary files with the standard function @cfunc{remove} as follo
 
 @example
 cce_location_t          L[1];
-cce_cleanup_handler_t   fd_H[1];
-cce_cleanup_handler_t   file_H[1];
+cce_clean_handler_t   fd_H[1];
+cce_clean_handler_t   file_H[1];
 
 if (cce_location(L)) @{
   cce_run_error_handlers_final(L);
@@ -6824,9 +6824,9 @@ if (cce_location(L)) @{
   flags.data    = CCSYS_O_CREAT;
   mode.data     = CCSYS_S_IRUSR | CCSYS_S_IWUSR;
   fd            = ccsys_open(L, "name.ext", flags, mode);
-  ccsys_cleanup_handler_filedes_init(L, fd_H, fd);
-  ccsys_cleanup_handler_remove_init(L, file_H, "name.ext");
-  cce_run_cleanup_handlers(L);
+  ccsys_clean_handler_filedes_init(L, fd_H, fd);
+  ccsys_clean_handler_remove_init(L, file_H, "name.ext");
+  cce_run_clean_handlers(L);
 @}
 @end example
 
@@ -6838,9 +6838,9 @@ Remember that a good way to create temporary files is to use the @posix{} standa
 The following symbols are defined in the header file @file{ccsys.h}.
 
 
-@deftypefun void ccsys_cleanup_handler_remove_init (cce_destination_t @var{L}, cce_handler_t * @var{H}, char const * @var{pathname})
+@deftypefun void ccsys_clean_handler_remove_init (cce_destination_t @var{L}, cce_handler_t * @var{H}, char const * @var{pathname})
 @deftypefunx void ccsys_error_handler_remove_init (cce_destination_t @var{L}, cce_handler_t * @var{H}, char const * @var{pathname})
-Register @var{H} as cleanup or error handler in the context of @var{L}.  The handler function will
+Register @var{H} as clean or error handler in the context of @var{L}.  The handler function will
 remove the file whose pathname is @var{pathname} using the standard function @cfunc{remove}; errors
 in @cfunc{remove} are @strong{ignored}.
 
@@ -6853,14 +6853,14 @@ exit to @var{L}.
 @end deftypefun
 
 
-@deftypefn {Preprocessor Macro} void ccsys_handler_remove_init (cce_destination_t @var{L}, cce_cleanup_handler_t * @var{H}, char const * @var{pathname})
+@deftypefn {Preprocessor Macro} void ccsys_handler_remove_init (cce_destination_t @var{L}, cce_clean_handler_t * @var{H}, char const * @var{pathname})
 @deftypefnx {Preprocessor Macro} void ccsys_handler_remove_init (cce_destination_t @var{L}, cce_error_handler_t * @var{H}, char const * @var{pathname})
 This preprocessor macro uses @code{_Generic} to dispatch the call according to the type of the
 pointer @var{H}; if the type is:
 
 @table @code
-@item cce_cleanup_handler_t
-The macro expands into a call to @cfunc{ccsys_cleanup_handler_remove_init}.
+@item cce_clean_handler_t
+The macro expands into a call to @cfunc{ccsys_clean_handler_remove_init}.
 
 @item cce_error_handler_t
 The macro expands into a call to @cfunc{ccsys_error_handler_remove_init}.
@@ -6932,7 +6932,7 @@ if (cce_location(L)) @{
     assert(true  == ccsys_pathname_isreg(L, newname));
   @}
 
-  cce_run_cleanup_handlers(L);
+  cce_run_clean_handlers(L);
 @}
 @end smallexample
 
@@ -6970,7 +6970,7 @@ if (cce_location(L)) @{
     assert(true  == ccsys_pathname_isreg(L, newname));
   @}
 
-  cce_run_cleanup_handlers(L);
+  cce_run_clean_handlers(L);
 @}
 @end smallexample
 
@@ -7013,7 +7013,7 @@ if (cce_location(L)) @{
     assert(true  == ccsys_pathname_isreg(L, newname));
   @}
 
-  cce_run_cleanup_handlers(L);
+  cce_run_clean_handlers(L);
 @}
 @end smallexample
 
@@ -7388,8 +7388,8 @@ As usage example of @cfunc{ccsys_stat} see the following code.
 
 @smallexample
 cce_location_t          L[1];
-cce_cleanup_handler_t   filename_H[1];
-cce_cleanup_handler_t   filedes_H[1];
+cce_clean_handler_t   filename_H[1];
+cce_clean_handler_t   filedes_H[1];
 
 if (cce_location(L)) @{
   cce_run_error_handlers_raise(L, upper_L);
@@ -7467,7 +7467,7 @@ if (cce_location(L)) @{
 #endif
   @}
 
-  cce_run_cleanup_handlers(L);
+  cce_run_clean_handlers(L);
 @}
 @end smallexample
 
@@ -7482,8 +7482,8 @@ As usage example of @cfunc{ccsys_fstatat} see the following code.
 cce_location_t        L[1];
 cce_handler_t         dirname_H[1];
 cce_handler_t         dir_H[1];
-cce_cleanup_handler_t filename_H[1];
-cce_cleanup_handler_t filedes_H[1];
+cce_clean_handler_t filename_H[1];
+cce_clean_handler_t filedes_H[1];
 ccsys_at_link_t       lnk;
 
 if (cce_location(L)) @{
@@ -7498,7 +7498,7 @@ if (cce_location(L)) @{
   @{
     ccsys_open_mode_t mode  = @{ .data = CCSYS_S_IRWXU @};
     ccsys_mkdir(L, dirname, mode);
-    ccsys_cleanup_handler_rmdir_init(L, dirname_H, dirname);
+    ccsys_clean_handler_rmdir_init(L, dirname_H, dirname);
   @}
 
   /* Open the parent directory. */
@@ -7506,7 +7506,7 @@ if (cce_location(L)) @{
     ccsys_dir_t *     dir;
 
     dir = ccsys_opendir(L, dirname);
-    ccsys_cleanup_handler_dirstream_init(L, dir_H, dir);
+    ccsys_clean_handler_dirstream_init(L, dir_H, dir);
     dirfd = ccsys_dirfd(L, dir);
   @}
 
@@ -7585,7 +7585,7 @@ if (cce_location(L)) @{
 #endif
   @}
 
-  cce_run_cleanup_handlers(L);
+  cce_run_clean_handlers(L);
 @}
 @end smallexample
 
@@ -7657,7 +7657,7 @@ if (cce_location(L)) @{
     ccsys_chown(L, filename, uid, gid);
   @}
 
-  cce_run_cleanup_handlers(L);
+  cce_run_clean_handlers(L);
 @}
 @end example
 
@@ -7670,7 +7670,7 @@ As usage example for @cfunc{ccsys_fchown} see the following code.
 
 @example
 cce_location_t        L[1];
-cce_cleanup_handler_t filedes_H[1];
+cce_clean_handler_t filedes_H[1];
 
 if (cce_location(L)) @{
     cce_run_error_handlers_final(L);
@@ -7697,7 +7697,7 @@ if (cce_location(L)) @{
     ccsys_fchown(L, fd, uid, gid);
   @}
 
-  cce_run_cleanup_handlers(L);
+  cce_run_clean_handlers(L);
 @}
 @end example
 
@@ -7740,7 +7740,7 @@ if (cce_location(L)) @{
     ccsys_lchown(L, linkname, uid, gid);
   @}
 
-  cce_run_cleanup_handlers(L);
+  cce_run_clean_handlers(L);
 @}
 @end example
 
@@ -7779,7 +7779,7 @@ if (cce_location(L)) @{
     ccsys_fchownat(L, CCSYS_AT_FDCWD, filename, uid, gid, flags);
   @}
 
-  cce_run_cleanup_handlers(L);
+  cce_run_clean_handlers(L);
 @}
 @end example
 
@@ -7820,7 +7820,7 @@ As usage example of @cfunc{ccsys_chmod} see the following code.
 
 @example
 cce_location_t        L[1];
-cce_cleanup_handler_t filename_H[1];
+cce_clean_handler_t filename_H[1];
 
 if (cce_location(L)) @{
   cce_run_error_handlers_final(L);
@@ -7856,7 +7856,7 @@ if (cce_location(L)) @{
     assert(CCSYS_S_IRWXU == (CCSYS_S_IRWXU & mode.data));
   @}
 
-  cce_run_cleanup_handlers(L);
+  cce_run_clean_handlers(L);
 @}
 @end example
 
@@ -7869,8 +7869,8 @@ As usage example of @cfunc{ccsys_fchmod} see the following code.
 
 @example
 cce_location_t        L[1];
-cce_cleanup_handler_t filename_H[1];
-cce_cleanup_handler_t filedes_H[1];
+cce_clean_handler_t filename_H[1];
+cce_clean_handler_t filedes_H[1];
 
 if (cce_location(L)) @{
   cce_run_error_handlers_final(L);
@@ -7908,7 +7908,7 @@ if (cce_location(L)) @{
     assert(CCSYS_S_IRWXU == (CCSYS_S_IRWXU & mode.data));
   @}
 
-  cce_run_cleanup_handlers(L);
+  cce_run_clean_handlers(L);
 @}
 @end example
 
@@ -7921,7 +7921,7 @@ As usage example of @cfunc{ccsys_fchmodat} see the following code.
 
 @example
 cce_location_t        L[1];
-cce_cleanup_handler_t filename_H[1];
+cce_clean_handler_t filename_H[1];
 
 if (cce_location(L)) @{
     cce_run_error_handlers_final(L);
@@ -7959,7 +7959,7 @@ if (cce_location(L)) @{
     assert(CCSYS_S_IRWXU == (CCSYS_S_IRWXU & mode.data));
   @}
 
-  cce_run_cleanup_handlers(L);
+  cce_run_clean_handlers(L);
 @}
 @end example
 
@@ -7996,7 +7996,7 @@ As usage example of @cfunc{ccsys_access} see the following code.
 
 @example
 cce_location_t        L[1];
-cce_cleanup_handler_t filename_H[1];
+cce_clean_handler_t filename_H[1];
 
 if (cce_location(L)) @{
   cce_run_error_handlers_final(L);
@@ -8046,7 +8046,7 @@ if (cce_location(L)) @{
     assert(false == ccsys_access(L, filename, mode));
   @}
 
-  cce_run_cleanup_handlers(L);
+  cce_run_clean_handlers(L);
 @}
 @end example
 
@@ -8059,7 +8059,7 @@ As usage example of @cfunc{ccsys_faccessat} see the following code.
 
 @example
 cce_location_t        L[1];
-cce_cleanup_handler_t filename_H[1];
+cce_clean_handler_t filename_H[1];
 
 if (cce_location(L)) @{
   cce_run_error_handlers_final(L);
@@ -8114,7 +8114,7 @@ if (cce_location(L)) @{
       ccsys_faccessat(L, CCSYS_AT_FDCWD, filename, mode, flags));
   @}
 
-  cce_run_cleanup_handlers(L);
+  cce_run_clean_handlers(L);
 @}
 @end example
 
@@ -8150,8 +8150,8 @@ As usage example of @cfunc{truncate} see the following code.
 
 @example
 cce_location_t        L[1];
-cce_cleanup_handler_t filename_H[1];
-cce_cleanup_handler_t filedes_H[1];
+cce_clean_handler_t filename_H[1];
+cce_clean_handler_t filedes_H[1];
 
 if (cce_location(L)) @{
   cce_run_error_handlers_final(L);
@@ -8203,7 +8203,7 @@ if (cce_location(L)) @{
     assert(100 == ccsys_luref(ccsys_ref_stat_st_size(S)));
   @}
 
-  cce_run_cleanup_handlers(L);
+  cce_run_clean_handlers(L);
 @}
 @end example
 
@@ -8216,8 +8216,8 @@ As usage example of @cfunc{ftruncate} see the following code.
 
 @example
 cce_location_t        L[1];
-cce_cleanup_handler_t filename_H[1];
-cce_cleanup_handler_t filedes_H[1];
+cce_clean_handler_t filename_H[1];
+cce_clean_handler_t filedes_H[1];
 
 if (cce_location(L)) @{
   cce_run_error_handlers_final(L);
@@ -8269,7 +8269,7 @@ if (cce_location(L)) @{
     assert(101 == ccsys_luref(ccsys_ref_stat_st_size(S)));
   @}
 
-  cce_run_cleanup_handlers(L);
+  cce_run_clean_handlers(L);
 @}
 @end example
 
@@ -8347,7 +8347,7 @@ As usage example of @cfunc{ccsys_utimensat} see the following code.
 
 @example
 cce_location_t        L[1];
-cce_cleanup_handler_t filename_H[1];
+cce_clean_handler_t filename_H[1];
 
 if (cce_location(L)) @{
   cce_run_error_handlers_final(L);
@@ -8394,7 +8394,7 @@ if (cce_location(L)) @{
     assert(0   == ccsys_luref(mtim.nanoseconds));
   @}
 
-  cce_run_cleanup_handlers(L);
+  cce_run_clean_handlers(L);
 @}
 @end example
 
@@ -8407,8 +8407,8 @@ As usage example of @cfunc{ccsys_futimens} see the following code.
 
 @example
 cce_location_t        L[1];
-cce_cleanup_handler_t filename_H[1];
-cce_cleanup_handler_t filedes_H[1];
+cce_clean_handler_t filename_H[1];
+cce_clean_handler_t filedes_H[1];
 
 if (cce_location(L)) @{
   cce_run_error_handlers_final(L);
@@ -8455,7 +8455,7 @@ if (cce_location(L)) @{
     assert(0   == ccsys_luref(mtim.nanoseconds));
   @}
 
-  cce_run_cleanup_handlers(L);
+  cce_run_clean_handlers(L);
 @}
 @end example
 
@@ -8468,7 +8468,7 @@ As usage example of @cfunc{ccsys_utimes} see the following code.
 
 @example
 cce_location_t        L[1];
-cce_cleanup_handler_t filename_H[1];
+cce_clean_handler_t filename_H[1];
 
 if (cce_location(L)) @{
   cce_run_error_handlers_final(L);
@@ -8513,7 +8513,7 @@ if (cce_location(L)) @{
     assert(0   == ccsys_luref(mtim.nanoseconds));
   @}
 
-  cce_run_cleanup_handlers(L);
+  cce_run_clean_handlers(L);
 @}
 @end example
 
@@ -8526,8 +8526,8 @@ As usage example of @cfunc{ccsys_lutimes} see the following code.
 
 @example
 cce_location_t        L[1];
-cce_cleanup_handler_t filename_H[1];
-cce_cleanup_handler_t linkname_H[1];
+cce_clean_handler_t filename_H[1];
+cce_clean_handler_t linkname_H[1];
 
 if (cce_location(L)) @{
   cce_run_error_handlers_final(L);
@@ -8579,7 +8579,7 @@ if (cce_location(L)) @{
     assert(0   == ccsys_luref(mtim.nanoseconds));
   @}
 
-  cce_run_cleanup_handlers(L);
+  cce_run_clean_handlers(L);
 @}
 @end example
 
@@ -8592,8 +8592,8 @@ As usage example of @cfunc{ccsys_futimes} see the following code.
 
 @example
 cce_location_t        L[1];
-cce_cleanup_handler_t filename_H[1];
-cce_cleanup_handler_t filedes_H[1];
+cce_clean_handler_t filename_H[1];
+cce_clean_handler_t filedes_H[1];
 
 if (cce_location(L)) @{
   cce_run_error_handlers_final(L);
@@ -8640,7 +8640,7 @@ if (cce_location(L)) @{
     assert(0   == ccsys_luref(mtim.nanoseconds));
   @}
 
-  cce_run_cleanup_handlers(L);
+  cce_run_clean_handlers(L);
 @}
 @end example
 
@@ -8653,7 +8653,7 @@ As usage example of @cfunc{ccsys_futimesat} see the following code.
 
 @example
 cce_location_t        L[1];
-cce_cleanup_handler_t filename_H[1];
+cce_clean_handler_t filename_H[1];
 
 if (cce_location(L)) @{
   cce_run_error_handlers_final(L);
@@ -8698,7 +8698,7 @@ if (cce_location(L)) @{
     assert(0   == ccsys_luref(mtim.nanoseconds));
   @}
 
-  cce_run_cleanup_handlers(L);
+  cce_run_clean_handlers(L);
 @}
 @end example
 
@@ -8772,8 +8772,8 @@ As usage example of @cfunc{ccsys_mkstemp} see the following code.
 
 @example
 cce_location_t        L[1];
-cce_cleanup_handler_t filename_H[1];
-cce_cleanup_handler_t filedes_H[1];
+cce_clean_handler_t filename_H[1];
+cce_clean_handler_t filedes_H[1];
 
 if (cce_location(L)) @{
   cce_run_error_handlers_final(L);
@@ -8792,7 +8792,7 @@ if (cce_location(L)) @{
   /* Validate file existence. */
   assert(true == ccsys_pathname_isreg(L, filename));
 
-  cce_run_cleanup_handlers(L);
+  cce_run_clean_handlers(L);
 @}
 @end example
 
@@ -8805,8 +8805,8 @@ As usage example of @cfunc{ccsys_mkostemp} see the following code.
 
 @example
 cce_location_t        L[1];
-cce_cleanup_handler_t filename_H[1];
-cce_cleanup_handler_t filedes_H[1];
+cce_clean_handler_t filename_H[1];
+cce_clean_handler_t filedes_H[1];
 
 if (cce_location(L)) @{
   cce_run_error_handlers_final(L);
@@ -8827,7 +8827,7 @@ if (cce_location(L)) @{
   /* Validate file existence. */
   assert(true == ccsys_pathname_isreg(L, filename));
 
-  cce_run_cleanup_handlers(L);
+  cce_run_clean_handlers(L);
 @}
 @end example
 
@@ -8840,8 +8840,8 @@ As usage example of @cfunc{ccsys_mkstemps} see the following code.
 
 @example
 cce_location_t        L[1];
-cce_cleanup_handler_t filename_H[1];
-cce_cleanup_handler_t filedes_H[1];
+cce_clean_handler_t filename_H[1];
+cce_clean_handler_t filedes_H[1];
 
 if (cce_location(L)) @{
   cce_run_error_handlers_final(L);
@@ -8860,7 +8860,7 @@ if (cce_location(L)) @{
   /* Validate file existence. */
   assert(true == ccsys_pathname_isreg(L, filename));
 
-  cce_run_cleanup_handlers(L);
+  cce_run_clean_handlers(L);
 @}
 @end example
 
@@ -8873,8 +8873,8 @@ As usage example of @cfunc{ccsys_mkostemps} see the following code.
 
 @example
 cce_location_t        L[1];
-cce_cleanup_handler_t filename_H[1];
-cce_cleanup_handler_t filedes_H[1];
+cce_clean_handler_t filename_H[1];
+cce_clean_handler_t filedes_H[1];
 
 if (cce_location(L)) @{
   cce_run_error_handlers_final(L);
@@ -8895,7 +8895,7 @@ if (cce_location(L)) @{
   /* Validate file existence. */
   assert(true == ccsys_pathname_isreg(L, filename));
 
-  cce_run_cleanup_handlers(L);
+  cce_run_clean_handlers(L);
 @}
 @end example
 
@@ -8908,7 +8908,7 @@ As usage example of @cfunc{ccsys_mkdtemp} see the following code.
 
 @example
 cce_location_t        L[1];
-cce_cleanup_handler_t dirname_H[1];
+cce_clean_handler_t dirname_H[1];
 
 if (cce_location(L)) @{
   cce_run_error_handlers_final(L);
@@ -8924,7 +8924,7 @@ if (cce_location(L)) @{
   /* Validate file existence. */
   assert(true == ccsys_pathname_isdir(L, dirname));
 
-  cce_run_cleanup_handlers(L);
+  cce_run_clean_handlers(L);
 @}
 @end example
 
@@ -9347,7 +9347,7 @@ if (cce_location(L)) @{
   flag = ccsys_signal_bub_delivered(signum);
   cctests_assert(L, true == flag);
 
-  cce_run_cleanup_handlers(L);
+  cce_run_clean_handlers(L);
 @}
 @end example
 

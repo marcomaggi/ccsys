@@ -1,7 +1,6 @@
 # CCSys
 
 [![Build Status](https://travis-ci.org/marcomaggi/ccsys.svg?branch=master)](https://travis-ci.org/marcomaggi/ccsys)
-[![Coverity passed](https://scan.coverity.com/projects/13048/badge.svg)](https://scan.coverity.com/projects/marcomaggi-ccsys)
 [![codecov](https://codecov.io/gh/marcomaggi/ccsys/branch/master/graph/badge.svg)](https://codecov.io/gh/marcomaggi/ccsys)
 
 
@@ -12,7 +11,7 @@ adapters  for POSIX  system  functions to  convert  the error  reporting
 mechanism to the use of the library CCExceptions.
 
 This  package depends  on  the package  CCExceptions,  at least  version
-`0.7.1-beta.1`.
+`0.8.0`.
 
 The  package makes  use of  the  GNU Autotools  and  it is  tested on  a
 GNU+Linux system.
@@ -184,18 +183,6 @@ project's dashboard at:
 
 Usage of this  service is configured through the  file `.travis.yml` and
 additional scripts are under the directory `meta/travis-ci`.
-
-
-### Coverity Scan
-
-Coverity Scan is  a service providing the results of  static analysis on
-open source coding projects.  We can find this project's dashboard at:
-
-[https://scan.coverity.com/projects/marcomaggi-ccsys](https://scan.coverity.com/projects/marcomaggi-ccsys)
-
-Usage of this  service is implemented with make rules;  see the relevant
-section in the file `Makefile.am`.  To access the service a unique token
-is needed: this token is private and is owned by the current maintainer.
 
 
 ### Clang's Static Analyzer

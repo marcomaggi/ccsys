@@ -1278,7 +1278,7 @@ ccsys_decl void ccsys_free (cce_destination_t L CCSYS_UNUSED, void * ptr)
 
 /* ------------------------------------------------------------------ */
 
-ccsys_decl void ccsys_cleanup_handler_malloc_init (cce_destination_t L, cce_handler_t * H, void * pointer)
+ccsys_decl void ccsys_clean_handler_malloc_init (cce_destination_t L, cce_handler_t * H, void * pointer)
   __attribute__((__nonnull__(1,2,3)));
 
 ccsys_decl void ccsys_error_handler_malloc_init (cce_destination_t L, cce_handler_t * H, void * pointer)
@@ -1286,12 +1286,12 @@ ccsys_decl void ccsys_error_handler_malloc_init (cce_destination_t L, cce_handle
 
 #define ccsys_handler_malloc_init(L,P_H,P) \
   _Generic((P_H),								\
-	   cce_cleanup_handler_t	*: ccsys_cleanup_handler_malloc_init,	\
+	   cce_clean_handler_t	*: ccsys_clean_handler_malloc_init,	\
 	   cce_error_handler_t		*: ccsys_error_handler_malloc_init)(L,&(P_H->handler),P)
 
 /* ------------------------------------------------------------------ */
 
-ccsys_decl void * ccsys_malloc_guarded_cleanup (cce_destination_t L, cce_cleanup_handler_t * P_H, size_t size)
+ccsys_decl void * ccsys_malloc_guarded_clean (cce_destination_t L, cce_clean_handler_t * P_H, size_t size)
   __attribute__((__nonnull__(1,2),__returns_nonnull__));
 
 ccsys_decl void * ccsys_malloc_guarded_error   (cce_destination_t L, cce_error_handler_t *   P_H, size_t size)
@@ -1299,12 +1299,12 @@ ccsys_decl void * ccsys_malloc_guarded_error   (cce_destination_t L, cce_error_h
 
 #define ccsys_malloc_guarded(L,P_H,size) \
   _Generic((P_H),								\
-	   cce_cleanup_handler_t	*: ccsys_malloc_guarded_cleanup,	\
+	   cce_clean_handler_t	*: ccsys_malloc_guarded_clean,	\
 	   cce_error_handler_t		*: ccsys_malloc_guarded_error)(L,P_H,size)
 
 /* ------------------------------------------------------------------ */
 
-ccsys_decl void * ccsys_realloc_guarded_cleanup (cce_destination_t L, cce_cleanup_handler_t * P_H, void * P, size_t newsize)
+ccsys_decl void * ccsys_realloc_guarded_clean (cce_destination_t L, cce_clean_handler_t * P_H, void * P, size_t newsize)
   __attribute__((__nonnull__(1,2),__returns_nonnull__));
 
 ccsys_decl void * ccsys_realloc_guarded_error   (cce_destination_t L, cce_error_handler_t *   P_H, void * P, size_t newsize)
@@ -1312,12 +1312,12 @@ ccsys_decl void * ccsys_realloc_guarded_error   (cce_destination_t L, cce_error_
 
 #define ccsys_realloc_guarded(L,P_H,old_P,newsize) \
   _Generic((P_H),								\
-	   cce_cleanup_handler_t	*: ccsys_realloc_guarded_cleanup,	\
+	   cce_clean_handler_t	*: ccsys_realloc_guarded_clean,	\
 	   cce_error_handler_t		*: ccsys_realloc_guarded_error)(L,P_H,old_P,newsize)
 
 /* ------------------------------------------------------------------ */
 
-ccsys_decl void * ccsys_calloc_guarded_cleanup (cce_destination_t L, cce_cleanup_handler_t * P_H, size_t count, size_t eltsize)
+ccsys_decl void * ccsys_calloc_guarded_clean (cce_destination_t L, cce_clean_handler_t * P_H, size_t count, size_t eltsize)
   __attribute__((__nonnull__(1,2),__returns_nonnull__));
 
 ccsys_decl void * ccsys_calloc_guarded_error   (cce_destination_t L, cce_error_handler_t *   P_H, size_t count, size_t eltsize)
@@ -1325,7 +1325,7 @@ ccsys_decl void * ccsys_calloc_guarded_error   (cce_destination_t L, cce_error_h
 
 #define ccsys_calloc_guarded(L,P_H,count,eltsize) \
   _Generic((P_H),								\
-	   cce_cleanup_handler_t	*: ccsys_calloc_guarded_cleanup,	\
+	   cce_clean_handler_t	*: ccsys_calloc_guarded_clean,	\
 	   cce_error_handler_t		*: ccsys_calloc_guarded_error)(L,P_H,count,eltsize)
 
 
@@ -1472,7 +1472,7 @@ ccsys_decl ccsys_passwd_t const * ccsys_getpwent (cce_destination_t L)
 
 /* ------------------------------------------------------------------ */
 
-ccsys_decl void ccsys_cleanup_handler_endpwent_init (cce_destination_t L, cce_handler_t * H)
+ccsys_decl void ccsys_clean_handler_endpwent_init (cce_destination_t L, cce_handler_t * H)
   __attribute__((__nonnull__(1,2)));
 
 ccsys_decl void ccsys_error_handler_endpwent_init (cce_destination_t L, cce_handler_t * H)
@@ -1480,7 +1480,7 @@ ccsys_decl void ccsys_error_handler_endpwent_init (cce_destination_t L, cce_hand
 
 #define ccsys_handler_endpwent_init(L,P_H) \
   _Generic((P_H),								\
-	   cce_cleanup_handler_t	*: ccsys_cleanup_handler_endpwent_init,	\
+	   cce_clean_handler_t	*: ccsys_clean_handler_endpwent_init,	\
 	   cce_error_handler_t		*: ccsys_error_handler_endpwent_init)(L,&(P_H->handler))
 
 
@@ -1525,7 +1525,7 @@ ccsys_decl ccsys_group_t const * ccsys_getgrent (cce_destination_t L)
 
 /* ------------------------------------------------------------------ */
 
-ccsys_decl void ccsys_cleanup_handler_endgrent_init (cce_destination_t L, cce_handler_t * H)
+ccsys_decl void ccsys_clean_handler_endgrent_init (cce_destination_t L, cce_handler_t * H)
   __attribute__((__nonnull__(1,2)));
 
 ccsys_decl void ccsys_error_handler_endgrent_init (cce_destination_t L, cce_handler_t * H)
@@ -1533,7 +1533,7 @@ ccsys_decl void ccsys_error_handler_endgrent_init (cce_destination_t L, cce_hand
 
 #define ccsys_handler_endgrent_init(L,P_H) \
   _Generic((P_H),								\
-	   cce_cleanup_handler_t	*: ccsys_cleanup_handler_endgrent_init,	\
+	   cce_clean_handler_t	*: ccsys_clean_handler_endgrent_init,	\
 	   cce_error_handler_t		*: ccsys_error_handler_endgrent_init)(L,&(P_H->handler))
 
 
@@ -1666,7 +1666,7 @@ ccsys_decl void ccsys_pipe2 (cce_destination_t L, ccsys_fd_t pipefd[2], ccsys_op
 
 /* ------------------------------------------------------------------ */
 
-ccsys_decl void ccsys_cleanup_handler_pipedes_init (cce_destination_t L, cce_handler_t * H, ccsys_fd_t pipefd[2])
+ccsys_decl void ccsys_clean_handler_pipedes_init (cce_destination_t L, cce_handler_t * H, ccsys_fd_t pipefd[2])
   __attribute__((__nonnull__(1,2,3)));
 
 ccsys_decl void ccsys_error_handler_pipedes_init (cce_destination_t L, cce_handler_t * H, ccsys_fd_t pipefd[2])
@@ -1674,7 +1674,7 @@ ccsys_decl void ccsys_error_handler_pipedes_init (cce_destination_t L, cce_handl
 
 #define ccsys_handler_pipedes_init(L,H,pipefd)				\
   _Generic((H),								\
-	   cce_cleanup_handler_t	*: ccsys_cleanup_handler_pipedes_init, \
+	   cce_clean_handler_t	*: ccsys_clean_handler_pipedes_init, \
 	   cce_error_handler_t		*: ccsys_error_handler_pipedes_init)(L,&(H->handler),pipefd)
 
 
@@ -1698,7 +1698,7 @@ ccsys_decl void ccsys_close (cce_destination_t L, ccsys_fd_t filedes)
 
 /* ------------------------------------------------------------------ */
 
-ccsys_decl void ccsys_cleanup_handler_filedes_init (cce_destination_t L, cce_handler_t * H, ccsys_fd_t filedes)
+ccsys_decl void ccsys_clean_handler_filedes_init (cce_destination_t L, cce_handler_t * H, ccsys_fd_t filedes)
   __attribute__((__nonnull__(1,2)));
 
 ccsys_decl void ccsys_error_handler_filedes_init (cce_destination_t L, cce_handler_t * H, ccsys_fd_t filedes)
@@ -1706,7 +1706,7 @@ ccsys_decl void ccsys_error_handler_filedes_init (cce_destination_t L, cce_handl
 
 #define ccsys_handler_filedes_init(L,H,filedes)				\
   _Generic((H),								\
-	   cce_cleanup_handler_t	*: ccsys_cleanup_handler_filedes_init, \
+	   cce_clean_handler_t	*: ccsys_clean_handler_filedes_init, \
 	   cce_error_handler_t		*: ccsys_error_handler_filedes_init)(L,&(H->handler),filedes)
 
 
@@ -1897,7 +1897,7 @@ ccsys_fileno (ccsys_file_t stream)
 
 /* ------------------------------------------------------------------ */
 
-ccsys_decl void ccsys_cleanup_handler_stream_init (cce_destination_t L, cce_handler_t * H, ccsys_file_t stream)
+ccsys_decl void ccsys_clean_handler_stream_init (cce_destination_t L, cce_handler_t * H, ccsys_file_t stream)
   __attribute__((__nonnull__(1,2)));
 
 ccsys_decl void ccsys_error_handler_stream_init (cce_destination_t L, cce_handler_t * H, ccsys_file_t stream)
@@ -1905,7 +1905,7 @@ ccsys_decl void ccsys_error_handler_stream_init (cce_destination_t L, cce_handle
 
 #define ccsys_handler_stream_init(L,H,stream)				\
   _Generic((H),								\
-	   cce_cleanup_handler_t	*: ccsys_cleanup_handler_stream_init, \
+	   cce_clean_handler_t	*: ccsys_clean_handler_stream_init, \
 	   cce_error_handler_t		*: ccsys_error_handler_stream_init)(L,&(H->handler),stream)
 
 
@@ -1956,7 +1956,7 @@ ccsys_decl ccsys_dirfd_t ccsys_dirfd (cce_destination_t L, ccsys_dir_t * _dirstr
 
 /* ------------------------------------------------------------------ */
 
-ccsys_decl void ccsys_cleanup_handler_dirstream_init (cce_destination_t L, cce_handler_t * H, ccsys_dir_t * dirstream)
+ccsys_decl void ccsys_clean_handler_dirstream_init (cce_destination_t L, cce_handler_t * H, ccsys_dir_t * dirstream)
   __attribute__((__nonnull__(1,2,3)));
 
 ccsys_decl void ccsys_error_handler_dirstream_init (cce_destination_t L, cce_handler_t * H, ccsys_dir_t * dirstream)
@@ -1964,7 +1964,7 @@ ccsys_decl void ccsys_error_handler_dirstream_init (cce_destination_t L, cce_han
 
 #define ccsys_handler_dirstream_init(L,H,R)				\
   _Generic((H),								\
-	   cce_cleanup_handler_t	*: ccsys_cleanup_handler_dirstream_init, \
+	   cce_clean_handler_t	*: ccsys_clean_handler_dirstream_init, \
 	   cce_error_handler_t		*: ccsys_error_handler_dirstream_init)(L,&(H->handler),R)
 
 
@@ -2108,7 +2108,7 @@ ccsys_decl void ccsys_rmdir (cce_destination_t L, char const * pathname)
 
 /* ------------------------------------------------------------------ */
 
-ccsys_decl void ccsys_cleanup_handler_rmdir_init (cce_destination_t L, cce_handler_t * H, char const * pathname)
+ccsys_decl void ccsys_clean_handler_rmdir_init (cce_destination_t L, cce_handler_t * H, char const * pathname)
   __attribute__((__nonnull__(1,2,3)));
 
 ccsys_decl void ccsys_error_handler_rmdir_init (cce_destination_t L, cce_handler_t * H, char const * pathname)
@@ -2116,7 +2116,7 @@ ccsys_decl void ccsys_error_handler_rmdir_init (cce_destination_t L, cce_handler
 
 #define ccsys_handler_rmdir_init(L,H,R)				\
   _Generic((H),								\
-	   cce_cleanup_handler_t	*: ccsys_cleanup_handler_rmdir_init, \
+	   cce_clean_handler_t	*: ccsys_clean_handler_rmdir_init, \
 	   cce_error_handler_t		*: ccsys_error_handler_rmdir_init)(L,&(H->handler),R)
 
 
@@ -2188,7 +2188,7 @@ struct ccsys_at_link_t {
   ccsys_unlinkat_flags_t	flags;
 };
 
-ccsys_decl void ccsys_cleanup_handler_unlinkat_init (cce_destination_t L, cce_handler_t * H, ccsys_at_link_t * lnk)
+ccsys_decl void ccsys_clean_handler_unlinkat_init (cce_destination_t L, cce_handler_t * H, ccsys_at_link_t * lnk)
   __attribute__((__nonnull__(1,2,3)));
 
 ccsys_decl void ccsys_error_handler_unlinkat_init (cce_destination_t L, cce_handler_t * H, ccsys_at_link_t * lnk)
@@ -2196,7 +2196,7 @@ ccsys_decl void ccsys_error_handler_unlinkat_init (cce_destination_t L, cce_hand
 
 #define ccsys_handler_unlinkat_init(L,H,LNK)				\
   _Generic((H),								\
-	   cce_cleanup_handler_t	*: ccsys_cleanup_handler_unlinkat_init, \
+	   cce_clean_handler_t	*: ccsys_clean_handler_unlinkat_init, \
 	   cce_error_handler_t		*: ccsys_error_handler_unlinkat_init)(L,&(H->handler),LNK)
 
 
@@ -2209,7 +2209,7 @@ ccsys_decl void ccsys_remove (cce_destination_t L, char const * pathname)
 
 /* ------------------------------------------------------------------ */
 
-ccsys_decl void ccsys_cleanup_handler_remove_init (cce_destination_t L, cce_handler_t * H, char const * pathname)
+ccsys_decl void ccsys_clean_handler_remove_init (cce_destination_t L, cce_handler_t * H, char const * pathname)
   __attribute__((__nonnull__(1,2,3)));
 
 ccsys_decl void ccsys_error_handler_remove_init (cce_destination_t L, cce_handler_t * H, char const * pathname)
@@ -2217,8 +2217,8 @@ ccsys_decl void ccsys_error_handler_remove_init (cce_destination_t L, cce_handle
 
 #define ccsys_handler_remove_init(L,H,R)				\
   _Generic((H),								\
-	   cce_cleanup_handler_t	*: ccsys_cleanup_handler_remove_init, \
-	   cce_error_handler_t		*: ccsys_error_handler_remove_init)(L,&(H->handler),R)
+	   cce_clean_handler_t	*: ccsys_clean_handler_remove_init, \
+	   cce_error_handler_t	*: ccsys_error_handler_remove_init)(L,&(H->handler),R)
 
 
 /** --------------------------------------------------------------------

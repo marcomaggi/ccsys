@@ -25,7 +25,7 @@ adapters  for POSIX  system  functions to  convert  the error  reporting
 mechanism to the use of the library CCExceptions.
 
   This package  depends on  the package  CCExceptions, at  least version
-0.7.1-beta.1.
+0.8.0.
 
   The package  makes use  of the  GNU Autotools  and it  is tested  on a
 GNU+Linux system.
@@ -190,20 +190,7 @@ project's dashboard at:
 the scripts under the directory "meta/travis-ci".
 
 
-D.2 Coverity Scan
------------------
-
-Coverity Scan is  a service providing the results of  static analysis on
-open source coding projects.  We can find this project's dashboard at:
-
-	 <https://scan.coverity.com/projects/marcomaggi-ccsys>
-
-  Usage of this service is implemented with make rules; see the relevant
-section in the file "Makefile.am".  To access the service a unique token
-is needed: this token is private and is owned by the current maintainer.
-
-
-D.3 Clang's Static Analyzer
+D.2 Clang's Static Analyzer
 ---------------------------
 
 The Clang Static Analyzer is a source code analysis tool that finds bugs
@@ -216,7 +203,7 @@ and we can find it at:
 section in the file "Makefile.am".
 
 
-D.4 Codecov
+D.3 Codecov
 -----------
 
 Codecov is a service providing code  coverage reports.  We can find this

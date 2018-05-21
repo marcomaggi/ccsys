@@ -53,28 +53,6 @@ libccsys_la_SOURCES	= \
 	src/ccsys-version.c
 
 #page
-#### libraries
-
-check_LTLIBRARIES	= libcctests.la
-libcctests_la_CPPFLAGS	= $(CCEXCEPTIONS_CFLAGS) \
-	-Dcctests_VERSION_INTERFACE_STRING='"0.0.0"'	\
-	-Dcctests_VERSION_INTERFACE_CURRENT=0		\
-	-Dcctests_VERSION_INTERFACE_REVISION=0		\
-	-Dcctests_VERSION_INTERFACE_AGE=0
-libcctests_la_LDFLAGS	= $(CCEXCEPTIONS_LIBS)
-libcctests_la_SOURCES	= \
-	cctests/cctests.h			\
-	cctests/cctests-internals.h		\
-	cctests/cctests-version.c		\
-	cctests/cctests-conditions.c		\
-	cctests/cctests-exception-handlers.c	\
-	cctests/cctests-system.c		\
-	cctests/cctests-driver.c		\
-	cctests/cctests-assertions.c		\
-	cctests/cctests-process.c		\
-	cctests/cctests-helpers.c
-
-#page
 #### tests
 
 check_PROGRAMS	= \
@@ -90,10 +68,12 @@ check_PROGRAMS	= \
 	tests/sleeping				\
 	tests/resources-limitations
 
+if MMUX_TESTING_ENABLED
 TESTS				= $(check_PROGRAMS)
+endif
 
-ccsys_tests_cppflags		= -I$(srcdir)/src $(CCEXCEPTIONS_CFLAGS) -I$(srcdir)/cctests
-ccsys_tests_ldadd		= libccsys.la $(CCEXCEPTIONS_LIBS) libcctests.la
+ccsys_tests_cppflags		= -I$(srcdir)/src $(CCEXCEPTIONS_CFLAGS) $(CCTESTS_CFLAGS)
+ccsys_tests_ldadd		= libccsys.la $(CCEXCEPTIONS_LIBS) $(CCTESTS_LIBS)
 
 tests_version_CPPFLAGS		= $(ccsys_tests_cppflags)
 tests_version_LDADD		= $(ccsys_tests_ldadd)
@@ -147,52 +127,6 @@ ccsys_demos_ldadd		= libccsys.la $(CCEXCEPTIONS_LIBS)
 
 demos_listdir_CPPFLAGS		= $(ccsys_demos_cppflags)
 demos_listdir_LDADD		= $(ccsys_demos_ldadd)
-
-#page
-#### Coverity support
-#
-# First run  "make clean",  then run "make  coverity" to  generate the
-# report.  Remember  to put  in the  PATH the  directory in  which the
-# Coverity tools are installed.
-#
-# The tool  will use  a temporary directory  "$(builddir)/cov-int"; we
-# must *not* change this pathname.
-#
-# To generate and submit a report we must do:
-#
-#    $ make clean
-#    $ make coverity-scan
-#    $ make coverity-archive
-#    $ make coverity-upload
-#
-# after "make  coverity-scan" we should  check that the last  lines of
-# the file "cov-int/build-log.txt" report a successful build.
-#
-# Notice that if your Linux kernel is  at version 4.8 or above we have
-# to first issue the command:
-#
-#    $ sudo /sbin/sysctl vsyscall=emulate
-#
-# to make the Coverity tools work.
-#
-
-CCSYS_COVERITY_TOKEN_FILE = /home/unsafe-users/marco-devel/.coverity-ccsys-token
-
-.PHONY: coverity-scan coverity-archive coverity-upload
-
-coverity-scan:
-	cov-build --dir cov-int make -j 4
-
-coverity-archive:
-	tar caf ccsys.xz cov-int
-
-coverity-upload:
-	curl --form token=$$(<$(CCSYS_COVERITY_TOKEN_FILE)) \
-	     --form email='marco.maggi-ipsu@poste.it' \
-	     --form file='@ccsys.xz' \
-	     --form version="$(VERSION)" \
-	     --form description="A build description" \
-	     'https://scan.coverity.com/builds?project=marcomaggi%2Fccsys'
 
 #page
 #### Static analysis with Clang's Static Analyzer

@@ -48,7 +48,7 @@ test_1_1 (cce_destination_t upper_L)
     leftover = ccsys_nanosleep(L, requested);
     cctests_assert(L, ccsys_timespec_is_zero(leftover));
 
-    cce_run_cleanup_handlers(L);
+    cce_run_clean_handlers(L);
   }
 #else
   cctests_skip();
