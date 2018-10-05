@@ -78,7 +78,7 @@ test_2_1 (cce_destination_t upper_L)
     {
       ccsys_open_mode_t	mode  = { .data = CCSYS_S_IRWXU };
       ccsys_mkdir(L, dirname, mode);
-      ccsys_handler_rmdir_init(L, dir_H, dirname);
+      ccsys_init_rmdir_handler(L, dir_H, dirname);
     }
 
     /* Open  the  directory.   The  descriptor in  "dirfd"  is  released
@@ -363,7 +363,7 @@ test_4_2 (cce_destination_t upper_L)
     {
       ccsys_open_mode_t	mode  = { .data = CCSYS_S_IRWXU };
       ccsys_mkdir(L, dirname, mode);
-      ccsys_handler_rmdir_init(L, dir_H, dirname);
+      ccsys_init_rmdir_handler(L, dir_H, dirname);
     }
 
     /* Open  the  directory.   The  descriptor in  "dirfd"  is  released

@@ -244,7 +244,7 @@ test_handler_rmdir (void)
   /* No error.  Clean call. */
   {
     cce_location_t	L[1];
-    cce_handler_t	rmdir_H[1];
+    cce_clean_handler_t	rmdir_H[1];
     volatile bool	done_flag  = false;
     volatile bool	error_flag = false;
 
@@ -254,7 +254,7 @@ test_handler_rmdir (void)
     } else {
       ccsys_open_mode_t	mode = { .data = 0 };
       ccsys_mkdir(L, "name.d", mode);
-      ccsys_clean_handler_rmdir_init(L, rmdir_H, "name.d");
+      ccsys_init_rmdir_handler(L, rmdir_H, "name.d");
       cce_run_body_handlers(L);
       done_flag = true;
     }
@@ -264,7 +264,7 @@ test_handler_rmdir (void)
   /* Error. */
   {
     cce_location_t	L[1];
-    cce_handler_t	rmdir_H[1];
+    cce_clean_handler_t	rmdir_H[1];
     volatile bool	done_flag  = false;
     volatile bool	error_flag = false;
 
@@ -274,7 +274,7 @@ test_handler_rmdir (void)
     } else {
       ccsys_open_mode_t	mode = { .data = 0 };
       ccsys_mkdir(L, "name.d", mode);
-      ccsys_clean_handler_rmdir_init(L, rmdir_H, "name.d");
+      ccsys_init_rmdir_handler(L, rmdir_H, "name.d");
       cce_raise(L, cce_condition_new_unknown());
       cce_run_body_handlers(L);
       done_flag = true;

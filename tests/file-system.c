@@ -262,7 +262,7 @@ test_3_1 (cce_destination_t upper_L)
 
     mode.data = CCSYS_S_IRWXU;
     ccsys_mkdir(L, dirname, mode);
-    ccsys_handler_rmdir_init(L, dirname_H, dirname);
+    ccsys_init_rmdir_handler(L, dirname_H, dirname);
     cce_run_body_handlers(L);
   }
 }
@@ -305,7 +305,7 @@ test_3_3 (cce_destination_t upper_L)
     {
       ccsys_open_mode_t	mode  = { .data = CCSYS_S_IRWXU };
       ccsys_mkdir(L, dirname1, mode);
-      ccsys_handler_rmdir_init(L, dirname1_H, dirname1);
+      ccsys_init_rmdir_handler(L, dirname1_H, dirname1);
     }
 
     /* Open  the  parent  directory.   The  descriptor  in  "dirfd1"  is
@@ -682,7 +682,7 @@ void
 test_4_4 (cce_destination_t upper_L)
 {
   cce_location_t	L[1];
-  cce_handler_t		dirname_H[1];
+  cce_clean_handler_t	dirname_H[1];
   cce_clean_handler_t	dir_H[1];
   cce_clean_handler_t	filename_H[1];
   cce_clean_handler_t	filedes_H[1];
@@ -700,7 +700,7 @@ test_4_4 (cce_destination_t upper_L)
     {
       ccsys_open_mode_t	mode  = { .data = CCSYS_S_IRWXU };
       ccsys_mkdir(L, dirname, mode);
-      ccsys_clean_handler_rmdir_init(L, dirname_H, dirname);
+      ccsys_init_rmdir_clean_handler(L, dirname_H, dirname);
     }
 
     /* Open the parent directory.  The descriptor in "dirfd" is released
@@ -2777,7 +2777,7 @@ test_15_1 (cce_destination_t upper_L)
     /* Create the directory. */
     {
       ccsys_mkdtemp(L, dirname);
-      ccsys_handler_rmdir_init(L, dirname_H, dirname);
+      ccsys_init_rmdir_handler(L, dirname_H, dirname);
     }
 
     /* Validate file existence. */

@@ -3743,7 +3743,7 @@ if (cce_location(L)) @{
 
     mode.data = CCSYS_S_IRWXU;
     ccsys_mkdir(L, dirname, mode);
-    ccsys_handler_rmdir_init(L, dir_H, dirname);
+    ccsys_init_rmdir_handler(L, dir_H, dirname);
   @}
 
   /* Open the directory.  The descriptor in "dirfd" is released
@@ -4163,7 +4163,7 @@ sample (void)
       ccsys_open_mode_t mode;
       mode.data = CCSYS_S_IRWXU;
       ccsys_mkdir(L, dirname, mode);
-      ccsys_handler_rmdir_init(L, dir_H, dirname);
+      ccsys_init_rmdir_handler(L, dir_H, dirname);
     @}
 
     /* Open the directory. */
@@ -6081,7 +6081,7 @@ if (cce_location(L)) @{
 
   mode.data = CCSYS_S_IRWXU;
   ccsys_mkdir(L, "name.d", mode);
-  ccsys_handler_rmdir_init(L, dirname_H, "name.d");
+  ccsys_init_rmdir_handler(L, dirname_H, "name.d");
   cce_run_clean_handlers(L);
 @}
 @end example
@@ -6092,8 +6092,8 @@ Remember that a good way to create temporary files is to use the function @cfunc
 implemented by the @gnu{} C Library.
 
 
-@deftypefun void ccsys_clean_handler_rmdir_init (cce_destination_t @var{L}, cce_handler_t * @var{H}, char const * @var{pathname})
-@deftypefunx void ccsys_error_handler_rmdir_init (cce_destination_t @var{L}, cce_handler_t * @var{H}, char const * @var{pathname})
+@deftypefun void ccsys_init_rmdir_clean_handler (cce_destination_t @var{L}, cce_clean_handler_t * @var{H}, char const * @var{pathname})
+@deftypefunx void ccsys_init_rmdir_error_handler (cce_destination_t @var{L}, cce_error_handler_t * @var{H}, char const * @var{pathname})
 Register @var{H} as clean or error handler in the context of @var{L}.  The handler function will
 remove the directory whose pathname is @var{pathname} using the standard function @cfunc{rmdir};
 errors in @cfunc{rmdir} are @strong{ignored}.  The directory is removed only if it is empty.
@@ -6107,17 +6107,17 @@ exit to @var{L}.
 @end deftypefun
 
 
-@deftypefn {Preprocessor Macro} void ccsys_handler_rmdir_init (cce_destination_t @var{L}, cce_clean_handler_t * @var{H}, char const * @var{pathname})
-@deftypefnx {Preprocessor Macro} void ccsys_handler_rmdir_init (cce_destination_t @var{L}, cce_error_handler_t * @var{H}, char const * @var{pathname})
+@deftypefn {Preprocessor Macro} void ccsys_init_rmdir_handler (cce_destination_t @var{L}, cce_clean_handler_t * @var{H}, char const * @var{pathname})
+@deftypefnx {Preprocessor Macro} void ccsys_init_rmdir_handler (cce_destination_t @var{L}, cce_error_handler_t * @var{H}, char const * @var{pathname})
 This preprocessor macro uses @code{_Generic} to dispatch the call according to the type of the
 pointer @var{H}; if the type is:
 
 @table @code
 @item cce_clean_handler_t
-The macro expands into a call to @cfunc{ccsys_clean_handler_rmdir_init}.
+The macro expands into a call to @cfunc{ccsys_init_rmdir_clean_handler}.
 
 @item cce_error_handler_t
-The macro expands into a call to @cfunc{ccsys_error_handler_rmdir_init}.
+The macro expands into a call to @cfunc{ccsys_init_rmdir_error_handler}.
 @end table
 @end deftypefn
 
@@ -8730,7 +8730,7 @@ if (cce_location(L)) @{
   /* Create the directory. */
   @{
     ccsys_mkdtemp(L, dirname);
-    ccsys_handler_rmdir_init(L, dirname_H, dirname);
+    ccsys_init_rmdir_handler(L, dirname_H, dirname);
   @}
 
   /* Validate file existence. */

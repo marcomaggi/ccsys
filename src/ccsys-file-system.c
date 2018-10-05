@@ -880,7 +880,7 @@ ccsys_rmdir (cce_location_t * L, char const * pathname)
 #ifdef HAVE_RMDIR
 __attribute__((nonnull(1,2)))
 static void
-cce_handler_rmdir_function (const cce_condition_t * C CCE_UNUSED, cce_handler_t * H)
+cce_rmdir_handler_function (const cce_condition_t * C CCE_UNUSED, cce_handler_t * H)
 {
   if (0) { fprintf(stderr, "%s: removing '%s'\n", __func__, H->pathname); }
   rmdir(H->pathname);
@@ -888,18 +888,18 @@ cce_handler_rmdir_function (const cce_condition_t * C CCE_UNUSED, cce_handler_t 
 }
 
 void
-ccsys_clean_handler_rmdir_init (cce_location_t * L, cce_handler_t * H, char const * pathname)
+ccsys_init_rmdir_clean_handler (cce_location_t * L, cce_clean_handler_t * H, char const * pathname)
 {
-  H->function	= cce_handler_rmdir_function;
-  H->pathname	= (char *)pathname;
+  H->handler.function	= cce_rmdir_handler_function;
+  H->handler.pathname	= (char *)pathname;
   cce_register_clean_handler(L, H);
 }
 
 void
-ccsys_error_handler_rmdir_init (cce_location_t * L, cce_handler_t * H, char const * pathname)
+ccsys_init_rmdir_error_handler (cce_location_t * L, cce_error_handler_t * H, char const * pathname)
 {
-  H->function	= cce_handler_rmdir_function;
-  H->pathname	= (char *)pathname;
+  H->handler.function	= cce_rmdir_handler_function;
+  H->handler.pathname	= (char *)pathname;
   cce_register_error_handler(L, H);
 }
 #endif
