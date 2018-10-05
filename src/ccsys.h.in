@@ -1632,16 +1632,16 @@ ccsys_decl void ccsys_close (cce_destination_t L, ccsys_fd_t filedes)
 
 /* ------------------------------------------------------------------ */
 
-ccsys_decl void ccsys_clean_handler_filedes_init (cce_destination_t L, cce_handler_t * H, ccsys_fd_t filedes)
+ccsys_decl void ccsys_init_filedes_clean_handler (cce_destination_t L, cce_clean_handler_t * H, ccsys_fd_t filedes)
   __attribute__((__nonnull__(1,2)));
 
-ccsys_decl void ccsys_error_handler_filedes_init (cce_destination_t L, cce_handler_t * H, ccsys_fd_t filedes)
+ccsys_decl void ccsys_init_filedes_error_handler (cce_destination_t L, cce_error_handler_t * H, ccsys_fd_t filedes)
   __attribute__((__nonnull__(1,2)));
 
-#define ccsys_handler_filedes_init(L,H,filedes)				\
+#define ccsys_init_filedes_handler(L,H,pipefd)				\
   _Generic((H),								\
-	   cce_clean_handler_t	*: ccsys_clean_handler_filedes_init, \
-	   cce_error_handler_t		*: ccsys_error_handler_filedes_init)(L,&(H->handler),filedes)
+	   cce_clean_handler_t	*: ccsys_init_filedes_clean_handler,	\
+	   cce_error_handler_t	*: ccsys_init_filedes_error_handler)(L,H,pipefd)
 
 
 /** --------------------------------------------------------------------

@@ -3765,7 +3765,7 @@ if (cce_location(L)) @{
     flags.data = CCSYS_O_CREAT;
     mode.data  = CCSYS_S_IRUSR | CCSYS_S_IWUSR;
     fd = ccsys_openat(L, dirfd, filename, flags, mode);
-    ccsys_handler_filedes_init(L, file_H, fd);
+    ccsys_init_filedes_handler(L, file_H, fd);
 
     /* Do something with "fd" here. */
   @}
@@ -4058,7 +4058,7 @@ sample_parent (cce_destination_t upper_L, char const * fifoname)
       flags.data = CCSYS_O_RDONLY;
       mode.data  = 0;
       infd = ccsys_open(L, fifoname, flags, mode);
-      ccsys_handler_filedes_init(L, infd_H, infd);
+      ccsys_init_filedes_handler(L, infd_H, infd);
     @}
 
     /* Read from the FIFO. */
@@ -4089,7 +4089,7 @@ sample_child  (char const * fifoname)
       flags.data = CCSYS_O_WRONLY;
       mode.data  = 0;
       oufd = ccsys_open(L, fifoname, flags, mode);
-      ccsys_handler_filedes_init(L, oufd_H, oufd);
+      ccsys_init_filedes_handler(L, oufd_H, oufd);
     @}
 
     /* Write to the FIFO. */
@@ -4223,7 +4223,7 @@ sample_parent (cce_destination_t upper_L,
       flags.data = CCSYS_O_RDONLY;
       mode.data  = 0;
       infd = ccsys_openat(L, dirfd, fifoname, flags, mode);
-      ccsys_handler_filedes_init(L, infd_H, infd);
+      ccsys_init_filedes_handler(L, infd_H, infd);
     @}
 
     /* Read from the FIFO. */
@@ -4254,7 +4254,7 @@ sample_child (ccsys_dirfd_t dirfd, char const * fifoname)
       flags.data = CCSYS_O_WRONLY;
       mode.data  = 0;
       oufd = ccsys_openat(L, dirfd, fifoname, flags, mode);
-      ccsys_handler_filedes_init(L, oufd_H, oufd);
+      ccsys_init_filedes_handler(L, oufd_H, oufd);
     @}
 
     /* Write to the FIFO. */
@@ -4309,7 +4309,7 @@ if (cce_location(L)) @{
   flags.data = CCSYS_O_CREAT;
   mode.data  = CCSYS_S_IRUSR | CCSYS_S_IWUSR;
   fd = ccsys_open(L, filename, flags, mode);
-  ccsys_handler_filedes_init(L, H, fd);
+  ccsys_init_filedes_handler(L, H, fd);
 
   /* Do something with "fd" here. */
   cce_run_clean_handlers(L);
@@ -4317,25 +4317,25 @@ if (cce_location(L)) @{
 @end example
 
 
-@deftypefun void ccsys_clean_handler_filedes_init (cce_destination_t @var{L}, cce_handler_t * @var{H}, ccsys_fd_t @var{fd})
-@deftypefunx void ccsys_error_handler_filedes_init (cce_destination_t @var{L}, cce_handler_t * @var{H}, ccsys_fd_t @var{fd})
+@deftypefun void ccsys_init_filedes_clean_handler (cce_destination_t @var{L}, cce_clean_handler_t * @var{H}, ccsys_fd_t @var{fd})
+@deftypefunx void ccsys_init_filedes_error_handler (cce_destination_t @var{L}, cce_error_handler_t * @var{H}, ccsys_fd_t @var{fd})
 Register @var{H} as clean or error handler in the context of @var{L}.  The handler function will
 release the file descriptor @var{fd} using the standard function @cfunc{close}; errors in
 @cfunc{close} are @strong{ignored}.
 @end deftypefun
 
 
-@deftypefn {Preprocessor Macro} void ccsys_handler_filedes_init (cce_destination_t @var{L}, cce_clean_handler_t * @var{H}, ccsys_fd_t @var{fd})
-@deftypefnx {Preprocessor Macro} void ccsys_handler_filedes_init (cce_destination_t @var{L}, cce_error_handler_t * @var{H}, ccsys_fd_t @var{fd})
+@deftypefn {Preprocessor Macro} void ccsys_init_filedes_handler (cce_destination_t @var{L}, cce_clean_handler_t * @var{H}, ccsys_fd_t @var{fd})
+@deftypefnx {Preprocessor Macro} void ccsys_init_filedes_handler (cce_destination_t @var{L}, cce_error_handler_t * @var{H}, ccsys_fd_t @var{fd})
 This preprocessor macro uses @code{_Generic} to dispatch the call according to the type of the
 pointer @var{H}; if the type is:
 
 @table @code
 @item cce_clean_handler_t
-The macro expands into a call to @cfunc{ccsys_clean_handler_filedes_init}.
+The macro expands into a call to @cfunc{ccsys_init_filedes_clean_handler}.
 
 @item cce_error_handler_t
-The macro expands into a call to @cfunc{ccsys_error_handler_filedes_init}.
+The macro expands into a call to @cfunc{ccsys_init_filedes_error_handler}.
 @end table
 @end deftypefn
 
@@ -4410,7 +4410,7 @@ if (cce_location(L)) @{
     flags.data = CCSYS_O_CREAT | CCSYS_O_RDWR;
     mode.data  = CCSYS_S_IRUSR | CCSYS_S_IWUSR;
     fd = ccsys_open(L, filename, flags, mode);
-    ccsys_handler_filedes_init(L, filedes_H, fd);
+    ccsys_init_filedes_handler(L, filedes_H, fd);
     ccsys_handler_remove_init(L, file_H, filename);
   @}
 
@@ -4472,7 +4472,7 @@ if (cce_location(L)) @{
     flags.data = CCSYS_O_CREAT | CCSYS_O_RDWR;
     mode.data  = CCSYS_S_IRUSR | CCSYS_S_IWUSR;
     fd = ccsys_open(L, filename, flags, mode);
-    ccsys_handler_filedes_init(L, filedes_H, fd);
+    ccsys_init_filedes_handler(L, filedes_H, fd);
     ccsys_handler_remove_init(L, file_H, filename);
   @}
 
@@ -4621,7 +4621,7 @@ if (cce_location(L)) @{
     flags.data = CCSYS_O_CREAT | CCSYS_O_RDWR;
     mode.data  = CCSYS_S_IRUSR | CCSYS_S_IWUSR;
     fd = ccsys_open(L, filename, flags, mode);
-    ccsys_handler_filedes_init(L, filedes_H, fd);
+    ccsys_init_filedes_handler(L, filedes_H, fd);
     ccsys_handler_remove_init(L, file_H, filename);
   @}
 
@@ -4705,7 +4705,7 @@ if (cce_location(L)) @{
     flags.data = CCSYS_O_CREAT | CCSYS_O_RDWR;
     mode.data  = CCSYS_S_IRUSR | CCSYS_S_IWUSR;
     fd = ccsys_open(L, filename, flags, mode);
-    ccsys_handler_filedes_init(L, filedes_H, fd);
+    ccsys_init_filedes_handler(L, filedes_H, fd);
     ccsys_handler_remove_init(L, file_H, filename);
   @}
 
@@ -4814,7 +4814,7 @@ if (cce_location(L)) @{
     flags.data = CCSYS_O_CREAT | CCSYS_O_RDWR;
     mode.data  = CCSYS_S_IRUSR | CCSYS_S_IWUSR;
     fd = ccsys_open(L, filename, flags, mode);
-    ccsys_handler_filedes_init(L, filedes_H, fd);
+    ccsys_init_filedes_handler(L, filedes_H, fd);
     ccsys_handler_remove_init(L, file_H, filename);
    @}
 
@@ -4872,7 +4872,7 @@ if (cce_location(L)) @{
     flags.data = CCSYS_O_CREAT | CCSYS_O_RDWR;
     mode.data  = CCSYS_S_IRUSR | CCSYS_S_IWUSR;
     fd = ccsys_open(L, filename, flags, mode);
-    ccsys_handler_filedes_init(L, filedes_H, fd);
+    ccsys_init_filedes_handler(L, filedes_H, fd);
     ccsys_handler_remove_init(L, file_H, filename);
   @}
 
@@ -4934,7 +4934,7 @@ if (cce_location(L)) @{
     flags.data = CCSYS_O_CREAT | CCSYS_O_RDWR;
     mode.data  = CCSYS_S_IRUSR | CCSYS_S_IWUSR;
     fd = ccsys_open(L, filename, flags, mode);
-    ccsys_handler_filedes_init(L, filedes_H, fd);
+    ccsys_init_filedes_handler(L, filedes_H, fd);
     ccsys_handler_remove_init(L, file_H, filename);
   @}
 
@@ -5112,8 +5112,8 @@ doit_parent (cce_destination_t upper_L,
   if (cce_location(L)) @{
     cce_run_error_handlers_raise(L, upper_L);
   @} else @{
-    ccsys_handler_filedes_init(L, infd_H, infd);
-    ccsys_handler_filedes_init(L, oufd_H, oufd);
+    ccsys_init_filedes_handler(L, infd_H, infd);
+    ccsys_init_filedes_handler(L, oufd_H, oufd);
 
     /* Wait for the output file descriptor to be writable. */
     @{
@@ -5181,8 +5181,8 @@ doit_child (ccsys_fd_t infd, ccsys_fd_t oufd)
   if (cce_location(L)) @{
     cce_run_error_handlers_final(L);
   @} else @{
-    ccsys_handler_filedes_init(L, infd_H, infd);
-    ccsys_handler_filedes_init(L, oufd_H, oufd);
+    ccsys_init_filedes_handler(L, infd_H, infd);
+    ccsys_init_filedes_handler(L, oufd_H, oufd);
 
     /* Wait for the input file descriptor to be readable. */
     @{
@@ -5332,8 +5332,8 @@ doit_parent (cce_destination_t upper_L,
   if (cce_location(L)) @{
     cce_run_error_handlers_raise(L, upper_L);
   @} else @{
-    ccsys_handler_filedes_init(L, infd_H, infd);
-    ccsys_handler_filedes_init(L, oufd_H, oufd);
+    ccsys_init_filedes_handler(L, infd_H, infd);
+    ccsys_init_filedes_handler(L, oufd_H, oufd);
 
     /* Wait for the output file descriptor to be writable. */
     @{
@@ -5405,8 +5405,8 @@ doit_child (ccsys_fd_t infd, ccsys_fd_t oufd)
   if (cce_location(L)) @{
     cce_run_error_handlers_final(L);
   @} else @{
-    ccsys_handler_filedes_init(L, infd_H, infd);
-    ccsys_handler_filedes_init(L, oufd_H, oufd);
+    ccsys_init_filedes_handler(L, infd_H, infd);
+    ccsys_init_filedes_handler(L, oufd_H, oufd);
 
     /* Wait for the input file descriptor to be readable. */
     @{
@@ -6540,7 +6540,7 @@ if (cce_location(L)) @{
     flags.data = CCSYS_O_CREAT;
     mode.data  = CCSYS_S_IRUSR | CCSYS_S_IWUSR;
     fd         = ccsys_open(L, dirfd, "name.ext", flags, mode);
-    ccsys_handler_filedes_init(L, filedes_H, fd);
+    ccsys_init_filedes_handler(L, filedes_H, fd);
   @}
 
   @{
@@ -7217,7 +7217,7 @@ if (cce_location(L)) @{
     flags.data = CCSYS_O_CREAT;
     mode.data  = CCSYS_S_IRUSR | CCSYS_S_IWUSR;
     fd = ccsys_open(L, filename, flags, mode);
-    ccsys_handler_filedes_init(L, filedes_H, fd);
+    ccsys_init_filedes_handler(L, filedes_H, fd);
     ccsys_handler_remove_init(L, filename_H, filename);
   @}
 
@@ -7330,7 +7330,7 @@ if (cce_location(L)) @{
     flags.data = CCSYS_O_CREAT;
     mode.data  = CCSYS_S_IRUSR | CCSYS_S_IWUSR;
     fd = ccsys_openat(L, dirfd, filename, flags, mode);
-    ccsys_handler_filedes_init(L, filedes_H, fd);
+    ccsys_init_filedes_handler(L, filedes_H, fd);
     lnk.dirfd         = dirfd;
     lnk.pathname      = filename;
     ccsys_handler_unlinkat_init(L, filename_H, &lnk);
@@ -7498,7 +7498,7 @@ if (cce_location(L)) @{
     flags.data = CCSYS_O_CREAT;
     mode.data  = CCSYS_S_IRUSR | CCSYS_S_IWUSR;
     fd = ccsys_open(L, filename, flags, mode);
-    ccsys_handler_filedes_init(L, filedes_H, fd);
+    ccsys_init_filedes_handler(L, filedes_H, fd);
   @}
 
   /* Change ownership. */
@@ -7698,7 +7698,7 @@ if (cce_location(L)) @{
     flags.data = CCSYS_O_CREAT;
     mode.data  = 0;
     fd = ccsys_open(L, filename, flags, mode);
-    ccsys_handler_filedes_init(L, filedes_H, fd);
+    ccsys_init_filedes_handler(L, filedes_H, fd);
     ccsys_handler_remove_init(L, filename_H, filename);
   @}
 
@@ -7979,7 +7979,7 @@ if (cce_location(L)) @{
     flags.data = CCSYS_O_CREAT | CCSYS_O_RDWR;
     mode.data  = CCSYS_S_IRUSR | CCSYS_S_IWUSR;
     fd = ccsys_open(L, filename, flags, mode);
-    ccsys_handler_filedes_init(L, filedes_H, fd);
+    ccsys_init_filedes_handler(L, filedes_H, fd);
     ccsys_handler_remove_init(L, filename_H, filename);
   @}
 
@@ -8045,7 +8045,7 @@ if (cce_location(L)) @{
     flags.data = CCSYS_O_CREAT | CCSYS_O_RDWR;
     mode.data  = CCSYS_S_IRUSR | CCSYS_S_IWUSR;
     fd = ccsys_open(L, filename, flags, mode);
-    ccsys_handler_filedes_init(L, filedes_H, fd);
+    ccsys_init_filedes_handler(L, filedes_H, fd);
     ccsys_handler_remove_init(L, filename_H, filename);
   @}
 
@@ -8236,7 +8236,7 @@ if (cce_location(L)) @{
     flags.data = CCSYS_O_CREAT | CCSYS_O_RDWR;
     mode.data  = CCSYS_S_IRUSR | CCSYS_S_IWUSR;
     fd = ccsys_open(L, filename, flags, mode);
-    ccsys_handler_filedes_init(L, filedes_H, fd);
+    ccsys_init_filedes_handler(L, filedes_H, fd);
     ccsys_handler_remove_init(L, filename_H, filename);
   @}
 
@@ -8421,7 +8421,7 @@ if (cce_location(L)) @{
     flags.data = CCSYS_O_CREAT | CCSYS_O_RDWR;
     mode.data  = CCSYS_S_IRUSR | CCSYS_S_IWUSR;
     fd = ccsys_open(L, filename, flags, mode);
-    ccsys_handler_filedes_init(L, filedes_H, fd);
+    ccsys_init_filedes_handler(L, filedes_H, fd);
     ccsys_handler_remove_init(L, filename_H, filename);
   @}
 
@@ -8597,7 +8597,7 @@ if (cce_location(L)) @{
     ccsys_fd_t        fd;
 
     fd = ccsys_mkstemp(L, filename);
-    ccsys_handler_filedes_init(L, filedes_H, fd);
+    ccsys_init_filedes_handler(L, filedes_H, fd);
     ccsys_handler_remove_init(L, filename_H, filename);
   @}
 
@@ -8632,7 +8632,7 @@ if (cce_location(L)) @{
 
     flags.data = CCSYS_O_CREAT | CCSYS_O_RDWR;
     fd = ccsys_mkostemp(L, filename, flags);
-    ccsys_handler_filedes_init(L, filedes_H, fd);
+    ccsys_init_filedes_handler(L, filedes_H, fd);
     ccsys_handler_remove_init(L, filename_H, filename);
   @}
 
@@ -8665,7 +8665,7 @@ if (cce_location(L)) @{
     ccsys_fd_t        fd;
 
     fd = ccsys_mkstemps(L, filename, 4);
-    ccsys_handler_filedes_init(L, filedes_H, fd);
+    ccsys_init_filedes_handler(L, filedes_H, fd);
     ccsys_handler_remove_init(L, filename_H, filename);
   @}
 
@@ -8700,7 +8700,7 @@ if (cce_location(L)) @{
 
     flags.data = CCSYS_O_CREAT | CCSYS_O_RDWR;
     fd = ccsys_mkostemps(L, filename, 4, flags);
-    ccsys_handler_filedes_init(L, filedes_H, fd);
+    ccsys_init_filedes_handler(L, filedes_H, fd);
     ccsys_handler_remove_init(L, filename_H, filename);
   @}
 

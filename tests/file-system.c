@@ -318,7 +318,7 @@ test_3_3 (cce_destination_t upper_L)
       flags.data = CCSYS_O_PATH;
       mode.data  = CCSYS_S_IRUSR | CCSYS_S_IWUSR;
       fd     = ccsys_open(L, dirname1, flags, mode);
-      ccsys_handler_filedes_init(L, filedes_H, fd);
+      ccsys_init_filedes_handler(L, filedes_H, fd);
       dirfd1 = ccsys_fd_to_dirfd(fd);
     }
 
@@ -515,7 +515,7 @@ test_4_2 (cce_destination_t upper_L)
       flags.data = CCSYS_O_CREAT;
       mode.data  = CCSYS_S_IRUSR | CCSYS_S_IWUSR;
       fd = ccsys_open(L, filename, flags, mode);
-      ccsys_handler_filedes_init(L, filedes_H, fd);
+      ccsys_init_filedes_handler(L, filedes_H, fd);
       ccsys_handler_remove_init(L, filename_H, filename);
     }
 
@@ -607,7 +607,7 @@ test_4_3 (cce_destination_t upper_L)
       flags.data = CCSYS_O_CREAT;
       mode.data	 = CCSYS_S_IRUSR | CCSYS_S_IWUSR;
       fd = ccsys_open(L, filename, flags, mode);
-      ccsys_handler_filedes_init(L, filedes_H, fd);
+      ccsys_init_filedes_handler(L, filedes_H, fd);
       ccsys_handler_remove_init(L, filename_H, filename);
     }
 
@@ -721,7 +721,7 @@ test_4_4 (cce_destination_t upper_L)
       flags.data = CCSYS_O_CREAT;
       mode.data  = CCSYS_S_IRUSR | CCSYS_S_IWUSR;
       fd = ccsys_openat(L, dirfd, filename, flags, mode);
-      ccsys_handler_filedes_init(L, filedes_H, fd);
+      ccsys_init_filedes_handler(L, filedes_H, fd);
       lnk.dirfd		= dirfd;
       lnk.pathname	= filename;
       lnk.flags.data	= 0;
@@ -819,7 +819,7 @@ test_4_5 (cce_destination_t upper_L)
       flags.data = CCSYS_O_CREAT;
       mode.data  = CCSYS_S_IRUSR | CCSYS_S_IWUSR;
       fd = ccsys_open(L, filename, flags, mode);
-      ccsys_handler_filedes_init(L, filedes_H, fd);
+      ccsys_init_filedes_handler(L, filedes_H, fd);
       ccsys_handler_remove_init(L, filename_H, filename);
     }
 
@@ -914,7 +914,7 @@ test_5_1 (cce_destination_t upper_L)
       flags.data = CCSYS_O_CREAT;
       mode.data  = CCSYS_S_IRUSR | CCSYS_S_IWUSR;
       fd = ccsys_open(L, filename, flags, mode);
-      ccsys_handler_filedes_init(L, filedes_H, fd);
+      ccsys_init_filedes_handler(L, filedes_H, fd);
       ccsys_handler_remove_init(L, filename_H, filename);
     }
 
@@ -964,7 +964,7 @@ test_5_2 (cce_destination_t upper_L)
       flags.data = CCSYS_O_CREAT;
       mode.data  = CCSYS_S_IRUSR | CCSYS_S_IWUSR;
       fd = ccsys_open(L, filename, flags, mode);
-      ccsys_handler_filedes_init(L, filedes_H, fd);
+      ccsys_init_filedes_handler(L, filedes_H, fd);
       ccsys_handler_remove_init(L, filename_H, filename);
     }
 
@@ -1029,7 +1029,7 @@ test_5_3_1 (cce_destination_t upper_L)
       flags.data = CCSYS_O_CREAT;
       mode.data  = CCSYS_S_IRUSR | CCSYS_S_IWUSR;
       fd = ccsys_openat(L, dirfd, filename, flags, mode);
-      ccsys_handler_filedes_init(L, filedes_H, fd);
+      ccsys_init_filedes_handler(L, filedes_H, fd);
       ccsys_handler_remove_init(L, filename_H, filename);
     }
 
@@ -1148,7 +1148,7 @@ test_5_4_1 (cce_destination_t upper_L)
       flags.data = CCSYS_O_CREAT;
       mode.data  = CCSYS_S_IRUSR | CCSYS_S_IWUSR;
       fd = ccsys_openat(L, dirfd, filename, flags, mode);
-      ccsys_handler_filedes_init(L, filedes_H, fd);
+      ccsys_init_filedes_handler(L, filedes_H, fd);
       ccsys_handler_remove_init(L, filename_H, filename);
     }
 
@@ -1729,7 +1729,7 @@ test_9_3 (cce_destination_t upper_L)
       flags.data = CCSYS_O_CREAT;
       mode.data  = CCSYS_S_IRUSR | CCSYS_S_IWUSR;
       fd = ccsys_open(L, filename, flags, mode);
-      ccsys_handler_filedes_init(L, filedes_H, fd);
+      ccsys_init_filedes_handler(L, filedes_H, fd);
       ccsys_handler_remove_init(L, filename_H, filename);
     }
 
@@ -1865,7 +1865,7 @@ test_10_2 (cce_destination_t upper_L)
       flags.data = CCSYS_O_CREAT;
       mode.data  = 0;
       fd = ccsys_open(L, filename, flags, mode);
-      ccsys_handler_filedes_init(L, filedes_H, fd);
+      ccsys_init_filedes_handler(L, filedes_H, fd);
       ccsys_handler_remove_init(L, filename_H, filename);
     }
 
@@ -2099,7 +2099,7 @@ test_12_1 (cce_destination_t upper_L)
       flags.data = CCSYS_O_CREAT | CCSYS_O_RDWR;
       mode.data  = CCSYS_S_IRUSR | CCSYS_S_IWUSR;
       fd = ccsys_open(L, filename, flags, mode);
-      ccsys_handler_filedes_init(L, filedes_H, fd);
+      ccsys_init_filedes_handler(L, filedes_H, fd);
       ccsys_handler_remove_init(L, filename_H, filename);
     }
 
@@ -2165,7 +2165,7 @@ test_12_2 (cce_destination_t upper_L)
       flags.data = CCSYS_O_CREAT | CCSYS_O_RDWR;
       mode.data  = CCSYS_S_IRUSR | CCSYS_S_IWUSR;
       fd = ccsys_open(L, filename, flags, mode);
-      ccsys_handler_filedes_init(L, filedes_H, fd);
+      ccsys_init_filedes_handler(L, filedes_H, fd);
       ccsys_handler_remove_init(L, filename_H, filename);
     }
 
@@ -2370,7 +2370,7 @@ test_13_3 (cce_destination_t upper_L)
       flags.data = CCSYS_O_CREAT | CCSYS_O_RDWR;
       mode.data  = CCSYS_S_IRUSR | CCSYS_S_IWUSR;
       fd = ccsys_open(L, filename, flags, mode);
-      ccsys_handler_filedes_init(L, filedes_H, fd);
+      ccsys_init_filedes_handler(L, filedes_H, fd);
       ccsys_handler_remove_init(L, filename_H, filename);
     }
 
@@ -2564,7 +2564,7 @@ test_13_6 (cce_destination_t upper_L)
       flags.data = CCSYS_O_CREAT | CCSYS_O_RDWR;
       mode.data  = CCSYS_S_IRUSR | CCSYS_S_IWUSR;
       fd = ccsys_open(L, filename, flags, mode);
-      ccsys_handler_filedes_init(L, filedes_H, fd);
+      ccsys_init_filedes_handler(L, filedes_H, fd);
       ccsys_handler_remove_init(L, filename_H, filename);
     }
 
@@ -2631,7 +2631,7 @@ test_14_1 (cce_destination_t upper_L)
       ccsys_fd_t	fd;
 
       fd = ccsys_mkstemp(L, filename);
-      ccsys_handler_filedes_init(L, filedes_H, fd);
+      ccsys_init_filedes_handler(L, filedes_H, fd);
       ccsys_handler_remove_init(L, filename_H, filename);
     }
 
@@ -2668,7 +2668,7 @@ test_14_2 (cce_destination_t upper_L)
 
       flags.data = CCSYS_O_CREAT | CCSYS_O_RDWR;
       fd = ccsys_mkostemp(L, filename, flags);
-      ccsys_handler_filedes_init(L, filedes_H, fd);
+      ccsys_init_filedes_handler(L, filedes_H, fd);
       ccsys_handler_remove_init(L, filename_H, filename);
     }
 
@@ -2703,7 +2703,7 @@ test_14_3 (cce_destination_t upper_L)
       ccsys_fd_t	fd;
 
       fd = ccsys_mkstemps(L, filename, 4);
-      ccsys_handler_filedes_init(L, filedes_H, fd);
+      ccsys_init_filedes_handler(L, filedes_H, fd);
       ccsys_handler_remove_init(L, filename_H, filename);
     }
 
@@ -2740,7 +2740,7 @@ test_14_4 (cce_destination_t upper_L)
 
       flags.data = CCSYS_O_CREAT | CCSYS_O_RDWR;
       fd = ccsys_mkostemps(L, filename, 4, flags);
-      ccsys_handler_filedes_init(L, filedes_H, fd);
+      ccsys_init_filedes_handler(L, filedes_H, fd);
       ccsys_handler_remove_init(L, filename_H, filename);
     }
 

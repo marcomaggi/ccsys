@@ -751,25 +751,25 @@ ccsys_fsetpos (cce_destination_t L, ccsys_file_t stream, ccsys_fpos_t const * po
 
 __attribute__((nonnull(1,2)))
 static void
-cce_handler_filedes_function (cce_condition_t const * C CCE_UNUSED, cce_handler_t * H)
+cce_filedes_handler_function (cce_condition_t const * C CCE_UNUSED, cce_handler_t * H)
 {
   close(H->filedes);
   if (0) { fprintf(stderr, "%s: done\n", __func__); }
 }
 
 void
-ccsys_clean_handler_filedes_init (cce_location_t * L, cce_handler_t * H, ccsys_fd_t filedes)
+ccsys_init_filedes_clean_handler (cce_location_t * L, cce_clean_handler_t * H, ccsys_fd_t filedes)
 {
-  H->function	= cce_handler_filedes_function;
-  H->filedes	= filedes.data;
+  H->handler.function	= cce_filedes_handler_function;
+  H->handler.filedes	= filedes.data;
   cce_register_clean_handler(L, H);
 }
 
 void
-ccsys_error_handler_filedes_init (cce_location_t * L, cce_handler_t * H, ccsys_fd_t filedes)
+ccsys_init_filedes_error_handler (cce_location_t * L, cce_error_handler_t * H, ccsys_fd_t filedes)
 {
-  H->function	= cce_handler_filedes_function;
-  H->filedes	= filedes.data;
+  H->handler.function	= cce_filedes_handler_function;
+  H->handler.filedes	= filedes.data;
   cce_register_error_handler(L, H);
 }
 

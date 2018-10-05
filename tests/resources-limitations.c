@@ -146,7 +146,7 @@ test_2_2 (cce_destination_t upper_L)
       flags.data = CCSYS_O_CREAT;
       mode.data  = CCSYS_S_IRUSR | CCSYS_S_IWUSR;
       fd = ccsys_open(L, filename, flags, mode);
-      ccsys_handler_filedes_init(L, filedes_H, fd);
+      ccsys_init_filedes_handler(L, filedes_H, fd);
       ccsys_handler_remove_init(L, filename_H, filename);
     }
 

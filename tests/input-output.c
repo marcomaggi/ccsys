@@ -48,7 +48,7 @@ test_1_1 (cce_destination_t upper_L)
     flags.data = CCSYS_O_CREAT;
     mode.data  = CCSYS_S_IRUSR | CCSYS_S_IWUSR;
     fd = ccsys_open(L, filename, flags, mode);
-    ccsys_handler_filedes_init(L, H, fd);
+    ccsys_init_filedes_handler(L, H, fd);
     cctests_assert(L, 0 != fd.data);
     ccsys_remove(L, filename);
     cce_run_body_handlers(L);
@@ -98,7 +98,7 @@ test_2_1 (cce_destination_t upper_L)
       ccsys_fd_t            fd;
 
       fd = ccsys_openat(L, dirfd, filename, flags, mode);
-      ccsys_handler_filedes_init(L, file_H, fd);
+      ccsys_init_filedes_handler(L, file_H, fd);
       cctests_assert(L, 0 != fd.data);
     }
 
@@ -275,7 +275,7 @@ test_4_1_parent (cce_destination_t upper_L, char const * fifoname)
       if (0) { fprintf(stderr, "%s: open fifo for reading\n", __func__); }
       infd = ccsys_open(L, fifoname, flags, mode);
       if (0) { fprintf(stderr, "%s: open fifo for reading done\n", __func__); }
-      ccsys_handler_filedes_init(L, infd_H, infd);
+      ccsys_init_filedes_handler(L, infd_H, infd);
     }
 
     /* Read from the FIFO. */
@@ -312,7 +312,7 @@ test_4_1_child  (char const * fifoname)
       mode.data  = 0;
       if (0) { fprintf(stderr, "%s: open fifo for writing\n", __func__); }
       oufd = ccsys_open(L, fifoname, flags, mode);
-      ccsys_handler_filedes_init(L, oufd_H, oufd);
+      ccsys_init_filedes_handler(L, oufd_H, oufd);
     }
 
     /* Write to the FIFO. */
@@ -431,7 +431,7 @@ test_4_2_parent (cce_destination_t upper_L, ccsys_dirfd_t dirfd, char const * fi
       if (0) { fprintf(stderr, "%s: open fifo for reading\n", __func__); }
       infd = ccsys_openat(L, dirfd, fifoname, flags, mode);
       if (0) { fprintf(stderr, "%s: open fifo for reading done\n", __func__); }
-      ccsys_handler_filedes_init(L, infd_H, infd);
+      ccsys_init_filedes_handler(L, infd_H, infd);
     }
 
     /* Read from the FIFO. */
@@ -468,7 +468,7 @@ test_4_2_child (ccsys_dirfd_t dirfd, char const * fifoname)
       mode.data  = 0;
       if (0) { fprintf(stderr, "%s: open fifo for writing\n", __func__); }
       oufd = ccsys_openat(L, dirfd, fifoname, flags, mode);
-      ccsys_handler_filedes_init(L, oufd_H, oufd);
+      ccsys_init_filedes_handler(L, oufd_H, oufd);
     }
 
     /* Write to the FIFO. */
@@ -544,7 +544,7 @@ test_6_1 (cce_destination_t upper_L)
       flags.data = CCSYS_O_CREAT | CCSYS_O_RDWR;
       mode.data  = CCSYS_S_IRUSR | CCSYS_S_IWUSR;
       fd = ccsys_open(L, filename, flags, mode);
-      ccsys_handler_filedes_init(L, filedes_H, fd);
+      ccsys_init_filedes_handler(L, filedes_H, fd);
       ccsys_handler_remove_init(L, file_H, filename);
     }
 
@@ -618,7 +618,7 @@ test_6_2 (cce_destination_t upper_L)
       flags.data = CCSYS_O_CREAT | CCSYS_O_RDWR;
       mode.data  = CCSYS_S_IRUSR | CCSYS_S_IWUSR;
       fd = ccsys_open(L, filename, flags, mode);
-      ccsys_handler_filedes_init(L, filedes_H, fd);
+      ccsys_init_filedes_handler(L, filedes_H, fd);
       ccsys_handler_remove_init(L, file_H, filename);
     }
 
@@ -687,7 +687,7 @@ test_7_1 (cce_destination_t upper_L)
       flags.data = CCSYS_O_CREAT | CCSYS_O_RDWR;
       mode.data  = CCSYS_S_IRUSR | CCSYS_S_IWUSR;
       fd = ccsys_open(L, filename, flags, mode);
-      ccsys_handler_filedes_init(L, filedes_H, fd);
+      ccsys_init_filedes_handler(L, filedes_H, fd);
       ccsys_handler_remove_init(L, file_H, filename);
     }
 
@@ -785,7 +785,7 @@ test_7_2 (cce_destination_t upper_L)
       flags.data = CCSYS_O_CREAT | CCSYS_O_RDWR;
       mode.data  = CCSYS_S_IRUSR | CCSYS_S_IWUSR;
       fd = ccsys_open(L, filename, flags, mode);
-      ccsys_handler_filedes_init(L, filedes_H, fd);
+      ccsys_init_filedes_handler(L, filedes_H, fd);
       ccsys_handler_remove_init(L, file_H, filename);
     }
 
@@ -879,7 +879,7 @@ test_8_1 (cce_destination_t upper_L)
       flags.data = CCSYS_O_CREAT | CCSYS_O_RDWR;
       mode.data  = CCSYS_S_IRUSR | CCSYS_S_IWUSR;
       fd = ccsys_open(L, filename, flags, mode);
-      ccsys_handler_filedes_init(L, filedes_H, fd);
+      ccsys_init_filedes_handler(L, filedes_H, fd);
       ccsys_handler_remove_init(L, file_H, filename);
     }
 
@@ -947,7 +947,7 @@ test_8_2 (cce_destination_t upper_L)
       flags.data = CCSYS_O_CREAT | CCSYS_O_RDWR;
       mode.data  = CCSYS_S_IRUSR | CCSYS_S_IWUSR;
       fd = ccsys_open(L, filename, flags, mode);
-      ccsys_handler_filedes_init(L, filedes_H, fd);
+      ccsys_init_filedes_handler(L, filedes_H, fd);
       ccsys_handler_remove_init(L, file_H, filename);
     }
 
@@ -1017,7 +1017,7 @@ test_8_3 (cce_destination_t upper_L)
       flags.data = CCSYS_O_CREAT | CCSYS_O_RDWR;
       mode.data  = CCSYS_S_IRUSR | CCSYS_S_IWUSR;
       fd = ccsys_open(L, filename, flags, mode);
-      ccsys_handler_filedes_init(L, filedes_H, fd);
+      ccsys_init_filedes_handler(L, filedes_H, fd);
       ccsys_handler_remove_init(L, file_H, filename);
     }
 
@@ -1145,8 +1145,8 @@ test_9_1_parent (cce_destination_t upper_L, ccsys_fd_t infd, ccsys_fd_t oufd)
   if (cce_location(L)) {
     cce_run_catch_handlers_raise(L, upper_L);
   } else {
-    ccsys_handler_filedes_init(L, infd_H, infd);
-    ccsys_handler_filedes_init(L, oufd_H, oufd);
+    ccsys_init_filedes_handler(L, infd_H, infd);
+    ccsys_init_filedes_handler(L, oufd_H, oufd);
 
     /* Wait for the output file descriptor to be writable. */
     {
@@ -1214,8 +1214,8 @@ test_9_1_child (ccsys_fd_t infd, ccsys_fd_t oufd)
   if (cce_location(L)) {
     cce_run_catch_handlers_final(L);
   } else {
-    ccsys_handler_filedes_init(L, infd_H, infd);
-    ccsys_handler_filedes_init(L, oufd_H, oufd);
+    ccsys_init_filedes_handler(L, infd_H, infd);
+    ccsys_init_filedes_handler(L, oufd_H, oufd);
 
     /* Wait for the input file descriptor to be readable. */
     {
@@ -1358,8 +1358,8 @@ test_9_2_parent (cce_destination_t upper_L, ccsys_fd_t infd, ccsys_fd_t oufd)
   if (cce_location(L)) {
     cce_run_catch_handlers_raise(L, upper_L);
   } else {
-    ccsys_handler_filedes_init(L, infd_H, infd);
-    ccsys_handler_filedes_init(L, oufd_H, oufd);
+    ccsys_init_filedes_handler(L, infd_H, infd);
+    ccsys_init_filedes_handler(L, oufd_H, oufd);
 
     /* Wait for the output file descriptor to be writable. */
     {
@@ -1429,8 +1429,8 @@ test_9_2_child (ccsys_fd_t infd, ccsys_fd_t oufd)
   if (cce_location(L)) {
     cce_run_catch_handlers_final(L);
   } else {
-    ccsys_handler_filedes_init(L, infd_H, infd);
-    ccsys_handler_filedes_init(L, oufd_H, oufd);
+    ccsys_init_filedes_handler(L, infd_H, infd);
+    ccsys_init_filedes_handler(L, oufd_H, oufd);
 
     /* Wait for the input file descriptor to be readable. */
     {
