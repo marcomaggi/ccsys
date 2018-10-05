@@ -301,7 +301,7 @@ test_4_1_child  (char const * fifoname)
   cce_clean_handler_t	oufd_H[1];
 
   if (cce_location(L)) {
-    cce_run_error_handlers_final(L);
+    cce_run_catch_handlers_final(L);
   } else {
     /* Open the FIFO for writing. */
     {
@@ -457,7 +457,7 @@ test_4_2_child (ccsys_dirfd_t dirfd, char const * fifoname)
   cce_clean_handler_t	oufd_H[1];
 
   if (cce_location(L)) {
-    cce_run_error_handlers_final(L);
+    cce_run_catch_handlers_final(L);
   } else {
     /* Open the FIFO for writing. */
     {
@@ -1212,7 +1212,7 @@ test_9_1_child (ccsys_fd_t infd, ccsys_fd_t oufd)
   cce_clean_handler_t	oufd_H[1];
 
   if (cce_location(L)) {
-    cce_run_error_handlers_final(L);
+    cce_run_catch_handlers_final(L);
   } else {
     ccsys_handler_filedes_init(L, infd_H, infd);
     ccsys_handler_filedes_init(L, oufd_H, oufd);
@@ -1427,7 +1427,7 @@ test_9_2_child (ccsys_fd_t infd, ccsys_fd_t oufd)
   cce_clean_handler_t	oufd_H[1];
 
   if (cce_location(L)) {
-    cce_run_error_handlers_final(L);
+    cce_run_catch_handlers_final(L);
   } else {
     ccsys_handler_filedes_init(L, infd_H, infd);
     ccsys_handler_filedes_init(L, oufd_H, oufd);
