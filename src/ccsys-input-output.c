@@ -838,7 +838,7 @@ ccsys_error_handler_dirfd_init (cce_location_t * L, cce_handler_t * H, ccsys_dir
 
 __attribute__((nonnull(1,2)))
 static void
-cce_handler_pipedes_function (cce_condition_t const * C CCE_UNUSED, cce_handler_t * H)
+cce_pipedes_handler_function (cce_condition_t const * C CCE_UNUSED, cce_handler_t * H)
 {
 #ifdef HAVE_CLOSE
   close(H->pipedes[0]);
@@ -848,20 +848,20 @@ cce_handler_pipedes_function (cce_condition_t const * C CCE_UNUSED, cce_handler_
 }
 
 void
-ccsys_clean_handler_pipedes_init (cce_location_t * L, cce_handler_t * H, ccsys_fd_t pipedes[2])
+ccsys_init_pipedes_clean_handler (cce_location_t * L, cce_clean_handler_t * H, ccsys_fd_t pipedes[2])
 {
-  H->function	= cce_handler_pipedes_function;
-  H->pipedes[0]	= pipedes[0].data;
-  H->pipedes[1]	= pipedes[1].data;
+  H->handler.function	= cce_pipedes_handler_function;
+  H->handler.pipedes[0]	= pipedes[0].data;
+  H->handler.pipedes[1]	= pipedes[1].data;
   cce_register_clean_handler(L, H);
 }
 
 void
-ccsys_error_handler_pipedes_init (cce_location_t * L, cce_handler_t * H, ccsys_fd_t pipedes[2])
+ccsys_init_pipedes_error_handler (cce_location_t * L, cce_error_handler_t * H, ccsys_fd_t pipedes[2])
 {
-  H->function	= cce_handler_pipedes_function;
-  H->pipedes[0]	= pipedes[0].data;
-  H->pipedes[1]	= pipedes[1].data;
+  H->handler.function	= cce_pipedes_handler_function;
+  H->handler.pipedes[0]	= pipedes[0].data;
+  H->handler.pipedes[1]	= pipedes[1].data;
   cce_register_error_handler(L, H);
 }
 

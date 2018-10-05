@@ -3815,14 +3815,14 @@ follows:
 
 @example
 cce_location_t          L[1];
-cce_clean_handler_t   H[1];
+cce_clean_handler_t     H[1];
 
 if (cce_location(L)) @{
   cce_run_error_handlers_final(L);
 @} else @{
   ccsys_fd_t    pipefd[2];
   ccsys_pipe(L, pipefd);
-  ccsys_handler_pipedes_init(L, H, pipefd);
+  ccsys_init_pipedes_handler(L, H, pipefd);
   cce_run_clean_handlers(L);
 @}
 @end example
@@ -3830,25 +3830,25 @@ if (cce_location(L)) @{
 The following symbols are defined in the header file @file{ccsys.h}.
 
 
-@deftypefun void ccsys_clean_handler_pipedes_init (cce_destination_t @var{L}, cce_handler_t * @var{H}, ccsys_fd_t @var{pipedes}[2])
-@deftypefunx void ccsys_error_handler_pipedes_init (cce_destination_t @var{L}, cce_handler_t * @var{H}, ccsys_fd_t @var{pipedes}[2])
+@deftypefun void ccsys_init_pipedes_clean_handler (cce_destination_t @var{L}, cce_clean_handler_t * @var{H}, ccsys_fd_t @var{pipedes}[2])
+@deftypefunx void ccsys_init_pipedes_error_handler (cce_destination_t @var{L}, cce_error_handler_t * @var{H}, ccsys_fd_t @var{pipedes}[2])
 Register @var{H} as clean or error handler in the context of @var{L}.  The handler function will
 release the file descriptors in @var{pipedes} using the standard function @cfunc{close}; errors in
 @cfunc{close} are @strong{ignored}.
 @end deftypefun
 
 
-@deftypefn {Preprocessor Macro} void ccsys_handler_pipedes_init (cce_destination_t @var{L}, cce_clean_handler_t * @var{H}, ccsys_fd_t @var{pipedes}[2])
-@deftypefnx {Preprocessor Macro} void ccsys_handler_pipedes_init (cce_destination_t @var{L}, cce_error_handler_t * @var{H}, ccsys_fd_t @var{pipedes}[2])
+@deftypefn {Preprocessor Macro} void ccsys_init_pipedes_handler (cce_destination_t @var{L}, cce_clean_handler_t * @var{H}, ccsys_fd_t @var{pipedes}[2])
+@deftypefnx {Preprocessor Macro} void ccsys_init_pipedes_handler (cce_destination_t @var{L}, cce_error_handler_t * @var{H}, ccsys_fd_t @var{pipedes}[2])
 This preprocessor macro uses @code{_Generic} to dispatch the call according to the type of the
 pointer @var{H}; if the type is:
 
 @table @code
 @item cce_clean_handler_t
-The macro expands into a call to @cfunc{ccsys_clean_handler_pipedes_init}.
+The macro expands into a call to @cfunc{ccsys_init_pipedes_clean_handler}.
 
 @item cce_error_handler_t
-The macro expands into a call to @cfunc{ccsys_error_handler_pipedes_init}.
+The macro expands into a call to @cfunc{ccsys_init_pipedes_error_handler}.
 @end table
 @end deftypefn
 

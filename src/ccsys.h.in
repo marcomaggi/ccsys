@@ -1600,16 +1600,16 @@ ccsys_decl void ccsys_pipe2 (cce_destination_t L, ccsys_fd_t pipefd[2], ccsys_op
 
 /* ------------------------------------------------------------------ */
 
-ccsys_decl void ccsys_clean_handler_pipedes_init (cce_destination_t L, cce_handler_t * H, ccsys_fd_t pipefd[2])
+ccsys_decl void ccsys_init_pipedes_clean_handler (cce_destination_t L, cce_clean_handler_t * H, ccsys_fd_t pipefd[2])
   __attribute__((__nonnull__(1,2,3)));
 
-ccsys_decl void ccsys_error_handler_pipedes_init (cce_destination_t L, cce_handler_t * H, ccsys_fd_t pipefd[2])
+ccsys_decl void ccsys_init_pipedes_error_handler (cce_destination_t L, cce_error_handler_t * H, ccsys_fd_t pipefd[2])
   __attribute__((__nonnull__(1,2,3)));
 
-#define ccsys_handler_pipedes_init(L,H,pipefd)				\
+#define ccsys_init_pipedes_handler(L,H,pipefd)				\
   _Generic((H),								\
-	   cce_clean_handler_t	*: ccsys_clean_handler_pipedes_init, \
-	   cce_error_handler_t		*: ccsys_error_handler_pipedes_init)(L,&(H->handler),pipefd)
+	   cce_clean_handler_t	*: ccsys_init_pipedes_clean_handler,	\
+	   cce_error_handler_t	*: ccsys_init_pipedes_error_handler)(L,H,pipefd)
 
 
 /** --------------------------------------------------------------------

@@ -133,7 +133,7 @@ test_3_1 (cce_destination_t upper_L)
     /* Create the pipe. */
     {
       ccsys_pipe(L, pipefd);
-      ccsys_handler_pipedes_init(L, H, pipefd);
+      ccsys_init_pipedes_handler(L, H, pipefd);
     }
 
     /* Write to the pipe. */
@@ -176,7 +176,7 @@ test_3_2 (cce_destination_t upper_L)
       ccsys_open_flags_t	flags;
       flags.data = CCSYS_O_CLOEXEC;
       ccsys_pipe2(L, pipefd, flags);
-      ccsys_handler_pipedes_init(L, H, pipefd);
+      ccsys_init_pipedes_handler(L, H, pipefd);
     }
 
     /* Write to the pipe. */
@@ -1086,9 +1086,9 @@ test_9_1 (cce_destination_t upper_L)
       cce_run_catch_handlers_raise(L, upper_L);
     } else {
       ccsys_pipe(L, forwards);
-      ccsys_handler_pipedes_init(L, forwards_H, forwards);
+      ccsys_init_pipedes_handler(L, forwards_H, forwards);
       ccsys_pipe(L, backwards);
-      ccsys_handler_pipedes_init(L, backwards_H, backwards);
+      ccsys_init_pipedes_handler(L, backwards_H, backwards);
       cce_run_body_handlers(L);
     }
 
@@ -1299,9 +1299,9 @@ test_9_2 (cce_destination_t upper_L)
       cce_run_catch_handlers_raise(L, upper_L);
     } else {
       ccsys_pipe(L, forwards);
-      ccsys_handler_pipedes_init(L, forwards_H, forwards);
+      ccsys_init_pipedes_handler(L, forwards_H, forwards);
       ccsys_pipe(L, backwards);
-      ccsys_handler_pipedes_init(L, backwards_H, backwards);
+      ccsys_init_pipedes_handler(L, backwards_H, backwards);
       cce_run_body_handlers(L);
     }
 

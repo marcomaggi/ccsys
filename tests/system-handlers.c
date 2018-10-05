@@ -142,7 +142,7 @@ test_handler_pipedes (void)
   /* No error.  Clean call. */
   {
     cce_location_t	L[1];
-    cce_handler_t	H[1];
+    cce_clean_handler_t	H[1];
     volatile bool	done_flag  = false;
     volatile bool	error_flag = false;
 
@@ -152,7 +152,7 @@ test_handler_pipedes (void)
     } else {
       ccsys_fd_t	pipedes[2];
       ccsys_pipe(L, pipedes);
-      ccsys_clean_handler_pipedes_init(L, H, pipedes);
+      ccsys_init_pipedes_clean_handler(L, H, pipedes);
       cce_run_body_handlers(L);
       done_flag = true;
     }
@@ -162,7 +162,7 @@ test_handler_pipedes (void)
   /* Error. */
   {
     cce_location_t	L[1];
-    cce_handler_t	H[1];
+    cce_clean_handler_t	H[1];
     volatile bool	done_flag  = false;
     volatile bool	error_flag = false;
 
@@ -172,7 +172,7 @@ test_handler_pipedes (void)
     } else {
       ccsys_fd_t	pipedes[2];
       ccsys_pipe(L, pipedes);
-      ccsys_clean_handler_pipedes_init(L, H, pipedes);
+      ccsys_init_pipedes_clean_handler(L, H, pipedes);
       cce_raise(L, cce_condition_new_unknown());
       cce_run_body_handlers(L);
       done_flag = true;
