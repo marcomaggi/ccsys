@@ -725,23 +725,23 @@ ccsys_getgrent (cce_destination_t L)
 #ifdef HAVE_ENDPWENT
 __attribute__((__nonnull__(1,2)))
 static void
-cce_handler_endpwent_function (const cce_condition_t * C CCSYS_UNUSED, cce_handler_t * H CCSYS_UNUSED)
+cce_endpwent_handler_function (const cce_condition_t * C CCSYS_UNUSED, cce_handler_t * H CCSYS_UNUSED)
 {
   endpwent();
   if (0) { fprintf(stderr, "%s: done\n", __func__); }
 }
 
 void
-ccsys_clean_handler_endpwent_init (cce_location_t * L, cce_handler_t * H)
+ccsys_init_endpwent_clean_handler (cce_location_t * L, cce_clean_handler_t * H)
 {
-  H->function	= cce_handler_endpwent_function;
+  H->handler.function	= cce_endpwent_handler_function;
   cce_register_clean_handler(L, H);
 }
 
 void
-ccsys_error_handler_endpwent_init (cce_location_t * L, cce_handler_t * H)
+ccsys_init_endpwent_error_handler (cce_location_t * L, cce_error_handler_t * H)
 {
-  H->function	= cce_handler_endpwent_function;
+  H->handler.function	= cce_endpwent_handler_function;
   cce_register_error_handler(L, H);
 }
 #endif
@@ -754,23 +754,23 @@ ccsys_error_handler_endpwent_init (cce_location_t * L, cce_handler_t * H)
 #ifdef HAVE_ENDGRENT
 __attribute__((__nonnull__(1,2)))
 static void
-cce_handler_endgrent_function (const cce_condition_t * C CCSYS_UNUSED, cce_handler_t * H CCSYS_UNUSED)
+cce_endgrent_handler_function (const cce_condition_t * C CCSYS_UNUSED, cce_handler_t * H CCSYS_UNUSED)
 {
   endgrent();
   if (0) { fprintf(stderr, "%s: done\n", __func__); }
 }
 
 void
-ccsys_clean_handler_endgrent_init (cce_location_t * L, cce_handler_t * H)
+ccsys_init_endgrent_clean_handler (cce_location_t * L, cce_clean_handler_t * H)
 {
-  H->function	= cce_handler_endgrent_function;
+  H->handler.function	= cce_endgrent_handler_function;
   cce_register_clean_handler(L, H);
 }
 
 void
-ccsys_error_handler_endgrent_init (cce_location_t * L, cce_handler_t * H)
+ccsys_init_endgrent_error_handler (cce_location_t * L, cce_error_handler_t * H)
 {
-  H->function	= cce_handler_endgrent_function;
+  H->handler.function	= cce_endgrent_handler_function;
   cce_register_error_handler(L, H);
 }
 #endif

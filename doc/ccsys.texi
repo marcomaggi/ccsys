@@ -3385,24 +3385,24 @@ Wrapper for @cfunc{getpwent}; @manpage{getpwent, Get password file entry}.
 
 @c ------------------------------------------------------------------------
 
-@deftypefun void ccsys_clean_handler_endpwent_init (cce_destination_t @var{L}, cce_handler_t * @var{H})
-@deftypefunx void ccsys_error_handler_endpwent_init (cce_destination_t @var{L}, cce_handler_t * @var{H})
+@deftypefun void ccsys_init_endpwent_clean_handler (cce_destination_t @var{L}, cce_clean_handler_t * @var{H})
+@deftypefunx void ccsys_init_endpwent_error_handler (cce_destination_t @var{L}, cce_error_handler_t * @var{H})
 Register @var{H} as clean or error handler in the context of @var{L}.  The handler function will
 reset the users database pointer using the standard function @cfunc{endpwent}.
 @end deftypefun
 
 
-@deftypefn {Preprocessor Macro} void ccsys_handler_endpwent_init (cce_destination_t @var{L}, cce_clean_handler_t * @var{P_H})
-@deftypefnx {Preprocessor Macro} void ccsys_handler_endpwent_init (cce_destination_t @var{L}, cce_error_handler_t * @var{P_H})
+@deftypefn {Preprocessor Macro} void ccsys_init_endpwent_handler (cce_destination_t @var{L}, cce_clean_handler_t * @var{P_H})
+@deftypefnx {Preprocessor Macro} void ccsys_init_endpwent_handler (cce_destination_t @var{L}, cce_error_handler_t * @var{P_H})
 This preprocessor macro uses @code{_Generic} to dispatch the call according to the type of the
 pointer @var{P_H}; if the type is:
 
 @table @code
 @item cce_clean_handler_t
-The macro expands into a call to @cfunc{ccsys_clean_handler_endpwent_init}.
+The macro expands into a call to @cfunc{ccsys_init_endpwent_clean_handler}.
 
 @item cce_error_handler_t
-The macro expands into a call to @cfunc{ccsys_error_handler_endpwent_init}.
+The macro expands into a call to @cfunc{ccsys_init_endpwent_error_handler}.
 @end table
 @end deftypefn
 
@@ -3426,7 +3426,7 @@ if (cce_location(L)) @{
   cce_run_error_handlers_final(L);
 @} else @{
   ccsys_setpwent(L);
-  ccsys_handler_endpwent_init(L, endpwent_H);
+  ccsys_init_endpwent_handler(L, endpwent_H);
 
   for (ccsys_passwd_t const * S = ccsys_getpwent(L);
        NULL != S;
@@ -3571,24 +3571,24 @@ Wrapper for @cfunc{getgrent}; @manpage{getgrent, Get group file entry}.
 
 @c ------------------------------------------------------------------------
 
-@deftypefun void ccsys_clean_handler_endgrent_init (cce_destination_t @var{L}, cce_handler_t * @var{H})
-@deftypefunx void ccsys_error_handler_endgrent_init (cce_destination_t @var{L}, cce_handler_t * @var{H})
+@deftypefun void ccsys_init_endgrent_clean_handler (cce_destination_t @var{L}, cce_clean_handler_t * @var{H})
+@deftypefunx void ccsys_init_endgrent_error_handler (cce_destination_t @var{L}, cce_error_handler_t * @var{H})
 Register @var{H} as clean or error handler in the context of @var{L}.  The handler function will
 reset the users database pointer using the standard function @cfunc{endgrent}.
 @end deftypefun
 
 
-@deftypefn {Preprocessor Macro} void ccsys_handler_endgrent_init (cce_destination_t @var{L}, cce_clean_handler_t * @var{P_H})
-@deftypefnx {Preprocessor Macro} void ccsys_handler_endgrent_init (cce_destination_t @var{L}, cce_error_handler_t * @var{P_H})
+@deftypefn {Preprocessor Macro} void ccsys_init_endgrent_handler (cce_destination_t @var{L}, cce_clean_handler_t * @var{P_H})
+@deftypefnx {Preprocessor Macro} void ccsys_init_endgrent_handler (cce_destination_t @var{L}, cce_error_handler_t * @var{P_H})
 This preprocessor macro uses @code{_Generic} to dispatch the call according to the type of the
 pointer @var{P_H}; if the type is:
 
 @table @code
 @item cce_clean_handler_t
-The macro expands into a call to @cfunc{ccsys_clean_handler_endgrent_init}.
+The macro expands into a call to @cfunc{ccsys_init_endgrent_clean_handler}.
 
 @item cce_error_handler_t
-The macro expands into a call to @cfunc{ccsys_error_handler_endgrent_init}.
+The macro expands into a call to @cfunc{ccsys_init_endgrent_error_handler}.
 @end table
 @end deftypefn
 

@@ -1406,16 +1406,16 @@ ccsys_decl ccsys_passwd_t const * ccsys_getpwent (cce_destination_t L)
 
 /* ------------------------------------------------------------------ */
 
-ccsys_decl void ccsys_clean_handler_endpwent_init (cce_destination_t L, cce_handler_t * H)
+ccsys_decl void ccsys_init_endpwent_clean_handler (cce_destination_t L, cce_clean_handler_t * H)
   __attribute__((__nonnull__(1,2)));
 
-ccsys_decl void ccsys_error_handler_endpwent_init (cce_destination_t L, cce_handler_t * H)
+ccsys_decl void ccsys_init_endpwent_error_handler (cce_destination_t L, cce_error_handler_t * H)
   __attribute__((__nonnull__(1,2)));
 
-#define ccsys_handler_endpwent_init(L,P_H) \
+#define ccsys_init_endpwent_handler(L,P_H) \
   _Generic((P_H),								\
-	   cce_clean_handler_t	*: ccsys_clean_handler_endpwent_init,	\
-	   cce_error_handler_t		*: ccsys_error_handler_endpwent_init)(L,&(P_H->handler))
+	   cce_clean_handler_t	*: ccsys_init_endpwent_clean_handler,		\
+	   cce_error_handler_t	*: ccsys_init_endpwent_error_handler)(L,P_H)
 
 
 /** --------------------------------------------------------------------
@@ -1459,16 +1459,16 @@ ccsys_decl ccsys_group_t const * ccsys_getgrent (cce_destination_t L)
 
 /* ------------------------------------------------------------------ */
 
-ccsys_decl void ccsys_clean_handler_endgrent_init (cce_destination_t L, cce_handler_t * H)
+ccsys_decl void ccsys_init_endgrent_clean_handler (cce_destination_t L, cce_clean_handler_t * H)
   __attribute__((__nonnull__(1,2)));
 
-ccsys_decl void ccsys_error_handler_endgrent_init (cce_destination_t L, cce_handler_t * H)
+ccsys_decl void ccsys_init_endgrent_error_handler (cce_destination_t L, cce_error_handler_t * H)
   __attribute__((__nonnull__(1,2)));
 
-#define ccsys_handler_endgrent_init(L,P_H) \
+#define ccsys_init_endgrent_handler(L,P_H) \
   _Generic((P_H),								\
-	   cce_clean_handler_t	*: ccsys_clean_handler_endgrent_init,	\
-	   cce_error_handler_t		*: ccsys_error_handler_endgrent_init)(L,&(P_H->handler))
+	   cce_clean_handler_t	*: ccsys_init_endgrent_clean_handler,		\
+	   cce_error_handler_t	*: ccsys_init_endgrent_error_handler)(L,P_H)
 
 
 /** --------------------------------------------------------------------

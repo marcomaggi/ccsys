@@ -581,7 +581,7 @@ test_7_1 (cce_destination_t upper_L)
     cce_run_catch_handlers_raise(L, upper_L);
   } else {
     ccsys_setpwent(L);
-    ccsys_handler_endpwent_init(L, endpwent_H);
+    ccsys_init_endpwent_handler(L, endpwent_H);
 
     for (ccsys_passwd_t const * S = ccsys_getpwent(L); NULL != S; S = ccsys_getpwent(L)) {
       fprintf(stderr, "%s: /etc/passwd entry: pw_name=%s\n",	__func__, ccsys_ref_passwd_pw_name(S));
@@ -776,7 +776,7 @@ test_9_1 (cce_destination_t upper_L)
     cce_run_catch_handlers_raise(L, upper_L);
   } else {
     ccsys_setgrent(L);
-    ccsys_handler_endgrent_init(L, endgrent_H);
+    ccsys_init_endgrent_handler(L, endgrent_H);
 
     for (ccsys_group_t const * S = ccsys_getgrent(L); NULL != S; S = ccsys_getgrent(L)) {
       fprintf(stderr, "%s: /etc/group entry: gr_name=%s\n",	__func__, ccsys_ref_group_gr_name(S));
