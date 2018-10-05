@@ -2,7 +2,7 @@
 
 [![Build Status](https://travis-ci.org/marcomaggi/ccsys.svg?branch=master)](https://travis-ci.org/marcomaggi/ccsys)
 [![codecov](https://codecov.io/gh/marcomaggi/ccsys/branch/master/graph/badge.svg)](https://codecov.io/gh/marcomaggi/ccsys)
-
+[![Codacy Badge]()]()
 
 ## Introduction
 
@@ -10,11 +10,15 @@ This package  installs a  standard C11  language library;  it implements
 adapters  for POSIX  system  functions to  convert  the error  reporting
 mechanism to the use of the library CCExceptions.
 
-This  package depends  on  the package  CCExceptions,  at least  version
-`0.8.0`.
+The  library  targets  POSIX  systems.   This  package  depends  on  the
+packages:  CCExceptions,  at least  version  0.8.0;  CCMemory, at  least
+version  0.2.1; CCStructs,  at least  version  0.1.0.  To  run the  test
+suite: this package  depends upon the package CCTests,  at least version
+0.3.0.
 
-The  package makes  use of  the  GNU Autotools  and  it is  tested on  a
-GNU+Linux system.
+The package uses the GNU Autotools and it is tested, using Travis CI, on
+both Ubuntu GNU+Linux  systems and OS X systems.  The  package relies on
+`pkg-config` to find the dependencies installed on the system.
 
 
 ## License
@@ -122,7 +126,14 @@ $ make install
 
 ## Usage
 
-Read the documentation.
+Read the documentation generated from  the Texinfo sources.  The package
+installs the documentation  in Info format; we can  generate and install
+documentation in HTML format by running:
+
+```
+$ make html
+$ make install-html
+```
 
 **IMPORTANT** To use the library we  must enable the POSIX features when
 including   the   standard   header   files;  so   either   we   include
@@ -170,6 +181,22 @@ the GNU Project software can be found here:
 
 [http://www.gnu.org/](http://www.gnu.org/)
 
+the package CCExceptions is available at:
+
+[https://github.com/marcomaggi/ccexceptions/](https://github.com/marcomaggi/ccexceptions/)
+
+the package CCMemory is available at:
+
+[https://github.com/marcomaggi/ccmemory/](https://github.com/marcomaggi/ccmemory/)
+
+the package CCStructs is available at:
+
+[https://github.com/marcomaggi/ccstructs/](https://github.com/marcomaggi/ccstructs/)
+
+the package CCTests is available at:
+
+[https://github.com/marcomaggi/cctests/](https://github.com/marcomaggi/cctests/)
+
 
 ## Badges and static analysis
 
@@ -207,4 +234,15 @@ project's dashboard at:
 Usage of  this service is  implemented through direct  interface between
 GitHub and Codecov  sites; it configured through  the file `codecov.yml`
 and appropriate entries in Travis CI's matrix of builds.
+
+
+### Codacy
+
+Codacy is  an online service  providing code  review.  We can  find this
+project's dashboard at:
+
+[https://www.codacy.com/app/marcomaggi/ccsys](https://www.codacy.com/app/marcomaggi/ccsys)
+
+Usage of this service is  implemented through direct integration between
+GitHub and Codacy sites.
 

@@ -96,6 +96,8 @@ env:
 
 install:
    - ./meta/travis-ci/install-ccexceptions.sh
+   - ./meta/travis-ci/install-ccmemory.sh
+   - ./meta/travis-ci/install-ccstructs.sh
    - ./meta/travis-ci/install-cctests.sh
 
 #page
@@ -150,6 +152,19 @@ matrix:
             - gcc-7
       script: "./configure --enable-maintainer-mode; make all; make check;"
 
+    # Plain build under Ubuntu GNU+Linux "trusty", GCC 8.
+    - os: linux
+      dist: trusty
+      compiler: gcc-8
+      addons:
+        apt:
+          sources:
+            - ubuntu-toolchain-r-test
+          packages:
+            - texinfo
+            - gcc-8
+      script: "./configure --enable-maintainer-mode; make all; make check;"
+
     # Plain build  under Ubuntu GNU+Linux "trusty",  CLang automatically
     # selected by Travis CI.
     - os: linux
@@ -161,21 +176,21 @@ matrix:
           packages:
             - texinfo
       compiler: clang
-      script: "./configure --enable-maintainer-mode; make all; make check;"
+      script: "./configure --enable-maintainer-mode; make all CFLAGS='-Wno-unknown-attributes'; make check CFLAGS='-Wno-unknown-attributes';"
 
     # Plain build under OS X, XCode 7.3, CLang automatically selected by
     # Travis CI.
     - os: osx
       osx_image: xcode7.3
       compiler: clang
-      script: "./configure --enable-maintainer-mode; make all; make check;"
+      script: "./configure --enable-maintainer-mode; make all CFLAGS='-Wno-unknown-attributes'; make check CFLAGS='-Wno-unknown-attributes';"
 
     # Plain build under OS X, XCode 8.3, CLang automatically selected by
     # Travis CI.
     - os: osx
       osx_image: xcode8.3
       compiler: clang
-      script: "./configure --enable-maintainer-mode; make all; make check;"
+      script: "./configure --enable-maintainer-mode; make all CFLAGS='-Wno-unknown-attributes'; make check CFLAGS='-Wno-unknown-attributes';"
 
     # Codecov support under Ubuntu GNU+Linux "trusty", GCC 7.
     - os: linux

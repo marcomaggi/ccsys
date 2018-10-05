@@ -24,7 +24,7 @@ doc_ccsys_TEXINFOS	= \
 	doc/lgpl-3.0.texi	\
 	doc/fdl-1.3.texi
 
-#page
+
 #### libraries
 
 ccsys_CURRENT		= @ccsys_VERSION_INTERFACE_CURRENT@
@@ -34,9 +34,9 @@ ccsys_AGE		= @ccsys_VERSION_INTERFACE_AGE@
 include_HEADERS		= src/ccsys.h
 
 lib_LTLIBRARIES		= libccsys.la
-libccsys_la_CPPFLAGS	= $(CCEXCEPTIONS_CFLAGS)
+libccsys_la_CPPFLAGS	= $(CCEXCEPTIONS_CFLAGS) $(CCMEMORY_CFLAGS) $(CCSTRUCTS_CFLAGS)
 libccsys_la_LDFLAGS	= -version-info $(ccsys_CURRENT):$(ccsys_REVISION):$(ccsys_AGE) \
-			  $(CCEXCEPTIONS_LIBS)
+			  $(CCEXCEPTIONS_LIBS) $(CCMEMORY_LIBS) $(CCSTRUCTS_LIBS)
 libccsys_la_SOURCES	= \
 	src/ccsys-internals.h			\
 	src/ccsys-system-program.c		\
@@ -52,7 +52,7 @@ libccsys_la_SOURCES	= \
 	src/ccsys-resources-limitations.c	\
 	src/ccsys-version.c
 
-#page
+
 #### tests
 
 check_PROGRAMS	= \
@@ -72,8 +72,10 @@ if MMUX_TESTING_ENABLED
 TESTS				= $(check_PROGRAMS)
 endif
 
-ccsys_tests_cppflags		= -I$(srcdir)/src $(CCEXCEPTIONS_CFLAGS) $(CCTESTS_CFLAGS)
-ccsys_tests_ldadd		= libccsys.la $(CCEXCEPTIONS_LIBS) $(CCTESTS_LIBS)
+ccsys_tests_cppflags		= -I$(srcdir)/src \
+	$(CCEXCEPTIONS_CFLAGS) $(CCMEMORY_CFLAGS) $(CCSTRUCTS_CFLAGS) $(CCTESTS_CFLAGS)
+ccsys_tests_ldadd		= libccsys.la \
+	$(CCEXCEPTIONS_LIBS) $(CCMEMORY_LIBS) $(CCSTRUCTS_LIBS) $(CCTESTS_LIBS)
 
 tests_version_CPPFLAGS		= $(ccsys_tests_cppflags)
 tests_version_LDADD		= $(ccsys_tests_ldadd)
@@ -113,7 +115,7 @@ tests_resources_limitations_LDADD	= $(ccsys_tests_ldadd)
 installcheck-local: $(TESTS)
 	@for f in $(TESTS); do $(builddir)/$$f; done
 
-#page
+
 #### demo programs
 
 EXTRA_DIST	+= \
@@ -122,13 +124,30 @@ EXTRA_DIST	+= \
 noinst_PROGRAMS	= \
 	demos/listdir
 
-ccsys_demos_cppflags		= -I$(srcdir)/src $(CCSYS_FLAGS) $(CCEXCEPTIONS_CFLAGS)
-ccsys_demos_ldadd		= libccsys.la $(CCEXCEPTIONS_LIBS)
+ccsys_demos_cppflags		= -I$(srcdir)/src $(CCSYS_FLAGS) \
+	$(CCEXCEPTIONS_CFLAGS) $(CCMEMORY_CFLAGS) $(CCSTRUCTS_CFLAGS) $(CCTESTS_CFLAGS)
+ccsys_demos_ldadd		= libccsys.la \
+	$(CCEXCEPTIONS_LIBS) $(CCMEMORY_LIBS) $(CCSTRUCTS_LIBS) $(CCTESTS_LIBS)
 
 demos_listdir_CPPFLAGS		= $(ccsys_demos_cppflags)
 demos_listdir_LDADD		= $(ccsys_demos_ldadd)
 
-#page
+
+#### testing under GDB
+
+$(builddir)/.gdbinit:
+	ln -sv "$(top_srcdir)/gdbinit" "$(builddir)/.gdbinit"
+
+# This rule is meant to be used as:
+#
+#   $ make all gdb-test FILE=tests/inspection CFLAGS='-g'
+#
+# after having created an appropriate file "$(top_srcdir)/.gdbinit".
+#
+gdb-test: $(builddir)/.gdbinit
+	libtool --mode=execute gdb $$FILE
+
+
 #### Static analysis with Clang's Static Analyzer
 #
 # See the documentation for the command line tool at:
@@ -140,17 +159,10 @@ demos_listdir_LDADD		= $(ccsys_demos_ldadd)
 #    $ make clean
 #    $ make clang-static-analysis
 #
-# The  program  "scan-build"  works  by  overriding  the  CC  and  CXX
-# environment variables.  Automake defines CXX as:
-#
-#    CXX = g++ -std=c++11
-#
-# so we override CXXFLAGS to include the language specification.
-#
 
 .PHONY: clang-static-analysis
 
 clang-static-analysis:
-	scan-build make CXXFLAGS='-std=c++11'
+	scan-build make
 
 ### end of file
