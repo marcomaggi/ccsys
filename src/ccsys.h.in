@@ -119,9 +119,8 @@ extern "C" {
  ** ----------------------------------------------------------------- */
 
 #include <ccexceptions.h>
-#include <ccmemory.h>
-#include <ccstructs.h>
-#include <stdio.h>
+//#include <ccmemory.h>
+//#include <ccstructs.h>
 #include <stddef.h>
 #include <stdlib.h>
 #include <stdint.h>
@@ -1881,7 +1880,7 @@ ccsys_decl void ccsys_error_handler_dirstream_init (cce_destination_t L, cce_han
 #define ccsys_handler_dirstream_init(L,H,R)				\
   _Generic((H),								\
 	   cce_clean_handler_t	*: ccsys_clean_handler_dirstream_init, \
-	   cce_error_handler_t		*: ccsys_error_handler_dirstream_init)(L,&(H->handler),R)
+	   cce_error_handler_t	*: ccsys_error_handler_dirstream_init)(L,&(H->handler),R)
 
 
 /** --------------------------------------------------------------------
