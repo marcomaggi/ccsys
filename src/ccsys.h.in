@@ -1871,16 +1871,16 @@ ccsys_decl ccsys_dirfd_t ccsys_dirfd (cce_destination_t L, ccsys_dir_t * _dirstr
 
 /* ------------------------------------------------------------------ */
 
-ccsys_decl void ccsys_clean_handler_dirstream_init (cce_destination_t L, cce_handler_t * H, ccsys_dir_t * dirstream)
+ccsys_decl void ccsys_init_dirstream_clean_handler (cce_destination_t L, cce_clean_handler_t * H, ccsys_dir_t * dirstream)
   __attribute__((__nonnull__(1,2,3)));
 
-ccsys_decl void ccsys_error_handler_dirstream_init (cce_destination_t L, cce_handler_t * H, ccsys_dir_t * dirstream)
+ccsys_decl void ccsys_init_dirstream_error_handler (cce_destination_t L, cce_error_handler_t * H, ccsys_dir_t * dirstream)
   __attribute__((__nonnull__(1,2,3)));
 
-#define ccsys_handler_dirstream_init(L,H,R)				\
+#define ccsys_init_dirstream_handler(L,H,R)				\
   _Generic((H),								\
-	   cce_clean_handler_t	*: ccsys_clean_handler_dirstream_init, \
-	   cce_error_handler_t	*: ccsys_error_handler_dirstream_init)(L,&(H->handler),R)
+	   cce_clean_handler_t	*: ccsys_init_dirstream_clean_handler,	\
+	   cce_error_handler_t	*: ccsys_init_dirstream_error_handler)(L,H,R)
 
 
 /** --------------------------------------------------------------------

@@ -176,7 +176,7 @@ test_1_4_child (cce_destination_t upper_L)
     ccsys_dirfd_t	dirfd;
 
     dirstream = ccsys_opendir(L, dirname);
-    ccsys_handler_dirstream_init(L, dirstream_H, dirstream);
+    ccsys_init_dirstream_handler(L, dirstream_H, dirstream);
     dirfd = ccsys_dirfd(L, dirstream);
 
     ccsys_fchdir(L, dirfd);
@@ -232,7 +232,7 @@ test_2_1 (cce_destination_t upper_L)
     ccsys_dirent_t *      direntry;
 
     dirstream = ccsys_opendir(L, pathname);
-    ccsys_handler_dirstream_init(L, dirstream_H, dirstream);
+    ccsys_init_dirstream_handler(L, dirstream_H, dirstream);
     for (direntry = ccsys_readdir(L, dirstream);
 	 direntry;
 	 direntry = ccsys_readdir(L, dirstream)) {
@@ -683,7 +683,7 @@ test_4_4 (cce_destination_t upper_L)
 {
   cce_location_t	L[1];
   cce_handler_t		dirname_H[1];
-  cce_handler_t		dir_H[1];
+  cce_clean_handler_t	dir_H[1];
   cce_clean_handler_t	filename_H[1];
   cce_clean_handler_t	filedes_H[1];
   ccsys_at_link_t	lnk;
@@ -709,7 +709,7 @@ test_4_4 (cce_destination_t upper_L)
       ccsys_dir_t *	dir;
 
       dir = ccsys_opendir(L, dirname);
-      ccsys_clean_handler_dirstream_init(L, dir_H, dir);
+      ccsys_init_dirstream_handler(L, dir_H, dir);
       dirfd = ccsys_dirfd(L, dir);
     }
 
@@ -995,7 +995,7 @@ void
 test_5_3_1 (cce_destination_t upper_L)
 {
   cce_location_t	L[1];
-  cce_handler_t		dir_H[1];
+  cce_clean_handler_t	dir_H[1];
   cce_clean_handler_t	filename_H[1];
   cce_clean_handler_t	filedes_H[1];
   cce_clean_handler_t	linkname_H[1];
@@ -1016,7 +1016,7 @@ test_5_3_1 (cce_destination_t upper_L)
 
       ccsys_getcwd(L, dirname, CCSYS_PATH_MAX);
       dir = ccsys_opendir(L, dirname);
-      ccsys_clean_handler_dirstream_init(L, dir_H, dir);
+      ccsys_init_dirstream_handler(L, dir_H, dir);
       dirfd = ccsys_dirfd(L, dir);
     }
 
@@ -1114,7 +1114,7 @@ void
 test_5_4_1 (cce_destination_t upper_L)
 {
   cce_location_t	L[1];
-  cce_handler_t		dir_H[1];
+  cce_clean_handler_t	dir_H[1];
   cce_clean_handler_t	filename_H[1];
   cce_clean_handler_t	filedes_H[1];
   cce_clean_handler_t	linkname_H[1];
@@ -1135,7 +1135,7 @@ test_5_4_1 (cce_destination_t upper_L)
 
       ccsys_getcwd(L, dirname, CCSYS_PATH_MAX);
       dir = ccsys_opendir(L, dirname);
-      ccsys_clean_handler_dirstream_init(L, dir_H, dir);
+      ccsys_init_dirstream_handler(L, dir_H, dir);
       dirfd = ccsys_dirfd(L, dir);
     }
 

@@ -87,7 +87,7 @@ test_2_1 (cce_destination_t upper_L)
       ccsys_dir_t *	dirstream;
 
       dirstream = ccsys_opendir(L, dirname);
-      ccsys_handler_dirstream_init(L, dirstream_H, dirstream);
+      ccsys_init_dirstream_handler(L, dirstream_H, dirstream);
       dirfd = ccsys_dirfd(L, dirstream);
     }
 
@@ -372,7 +372,7 @@ test_4_2 (cce_destination_t upper_L)
       ccsys_dir_t *	dirstream;
 
       dirstream = ccsys_opendir(L, dirname);
-      ccsys_handler_dirstream_init(L, dirstream_H, dirstream);
+      ccsys_init_dirstream_handler(L, dirstream_H, dirstream);
       dirfd = ccsys_dirfd(L, dirstream);
     }
 

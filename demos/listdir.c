@@ -54,7 +54,7 @@ int
 list_dirs (const char * pathname)
 {
   cce_location_t	L[1];
-  cce_handler_t		dirstream_H[1];
+  cce_clean_handler_t	dirstream_H[1];
 
   if (cce_location(L)) {
     fprintf(stderr, "%s: error: %s\n", progname,
@@ -66,7 +66,7 @@ list_dirs (const char * pathname)
     ccsys_dirent_t *	direntry;
 
     dirstream = ccsys_opendir(L, pathname);
-    ccsys_clean_handler_dirstream_init(L, dirstream_H, dirstream);
+    ccsys_init_dirstream_clean_handler(L, dirstream_H, dirstream);
     while ((direntry = ccsys_readdir(L, dirstream))) {
       printf("%s\n", ccsys_ref_dirent_d_name(direntry));
       fflush(stdout);
