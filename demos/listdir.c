@@ -56,10 +56,9 @@ list_dirs (const char * pathname)
   cce_handler_t		dirstream_H[1];
 
   if (cce_location(L)) {
-    cce_run_error_handlers(L);
     fprintf(stderr, "%s: error: %s\n", progname,
 	    cce_condition_static_message(cce_condition(L)));
-    cce_condition_final(cce_condition(L));
+    cce_run_catch_handlers_final(L);
     return EXIT_FAILURE;
   } else {
     ccsys_dir_t *	dirstream;
@@ -71,7 +70,7 @@ list_dirs (const char * pathname)
       printf("%s\n", ccsys_ref_dirent_d_name(direntry));
       fflush(stdout);
     }
-    cce_run_clean_handlers(L);
+    cce_run_body_handlers(L);
     return EXIT_SUCCESS;
   }
 }

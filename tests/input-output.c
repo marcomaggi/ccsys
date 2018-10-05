@@ -38,7 +38,7 @@ test_1_1 (cce_destination_t upper_L)
   cce_clean_handler_t   H[1];
 
   if (cce_location(L)) {
-    cce_run_error_handlers_raise(L, upper_L);
+    cce_run_catch_handlers_raise(L, upper_L);
   } else {
     static char const *	filename = "name.ext";
     ccsys_open_flags_t	flags;
@@ -51,7 +51,7 @@ test_1_1 (cce_destination_t upper_L)
     ccsys_handler_filedes_init(L, H, fd);
     cctests_assert(L, 0 != fd.data);
     ccsys_remove(L, filename);
-    cce_run_clean_handlers(L);
+    cce_run_body_handlers(L);
   }
 }
 
@@ -68,7 +68,7 @@ test_2_1 (cce_destination_t upper_L)
 
   if (cce_location(L)) {
     fprintf(stderr, "%s: %s\n", __func__, cce_condition_static_message(cce_condition(L)));
-    cce_run_error_handlers_raise(L, upper_L);
+    cce_run_catch_handlers_raise(L, upper_L);
   } else {
     static char const * filename = "name.ext";
     static char const *	dirname  = "name.d";
@@ -109,7 +109,7 @@ test_2_1 (cce_destination_t upper_L)
       ccsys_unlinkat(L, dirfd, filename, flags);
     }
 
-    cce_run_clean_handlers(L);
+    cce_run_body_handlers(L);
   }
 }
 
@@ -126,7 +126,7 @@ test_3_1 (cce_destination_t upper_L)
   cce_clean_handler_t   H[1];
 
   if (cce_location(L)) {
-    cce_run_error_handlers_raise(L, upper_L);
+    cce_run_catch_handlers_raise(L, upper_L);
   } else {
     ccsys_fd_t    pipefd[2];
 
@@ -155,7 +155,7 @@ test_3_1 (cce_destination_t upper_L)
       cctests_assert(L, 0 == strncmp(buf, "0123456789", N));
     }
 
-    cce_run_clean_handlers(L);
+    cce_run_body_handlers(L);
   }
 }
 
@@ -167,7 +167,7 @@ test_3_2 (cce_destination_t upper_L)
   cce_clean_handler_t   H[1];
 
   if (cce_location(L)) {
-    cce_run_error_handlers_raise(L, upper_L);
+    cce_run_catch_handlers_raise(L, upper_L);
   } else {
     ccsys_fd_t		pipefd[2];
 
@@ -198,7 +198,7 @@ test_3_2 (cce_destination_t upper_L)
       cctests_assert(L, 0 == strncmp(buf, "0123456789", N));
     }
 
-    cce_run_clean_handlers(L);
+    cce_run_body_handlers(L);
   }
 }
 
@@ -218,7 +218,7 @@ test_4_1 (cce_destination_t upper_L)
   cce_clean_handler_t	fifo_H[1];
 
   if (cce_location(L)) {
-    cce_run_error_handlers_raise(L, upper_L);
+    cce_run_catch_handlers_raise(L, upper_L);
   } else {
     static char const *	fifoname = "fifo.ext";
     ccsys_pid_t		pid;
@@ -251,7 +251,7 @@ test_4_1 (cce_destination_t upper_L)
 	 FIFO then exit. */
       test_4_1_child(fifoname);
     }
-    cce_run_clean_handlers(L);
+    cce_run_body_handlers(L);
   }
 }
 
@@ -263,7 +263,7 @@ test_4_1_parent (cce_destination_t upper_L, char const * fifoname)
   ccsys_fd_t		infd;
 
   if (cce_location(L)) {
-    cce_run_error_handlers_raise(L, upper_L);
+    cce_run_catch_handlers_raise(L, upper_L);
   } else {
     /* Open the FIFO for reading. */
     {
@@ -289,7 +289,7 @@ test_4_1_parent (cce_destination_t upper_L, char const * fifoname)
       if (0) { fprintf(stderr, "%s: read input='%s' \n", __func__, inbuf); }
     }
 
-    cce_run_clean_handlers(L);
+    cce_run_body_handlers(L);
   }
 }
 
@@ -322,7 +322,7 @@ test_4_1_child  (char const * fifoname)
       if (0) { fprintf(stderr, "%s: writing to %s\n", __func__, fifoname); }
       ccsys_write(L, oufd, oubuf, len);
     }
-    cce_run_clean_handlers(L);
+    cce_run_body_handlers(L);
   }
 
   /* Terminate the child process. */
@@ -352,7 +352,7 @@ test_4_2 (cce_destination_t upper_L)
   ccsys_at_link_t	fifo_unlink_data;
 
   if (cce_location(L)) {
-    cce_run_error_handlers_raise(L, upper_L);
+    cce_run_catch_handlers_raise(L, upper_L);
   } else {
     static char const *	dirname  = "name.d";
     static char const *	fifoname = "fifo.ext";
@@ -407,7 +407,7 @@ test_4_2 (cce_destination_t upper_L)
 	 FIFO then exit. */
       test_4_2_child(dirfd, fifoname);
     }
-    cce_run_clean_handlers(L);
+    cce_run_body_handlers(L);
   }
 }
 
@@ -419,7 +419,7 @@ test_4_2_parent (cce_destination_t upper_L, ccsys_dirfd_t dirfd, char const * fi
   ccsys_fd_t		infd;
 
   if (cce_location(L)) {
-    cce_run_error_handlers_raise(L, upper_L);
+    cce_run_catch_handlers_raise(L, upper_L);
   } else {
     /* Open the FIFO for reading. */
     {
@@ -445,7 +445,7 @@ test_4_2_parent (cce_destination_t upper_L, ccsys_dirfd_t dirfd, char const * fi
       if (0) { fprintf(stderr, "%s: read input='%s' \n", __func__, inbuf); }
     }
 
-    cce_run_clean_handlers(L);
+    cce_run_body_handlers(L);
   }
 }
 
@@ -478,7 +478,7 @@ test_4_2_child (ccsys_dirfd_t dirfd, char const * fifoname)
       if (0) { fprintf(stderr, "%s: writing to %s\n", __func__, fifoname); }
       ccsys_write(L, oufd, oubuf, len);
     }
-    cce_run_clean_handlers(L);
+    cce_run_body_handlers(L);
   }
 
   /* Terminate the child process. */
@@ -501,7 +501,7 @@ test_5_1 (cce_destination_t upper_L)
   cce_location_t	  L[1];
 
   if (cce_location(L)) {
-    cce_run_error_handlers_raise(L, upper_L);
+    cce_run_catch_handlers_raise(L, upper_L);
   } else {
     static char const *	filename = "name.ext";
     ccsys_open_flags_t	flags;
@@ -513,7 +513,7 @@ test_5_1 (cce_destination_t upper_L)
     fd = ccsys_open(L, filename, flags, mode);
     ccsys_close(L, fd);
     ccsys_remove(L, filename);
-    cce_run_clean_handlers(L);
+    cce_run_body_handlers(L);
   }
 }
 
@@ -532,7 +532,7 @@ test_6_1 (cce_destination_t upper_L)
   cce_clean_handler_t   file_H[1];
 
   if (cce_location(L)) {
-    cce_run_error_handlers_raise(L, upper_L);
+    cce_run_catch_handlers_raise(L, upper_L);
   } else {
     static char const *	filename = "name.ext";
     ccsys_fd_t		fd;
@@ -586,7 +586,7 @@ test_6_1 (cce_destination_t upper_L)
       }
     }
 
-    cce_run_clean_handlers(L);
+    cce_run_body_handlers(L);
   }
 }
 
@@ -606,7 +606,7 @@ test_6_2 (cce_destination_t upper_L)
   cce_clean_handler_t   file_H[1];
 
   if (cce_location(L)) {
-    cce_run_error_handlers_raise(L, upper_L);
+    cce_run_catch_handlers_raise(L, upper_L);
   } else {
     static char const *	filename = "name.ext";
     ccsys_fd_t		fd;
@@ -654,7 +654,7 @@ test_6_2 (cce_destination_t upper_L)
       }
     }
 
-    cce_run_clean_handlers(L);
+    cce_run_body_handlers(L);
   }
 #endif
 }
@@ -675,7 +675,7 @@ test_7_1 (cce_destination_t upper_L)
   cce_clean_handler_t   file_H[1];
 
   if (cce_location(L)) {
-    cce_run_error_handlers_raise(L, upper_L);
+    cce_run_catch_handlers_raise(L, upper_L);
   } else {
     static char const *	filename = "name.ext";
     ccsys_fd_t		fd;
@@ -752,7 +752,7 @@ test_7_1 (cce_destination_t upper_L)
       }
     }
 
-    cce_run_clean_handlers(L);
+    cce_run_body_handlers(L);
   }
 #endif
 }
@@ -773,7 +773,7 @@ test_7_2 (cce_destination_t upper_L)
   cce_clean_handler_t   file_H[1];
 
   if (cce_location(L)) {
-    cce_run_error_handlers_raise(L, upper_L);
+    cce_run_catch_handlers_raise(L, upper_L);
   } else {
     static char const *	filename = "name.ext";
     ccsys_fd_t		fd;
@@ -844,7 +844,7 @@ test_7_2 (cce_destination_t upper_L)
       }
     }
 
-    cce_run_clean_handlers(L);
+    cce_run_body_handlers(L);
   }
 #endif
 }
@@ -866,7 +866,7 @@ test_8_1 (cce_destination_t upper_L)
 
   if (cce_location(L)) {
     fprintf(stderr, "%s: %s\n", __func__, cce_condition_static_message(cce_condition(L)));
-    cce_run_error_handlers_raise(L, upper_L);
+    cce_run_catch_handlers_raise(L, upper_L);
   } else {
     static char const *	filename = "name.ext";
     ccsys_fd_t		fd, fdx;
@@ -912,7 +912,7 @@ test_8_1 (cce_destination_t upper_L)
       cctests_assert(L, 0 == strncmp(inbuf, checkbuf, len));
     }
 
-    cce_run_clean_handlers(L);
+    cce_run_body_handlers(L);
   }
 #endif
 }
@@ -934,7 +934,7 @@ test_8_2 (cce_destination_t upper_L)
 
   if (cce_location(L)) {
     fprintf(stderr, "%s: %s\n", __func__, cce_condition_static_message(cce_condition(L)));
-    cce_run_error_handlers_raise(L, upper_L);
+    cce_run_catch_handlers_raise(L, upper_L);
   } else {
     static char const *	filename = "name.ext";
     ccsys_fd_t		fd, fdx;
@@ -982,7 +982,7 @@ test_8_2 (cce_destination_t upper_L)
       cctests_assert(L, 0 == strncmp(inbuf, checkbuf, len));
     }
 
-    cce_run_clean_handlers(L);
+    cce_run_body_handlers(L);
   }
 #endif
 }
@@ -1004,7 +1004,7 @@ test_8_3 (cce_destination_t upper_L)
 
   if (cce_location(L)) {
     fprintf(stderr, "%s: %s\n", __func__, cce_condition_static_message(cce_condition(L)));
-    cce_run_error_handlers_raise(L, upper_L);
+    cce_run_catch_handlers_raise(L, upper_L);
   } else {
     static char const *	filename = "name.ext";
     ccsys_fd_t		fd, fdx;
@@ -1055,7 +1055,7 @@ test_8_3 (cce_destination_t upper_L)
       cctests_assert(L, 0 == strncmp(inbuf, checkbuf, len));
     }
 
-    cce_run_clean_handlers(L);
+    cce_run_body_handlers(L);
   }
 #endif
 }
@@ -1083,13 +1083,13 @@ test_9_1 (cce_destination_t upper_L)
     cce_error_handler_t		backwards_H[1];
 
     if (cce_location(L)) {
-      cce_run_error_handlers_raise(L, upper_L);
+      cce_run_catch_handlers_raise(L, upper_L);
     } else {
       ccsys_pipe(L, forwards);
       ccsys_handler_pipedes_init(L, forwards_H, forwards);
       ccsys_pipe(L, backwards);
       ccsys_handler_pipedes_init(L, backwards_H, backwards);
-      cce_run_clean_handlers(L);
+      cce_run_body_handlers(L);
     }
 
     /* Here the  pipes have been  allocated.  Now split them  into their
@@ -1106,7 +1106,7 @@ test_9_1 (cce_destination_t upper_L)
     ccsys_pid_t		pid;
 
     if (cce_location(L)) {
-      cce_run_error_handlers_raise(L, upper_L);
+      cce_run_catch_handlers_raise(L, upper_L);
     } else {
       pid = ccsys_fork(L);
       if (ccsys_in_parent_after_fork(pid)) {
@@ -1130,7 +1130,7 @@ test_9_1 (cce_destination_t upper_L)
 	  ccsys__exit(status);
 	}
       }
-      cce_run_clean_handlers(L);
+      cce_run_body_handlers(L);
     }
   }
 }
@@ -1143,7 +1143,7 @@ test_9_1_parent (cce_destination_t upper_L, ccsys_fd_t infd, ccsys_fd_t oufd)
   cce_clean_handler_t	oufd_H[1];
 
   if (cce_location(L)) {
-    cce_run_error_handlers_raise(L, upper_L);
+    cce_run_catch_handlers_raise(L, upper_L);
   } else {
     ccsys_handler_filedes_init(L, infd_H, infd);
     ccsys_handler_filedes_init(L, oufd_H, oufd);
@@ -1200,7 +1200,7 @@ test_9_1_parent (cce_destination_t upper_L, ccsys_fd_t infd, ccsys_fd_t oufd)
       cctests_assert(L, 0 == strncmp(buf, "hello parent", N));
     }
 
-    cce_run_clean_handlers(L);
+    cce_run_body_handlers(L);
   }
 }
 
@@ -1269,7 +1269,7 @@ test_9_1_child (ccsys_fd_t infd, ccsys_fd_t oufd)
       cctests_assert(L, N == len);
     }
 
-    cce_run_clean_handlers(L);
+    cce_run_body_handlers(L);
   }
 }
 
@@ -1296,13 +1296,13 @@ test_9_2 (cce_destination_t upper_L)
     cce_error_handler_t		backwards_H[1];
 
     if (cce_location(L)) {
-      cce_run_error_handlers_raise(L, upper_L);
+      cce_run_catch_handlers_raise(L, upper_L);
     } else {
       ccsys_pipe(L, forwards);
       ccsys_handler_pipedes_init(L, forwards_H, forwards);
       ccsys_pipe(L, backwards);
       ccsys_handler_pipedes_init(L, backwards_H, backwards);
-      cce_run_clean_handlers(L);
+      cce_run_body_handlers(L);
     }
 
     /* Here the  pipes have been  allocated.  Now split them  into their
@@ -1319,7 +1319,7 @@ test_9_2 (cce_destination_t upper_L)
     ccsys_pid_t		pid;
 
     if (cce_location(L)) {
-      cce_run_error_handlers_raise(L, upper_L);
+      cce_run_catch_handlers_raise(L, upper_L);
     } else {
       pid = ccsys_fork(L);
       if (ccsys_in_parent_after_fork(pid)) {
@@ -1343,7 +1343,7 @@ test_9_2 (cce_destination_t upper_L)
 	  ccsys__exit(status);
 	}
       }
-      cce_run_clean_handlers(L);
+      cce_run_body_handlers(L);
     }
   }
 }
@@ -1356,7 +1356,7 @@ test_9_2_parent (cce_destination_t upper_L, ccsys_fd_t infd, ccsys_fd_t oufd)
   cce_clean_handler_t	oufd_H[1];
 
   if (cce_location(L)) {
-    cce_run_error_handlers_raise(L, upper_L);
+    cce_run_catch_handlers_raise(L, upper_L);
   } else {
     ccsys_handler_filedes_init(L, infd_H, infd);
     ccsys_handler_filedes_init(L, oufd_H, oufd);
@@ -1415,7 +1415,7 @@ test_9_2_parent (cce_destination_t upper_L, ccsys_fd_t infd, ccsys_fd_t oufd)
       cctests_assert(L, 0 == strncmp(buf, "hello parent", N));
     }
 
-    cce_run_clean_handlers(L);
+    cce_run_body_handlers(L);
   }
 }
 
@@ -1486,7 +1486,7 @@ test_9_2_child (ccsys_fd_t infd, ccsys_fd_t oufd)
       cctests_assert(L, N == len);
     }
 
-    cce_run_clean_handlers(L);
+    cce_run_body_handlers(L);
   }
 }
 
@@ -1504,7 +1504,7 @@ test_10_1 (cce_destination_t upper_L)
 
   if (cce_location(L)) {
     if (1) { fprintf(stderr, "%s: %s\n", __func__, cce_condition_static_message(cce_condition(L))); }
-    cce_run_error_handlers_raise(L, upper_L);
+    cce_run_catch_handlers_raise(L, upper_L);
   } else {
     char const *	filename = "name.ext";
     char const *	mode     = "w+";
@@ -1575,7 +1575,7 @@ test_10_1 (cce_destination_t upper_L)
 	cctests_assert(L, 0 == offset);
       }
     }
-    cce_run_clean_handlers(L);
+    cce_run_body_handlers(L);
   }
 }
 
@@ -1587,7 +1587,7 @@ test_10_2 (cce_destination_t upper_L)
 
   if (cce_location(L)) {
     if (1) { fprintf(stderr, "%s: %s\n", __func__, cce_condition_static_message(cce_condition(L))); }
-    cce_run_error_handlers_raise(L, upper_L);
+    cce_run_catch_handlers_raise(L, upper_L);
   } else {
     char const *	filename = "name.ext";
     char const *	mode     = "w+";
@@ -1612,7 +1612,7 @@ test_10_2 (cce_destination_t upper_L)
     /* Close the stream. */
     ccsys_fclose(L, stream);
 
-    cce_run_clean_handlers(L);
+    cce_run_body_handlers(L);
   }
 }
 

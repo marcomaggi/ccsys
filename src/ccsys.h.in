@@ -119,9 +119,26 @@ extern "C" {
  ** ----------------------------------------------------------------- */
 
 #include <ccexceptions.h>
+#include <ccmemory.h>
+#include <ccstructs.h>
 #include <stdio.h>
 #include <stddef.h>
 #include <stdlib.h>
+#include <stdint.h>
+
+
+/** --------------------------------------------------------------------
+ ** Version functions.
+ ** ----------------------------------------------------------------- */
+
+ccsys_decl char const *	ccsys_version_string		(void)
+  __attribute__((__leaf__,__pure__));
+ccsys_decl int		ccsys_version_interface_current	(void)
+  __attribute__((__leaf__,__pure__));
+ccsys_decl int		ccsys_version_interface_revision(void)
+  __attribute__((__leaf__,__pure__));
+ccsys_decl int		ccsys_version_interface_age	(void)
+  __attribute__((__leaf__,__pure__));
 
 
 /** --------------------------------------------------------------------
@@ -269,7 +286,7 @@ struct ccsys_stat_t		{ uint8_t data[@SIZEOF_STRUCT_STAT@]; };
 
 
 /** --------------------------------------------------------------------
- ** Type definisions: time handling.
+ ** Type definitions: time handling.
  ** ----------------------------------------------------------------- */
 
 typedef long int			ccsys_time_unit_t;
@@ -836,20 +853,6 @@ static ccsys_dirfd_t const CCSYS_AT_FDCWD = { .data = @VALUEOF_CCSYS_AT_FDCWD@ }
 
 
 /** --------------------------------------------------------------------
- ** Version functions.
- ** ----------------------------------------------------------------- */
-
-ccsys_decl char const *	ccsys_version_string		(void)
-  __attribute__((__leaf__,__pure__));
-ccsys_decl int		ccsys_version_interface_current	(void)
-  __attribute__((__leaf__,__pure__));
-ccsys_decl int		ccsys_version_interface_revision(void)
-  __attribute__((__leaf__,__pure__));
-ccsys_decl int		ccsys_version_interface_age	(void)
-  __attribute__((__leaf__,__pure__));
-
-
-/** --------------------------------------------------------------------
  ** Basic program/system interface: environment variables.
  ** ----------------------------------------------------------------- */
 
@@ -1258,75 +1261,6 @@ ccsys_decl void ccsys_getrlimit (cce_destination_t L, ccsys_getrlimit_resource_e
   __attribute__((__nonnull__(1,3)));
 
 /* setrlimit */
-
-
-/** --------------------------------------------------------------------
- ** Memory allocation.
- ** ----------------------------------------------------------------- */
-
-ccsys_decl void * ccsys_malloc (cce_destination_t L, size_t size)
-  __attribute__((__nonnull__(1),__returns_nonnull__));
-
-ccsys_decl void * ccsys_realloc (cce_destination_t L, void * ptr, size_t newsize)
-  __attribute__((__nonnull__(1),__returns_nonnull__));
-
-ccsys_decl void * ccsys_calloc (cce_destination_t L, size_t count, size_t eltsize)
-  __attribute__((__nonnull__(1),__returns_nonnull__));
-
-ccsys_decl void ccsys_free (cce_destination_t L CCSYS_UNUSED, void * ptr)
-  __attribute__((__nonnull__(1,2)));
-
-/* ------------------------------------------------------------------ */
-
-ccsys_decl void ccsys_clean_handler_malloc_init (cce_destination_t L, cce_handler_t * H, void * pointer)
-  __attribute__((__nonnull__(1,2,3)));
-
-ccsys_decl void ccsys_error_handler_malloc_init (cce_destination_t L, cce_handler_t * H, void * pointer)
-  __attribute__((__nonnull__(1,2,3)));
-
-#define ccsys_handler_malloc_init(L,P_H,P) \
-  _Generic((P_H),								\
-	   cce_clean_handler_t	*: ccsys_clean_handler_malloc_init,	\
-	   cce_error_handler_t		*: ccsys_error_handler_malloc_init)(L,&(P_H->handler),P)
-
-/* ------------------------------------------------------------------ */
-
-ccsys_decl void * ccsys_malloc_guarded_clean (cce_destination_t L, cce_clean_handler_t * P_H, size_t size)
-  __attribute__((__nonnull__(1,2),__returns_nonnull__));
-
-ccsys_decl void * ccsys_malloc_guarded_error   (cce_destination_t L, cce_error_handler_t *   P_H, size_t size)
-  __attribute__((__nonnull__(1,2),__returns_nonnull__));
-
-#define ccsys_malloc_guarded(L,P_H,size) \
-  _Generic((P_H),								\
-	   cce_clean_handler_t	*: ccsys_malloc_guarded_clean,	\
-	   cce_error_handler_t		*: ccsys_malloc_guarded_error)(L,P_H,size)
-
-/* ------------------------------------------------------------------ */
-
-ccsys_decl void * ccsys_realloc_guarded_clean (cce_destination_t L, cce_clean_handler_t * P_H, void * P, size_t newsize)
-  __attribute__((__nonnull__(1,2),__returns_nonnull__));
-
-ccsys_decl void * ccsys_realloc_guarded_error   (cce_destination_t L, cce_error_handler_t *   P_H, void * P, size_t newsize)
-  __attribute__((__nonnull__(1,2),__returns_nonnull__));
-
-#define ccsys_realloc_guarded(L,P_H,old_P,newsize) \
-  _Generic((P_H),								\
-	   cce_clean_handler_t	*: ccsys_realloc_guarded_clean,	\
-	   cce_error_handler_t		*: ccsys_realloc_guarded_error)(L,P_H,old_P,newsize)
-
-/* ------------------------------------------------------------------ */
-
-ccsys_decl void * ccsys_calloc_guarded_clean (cce_destination_t L, cce_clean_handler_t * P_H, size_t count, size_t eltsize)
-  __attribute__((__nonnull__(1,2),__returns_nonnull__));
-
-ccsys_decl void * ccsys_calloc_guarded_error   (cce_destination_t L, cce_error_handler_t *   P_H, size_t count, size_t eltsize)
-  __attribute__((__nonnull__(1,2),__returns_nonnull__));
-
-#define ccsys_calloc_guarded(L,P_H,count,eltsize) \
-  _Generic((P_H),								\
-	   cce_clean_handler_t	*: ccsys_calloc_guarded_clean,	\
-	   cce_error_handler_t		*: ccsys_calloc_guarded_error)(L,P_H,count,eltsize)
 
 
 /** --------------------------------------------------------------------

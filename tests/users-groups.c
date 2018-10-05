@@ -91,14 +91,14 @@ test_2_1 (cce_destination_t upper_L)
   cce_location_t	L[1];
 
   if (cce_location(L)) {
-    cce_run_error_handlers_raise(L, upper_L);
+    cce_run_catch_handlers_raise(L, upper_L);
   } else {
     ccsys_uid_t	uid;
 
     uid = ccsys_getuid();
     ccsys_setuid(L, uid);
 
-    cce_run_clean_handlers(L);
+    cce_run_body_handlers(L);
   }
 #endif
 }
@@ -111,14 +111,14 @@ test_2_2 (cce_destination_t upper_L)
   cce_location_t	L[1];
 
   if (cce_location(L)) {
-    cce_run_error_handlers_raise(L, upper_L);
+    cce_run_catch_handlers_raise(L, upper_L);
   } else {
     ccsys_uid_t	uid;
 
     uid = ccsys_geteuid();
     ccsys_seteuid(L, uid);
 
-    cce_run_clean_handlers(L);
+    cce_run_body_handlers(L);
   }
 #endif
 }
@@ -131,7 +131,7 @@ test_2_3 (cce_destination_t upper_L)
   cce_location_t	L[1];
 
   if (cce_location(L)) {
-    cce_run_error_handlers_raise(L, upper_L);
+    cce_run_catch_handlers_raise(L, upper_L);
   } else {
     ccsys_uid_t	ruid, euid;
 
@@ -139,7 +139,7 @@ test_2_3 (cce_destination_t upper_L)
     euid = ccsys_geteuid();
     ccsys_setreuid(L, ruid, euid);
 
-    cce_run_clean_handlers(L);
+    cce_run_body_handlers(L);
   }
 #endif
 }
@@ -157,14 +157,14 @@ test_3_1 (cce_destination_t upper_L)
   cce_location_t	L[1];
 
   if (cce_location(L)) {
-    cce_run_error_handlers_raise(L, upper_L);
+    cce_run_catch_handlers_raise(L, upper_L);
   } else {
     ccsys_gid_t	gid;
 
     gid = ccsys_getgid();
     ccsys_setgid(L, gid);
 
-    cce_run_clean_handlers(L);
+    cce_run_body_handlers(L);
   }
 #endif
 }
@@ -177,14 +177,14 @@ test_3_2 (cce_destination_t upper_L)
   cce_location_t	L[1];
 
   if (cce_location(L)) {
-    cce_run_error_handlers_raise(L, upper_L);
+    cce_run_catch_handlers_raise(L, upper_L);
   } else {
     ccsys_gid_t	gid;
 
     gid = ccsys_getegid();
     ccsys_setegid(L, gid);
 
-    cce_run_clean_handlers(L);
+    cce_run_body_handlers(L);
   }
 #endif
 }
@@ -197,7 +197,7 @@ test_3_3 (cce_destination_t upper_L)
   cce_location_t	L[1];
 
   if (cce_location(L)) {
-    cce_run_error_handlers_raise(L, upper_L);
+    cce_run_catch_handlers_raise(L, upper_L);
   } else {
     ccsys_gid_t	rgid, egid;
 
@@ -205,7 +205,7 @@ test_3_3 (cce_destination_t upper_L)
     egid = ccsys_getegid();
     ccsys_setregid(L, rgid, egid);
 
-    cce_run_clean_handlers(L);
+    cce_run_body_handlers(L);
   }
 #endif
 }
@@ -223,7 +223,7 @@ test_4_1 (cce_destination_t upper_L)
   cce_location_t	L[1];
 
   if (cce_location(L)) {
-    cce_run_error_handlers_raise(L, upper_L);
+    cce_run_catch_handlers_raise(L, upper_L);
   } else {
     int		count;
 
@@ -239,7 +239,7 @@ test_4_1 (cce_destination_t upper_L)
 	fprintf(stderr, "%s: groups[%d]=%d\n", __func__, i, groups[i].data);
       }
     }
-    cce_run_clean_handlers(L);
+    cce_run_body_handlers(L);
   }
 #endif
 }
@@ -257,10 +257,10 @@ test_4_2 (cce_destination_t upper_L)
       if (CCSYS_EPERM == cce_condition_ref_errno_errnum(cce_condition(L))) {
 	fprintf(stderr, "%s: no permissions to set groups, but it's OK\n", __func__);
       } else {
-	cce_run_error_handlers_raise(L, upper_L);
+	cce_run_catch_handlers_raise(L, upper_L);
       }
     } else {
-      cce_run_error_handlers_raise(L, upper_L);
+      cce_run_catch_handlers_raise(L, upper_L);
     }
   } else {
     int		count;
@@ -275,7 +275,7 @@ test_4_2 (cce_destination_t upper_L)
 
       ccsys_setgroups(L, ngroups, groups);
     }
-    cce_run_clean_handlers(L);
+    cce_run_body_handlers(L);
   }
 #endif
 }
@@ -293,10 +293,10 @@ test_4_3 (cce_destination_t upper_L)
       if (CCSYS_EPERM == cce_condition_ref_errno_errnum(cce_condition(L))) {
 	fprintf(stderr, "%s: no permissions to set groups, but it's OK\n", __func__);
       } else {
-	cce_run_error_handlers_raise(L, upper_L);
+	cce_run_catch_handlers_raise(L, upper_L);
       }
     } else {
-      cce_run_error_handlers_raise(L, upper_L);
+      cce_run_catch_handlers_raise(L, upper_L);
     }
   } else {
     ccsys_gid_t		gid;
@@ -305,7 +305,7 @@ test_4_3 (cce_destination_t upper_L)
     gid = ccsys_getgid();
     ccsys_initgroups(L, username, gid);
 
-    cce_run_clean_handlers(L);
+    cce_run_body_handlers(L);
   }
 #endif
 }
@@ -319,7 +319,7 @@ test_4_4 (cce_destination_t upper_L)
 
   if (cce_location(L)) {
     if (1) { fprintf(stderr, "%s: %s\n", __func__, cce_condition_static_message(cce_condition(L))); }
-    cce_run_error_handlers_raise(L, upper_L);
+    cce_run_catch_handlers_raise(L, upper_L);
   } else {
     char const *	username = "marco";
     int			count;
@@ -339,7 +339,7 @@ test_4_4 (cce_destination_t upper_L)
 	fprintf(stderr, "%s: groups[%d]=%d\n", __func__, i, groups[i].data);
       }
     }
-    cce_run_clean_handlers(L);
+    cce_run_body_handlers(L);
   }
 #endif
 }
@@ -364,10 +364,10 @@ test_5_1 (cce_destination_t upper_L)
 	   2018) */
 	if (1) { fprintf(stderr, "%s: \"no controlling TTY\" error, let's make it OK\n", __func__); }
       } else {
-	cce_run_error_handlers_raise(L, upper_L);
+	cce_run_catch_handlers_raise(L, upper_L);
       }
     } else {
-      cce_run_error_handlers_raise(L, upper_L);
+      cce_run_catch_handlers_raise(L, upper_L);
     }
   } else {
     size_t	maxlen = CCSYS_L_CUSERID;
@@ -376,7 +376,7 @@ test_5_1 (cce_destination_t upper_L)
     ccsys_getlogin_r(L, username, maxlen);
     if (1) { fprintf(stderr, "%s: login user=%s\n", __func__, username); }
 
-    cce_run_clean_handlers(L);
+    cce_run_body_handlers(L);
   }
 #endif
 }
@@ -394,7 +394,7 @@ test_6_1 (cce_destination_t upper_L)
   cce_location_t	L[1];
 
   if (cce_location(L)) {
-    cce_run_error_handlers_raise(L, upper_L);
+    cce_run_catch_handlers_raise(L, upper_L);
   } else {
     ccsys_passwd_t const *	S;
 
@@ -422,7 +422,7 @@ test_6_1 (cce_destination_t upper_L)
     fprintf(stderr, "%s: pw_shell=%s\n",	__func__, ccsys_ref_passwd_pw_shell(S));
 #endif
 
-    cce_run_clean_handlers(L);
+    cce_run_body_handlers(L);
   }
 #endif
 }
@@ -435,7 +435,7 @@ test_6_2 (cce_destination_t upper_L)
   cce_location_t	L[1];
 
   if (cce_location(L)) {
-    cce_run_error_handlers_raise(L, upper_L);
+    cce_run_catch_handlers_raise(L, upper_L);
   } else {
     ccsys_passwd_t const	*A, *B;
 
@@ -464,7 +464,7 @@ test_6_2 (cce_destination_t upper_L)
     fprintf(stderr, "%s: pw_shell=%s\n",	__func__, ccsys_ref_passwd_pw_shell(B));
 #endif
 
-    cce_run_clean_handlers(L);
+    cce_run_body_handlers(L);
   }
 #endif
 }
@@ -477,7 +477,7 @@ test_6_3 (cce_destination_t upper_L)
   cce_location_t	L[1];
 
   if (cce_location(L)) {
-    cce_run_error_handlers_raise(L, upper_L);
+    cce_run_catch_handlers_raise(L, upper_L);
   } else {
     ccsys_passwd_t 	S;
     ccsys_passwd_t *	R;
@@ -510,7 +510,7 @@ test_6_3 (cce_destination_t upper_L)
     fprintf(stderr, "%s: pw_shell=%s\n",	__func__, ccsys_ref_passwd_pw_shell(R));
 #endif
 
-    cce_run_clean_handlers(L);
+    cce_run_body_handlers(L);
   }
 #endif
 }
@@ -523,7 +523,7 @@ test_6_4 (cce_destination_t upper_L)
   cce_location_t	L[1];
 
   if (cce_location(L)) {
-    cce_run_error_handlers_raise(L, upper_L);
+    cce_run_catch_handlers_raise(L, upper_L);
   } else {
     ccsys_passwd_t const *	A;
     ccsys_passwd_t		S;
@@ -558,7 +558,7 @@ test_6_4 (cce_destination_t upper_L)
     fprintf(stderr, "%s: pw_shell=%s\n",	__func__, ccsys_ref_passwd_pw_shell(R));
 #endif
 
-    cce_run_clean_handlers(L);
+    cce_run_body_handlers(L);
   }
 #endif
 }
@@ -578,7 +578,7 @@ test_7_1 (cce_destination_t upper_L)
 
   if (cce_location(L)) {
     if (1) { fprintf(stderr, "%s: %s\n", __func__, cce_condition_static_message(cce_condition(L))); }
-    cce_run_error_handlers_raise(L, upper_L);
+    cce_run_catch_handlers_raise(L, upper_L);
   } else {
     ccsys_setpwent(L);
     ccsys_handler_endpwent_init(L, endpwent_H);
@@ -595,7 +595,7 @@ test_7_1 (cce_destination_t upper_L)
       }
     }
 
-    cce_run_clean_handlers(L);
+    cce_run_body_handlers(L);
   }
 #endif
 }
@@ -613,7 +613,7 @@ test_8_1 (cce_destination_t upper_L)
   cce_location_t	L[1];
 
   if (cce_location(L)) {
-    cce_run_error_handlers_raise(L, upper_L);
+    cce_run_catch_handlers_raise(L, upper_L);
   } else {
     ccsys_group_t const *	S;
 
@@ -635,7 +635,7 @@ test_8_1 (cce_destination_t upper_L)
     }
 #endif
 
-    cce_run_clean_handlers(L);
+    cce_run_body_handlers(L);
   }
 #endif
 }
@@ -648,7 +648,7 @@ test_8_2 (cce_destination_t upper_L)
   cce_location_t	L[1];
 
   if (cce_location(L)) {
-    cce_run_error_handlers_raise(L, upper_L);
+    cce_run_catch_handlers_raise(L, upper_L);
   } else {
     ccsys_group_t const *A, *B;
 
@@ -671,7 +671,7 @@ test_8_2 (cce_destination_t upper_L)
     }
 #endif
 
-    cce_run_clean_handlers(L);
+    cce_run_body_handlers(L);
   }
 #endif
 }
@@ -684,7 +684,7 @@ test_8_3 (cce_destination_t upper_L)
   cce_location_t	L[1];
 
   if (cce_location(L)) {
-    cce_run_error_handlers_raise(L, upper_L);
+    cce_run_catch_handlers_raise(L, upper_L);
   } else {
     ccsys_group_t 	S;
     ccsys_group_t *	R;
@@ -711,7 +711,7 @@ test_8_3 (cce_destination_t upper_L)
     }
 #endif
 
-    cce_run_clean_handlers(L);
+    cce_run_body_handlers(L);
   }
 #endif
 }
@@ -724,7 +724,7 @@ test_8_4 (cce_destination_t upper_L)
   cce_location_t	L[1];
 
   if (cce_location(L)) {
-    cce_run_error_handlers_raise(L, upper_L);
+    cce_run_catch_handlers_raise(L, upper_L);
   } else {
     ccsys_group_t const *	A;
     ccsys_group_t		S;
@@ -753,7 +753,7 @@ test_8_4 (cce_destination_t upper_L)
     }
 #endif
 
-    cce_run_clean_handlers(L);
+    cce_run_body_handlers(L);
   }
 #endif
 }
@@ -773,7 +773,7 @@ test_9_1 (cce_destination_t upper_L)
 
   if (cce_location(L)) {
     if (1) { fprintf(stderr, "%s: %s\n", __func__, cce_condition_static_message(cce_condition(L))); }
-    cce_run_error_handlers_raise(L, upper_L);
+    cce_run_catch_handlers_raise(L, upper_L);
   } else {
     ccsys_setgrent(L);
     ccsys_handler_endgrent_init(L, endgrent_H);
@@ -792,7 +792,7 @@ test_9_1 (cce_destination_t upper_L)
       }
     }
 
-    cce_run_clean_handlers(L);
+    cce_run_body_handlers(L);
   }
 #endif
 }

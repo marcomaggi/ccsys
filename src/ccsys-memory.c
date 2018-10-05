@@ -38,56 +38,6 @@
 
 
 /** --------------------------------------------------------------------
- ** System wrappers: memory allocation.
- ** ----------------------------------------------------------------- */
-
-void *
-ccsys_malloc (cce_location_t * L, size_t size)
-{
-  void *	rv;
-  errno = 0;
-  rv = malloc (size);
-  if (NULL != rv) {
-    return rv;
-  } else {
-    cce_raise(L, cce_condition_new_errno_clear());
-  }
-}
-
-void *
-ccsys_realloc (cce_location_t * L, void * ptr, size_t newsize)
-{
-  void *	rv;
-  errno = 0;
-  rv = realloc(ptr, newsize);
-  if (NULL != rv) {
-    return rv;
-  } else {
-    cce_raise(L, cce_condition_new_errno_clear());
-  }
-}
-
-void *
-ccsys_calloc (cce_location_t * L, size_t count, size_t eltsize)
-{
-  void *	rv;
-  errno = 0;
-  rv = calloc(count, eltsize);
-  if (NULL != rv) {
-    return rv;
-  } else {
-    cce_raise(L, cce_condition_new_errno_clear());
-  }
-}
-
-void
-ccsys_free (cce_location_t * L CCSYS_UNUSED, void * ptr)
-{
-  free(ptr);
-}
-
-
-/** --------------------------------------------------------------------
  ** System wrappers: locking memory pages.
  ** ----------------------------------------------------------------- */
 
@@ -240,99 +190,5 @@ ccsys_madvise (cce_location_t * L, void * address, size_t length, ccsys_madvise_
   }
 }
 #endif
-
-
-/** --------------------------------------------------------------------
- ** Predefined POSIX exception handler: malloc pointer.
- ** ----------------------------------------------------------------- */
-
-__attribute__((__nonnull__(1,2)))
-static void
-cce_handler_malloc_function (const cce_condition_t * C CCE_UNUSED, cce_handler_t * H)
-{
-  free(H->pointer);
-  if (0) { fprintf(stderr, "%s: done\n", __func__); }
-}
-
-void
-ccsys_clean_handler_malloc_init (cce_location_t * L, cce_handler_t * H, void * pointer)
-{
-  H->function	= cce_handler_malloc_function;
-  H->pointer	= pointer;
-  cce_register_clean_handler(L, H);
-}
-
-void
-ccsys_error_handler_malloc_init (cce_location_t * L, cce_handler_t * H, void * pointer)
-{
-  H->function	= cce_handler_malloc_function;
-  H->pointer	= pointer;
-  cce_register_error_handler(L, H);
-}
-
-
-/** --------------------------------------------------------------------
- ** System wrappers: guarded memory allocation.
- ** ----------------------------------------------------------------- */
-
-void *
-ccsys_malloc_guarded_clean (cce_location_t * L, cce_clean_handler_t * P_H, size_t size)
-{
-  void *	P = ccsys_malloc(L, size);
-  cce_clean_handler_malloc_init(L, &(P_H->handler), P);
-  return P;
-}
-
-void *
-ccsys_malloc_guarded_error (cce_location_t * L, cce_error_handler_t * P_H, size_t size)
-{
-  void *	P = ccsys_malloc(L, size);
-  cce_error_handler_malloc_init(L, &(P_H->handler), P);
-  return P;
-}
-
-/* ------------------------------------------------------------------ */
-
-void *
-ccsys_realloc_guarded_clean (cce_location_t * L, cce_clean_handler_t * P_H, void * old_P, size_t newsize)
-{
-  if (P_H->handler.pointer == old_P) {
-    void *	P = ccsys_realloc(L, old_P, newsize);
-    P_H->handler.pointer = P;
-    return P;
-  } else {
-    cce_raise(L, cce_condition_new_invalid_argument(L, __func__, 2));
-  }
-}
-
-void *
-ccsys_realloc_guarded_error (cce_location_t * L, cce_error_handler_t * P_H, void * old_P, size_t newsize)
-{
-  if (P_H->handler.pointer == old_P) {
-    void *	P = ccsys_realloc(L, old_P, newsize);
-    P_H->handler.pointer = P;
-    return P;
-  } else {
-    cce_raise(L, cce_condition_new_invalid_argument(L, __func__, 2));
-  }
-}
-
-/* ------------------------------------------------------------------ */
-
-void *
-ccsys_calloc_guarded_clean (cce_location_t * L, cce_clean_handler_t * P_H, size_t count, size_t eltsize)
-{
-  void *	P = ccsys_calloc(L, count, eltsize);
-  cce_clean_handler_malloc_init(L, &(P_H->handler), P);
-  return P;
-}
-
-void *
-ccsys_calloc_guarded_error (cce_location_t * L, cce_error_handler_t * P_H, size_t count, size_t eltsize)
-{
-  void *	P = ccsys_calloc(L, count, eltsize);
-  cce_error_handler_malloc_init(L, &(P_H->handler), P);
-  return P;
-}
 
 /* end of file */

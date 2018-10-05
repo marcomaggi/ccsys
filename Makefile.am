@@ -58,7 +58,6 @@ libccsys_la_SOURCES	= \
 check_PROGRAMS	= \
 	tests/version				\
 	tests/system-program			\
-	tests/system-memory			\
 	tests/system-handlers			\
 	tests/users-groups			\
 	tests/input-output			\
@@ -82,9 +81,6 @@ tests_version_LDADD		= $(ccsys_tests_ldadd)
 
 tests_system_program_CPPFLAGS	= $(ccsys_tests_cppflags)
 tests_system_program_LDADD	= $(ccsys_tests_ldadd)
-
-tests_system_memory_CPPFLAGS	= $(ccsys_tests_cppflags)
-tests_system_memory_LDADD	= $(ccsys_tests_ldadd)
 
 tests_system_handlers_CPPFLAGS	= $(ccsys_tests_cppflags)
 tests_system_handlers_LDADD	= $(ccsys_tests_ldadd)
@@ -131,6 +127,8 @@ ccsys_demos_ldadd		= libccsys.la \
 
 demos_listdir_CPPFLAGS		= $(ccsys_demos_cppflags)
 demos_listdir_LDADD		= $(ccsys_demos_ldadd)
+
+demos/listdir.@OBJEXT@: src/ccsys.h
 
 
 #### testing under GDB

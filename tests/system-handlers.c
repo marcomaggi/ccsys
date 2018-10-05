@@ -43,19 +43,19 @@ test_handler_malloc (void)
 {
   /* No error.  Clean call. */
   {
-    cce_location_t	L[1];
-    cce_handler_t	H[1];
-    void *		P;
-    volatile bool	done_flag  = false;
-    volatile bool	error_flag = false;
+    cce_location_t		L[1];
+    ccmem_clean_handler_t	P_H[1];
+    void *			P;
+    volatile bool		done_flag  = false;
+    volatile bool		error_flag = false;
 
     if (cce_location(L)) {
-      cce_run_error_handlers_final(L);
+      cce_run_catch_handlers_final(L);
       error_flag = true;
     } else {
-      P = ccsys_malloc(L, 4096);
-      ccsys_clean_handler_malloc_init(L, H, P);
-      cce_run_clean_handlers(L);
+      P = ccmem_std_malloc_guarded(L, P_H, 4096);
+      if (0) { fprintf(stderr, "%s: %p\n", __func__, P); }
+      cce_run_body_handlers(L);
       done_flag = true;
     }
     assert(false == error_flag);
@@ -63,20 +63,20 @@ test_handler_malloc (void)
   }
   /* Error. */
   {
-    cce_location_t	L[1];
-    cce_handler_t	H[1];
-    void *		P;
-    volatile bool	done_flag  = false;
-    volatile bool	error_flag = false;
+    cce_location_t		L[1];
+    ccmem_clean_handler_t	P_H[1];
+    void *			P;
+    volatile bool		done_flag  = false;
+    volatile bool		error_flag = false;
 
     if (cce_location(L)) {
-      cce_run_error_handlers_final(L);
+      cce_run_catch_handlers_final(L);
       error_flag = true;
     } else {
-      P = ccsys_malloc(L, 4096);
-      ccsys_clean_handler_malloc_init(L, H, P);
+      P = ccmem_std_malloc_guarded(L, P_H, 4096);
+      if (0) { fprintf(stderr, "%s: %p\n", __func__, P); }
       cce_raise(L, cce_condition_new_unknown());
-      cce_run_clean_handlers(L);
+      cce_run_body_handlers(L);
       done_flag = true;
     }
     assert(true  == error_flag);
@@ -96,14 +96,14 @@ test_handler_filedes (void)
     volatile bool	error_flag = false;
 
     if (cce_location(L)) {
-      cce_run_error_handlers_final(L);
+      cce_run_catch_handlers_final(L);
       error_flag = true;
     } else {
       ccsys_open_flags_t	flags = { .data = CCSYS_O_CREAT };
       ccsys_open_mode_t		mode  = { .data = CCSYS_S_IRWXU };
       ccsys_fd_t		fd   = ccsys_open(L, "name.ext", flags, mode);
       ccsys_clean_handler_filedes_init(L, H, fd);
-      cce_run_clean_handlers(L);
+      cce_run_body_handlers(L);
       done_flag = true;
     }
     remove("name.ext");
@@ -118,7 +118,7 @@ test_handler_filedes (void)
     volatile bool	error_flag = false;
 
     if (cce_location(L)) {
-      cce_run_error_handlers_final(L);
+      cce_run_catch_handlers_final(L);
       error_flag = true;
     } else {
       ccsys_open_flags_t	flags = { .data = CCSYS_O_CREAT };
@@ -126,7 +126,7 @@ test_handler_filedes (void)
       ccsys_fd_t		fd   = ccsys_open(L, "name.ext", flags, mode);
       ccsys_clean_handler_filedes_init(L, H, fd);
       cce_raise(L, cce_condition_new_unknown());
-      cce_run_clean_handlers(L);
+      cce_run_body_handlers(L);
       done_flag = true;
     }
     remove("name.ext");
@@ -147,13 +147,13 @@ test_handler_pipedes (void)
     volatile bool	error_flag = false;
 
     if (cce_location(L)) {
-      cce_run_error_handlers_final(L);
+      cce_run_catch_handlers_final(L);
       error_flag = true;
     } else {
       ccsys_fd_t	pipedes[2];
       ccsys_pipe(L, pipedes);
       ccsys_clean_handler_pipedes_init(L, H, pipedes);
-      cce_run_clean_handlers(L);
+      cce_run_body_handlers(L);
       done_flag = true;
     }
     assert(false == error_flag);
@@ -167,14 +167,14 @@ test_handler_pipedes (void)
     volatile bool	error_flag = false;
 
     if (cce_location(L)) {
-      cce_run_error_handlers_final(L);
+      cce_run_catch_handlers_final(L);
       error_flag = true;
     } else {
       ccsys_fd_t	pipedes[2];
       ccsys_pipe(L, pipedes);
       ccsys_clean_handler_pipedes_init(L, H, pipedes);
       cce_raise(L, cce_condition_new_unknown());
-      cce_run_clean_handlers(L);
+      cce_run_body_handlers(L);
       done_flag = true;
     }
     assert(true  == error_flag);
@@ -195,7 +195,7 @@ test_handler_remove (void)
     volatile bool	error_flag = false;
 
     if (cce_location(L)) {
-      cce_run_error_handlers_final(L);
+      cce_run_catch_handlers_final(L);
       error_flag = true;
     } else {
       ccsys_open_flags_t	flags = { .data = CCSYS_O_CREAT };
@@ -203,7 +203,7 @@ test_handler_remove (void)
       ccsys_fd_t	fd = ccsys_open(L, "name.ext", flags, mode);
       ccsys_clean_handler_filedes_init(L, filedes_H, fd);
       ccsys_clean_handler_remove_init(L, remove_H, "name.ext");
-      cce_run_clean_handlers(L);
+      cce_run_body_handlers(L);
       done_flag = true;
     }
     assert(false == error_flag);
@@ -218,7 +218,7 @@ test_handler_remove (void)
     volatile bool	error_flag = false;
 
     if (cce_location(L)) {
-      cce_run_error_handlers_final(L);
+      cce_run_catch_handlers_final(L);
       error_flag = true;
     } else {
       ccsys_open_flags_t	flags = { .data = CCSYS_O_CREAT };
@@ -227,7 +227,7 @@ test_handler_remove (void)
       ccsys_clean_handler_filedes_init(L, filedes_H, fd);
       ccsys_clean_handler_remove_init(L, remove_H, "name.ext");
       cce_raise(L, cce_condition_new_unknown());
-      cce_run_clean_handlers(L);
+      cce_run_body_handlers(L);
       done_flag = true;
     }
     assert(true  == error_flag);
@@ -247,13 +247,13 @@ test_handler_rmdir (void)
     volatile bool	error_flag = false;
 
     if (cce_location(L)) {
-      cce_run_error_handlers_final(L);
+      cce_run_catch_handlers_final(L);
       error_flag = true;
     } else {
       ccsys_open_mode_t	mode = { .data = 0 };
       ccsys_mkdir(L, "name.d", mode);
       ccsys_clean_handler_rmdir_init(L, rmdir_H, "name.d");
-      cce_run_clean_handlers(L);
+      cce_run_body_handlers(L);
       done_flag = true;
     }
     assert(false == error_flag);
@@ -267,14 +267,14 @@ test_handler_rmdir (void)
     volatile bool	error_flag = false;
 
     if (cce_location(L)) {
-      cce_run_error_handlers_final(L);
+      cce_run_catch_handlers_final(L);
       error_flag = true;
     } else {
       ccsys_open_mode_t	mode = { .data = 0 };
       ccsys_mkdir(L, "name.d", mode);
       ccsys_clean_handler_rmdir_init(L, rmdir_H, "name.d");
       cce_raise(L, cce_condition_new_unknown());
-      cce_run_clean_handlers(L);
+      cce_run_body_handlers(L);
       done_flag = true;
     }
     assert(true  == error_flag);

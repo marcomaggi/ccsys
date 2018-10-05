@@ -37,7 +37,7 @@ test_1_1 (cce_destination_t upper_L)
   cce_location_t	L[1];
 
   if (cce_location(L)) {
-    cce_run_error_handlers_raise(L, upper_L);
+    cce_run_catch_handlers_raise(L, upper_L);
   } else {
     ccsys_timespec_t	requested = {
       .seconds.data	= 1,
@@ -48,7 +48,7 @@ test_1_1 (cce_destination_t upper_L)
     leftover = ccsys_nanosleep(L, requested);
     cctests_assert(L, ccsys_timespec_is_zero(leftover));
 
-    cce_run_clean_handlers(L);
+    cce_run_body_handlers(L);
   }
 #else
   cctests_skip();
