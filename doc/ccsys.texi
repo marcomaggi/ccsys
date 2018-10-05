@@ -5553,25 +5553,25 @@ Wrapper for @cfunc{fclose}; @manpage{fclose, Close a stream}.
 @subsubheading Stream handlers
 
 
-@deftypefun void ccsys_clean_handler_stream_init (cce_destination_t @var{L}, cce_handler_t * @var{H}, ccsys_file_t @var{stream})
-@deftypefunx void ccsys_error_handler_stream_init (cce_destination_t @var{L}, cce_handler_t * @var{H}, ccsys_file_t @var{stream})
+@deftypefun void ccsys_init_stream_clean_handler (cce_destination_t @var{L}, cce_clean_handler_t * @var{H}, ccsys_file_t @var{stream})
+@deftypefunx void ccsys_init_stream_error_handler (cce_destination_t @var{L}, cce_error_handler_t * @var{H}, ccsys_file_t @var{stream})
 Register @var{H} as clean or error handler in the context of @var{L}.  The handler function will
 release the stream @var{stream} using the standard function @cfunc{fclose}; errors in @cfunc{fclose}
 are @strong{ignored}.
 @end deftypefun
 
 
-@deftypefn {Preprocessor Macro} void ccsys_handler_stream_init (cce_destination_t @var{L}, cce_clean_handler_t * @var{H}, ccsys_file_t @var{stream})
-@deftypefnx {Preprocessor Macro} void ccsys_handler_stream_init (cce_destination_t @var{L}, cce_error_handler_t * @var{H}, ccsys_file_t @var{stream})
+@deftypefn {Preprocessor Macro} void ccsys_init_stream_handler (cce_destination_t @var{L}, cce_clean_handler_t * @var{H}, ccsys_file_t @var{stream})
+@deftypefnx {Preprocessor Macro} void ccsys_init_stream_handler (cce_destination_t @var{L}, cce_error_handler_t * @var{H}, ccsys_file_t @var{stream})
 This preprocessor macro uses @code{_Generic} to dispatch the call according to the type of the
 pointer @var{H}; if the type is:
 
 @table @code
 @item cce_clean_handler_t
-The macro expands into a call to @cfunc{ccsys_clean_handler_stream_init}.
+The macro expands into a call to @cfunc{ccsys_init_stream_clean_handler}.
 
 @item cce_error_handler_t
-The macro expands into a call to @cfunc{ccsys_error_handler_stream_init}.
+The macro expands into a call to @cfunc{ccsys_init_stream_error_handler}.
 @end table
 @end deftypefn
 
@@ -5949,7 +5949,7 @@ closing it with @cfunc{closedir}:
 
 @example
 cce_location_t          L[1];
-cce_clean_handler_t   dirstream_H[1];
+cce_clean_handler_t     dirstream_H[1];
 char const *            pathname = "./";
 
 if (cce_location(L)) @{

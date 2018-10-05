@@ -1513,7 +1513,7 @@ test_10_1 (cce_destination_t upper_L)
     /* Open the stream. */
     {
       stream = ccsys_fopen(L, filename, mode);
-      ccsys_handler_stream_init(L, stream_H, stream);
+      ccsys_init_stream_handler(L, stream_H, stream);
       ccsys_handler_remove_init(L, filename_H, filename);
     }
 

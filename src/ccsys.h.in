@@ -1800,47 +1800,29 @@ ccsys_decl void ccsys_fsetpos (cce_destination_t L, ccsys_file_t stream, ccsys_f
 
 /* ------------------------------------------------------------------ */
 
-__attribute__((__always_inline__))
-static inline void
-ccsys_clearerr (ccsys_file_t stream)
-{
-  clearerr((FILE *) stream.data);
-}
+ccsys_decl void ccsys_clearerr (ccsys_file_t stream);
 
-__attribute__((__always_inline__,__pure__))
-static inline bool
-ccsys_feof (ccsys_file_t stream)
-{
-  return (feof((FILE *) stream.data))? true : false;
-}
+ccsys_decl bool ccsys_feof (ccsys_file_t stream)
+  __attribute__((__pure__));
 
-__attribute__((__always_inline__,__pure__))
-static inline bool
-ccsys_ferror (ccsys_file_t stream)
-{
-  return (ferror((FILE *) stream.data))? true : false;
-}
+ccsys_decl bool ccsys_ferror (ccsys_file_t stream)
+  __attribute__((__pure__));
 
-__attribute__((__always_inline__,__pure__))
-static inline ccsys_fd_t
-ccsys_fileno (ccsys_file_t stream)
-{
-  ccsys_fd_t	fd = { .data = fileno((FILE *)stream.data) };
-  return fd;
-}
+ccsys_decl ccsys_fd_t ccsys_fileno (ccsys_file_t stream)
+  __attribute__((__pure__));
 
 /* ------------------------------------------------------------------ */
 
-ccsys_decl void ccsys_clean_handler_stream_init (cce_destination_t L, cce_handler_t * H, ccsys_file_t stream)
+ccsys_decl void ccsys_init_stream_clean_handler (cce_destination_t L, cce_clean_handler_t * H, ccsys_file_t stream)
   __attribute__((__nonnull__(1,2)));
 
-ccsys_decl void ccsys_error_handler_stream_init (cce_destination_t L, cce_handler_t * H, ccsys_file_t stream)
+ccsys_decl void ccsys_init_stream_error_handler (cce_destination_t L, cce_error_handler_t * H, ccsys_file_t stream)
   __attribute__((__nonnull__(1,2)));
 
-#define ccsys_handler_stream_init(L,H,stream)				\
+#define ccsys_init_stream_handler(L,H,stream)				\
   _Generic((H),								\
-	   cce_clean_handler_t	*: ccsys_clean_handler_stream_init, \
-	   cce_error_handler_t		*: ccsys_error_handler_stream_init)(L,&(H->handler),stream)
+	   cce_clean_handler_t	*: ccsys_init_stream_clean_handler,	\
+	   cce_error_handler_t	*: ccsys_init_stream_error_handler)(L,H,stream)
 
 
 /** --------------------------------------------------------------------

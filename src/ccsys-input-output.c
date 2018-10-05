@@ -744,6 +744,33 @@ ccsys_fsetpos (cce_destination_t L, ccsys_file_t stream, ccsys_fpos_t const * po
   }
 }
 
+/* ------------------------------------------------------------------ */
+
+void
+ccsys_clearerr (ccsys_file_t stream)
+{
+  clearerr((FILE *) stream.data);
+}
+
+bool
+ccsys_feof (ccsys_file_t stream)
+{
+  return (feof((FILE *) stream.data))? true : false;
+}
+
+bool
+ccsys_ferror (ccsys_file_t stream)
+{
+  return (ferror((FILE *) stream.data))? true : false;
+}
+
+ccsys_fd_t
+ccsys_fileno (ccsys_file_t stream)
+{
+  ccsys_fd_t	fd = { .data = fileno((FILE *)stream.data) };
+  return fd;
+}
+
 
 /** --------------------------------------------------------------------
  ** Input/output: file descriptor handler.
@@ -780,25 +807,25 @@ ccsys_init_filedes_error_handler (cce_location_t * L, cce_error_handler_t * H, c
 
 __attribute__((nonnull(1,2)))
 static void
-cce_handler_stream_function (cce_condition_t const * C CCE_UNUSED, cce_handler_t * H)
+cce_stream_handler_function (cce_condition_t const * C CCE_UNUSED, cce_handler_t * H)
 {
   fclose(H->pointer);
   if (0) { fprintf(stderr, "%s: done\n", __func__); }
 }
 
 void
-ccsys_clean_handler_stream_init (cce_location_t * L, cce_handler_t * H, ccsys_file_t file)
+ccsys_init_stream_clean_handler (cce_location_t * L, cce_clean_handler_t * H, ccsys_file_t file)
 {
-  H->function	= cce_handler_stream_function;
-  H->pointer	= file.data;
+  H->handler.function	= cce_stream_handler_function;
+  H->handler.pointer	= file.data;
   cce_register_clean_handler(L, H);
 }
 
 void
-ccsys_error_handler_stream_init (cce_location_t * L, cce_handler_t * H, ccsys_file_t file)
+ccsys_init_stream_error_handler (cce_location_t * L, cce_error_handler_t * H, ccsys_file_t file)
 {
-  H->function	= cce_handler_stream_function;
-  H->pointer	= file.data;
+  H->handler.function	= cce_stream_handler_function;
+  H->handler.pointer	= file.data;
   cce_register_error_handler(L, H);
 }
 
