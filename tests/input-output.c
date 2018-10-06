@@ -385,7 +385,7 @@ test_4_2 (cce_destination_t upper_L)
       fifo_unlink_data.dirfd		= dirfd;
       fifo_unlink_data.pathname		= fifoname;
       fifo_unlink_data.flags.data	= 0;
-      ccsys_handler_unlinkat_init(L, fifo_H, &fifo_unlink_data);
+      ccsys_init_unlinkat_handler(L, fifo_H, &fifo_unlink_data);
     }
 
     pid = ccsys_fork(L);

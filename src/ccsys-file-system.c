@@ -1135,7 +1135,7 @@ ccsys_unlinkat (cce_location_t * L, ccsys_dirfd_t dirfd, char const * pathname, 
 #ifdef HAVE_UNLINKAT
 __attribute__((nonnull(1,2)))
 static void
-cce_handler_unlinkat_function (const cce_condition_t * C CCE_UNUSED, cce_handler_t * H)
+cce_unlinkat_handler_function (const cce_condition_t * C CCE_UNUSED, cce_handler_t * H)
 {
   ccsys_at_link_t *	lnk	= H->pointer;
   unlinkat(lnk->dirfd.data, lnk->pathname, lnk->flags.data);
@@ -1143,18 +1143,18 @@ cce_handler_unlinkat_function (const cce_condition_t * C CCE_UNUSED, cce_handler
 }
 
 void
-ccsys_clean_handler_unlinkat_init (cce_location_t * L, cce_handler_t * H, ccsys_at_link_t * lnk)
+ccsys_init_unlinkat_clean_handler (cce_location_t * L, cce_clean_handler_t * H, ccsys_at_link_t * lnk)
 {
-  H->function	= cce_handler_unlinkat_function;
-  H->pointer	= lnk;
+  H->handler.function	= cce_unlinkat_handler_function;
+  H->handler.pointer	= lnk;
   cce_register_clean_handler(L, H);
 }
 
 void
-ccsys_error_handler_unlinkat_init (cce_location_t * L, cce_handler_t * H, ccsys_at_link_t * lnk)
+ccsys_init_unlinkat_error_handler (cce_location_t * L, cce_error_handler_t * H, ccsys_at_link_t * lnk)
 {
-  H->function	= cce_handler_unlinkat_function;
-  H->pointer	= lnk;
+  H->handler.function	= cce_unlinkat_handler_function;
+  H->handler.pointer	= lnk;
   cce_register_error_handler(L, H);
 }
 #endif

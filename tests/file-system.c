@@ -725,7 +725,7 @@ test_4_4 (cce_destination_t upper_L)
       lnk.dirfd		= dirfd;
       lnk.pathname	= filename;
       lnk.flags.data	= 0;
-      ccsys_handler_unlinkat_init(L, filename_H, &lnk);
+      ccsys_init_unlinkat_handler(L, filename_H, &lnk);
     }
 
     /* Inspect the file by pathname. */

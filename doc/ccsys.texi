@@ -4181,7 +4181,7 @@ sample (void)
       ccsys_mkfifoat(L, dirfd, fifoname, mode);
       fifo_unlink_data.dirfd    = dirfd;
       fifo_unlink_data.pathname = fifoname;
-      ccsys_handler_unlinkat_init(L, fifo_H, &fifo_unlink_data);
+      ccsys_init_unlinkat_handler(L, fifo_H, &fifo_unlink_data);
     @}
 
     pid = ccsys_fork(L);
@@ -6547,7 +6547,7 @@ if (cce_location(L)) @{
     lnk.dirfd      = dirfd;
     lnk.pathname   = filename;
     lnk.flags.data = 0;
-    ccsys_handler_unlinkat_init(L, filename_H, &lnk);
+    ccsys_init_unlinkat_handler(L, filename_H, &lnk);
   @}
 
   cce_run_clean_handlers(L);
@@ -6579,25 +6579,25 @@ a file.
 @end deftp
 
 
-@deftypefun void ccsys_clean_handler_unlinkat_init (cce_destination_t @var{L}, cce_handler_t * @var{H}, ccsys_at_link_t * @var{lnk})
-@deftypefunx void ccsys_error_handler_unlinkat_init (cce_destination_t @var{L}, cce_handler_t * @var{H}, ccsys_at_link_t * @var{lnk})
+@deftypefun void ccsys_init_unlinkat_clean_handler (cce_destination_t @var{L}, cce_clean_handler_t * @var{H}, ccsys_at_link_t * @var{lnk})
+@deftypefunx void ccsys_init_unlinkat_error_handler (cce_destination_t @var{L}, cce_error_handler_t * @var{H}, ccsys_at_link_t * @var{lnk})
 Register @var{H} as clean or error handler in the context of @var{L}.  The handler function will
 unlink at the file whose pathname is @code{@var{lnk}->@var{pathname}} using the standard function
 @cfunc{unlinkat}; errors in @cfunc{unlinkat} are @strong{ignored}.
 @end deftypefun
 
 
-@deftypefn {Preprocessor Macro} void ccsys_handler_unlinkat_init (cce_destination_t @var{L}, cce_clean_handler_t * @var{H}, ccsys_at_link_t * @var{lnk})
-@deftypefnx {Preprocessor Macro} void ccsys_handler_unlinkat_init (cce_destination_t @var{L}, cce_error_handler_t * @var{H}, ccsys_at_link_t * @var{lnk})
+@deftypefn {Preprocessor Macro} void ccsys_init_unlinkat_handler (cce_destination_t @var{L}, cce_clean_handler_t * @var{H}, ccsys_at_link_t * @var{lnk})
+@deftypefnx {Preprocessor Macro} void ccsys_init_unlinkat_handler (cce_destination_t @var{L}, cce_error_handler_t * @var{H}, ccsys_at_link_t * @var{lnk})
 This preprocessor macro uses @code{_Generic} to dispatch the call according to the type of the
 pointer @var{H}; if the type is:
 
 @table @code
 @item cce_clean_handler_t
-The macro expands into a call to @cfunc{ccsys_clean_handler_unlinkat_init}.
+The macro expands into a call to @cfunc{ccsys_init_unlinkat_clean_handler}.
 
 @item cce_error_handler_t
-The macro expands into a call to @cfunc{ccsys_error_handler_unlinkat_init}.
+The macro expands into a call to @cfunc{ccsys_init_unlinkat_error_handler}.
 @end table
 @end deftypefn
 
@@ -7333,7 +7333,7 @@ if (cce_location(L)) @{
     ccsys_init_filedes_handler(L, filedes_H, fd);
     lnk.dirfd         = dirfd;
     lnk.pathname      = filename;
-    ccsys_handler_unlinkat_init(L, filename_H, &lnk);
+    ccsys_init_unlinkat_handler(L, filename_H, &lnk);
   @}
 
   /* Inspect the file by pathname. */
