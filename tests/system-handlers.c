@@ -192,7 +192,7 @@ test_handler_remove (void)
   {
     cce_location_t	L[1];
     cce_clean_handler_t	filedes_H[1];
-    cce_handler_t	remove_H[1];
+    cce_clean_handler_t	remove_H[1];
     volatile bool	done_flag  = false;
     volatile bool	error_flag = false;
 
@@ -204,7 +204,7 @@ test_handler_remove (void)
       ccsys_open_mode_t	mode = { .data = CCSYS_S_IRUSR|CCSYS_S_IWUSR };
       ccsys_fd_t	fd = ccsys_open(L, "name.ext", flags, mode);
       ccsys_init_filedes_clean_handler(L, filedes_H, fd);
-      ccsys_clean_handler_remove_init(L, remove_H, "name.ext");
+      ccsys_init_remove_clean_handler(L, remove_H, "name.ext");
       cce_run_body_handlers(L);
       done_flag = true;
     }
@@ -215,7 +215,7 @@ test_handler_remove (void)
   {
     cce_location_t	L[1];
     cce_clean_handler_t	filedes_H[1];
-    cce_handler_t	remove_H[1];
+    cce_clean_handler_t	remove_H[1];
     volatile bool	done_flag  = false;
     volatile bool	error_flag = false;
 
@@ -227,7 +227,7 @@ test_handler_remove (void)
       ccsys_open_mode_t	mode = { .data = CCSYS_S_IRUSR|CCSYS_S_IWUSR };
       ccsys_fd_t	fd   = ccsys_open(L, "name.ext", flags, mode);
       ccsys_init_filedes_clean_handler(L, filedes_H, fd);
-      ccsys_clean_handler_remove_init(L, remove_H, "name.ext");
+      ccsys_init_remove_clean_handler(L, remove_H, "name.ext");
       cce_raise(L, cce_condition_new_unknown());
       cce_run_body_handlers(L);
       done_flag = true;

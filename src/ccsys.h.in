@@ -2124,16 +2124,16 @@ ccsys_decl void ccsys_remove (cce_destination_t L, char const * pathname)
 
 /* ------------------------------------------------------------------ */
 
-ccsys_decl void ccsys_clean_handler_remove_init (cce_destination_t L, cce_handler_t * H, char const * pathname)
+ccsys_decl void ccsys_init_remove_clean_handler (cce_destination_t L, cce_clean_handler_t * H, char const * pathname)
   __attribute__((__nonnull__(1,2,3)));
 
-ccsys_decl void ccsys_error_handler_remove_init (cce_destination_t L, cce_handler_t * H, char const * pathname)
+ccsys_decl void ccsys_init_remove_error_handler (cce_destination_t L, cce_error_handler_t * H, char const * pathname)
   __attribute__((__nonnull__(1,2,3)));
 
-#define ccsys_handler_remove_init(L,H,R)				\
+#define ccsys_init_remove_handler(L,H,R)				\
   _Generic((H),								\
-	   cce_clean_handler_t	*: ccsys_clean_handler_remove_init, \
-	   cce_error_handler_t	*: ccsys_error_handler_remove_init)(L,&(H->handler),R)
+	   cce_clean_handler_t	*: ccsys_init_remove_clean_handler,	\
+	   cce_error_handler_t	*: ccsys_init_remove_error_handler)(L,H,R)
 
 
 /** --------------------------------------------------------------------

@@ -1181,7 +1181,7 @@ ccsys_remove (cce_location_t * L, char const * pathname)
 
 __attribute__((nonnull(1,2)))
 static void
-cce_handler_remove_function (const cce_condition_t * C CCE_UNUSED, cce_handler_t * H)
+cce_remove_handler_function (const cce_condition_t * C CCE_UNUSED, cce_handler_t * H)
 {
 #ifdef HAVE_REMOVE
   remove(H->pathname);
@@ -1190,18 +1190,18 @@ cce_handler_remove_function (const cce_condition_t * C CCE_UNUSED, cce_handler_t
 }
 
 void
-ccsys_clean_handler_remove_init (cce_location_t * L, cce_handler_t * H, char const * pathname)
+ccsys_init_remove_clean_handler (cce_location_t * L, cce_clean_handler_t * H, char const * pathname)
 {
-  H->function	= cce_handler_remove_function;
-  H->pathname	= (char *)pathname;
+  H->handler.function	= cce_remove_handler_function;
+  H->handler.pathname	= (char *)pathname;
   cce_register_clean_handler(L, H);
 }
 
 void
-ccsys_error_handler_remove_init (cce_location_t * L, cce_handler_t * H, char const * pathname)
+ccsys_init_remove_error_handler (cce_location_t * L, cce_error_handler_t * H, char const * pathname)
 {
-  H->function	= cce_handler_remove_function;
-  H->pathname	= (char *)pathname;
+  H->handler.function	= cce_remove_handler_function;
+  H->handler.pathname	= (char *)pathname;
   cce_register_error_handler(L, H);
 }
 

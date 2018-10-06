@@ -516,7 +516,7 @@ test_4_2 (cce_destination_t upper_L)
       mode.data  = CCSYS_S_IRUSR | CCSYS_S_IWUSR;
       fd = ccsys_open(L, filename, flags, mode);
       ccsys_init_filedes_handler(L, filedes_H, fd);
-      ccsys_handler_remove_init(L, filename_H, filename);
+      ccsys_init_remove_handler(L, filename_H, filename);
     }
 
     /* Inspect the file by pathname. */
@@ -608,7 +608,7 @@ test_4_3 (cce_destination_t upper_L)
       mode.data	 = CCSYS_S_IRUSR | CCSYS_S_IWUSR;
       fd = ccsys_open(L, filename, flags, mode);
       ccsys_init_filedes_handler(L, filedes_H, fd);
-      ccsys_handler_remove_init(L, filename_H, filename);
+      ccsys_init_remove_handler(L, filename_H, filename);
     }
 
     /* Inspect the file by pathname. */
@@ -820,7 +820,7 @@ test_4_5 (cce_destination_t upper_L)
       mode.data  = CCSYS_S_IRUSR | CCSYS_S_IWUSR;
       fd = ccsys_open(L, filename, flags, mode);
       ccsys_init_filedes_handler(L, filedes_H, fd);
-      ccsys_handler_remove_init(L, filename_H, filename);
+      ccsys_init_remove_handler(L, filename_H, filename);
     }
 
     /* Inspect the file by pathname. */
@@ -915,13 +915,13 @@ test_5_1 (cce_destination_t upper_L)
       mode.data  = CCSYS_S_IRUSR | CCSYS_S_IWUSR;
       fd = ccsys_open(L, filename, flags, mode);
       ccsys_init_filedes_handler(L, filedes_H, fd);
-      ccsys_handler_remove_init(L, filename_H, filename);
+      ccsys_init_remove_handler(L, filename_H, filename);
     }
 
     /* Create the link. */
     {
       ccsys_link(L, filename, linkname);
-      ccsys_handler_remove_init(L, linkname_H, linkname);
+      ccsys_init_remove_handler(L, linkname_H, linkname);
     }
 
     /* Verify the link existence. */
@@ -965,13 +965,13 @@ test_5_2 (cce_destination_t upper_L)
       mode.data  = CCSYS_S_IRUSR | CCSYS_S_IWUSR;
       fd = ccsys_open(L, filename, flags, mode);
       ccsys_init_filedes_handler(L, filedes_H, fd);
-      ccsys_handler_remove_init(L, filename_H, filename);
+      ccsys_init_remove_handler(L, filename_H, filename);
     }
 
     /* Create the link. */
     {
       ccsys_symlink(L, filename, linkname);
-      ccsys_handler_remove_init(L, linkname_H, linkname);
+      ccsys_init_remove_handler(L, linkname_H, linkname);
     }
 
     /* Verify the link existence. */
@@ -1030,7 +1030,7 @@ test_5_3_1 (cce_destination_t upper_L)
       mode.data  = CCSYS_S_IRUSR | CCSYS_S_IWUSR;
       fd = ccsys_openat(L, dirfd, filename, flags, mode);
       ccsys_init_filedes_handler(L, filedes_H, fd);
-      ccsys_handler_remove_init(L, filename_H, filename);
+      ccsys_init_remove_handler(L, filename_H, filename);
     }
 
     /* Create the link. */
@@ -1039,7 +1039,7 @@ test_5_3_1 (cce_destination_t upper_L)
 
       flags.data = 0;
       ccsys_linkat(L, dirfd, filename, dirfd, linkname, flags);
-      ccsys_handler_remove_init(L, linkname_H, linkname);
+      ccsys_init_remove_handler(L, linkname_H, linkname);
     }
 
     /* Verify the link existence. */
@@ -1081,7 +1081,7 @@ test_5_3_2 (cce_destination_t upper_L)
       flags.data = CCSYS_O_CREAT;
       mode.data  = CCSYS_S_IRUSR | CCSYS_S_IWUSR;
       ccsys_touch(L, filename, flags, mode);
-      ccsys_handler_remove_init(L, filename_H, filename);
+      ccsys_init_remove_handler(L, filename_H, filename);
     }
 
     /* Create the link. */
@@ -1090,7 +1090,7 @@ test_5_3_2 (cce_destination_t upper_L)
 
       flags.data = 0;
       ccsys_linkat(L, CCSYS_AT_FDCWD, filename, CCSYS_AT_FDCWD, linkname, flags);
-      ccsys_handler_remove_init(L, linkname_H, linkname);
+      ccsys_init_remove_handler(L, linkname_H, linkname);
     }
 
     /* Verify the link existence. */
@@ -1149,13 +1149,13 @@ test_5_4_1 (cce_destination_t upper_L)
       mode.data  = CCSYS_S_IRUSR | CCSYS_S_IWUSR;
       fd = ccsys_openat(L, dirfd, filename, flags, mode);
       ccsys_init_filedes_handler(L, filedes_H, fd);
-      ccsys_handler_remove_init(L, filename_H, filename);
+      ccsys_init_remove_handler(L, filename_H, filename);
     }
 
     /* Create the link. */
     {
       ccsys_symlinkat(L, filename, dirfd, linkname);
-      ccsys_handler_remove_init(L, linkname_H, linkname);
+      ccsys_init_remove_handler(L, linkname_H, linkname);
     }
 
     /* Verify the link existence. */
@@ -1196,13 +1196,13 @@ test_5_4_2 (cce_destination_t upper_L)
       flags.data = CCSYS_O_CREAT;
       mode.data  = CCSYS_S_IRUSR | CCSYS_S_IWUSR;
       ccsys_touch(L, filename, flags, mode);
-      ccsys_handler_remove_init(L, filename_H, filename);
+      ccsys_init_remove_handler(L, filename_H, filename);
     }
 
     /* Create the link. */
     {
       ccsys_symlinkat(L, filename, CCSYS_AT_FDCWD, linkname);
-      ccsys_handler_remove_init(L, linkname_H, linkname);
+      ccsys_init_remove_handler(L, linkname_H, linkname);
     }
 
     /* Verify the link existence. */
@@ -1244,13 +1244,13 @@ test_6_1 (cce_destination_t upper_L)
       flags.data = CCSYS_O_CREAT;
       mode.data  = CCSYS_S_IRUSR | CCSYS_S_IWUSR;
       ccsys_touch(L, filename, flags, mode);
-      ccsys_handler_remove_init(L, filename_H, filename);
+      ccsys_init_remove_handler(L, filename_H, filename);
     }
 
     /* Create the link. */
     {
       ccsys_symlink(L, filename, linkname);
-      ccsys_handler_remove_init(L, linkname_H, linkname);
+      ccsys_init_remove_handler(L, linkname_H, linkname);
     }
 
     /* Read the link. */
@@ -1294,13 +1294,13 @@ test_6_2 (cce_destination_t upper_L)
       flags.data = CCSYS_O_CREAT;
       mode.data  = CCSYS_S_IRUSR | CCSYS_S_IWUSR;
       ccsys_touch(L, filename, flags, mode);
-      ccsys_handler_remove_init(L, filename_H, filename);
+      ccsys_init_remove_handler(L, filename_H, filename);
     }
 
     /* Create the link. */
     {
       ccsys_symlink(L, filename, linkname);
-      ccsys_handler_remove_init(L, linkname_H, linkname);
+      ccsys_init_remove_handler(L, linkname_H, linkname);
     }
 
     /* Read the link. */
@@ -1342,7 +1342,7 @@ test_6_3_1 (cce_destination_t upper_L)
       flags.data = CCSYS_O_CREAT;
       mode.data  = CCSYS_S_IRUSR | CCSYS_S_IWUSR;
       ccsys_touch(L, filename, flags, mode);
-      ccsys_handler_remove_init(L, filename_H, filename);
+      ccsys_init_remove_handler(L, filename_H, filename);
     }
 
     /* Read the pathname. */
@@ -1383,7 +1383,7 @@ test_6_3_2 (cce_destination_t upper_L)
       flags.data = CCSYS_O_CREAT;
       mode.data  = CCSYS_S_IRUSR | CCSYS_S_IWUSR;
       ccsys_touch(L, filename, flags, mode);
-      ccsys_handler_remove_init(L, filename_H, filename);
+      ccsys_init_remove_handler(L, filename_H, filename);
     }
 
     /* Read the pathname. */
@@ -1424,7 +1424,7 @@ test_7_1 (cce_destination_t upper_L)
       flags.data = CCSYS_O_CREAT;
       mode.data  = CCSYS_S_IRUSR | CCSYS_S_IWUSR;
       ccsys_touch(L, filename, flags, mode);
-      ccsys_handler_remove_init(L, filename_H, filename);
+      ccsys_init_remove_handler(L, filename_H, filename);
     }
 
     /* Unlink the pathname. */
@@ -1464,7 +1464,7 @@ test_7_2 (cce_destination_t upper_L)
       flags.data = CCSYS_O_CREAT;
       mode.data  = CCSYS_S_IRUSR | CCSYS_S_IWUSR;
       ccsys_touch(L, filename, flags, mode);
-      ccsys_handler_remove_init(L, filename_H, filename);
+      ccsys_init_remove_handler(L, filename_H, filename);
     }
 
     /* Unlink the pathname. */
@@ -1508,13 +1508,13 @@ test_8_1 (cce_destination_t upper_L)
       flags.data = CCSYS_O_CREAT;
       mode.data  = CCSYS_S_IRUSR | CCSYS_S_IWUSR;
       ccsys_touch(L, filename, flags, mode);
-      ccsys_handler_remove_init(L, filename_H, filename);
+      ccsys_init_remove_handler(L, filename_H, filename);
     }
 
     /* Rename the pathname. */
     {
       ccsys_rename(L, filename, newname);
-      ccsys_handler_remove_init(L, newname_H, newname);
+      ccsys_init_remove_handler(L, newname_H, newname);
       cctests_assert(L, false == ccsys_pathname_isreg(L, filename));
       cctests_assert(L, true  == ccsys_pathname_isreg(L, newname));
     }
@@ -1550,13 +1550,13 @@ test_8_2 (cce_destination_t upper_L)
       flags.data = CCSYS_O_CREAT;
       mode.data  = CCSYS_S_IRUSR | CCSYS_S_IWUSR;
       ccsys_touch(L, filename, flags, mode);
-      ccsys_handler_remove_init(L, filename_H, filename);
+      ccsys_init_remove_handler(L, filename_H, filename);
     }
 
     /* Rename the pathname. */
     {
       ccsys_renameat(L, CCSYS_AT_FDCWD, filename, CCSYS_AT_FDCWD, newname);
-      ccsys_handler_remove_init(L, newname_H, newname);
+      ccsys_init_remove_handler(L, newname_H, newname);
       cctests_assert(L, false == ccsys_pathname_isreg(L, filename));
       cctests_assert(L, true  == ccsys_pathname_isreg(L, newname));
     }
@@ -1595,7 +1595,7 @@ test_8_3 (cce_destination_t upper_L CCSYS_UNUSED)
       flags.data = CCSYS_O_CREAT;
       mode.data  = CCSYS_S_IRUSR | CCSYS_S_IWUSR;
       ccsys_touch(L, filename, flags, mode);
-      ccsys_handler_remove_init(L, filename_H, filename);
+      ccsys_init_remove_handler(L, filename_H, filename);
     }
 
     /* Rename the pathname. */
@@ -1604,7 +1604,7 @@ test_8_3 (cce_destination_t upper_L CCSYS_UNUSED)
 
       flags.data = 0;
       ccsys_renameat2(L, CCSYS_AT_FDCWD, filename, CCSYS_AT_FDCWD, newname, flags);
-      ccsys_handler_remove_init(L, newname_H, newname);
+      ccsys_init_remove_handler(L, newname_H, newname);
       cctests_assert(L, false == ccsys_pathname_isreg(L, filename));
       cctests_assert(L, true  == ccsys_pathname_isreg(L, newname));
     }
@@ -1640,7 +1640,7 @@ test_9_1 (cce_destination_t upper_L CCSYS_UNUSED)
       flags.data = CCSYS_O_CREAT;
       mode.data  = CCSYS_S_IRUSR | CCSYS_S_IWUSR;
       ccsys_touch(L, filename, flags, mode);
-      ccsys_handler_remove_init(L, filename_H, filename);
+      ccsys_init_remove_handler(L, filename_H, filename);
     }
 
     /* Change ownership. */
@@ -1681,13 +1681,13 @@ test_9_2 (cce_destination_t upper_L)
       flags.data = CCSYS_O_CREAT;
       mode.data  = CCSYS_S_IRUSR | CCSYS_S_IWUSR;
       ccsys_touch(L, filename, flags, mode);
-      ccsys_handler_remove_init(L, filename_H, filename);
+      ccsys_init_remove_handler(L, filename_H, filename);
     }
 
     /* Create the link. */
     {
       ccsys_symlink(L, filename, linkname);
-      ccsys_handler_remove_init(L, linkname_H, linkname);
+      ccsys_init_remove_handler(L, linkname_H, linkname);
     }
 
     /* Change ownership. */
@@ -1730,7 +1730,7 @@ test_9_3 (cce_destination_t upper_L)
       mode.data  = CCSYS_S_IRUSR | CCSYS_S_IWUSR;
       fd = ccsys_open(L, filename, flags, mode);
       ccsys_init_filedes_handler(L, filedes_H, fd);
-      ccsys_handler_remove_init(L, filename_H, filename);
+      ccsys_init_remove_handler(L, filename_H, filename);
     }
 
     /* Change ownership. */
@@ -1770,7 +1770,7 @@ test_9_4 (cce_destination_t upper_L)
       flags.data = CCSYS_O_CREAT;
       mode.data  = CCSYS_S_IRUSR | CCSYS_S_IWUSR;
       ccsys_touch(L, filename, flags, mode);
-      ccsys_handler_remove_init(L, filename_H, filename);
+      ccsys_init_remove_handler(L, filename_H, filename);
     }
 
     /* Change ownership. */
@@ -1814,7 +1814,7 @@ test_10_1 (cce_destination_t upper_L)
       flags.data = CCSYS_O_CREAT;
       mode.data  = 0;
       ccsys_touch(L, filename, flags, mode);
-      ccsys_handler_remove_init(L, filename_H, filename);
+      ccsys_init_remove_handler(L, filename_H, filename);
     }
 
     /* Change mode. */
@@ -1866,7 +1866,7 @@ test_10_2 (cce_destination_t upper_L)
       mode.data  = 0;
       fd = ccsys_open(L, filename, flags, mode);
       ccsys_init_filedes_handler(L, filedes_H, fd);
-      ccsys_handler_remove_init(L, filename_H, filename);
+      ccsys_init_remove_handler(L, filename_H, filename);
     }
 
     /* Change mode. */
@@ -1915,7 +1915,7 @@ test_10_3 (cce_destination_t upper_L)
       flags.data = CCSYS_O_CREAT;
       mode.data  = 0;
       ccsys_touch(L, filename, flags, mode);
-      ccsys_handler_remove_init(L, filename_H, filename);
+      ccsys_init_remove_handler(L, filename_H, filename);
     }
 
     /* Change mode. */
@@ -1971,7 +1971,7 @@ test_11_1 (cce_destination_t upper_L)
       flags.data = CCSYS_O_CREAT;
       mode.data  = 0;
       ccsys_touch(L, filename, flags, mode);
-      ccsys_handler_remove_init(L, filename_H, filename);
+      ccsys_init_remove_handler(L, filename_H, filename);
     }
 
     /* Testing permissions. */
@@ -2030,7 +2030,7 @@ test_11_2 (cce_destination_t upper_L)
       flags.data = CCSYS_O_CREAT;
       mode.data  = 0;
       ccsys_touch(L, filename, flags, mode);
-      ccsys_handler_remove_init(L, filename_H, filename);
+      ccsys_init_remove_handler(L, filename_H, filename);
     }
 
     /* Testing permissions. */
@@ -2100,7 +2100,7 @@ test_12_1 (cce_destination_t upper_L)
       mode.data  = CCSYS_S_IRUSR | CCSYS_S_IWUSR;
       fd = ccsys_open(L, filename, flags, mode);
       ccsys_init_filedes_handler(L, filedes_H, fd);
-      ccsys_handler_remove_init(L, filename_H, filename);
+      ccsys_init_remove_handler(L, filename_H, filename);
     }
 
     /* Write some data to the file. */
@@ -2166,7 +2166,7 @@ test_12_2 (cce_destination_t upper_L)
       mode.data  = CCSYS_S_IRUSR | CCSYS_S_IWUSR;
       fd = ccsys_open(L, filename, flags, mode);
       ccsys_init_filedes_handler(L, filedes_H, fd);
-      ccsys_handler_remove_init(L, filename_H, filename);
+      ccsys_init_remove_handler(L, filename_H, filename);
     }
 
     /* Write some data to the file. */
@@ -2234,7 +2234,7 @@ test_13_1 (cce_destination_t upper_L)
       flags.data = CCSYS_O_CREAT | CCSYS_O_RDWR;
       mode.data  = CCSYS_S_IRUSR | CCSYS_S_IWUSR;
       ccsys_touch(L, filename, flags, mode);
-      ccsys_handler_remove_init(L, filename_H, filename);
+      ccsys_init_remove_handler(L, filename_H, filename);
     }
 
     /* Set the times. */
@@ -2299,13 +2299,13 @@ test_13_2 (cce_destination_t upper_L)
       flags.data = CCSYS_O_CREAT | CCSYS_O_RDWR;
       mode.data  = CCSYS_S_IRUSR | CCSYS_S_IWUSR;
       ccsys_touch(L, filename, flags, mode);
-      ccsys_handler_remove_init(L, filename_H, filename);
+      ccsys_init_remove_handler(L, filename_H, filename);
     }
 
     /* Create the link. */
     {
       ccsys_symlink(L, filename, linkname);
-      ccsys_handler_remove_init(L, linkname_H, linkname);
+      ccsys_init_remove_handler(L, linkname_H, linkname);
     }
 
     /* Set the times. */
@@ -2371,7 +2371,7 @@ test_13_3 (cce_destination_t upper_L)
       mode.data  = CCSYS_S_IRUSR | CCSYS_S_IWUSR;
       fd = ccsys_open(L, filename, flags, mode);
       ccsys_init_filedes_handler(L, filedes_H, fd);
-      ccsys_handler_remove_init(L, filename_H, filename);
+      ccsys_init_remove_handler(L, filename_H, filename);
     }
 
     /* Set the times. */
@@ -2434,7 +2434,7 @@ test_13_4 (cce_destination_t upper_L)
       flags.data = CCSYS_O_CREAT | CCSYS_O_RDWR;
       mode.data  = CCSYS_S_IRUSR | CCSYS_S_IWUSR;
       ccsys_touch(L, filename, flags, mode);
-      ccsys_handler_remove_init(L, filename_H, filename);
+      ccsys_init_remove_handler(L, filename_H, filename);
     }
 
     /* Set the times. */
@@ -2497,7 +2497,7 @@ test_13_5 (cce_destination_t upper_L)
       flags.data = CCSYS_O_CREAT | CCSYS_O_RDWR;
       mode.data  = CCSYS_S_IRUSR | CCSYS_S_IWUSR;
       ccsys_touch(L, filename, flags, mode);
-      ccsys_handler_remove_init(L, filename_H, filename);
+      ccsys_init_remove_handler(L, filename_H, filename);
     }
 
     /* Set the times. */
@@ -2565,7 +2565,7 @@ test_13_6 (cce_destination_t upper_L)
       mode.data  = CCSYS_S_IRUSR | CCSYS_S_IWUSR;
       fd = ccsys_open(L, filename, flags, mode);
       ccsys_init_filedes_handler(L, filedes_H, fd);
-      ccsys_handler_remove_init(L, filename_H, filename);
+      ccsys_init_remove_handler(L, filename_H, filename);
     }
 
     /* Set the times. */
@@ -2632,7 +2632,7 @@ test_14_1 (cce_destination_t upper_L)
 
       fd = ccsys_mkstemp(L, filename);
       ccsys_init_filedes_handler(L, filedes_H, fd);
-      ccsys_handler_remove_init(L, filename_H, filename);
+      ccsys_init_remove_handler(L, filename_H, filename);
     }
 
     /* Validate file existence. */
@@ -2669,7 +2669,7 @@ test_14_2 (cce_destination_t upper_L)
       flags.data = CCSYS_O_CREAT | CCSYS_O_RDWR;
       fd = ccsys_mkostemp(L, filename, flags);
       ccsys_init_filedes_handler(L, filedes_H, fd);
-      ccsys_handler_remove_init(L, filename_H, filename);
+      ccsys_init_remove_handler(L, filename_H, filename);
     }
 
     /* Validate file existence. */
@@ -2704,7 +2704,7 @@ test_14_3 (cce_destination_t upper_L)
 
       fd = ccsys_mkstemps(L, filename, 4);
       ccsys_init_filedes_handler(L, filedes_H, fd);
-      ccsys_handler_remove_init(L, filename_H, filename);
+      ccsys_init_remove_handler(L, filename_H, filename);
     }
 
     /* Validate file existence. */
@@ -2741,7 +2741,7 @@ test_14_4 (cce_destination_t upper_L)
       flags.data = CCSYS_O_CREAT | CCSYS_O_RDWR;
       fd = ccsys_mkostemps(L, filename, 4, flags);
       ccsys_init_filedes_handler(L, filedes_H, fd);
-      ccsys_handler_remove_init(L, filename_H, filename);
+      ccsys_init_remove_handler(L, filename_H, filename);
     }
 
     /* Validate file existence. */

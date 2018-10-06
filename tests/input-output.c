@@ -229,7 +229,7 @@ test_4_1 (cce_destination_t upper_L)
 
       mode.data = CCSYS_S_IRUSR | CCSYS_S_IWUSR;
       ccsys_mkfifo(L, fifoname, mode);
-      ccsys_handler_remove_init(L, fifo_H, fifoname);
+      ccsys_init_remove_handler(L, fifo_H, fifoname);
     }
 
     pid = ccsys_fork(L);
@@ -545,7 +545,7 @@ test_6_1 (cce_destination_t upper_L)
       mode.data  = CCSYS_S_IRUSR | CCSYS_S_IWUSR;
       fd = ccsys_open(L, filename, flags, mode);
       ccsys_init_filedes_handler(L, filedes_H, fd);
-      ccsys_handler_remove_init(L, file_H, filename);
+      ccsys_init_remove_handler(L, file_H, filename);
     }
 
     /* Writing. */
@@ -619,7 +619,7 @@ test_6_2 (cce_destination_t upper_L)
       mode.data  = CCSYS_S_IRUSR | CCSYS_S_IWUSR;
       fd = ccsys_open(L, filename, flags, mode);
       ccsys_init_filedes_handler(L, filedes_H, fd);
-      ccsys_handler_remove_init(L, file_H, filename);
+      ccsys_init_remove_handler(L, file_H, filename);
     }
 
     /* Writing. */
@@ -688,7 +688,7 @@ test_7_1 (cce_destination_t upper_L)
       mode.data  = CCSYS_S_IRUSR | CCSYS_S_IWUSR;
       fd = ccsys_open(L, filename, flags, mode);
       ccsys_init_filedes_handler(L, filedes_H, fd);
-      ccsys_handler_remove_init(L, file_H, filename);
+      ccsys_init_remove_handler(L, file_H, filename);
     }
 
     /* Writing. */
@@ -786,7 +786,7 @@ test_7_2 (cce_destination_t upper_L)
       mode.data  = CCSYS_S_IRUSR | CCSYS_S_IWUSR;
       fd = ccsys_open(L, filename, flags, mode);
       ccsys_init_filedes_handler(L, filedes_H, fd);
-      ccsys_handler_remove_init(L, file_H, filename);
+      ccsys_init_remove_handler(L, file_H, filename);
     }
 
     /* Writing. */
@@ -880,7 +880,7 @@ test_8_1 (cce_destination_t upper_L)
       mode.data  = CCSYS_S_IRUSR | CCSYS_S_IWUSR;
       fd = ccsys_open(L, filename, flags, mode);
       ccsys_init_filedes_handler(L, filedes_H, fd);
-      ccsys_handler_remove_init(L, file_H, filename);
+      ccsys_init_remove_handler(L, file_H, filename);
     }
 
     /* Duplicate the file descriptor. */
@@ -948,7 +948,7 @@ test_8_2 (cce_destination_t upper_L)
       mode.data  = CCSYS_S_IRUSR | CCSYS_S_IWUSR;
       fd = ccsys_open(L, filename, flags, mode);
       ccsys_init_filedes_handler(L, filedes_H, fd);
-      ccsys_handler_remove_init(L, file_H, filename);
+      ccsys_init_remove_handler(L, file_H, filename);
     }
 
     /* Duplicate the file descriptor. */
@@ -1018,7 +1018,7 @@ test_8_3 (cce_destination_t upper_L)
       mode.data  = CCSYS_S_IRUSR | CCSYS_S_IWUSR;
       fd = ccsys_open(L, filename, flags, mode);
       ccsys_init_filedes_handler(L, filedes_H, fd);
-      ccsys_handler_remove_init(L, file_H, filename);
+      ccsys_init_remove_handler(L, file_H, filename);
     }
 
     /* Duplicate the file descriptor. */
@@ -1514,7 +1514,7 @@ test_10_1 (cce_destination_t upper_L)
     {
       stream = ccsys_fopen(L, filename, mode);
       ccsys_init_stream_handler(L, stream_H, stream);
-      ccsys_handler_remove_init(L, filename_H, filename);
+      ccsys_init_remove_handler(L, filename_H, filename);
     }
 
     /* Write to the stream. */
@@ -1596,7 +1596,7 @@ test_10_2 (cce_destination_t upper_L)
     /* Open the stream. */
     {
       stream = ccsys_fopen(L, filename, mode);
-      ccsys_handler_remove_init(L, filename_H, filename);
+      ccsys_init_remove_handler(L, filename_H, filename);
     }
 
     cctests_assert(L, false == ccsys_feof(stream));
