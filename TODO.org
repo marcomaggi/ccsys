@@ -8,5 +8,8 @@
 ** sysconf
 ** pathconf
 ** umask
+* Networking
+** testing for everything
+** client and server demo programs
 * end of file
 
