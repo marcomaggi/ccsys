@@ -5864,7 +5864,7 @@ if (cce_location(L)) @{
 * fs dirs reading types::       Directory stream and entry types.
 * fs dirs reading api::         Actually reading directory entries.
 * fs dirs reading handler::     Directory stream handler.
-* fs dirs reading alternate::   An alternative way to open directories.
+* fs dirs reading fd::          Open directories with descriptors.
 @end menu
 
 @c page
@@ -5999,33 +5999,43 @@ The macro expands into a call to @cfunc{ccsys_init_dirstream_error_handler}.
 @end deftypefn
 
 @c page
-@node fs dirs reading alternate
-@subsection An alternative way to open directories
+@node fs dirs reading fd
+@subsection Open directories with descriptors
 
 
 We must remember that we can also open a directory with @cfunc{ccsys_open}, and similar functions,
 using the @code{CCSYS_O_PATH} flag as follows:
 
 @example
-cce_location_t          L[1];
-cce_clean_handler_t     dirfd_H[1];
+cce_location_t        L[1];
+cce_clean_handler_t   rmdir_H[1];
+cce_clean_handler_t   dirfd_H[1];
 
 if (cce_location(L)) @{
-  cce_run_catch_handlers_final(L);
+  cce_run_catch_handlers_raise(L, upper_L);
 @} else @{
   char const *        dirname = "name.d";
-  ccsys_open_flags_t  flags;
-  ccsys_open_mode_t   mode;
-  ccsys_fd_t          fd;
   ccsys_dirfd_t       dirfd;
 
-  flags.data = CCSYS_O_PATH;
-  mode.data  = CCSYS_S_IRWXU;
-  fd         = ccsys_open(L, dirname, flags, mode);
-  dirfd      = ccsys_dirfd_from_fd(fd);
-  ccsys_init_dirfd_handler(L, dirfd_H, dirfd);
+  @{
+    ccsys_open_mode_t     mode;
 
-  /* Do something with "dirfd". */
+    mode.data = CCSYS_S_IRWXU;
+    ccsys_mkdir(L, dirname, mode);
+    ccsys_init_rmdir_handler(L, rmdir_H, dirname);
+  @}
+
+  @{
+    ccsys_open_flags_t  flags;
+    ccsys_open_mode_t   mode;
+    ccsys_fd_t          fd;
+
+    flags.data = CCSYS_O_PATH;
+    mode.data  = CCSYS_S_IRWXU;
+    fd         = ccsys_open(L, dirname, flags, mode);
+    dirfd      = ccsys_dirfd_from_fd(fd);
+    ccsys_init_dirfd_handler(L, dirfd_H, dirfd);
+  @}
 
   cce_run_body_handlers(L);
 @}

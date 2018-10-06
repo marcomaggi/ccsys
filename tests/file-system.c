@@ -221,9 +221,9 @@ test_1_4 (cce_destination_t upper_L)
 void
 test_2_1 (cce_destination_t upper_L)
 {
-  cce_location_t          L[1];
-  cce_clean_handler_t   dirstream_H[1];
-  char const *            pathname = "./";
+  cce_location_t	L[1];
+  cce_clean_handler_t	dirstream_H[1];
+  char const *		pathname = "./";
 
   if (cce_location(L)) {
     cce_run_catch_handlers_raise(L, upper_L);
@@ -2792,6 +2792,53 @@ test_15_1 (cce_destination_t upper_L)
 }
 
 
+/** --------------------------------------------------------------------
+ ** File system: opening and closing directory descriptors.
+ ** ----------------------------------------------------------------- */
+
+void
+test_16_1 (cce_destination_t upper_L)
+{
+#if (defined HAVE_MKDIR)
+  cce_location_t	L[1];
+  cce_clean_handler_t	rmdir_H[1];
+  cce_clean_handler_t	dirfd_H[1];
+
+  if (cce_location(L)) {
+    cce_run_catch_handlers_raise(L, upper_L);
+  } else {
+    char const *        dirname = "name.d";
+    ccsys_dirfd_t       dirfd;
+
+    {
+      ccsys_open_mode_t     mode;
+
+      mode.data = CCSYS_S_IRWXU;
+      ccsys_mkdir(L, dirname, mode);
+      ccsys_init_rmdir_handler(L, rmdir_H, dirname);
+    }
+
+    {
+      ccsys_open_flags_t  flags;
+      ccsys_open_mode_t   mode;
+      ccsys_fd_t          fd;
+
+      flags.data = CCSYS_O_PATH;
+      mode.data  = CCSYS_S_IRWXU;
+      fd         = ccsys_open(L, dirname, flags, mode);
+      dirfd      = ccsys_dirfd_from_fd(fd);
+      ccsys_init_dirfd_handler(L, dirfd_H, dirfd);
+    }
+
+    /* Do something with "dirfd". */
+    if (0) { fprintf(stderr, "%s: %d\n", __func__, dirfd.data); }
+
+    cce_run_body_handlers(L);
+  }
+#endif
+}
+
+
 int
 main (void)
 {
@@ -2921,6 +2968,12 @@ main (void)
     cctests_begin_group("creating temporary directories");
     {
       cctests_run(test_15_1);
+    }
+    cctests_end_group();
+
+    cctests_begin_group("opening and closing directory file descriptors");
+    {
+      cctests_run(test_16_1);
     }
     cctests_end_group();
   }
