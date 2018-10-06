@@ -1620,14 +1620,14 @@ As usage example of @cfunc{ccsys_getenv} see the following code.
 cce_location_t        L[1];
 
 if (cce_location(L)) @{
-  cce_run_error_handlers_final(L);
+  cce_run_catch_handlers_final(L);
 @} else @{
   char const *        path;
 
   path = ccsys_getenv(L, "PATH");
   assert(NULL != path);
 
-  cce_run_clean_handlers(L);
+  cce_run_body_handlers(L);
 @}
 @end example
 
@@ -1642,14 +1642,14 @@ As usage example of @cfunc{ccsys_secure_getenv} see the following code.
 cce_location_t        L[1];
 
 if (cce_location(L)) @{
-  cce_run_error_handlers_final(L);
+  cce_run_catch_handlers_final(L);
 @} else @{
   char const *        path;
 
   path = ccsys_secure_getenv(L, "PATH");
   assert(NULL != path);
 
-  cce_run_clean_handlers(L);
+  cce_run_body_handlers(L);
 @}
 @end example
 
@@ -1664,7 +1664,7 @@ As usage example of @cfunc{ccsys_setenv} see the following code.
 cce_location_t        L[1];
 
 if (cce_location(L)) @{
-  cce_run_error_handlers_final(L);
+  cce_run_catch_handlers_final(L);
 @} else @{
   char const *        ciao;
 
@@ -1694,7 +1694,7 @@ if (cce_location(L)) @{
     assert(0 == strncmp("789", ciao, strlen("123")));
   @}
 
-  cce_run_clean_handlers(L);
+  cce_run_body_handlers(L);
 @}
 @end example
 
@@ -1709,7 +1709,7 @@ As usage example of @cfunc{ccsys_putenv} see the following code.
 cce_location_t        L[1];
 
 if (cce_location(L)) @{
-  cce_run_error_handlers_final(L);
+  cce_run_catch_handlers_final(L);
 @} else @{
   char const *        hey;
 
@@ -1721,7 +1721,7 @@ if (cce_location(L)) @{
     assert(0 == strncmp("123", hey, strlen("123")));
   @}
 
-  cce_run_clean_handlers(L);
+  cce_run_body_handlers(L);
 @}
 @end example
 
@@ -1736,7 +1736,7 @@ As usage example of @cfunc{ccsys_unsetenv} see the following code.
 cce_location_t        L[1];
 
 if (cce_location(L)) @{
-  cce_run_error_handlers_final(L);
+  cce_run_catch_handlers_final(L);
 @} else @{
   char const *        ciao;
 
@@ -1745,7 +1745,7 @@ if (cce_location(L)) @{
   ciao = ccsys_getenv(L, "CIAO");
   assert(NULL == ciao);
 
-  cce_run_clean_handlers(L);
+  cce_run_body_handlers(L);
 @}
 @end example
 
@@ -1774,9 +1774,9 @@ if (cce_location(L)) @{
       (CCSYS_ENOENT ==
         cce_ref_condition_errno_errnum(cce_condition(L)))) @{
     /* The item is not in the auxiliary vector.  Fine. */
-    cce_run_clean_handlers(L);
+    cce_run_body_handlers(L);
   @} else @{
-    cce_run_error_handlers_raise(L, upper_L);
+    cce_run_catch_handlers_raise(L, upper_L);
   @}
 @} else @{
   ccsys_getauxval_type_t  type;
@@ -1786,7 +1786,7 @@ if (cce_location(L)) @{
   rv = ccsys_getauxval(L, type);
 
   fprintf(stderr, "AT_BASE=%lu\n", rv);
-  cce_run_clean_handlers(L);
+  cce_run_body_handlers(L);
 @}
 @end example
 
@@ -2504,7 +2504,7 @@ As usage example for @cfunc{ccsys_getrusage} see the following code.
 cce_location_t        L[1];
 
 if (cce_location(L)) @{
-  cce_run_error_handlers_final(L);
+  cce_run_catch_handlers_final(L);
 @} else @{
   ccsys_rusage_t      S[1];
 
@@ -2592,7 +2592,7 @@ if (cce_location(L)) @{
     printf("ru_nivcsw = %ld\n", F);
   @}
 
-  cce_run_clean_handlers(L);
+  cce_run_body_handlers(L);
 @}
 @end example
 
@@ -2711,7 +2711,7 @@ As usage example for @cfunc{ccsys_getrlimit} see the following code.
 cce_location_t        L[1];
 
 if (cce_location(L)) @{
-  cce_run_error_handlers_final(L);
+  cce_run_catch_handlers_final(L);
 @} else @{
   ccsys_rlimit_t      S[1];
 
@@ -2722,7 +2722,7 @@ if (cce_location(L)) @{
            ccsys_luref(ccsys_ref_rlimit_rlim_max(S)));
   @}
 
-  cce_run_clean_handlers(L);
+  cce_run_body_handlers(L);
 @}
 @end example
 
@@ -2972,7 +2972,7 @@ As usage example of @cfunc{ccsys_getgroups} see the following code.
 cce_location_t        L[1];
 
 if (cce_location(L)) @{
-  cce_run_error_handlers_raise(L, upper_L);
+  cce_run_catch_handlers_raise(L, upper_L);
 @} else @{
   int         count;
 
@@ -2987,7 +2987,7 @@ if (cce_location(L)) @{
       printf("groups[%d]=%d\n", i, groups[i].data);
     @}
   @}
-  cce_run_clean_handlers(L);
+  cce_run_body_handlers(L);
 @}
 @end example
 
@@ -3002,7 +3002,7 @@ As usage example of @cfunc{ccsys_getgrouplist} see the following code.
 cce_location_t        L[1];
 
 if (cce_location(L)) @{
-  cce_run_error_handlers_raise(L, upper_L);
+  cce_run_catch_handlers_raise(L, upper_L);
 @} else @{
   char const *        username = "marco";
   int                 count;
@@ -3020,7 +3020,7 @@ if (cce_location(L)) @{
       printf("groups[%d]=%d\n", i, groups[i].data);
     @}
   @}
-  cce_run_clean_handlers(L);
+  cce_run_body_handlers(L);
 @}
 @end example
 
@@ -3057,14 +3057,14 @@ As usage example of @cfunc{getlogin_r} see the following code.
 cce_location_t        L[1];
 
 if (cce_location(L)) @{
-  cce_run_error_handlers_final(L);
+  cce_run_catch_handlers_final(L);
 @} else @{
   size_t      maxlen = CCSYS_L_CUSERID;
   char        username[maxlen];
 
   ccsys_getlogin_r(L, username, maxlen);
   printf("login user=%s\n", username);
-  cce_run_clean_handlers(L);
+  cce_run_body_handlers(L);
 @}
 @end example
 
@@ -3246,7 +3246,7 @@ As usage example of @cfunc{getpwuid} see the following code.
 cce_location_t        L[1];
 
 if (cce_location(L)) @{
-  cce_run_error_handlers_final(L);
+  cce_run_catch_handlers_final(L);
 @} else @{
   ccsys_passwd_t const *      S;
 
@@ -3260,7 +3260,7 @@ if (cce_location(L)) @{
   fprint("pw_dir=%s\n",    ccsys_ref_passwd_pw_dir(S));
   fprint("pw_shell=%s\n",  ccsys_ref_passwd_pw_shell(S));
 
-  cce_run_clean_handlers(L);
+  cce_run_body_handlers(L);
 @}
 @end example
 
@@ -3275,7 +3275,7 @@ As usage example of @cfunc{getpwnam} see the following code.
 cce_location_t        L[1];
 
 if (cce_location(L)) @{
-  cce_run_error_handlers_final(L);
+  cce_run_catch_handlers_final(L);
 @} else @{
   ccsys_passwd_t const *        S;
 
@@ -3289,7 +3289,7 @@ if (cce_location(L)) @{
   fprint("pw_dir=%s\n",    ccsys_ref_passwd_pw_dir(S));
   fprint("pw_shell=%s\n",  ccsys_ref_passwd_pw_shell(S));
 
-  cce_run_clean_handlers(L);
+  cce_run_body_handlers(L);
 @}
 @end example
 
@@ -3304,7 +3304,7 @@ As usage example of @cfunc{getpwuid_r} see the following code.
 cce_location_t        L[1];
 
 if (cce_location(L)) @{
-  cce_run_error_handlers_final(L);
+  cce_run_catch_handlers_final(L);
 @} else @{
   ccsys_passwd_t      S;
   ccsys_passwd_t *    R;
@@ -3323,7 +3323,7 @@ if (cce_location(L)) @{
   fprint("pw_dir=%s\n",    ccsys_ref_passwd_pw_dir(S));
   fprint("pw_shell=%s\n",  ccsys_ref_passwd_pw_shell(S));
 
-  cce_run_clean_handlers(L);
+  cce_run_body_handlers(L);
 @}
 @end example
 
@@ -3338,7 +3338,7 @@ As usage example of @cfunc{getpwnam_r} see the following code.
 cce_location_t        L[1];
 
 if (cce_location(L)) @{
-  cce_run_error_handlers_final(L);
+  cce_run_catch_handlers_final(L);
 @} else @{
   ccsys_passwd_t      S;
   ccsys_passwd_t *    R;
@@ -3357,7 +3357,7 @@ if (cce_location(L)) @{
   fprint("pw_dir=%s\n",    ccsys_ref_passwd_pw_dir(S));
   fprint("pw_shell=%s\n",  ccsys_ref_passwd_pw_shell(S));
 
-  cce_run_clean_handlers(L);
+  cce_run_body_handlers(L);
 @}
 @end example
 
@@ -3423,7 +3423,7 @@ cce_location_t        L[1];
 cce_clean_handler_t endpwent_H[1];
 
 if (cce_location(L)) @{
-  cce_run_error_handlers_final(L);
+  cce_run_catch_handlers_final(L);
 @} else @{
   ccsys_setpwent(L);
   ccsys_init_endpwent_handler(L, endpwent_H);
@@ -3434,7 +3434,7 @@ if (cce_location(L)) @{
     printf("pw_name=%s\n", ccsys_ref_passwd_pw_name(S));
   @}
 
-  cce_run_clean_handlers(L);
+  cce_run_body_handlers(L);
 @}
 @end example
 
@@ -3731,7 +3731,7 @@ cce_clean_handler_t   dirstream_H[1];
 cce_clean_handler_t   file_H[1];
 
 if (cce_location(L)) @{
-  cce_run_error_handlers_final(L);
+  cce_run_catch_handlers_final(L);
 @} else @{
   static char const * dirname  = "dir.d";
   static char const * filename = "name.ext";
@@ -3778,7 +3778,7 @@ if (cce_location(L)) @{
     ccsys_unlinkat(L, dirfd, filename, flags);
   @}
 
-  cce_run_clean_handlers(L);
+  cce_run_body_handlers(L);
 @}
 @end example
 
@@ -3818,12 +3818,12 @@ cce_location_t          L[1];
 cce_clean_handler_t     H[1];
 
 if (cce_location(L)) @{
-  cce_run_error_handlers_final(L);
+  cce_run_catch_handlers_final(L);
 @} else @{
   ccsys_fd_t    pipefd[2];
   ccsys_pipe(L, pipefd);
   ccsys_init_pipedes_handler(L, H, pipefd);
-  cce_run_clean_handlers(L);
+  cce_run_body_handlers(L);
 @}
 @end example
 
@@ -3864,7 +3864,7 @@ cce_location_t          L[1];
 cce_clean_handler_t   H[1];
 
 if (cce_location(L)) @{
-  cce_run_error_handlers_raise(L, upper_L);
+  cce_run_catch_handlers_raise(L, upper_L);
 @} else @{
   ccsys_fd_t    pipefd[2];
 
@@ -3893,7 +3893,7 @@ if (cce_location(L)) @{
     assert(0 == strncmp(buf, "0123456789", N));
   @}
 
-  cce_run_clean_handlers(L);
+  cce_run_body_handlers(L);
 @}
 @end example
 
@@ -3909,7 +3909,7 @@ cce_location_t          L[1];
 cce_clean_handler_t   H[1];
 
 if (cce_location(L)) @{
-  cce_run_error_handlers_raise(L, upper_L);
+  cce_run_catch_handlers_raise(L, upper_L);
 @} else @{
   ccsys_fd_t          pipefd[2];
 
@@ -3940,7 +3940,7 @@ if (cce_location(L)) @{
     assert(0 == strncmp(buf, "0123456789", N));
   @}
 
-  cce_run_clean_handlers(L);
+  cce_run_body_handlers(L);
 @}
 @end example
 
@@ -4008,7 +4008,7 @@ sample (void)
   cce_clean_handler_t fifo_H[1];
 
   if (cce_location(L)) @{
-    cce_run_error_handlers_final(L);
+    cce_run_catch_handlers_final(L);
   @} else @{
     static char const * fifoname = "fifo.ext";
     ccsys_pid_t         pid;
@@ -4037,7 +4037,7 @@ sample (void)
       /* We are in the child process. */
       sample_child(fifoname);
     @}
-    cce_run_clean_handlers(L);
+    cce_run_body_handlers(L);
   @}
 @}
 
@@ -4049,7 +4049,7 @@ sample_parent (cce_destination_t upper_L, char const * fifoname)
   ccsys_fd_t            infd;
 
   if (cce_location(L)) @{
-    cce_run_error_handlers_raise(L, upper_L);
+    cce_run_catch_handlers_raise(L, upper_L);
   @} else @{
     /* Open the FIFO for reading. */
     @{
@@ -4068,7 +4068,7 @@ sample_parent (cce_destination_t upper_L, char const * fifoname)
       ccsys_read (L, infd, inbuf, len);
     @}
 
-    cce_run_clean_handlers(L);
+    cce_run_body_handlers(L);
   @}
 @}
 
@@ -4080,7 +4080,7 @@ sample_child  (char const * fifoname)
   cce_clean_handler_t oufd_H[1];
 
   if (cce_location(L)) @{
-    cce_run_error_handlers_final(L);
+    cce_run_catch_handlers_final(L);
   @} else @{
     /* Open the FIFO for writing. */
     @{
@@ -4098,7 +4098,7 @@ sample_child  (char const * fifoname)
       char *    oubuf = "0123456789";
       ccsys_write(L, oufd, oubuf, len);
     @}
-    cce_run_clean_handlers(L);
+    cce_run_body_handlers(L);
   @}
 
   /* Terminate the child process. */
@@ -4151,7 +4151,7 @@ sample (void)
   ccsys_at_link_t       fifo_unlink_data;
 
   if (cce_location(L)) @{
-    cce_run_error_handlers_final(L);
+    cce_run_catch_handlers_final(L);
   @} else @{
     static char const * dirname  = "name.d";
     static char const * fifoname = "fifo.ext";
@@ -4201,7 +4201,7 @@ sample (void)
       /* We are in the child process. */
       sample_child(dirfd, fifoname);
     @}
-    cce_run_clean_handlers(L);
+    cce_run_body_handlers(L);
   @}
 @}
 
@@ -4214,7 +4214,7 @@ sample_parent (cce_destination_t upper_L,
   ccsys_fd_t            infd;
 
   if (cce_location(L)) @{
-    cce_run_error_handlers_raise(L, upper_L);
+    cce_run_catch_handlers_raise(L, upper_L);
   @} else @{
     /* Open the FIFO for reading. */
     @{
@@ -4233,7 +4233,7 @@ sample_parent (cce_destination_t upper_L,
       ccsys_read (L, infd, inbuf, len);
     @}
 
-    cce_run_clean_handlers(L);
+    cce_run_body_handlers(L);
   @}
 @}
 
@@ -4245,7 +4245,7 @@ sample_child (ccsys_dirfd_t dirfd, char const * fifoname)
   cce_clean_handler_t oufd_H[1];
 
   if (cce_location(L)) @{
-    cce_run_error_handlers_final(L);
+    cce_run_catch_handlers_final(L);
   @} else @{
     /* Open the FIFO for writing. */
     @{
@@ -4263,7 +4263,7 @@ sample_child (ccsys_dirfd_t dirfd, char const * fifoname)
       char *    oubuf = "0123456789";
       ccsys_write(L, oufd, oubuf, len);
     @}
-    cce_run_clean_handlers(L);
+    cce_run_body_handlers(L);
   @}
 
   /* Terminate the child process. */
@@ -4299,7 +4299,7 @@ cce_location_t          L[1];
 cce_clean_handler_t   H[1];
 
 if (cce_location(L)) @{
-  cce_run_error_handlers_raise(L, upper_L);
+  cce_run_catch_handlers_raise(L, upper_L);
 @} else @{
   static char const * filename = "name.ext";
   ccsys_open_flags_t  flags;
@@ -4312,7 +4312,7 @@ if (cce_location(L)) @{
   ccsys_init_filedes_handler(L, H, fd);
 
   /* Do something with "fd" here. */
-  cce_run_clean_handlers(L);
+  cce_run_body_handlers(L);
 @}
 @end example
 
@@ -4398,7 +4398,7 @@ cce_clean_handler_t   filedes_H[1];
 cce_clean_handler_t   file_H[1];
 
 if (cce_location(L)) @{
-  cce_run_error_handlers_raise(L, upper_L);
+  cce_run_catch_handlers_raise(L, upper_L);
 @} else @{
   static char const * filename = "name.ext";
   ccsys_fd_t          fd;
@@ -4442,7 +4442,7 @@ if (cce_location(L)) @{
     N = ccsys_read(L, fd, buf, len);
   @}
 
-  cce_run_clean_handlers(L);
+  cce_run_body_handlers(L);
 @}
 @end example
 
@@ -4460,7 +4460,7 @@ cce_clean_handler_t   filedes_H[1];
 cce_clean_handler_t   file_H[1];
 
 if (cce_location(L)) @{
-  cce_run_error_handlers_raise(L, upper_L);
+  cce_run_catch_handlers_raise(L, upper_L);
 @} else @{
   static char const * filename = "name.ext";
   ccsys_fd_t          fd;
@@ -4499,7 +4499,7 @@ if (cce_location(L)) @{
     offset.data = 0;
     N = ccsys_pread(L, fd, buf, len, offset);
   @}
-  cce_run_clean_handlers(L);
+  cce_run_body_handlers(L);
 @}
 @end example
 
@@ -4609,7 +4609,7 @@ cce_clean_handler_t   filedes_H[1];
 cce_clean_handler_t   file_H[1];
 
 if (cce_location(L)) @{
-  cce_run_error_handlers_raise(L, upper_L);
+  cce_run_catch_handlers_raise(L, upper_L);
 @} else @{
   static char const * filename = "name.ext";
   ccsys_fd_t          fd;
@@ -4675,7 +4675,7 @@ if (cce_location(L)) @{
     N = ccsys_readv(L, fd, vec, buf_count);
   @}
 
-  cce_run_clean_handlers(L);
+  cce_run_body_handlers(L);
 @}
 @end example
 
@@ -4693,7 +4693,7 @@ cce_clean_handler_t   filedes_H[1];
 cce_clean_handler_t   file_H[1];
 
 if (cce_location(L)) @{
-  cce_run_error_handlers_raise(L, upper_L);
+  cce_run_catch_handlers_raise(L, upper_L);
 @} else @{
   static char const * filename = "name.ext";
   ccsys_fd_t          fd;
@@ -4754,7 +4754,7 @@ if (cce_location(L)) @{
     N = ccsys_preadv(L, fd, vec, buf_count, offset);
   @}
 
-  cce_run_clean_handlers(L);
+  cce_run_body_handlers(L);
 @}
 @end example
 
@@ -4801,7 +4801,7 @@ cce_clean_handler_t   filedes_H[1];
 cce_clean_handler_t   file_H[1];
 
 if (cce_location(L)) @{
-  cce_run_error_handlers_raise(L, upper_L);
+  cce_run_catch_handlers_raise(L, upper_L);
  @} else @{
   static char const * filename = "name.ext";
   ccsys_fd_t          fd, fdx;
@@ -4841,7 +4841,7 @@ if (cce_location(L)) @{
     ccsys_pread(L, fdx, inbuf, len, offset);
    @}
 
-  cce_run_clean_handlers(L);
+  cce_run_body_handlers(L);
  @}
 @end example
 
@@ -4859,7 +4859,7 @@ cce_clean_handler_t   filedes_H[1];
 cce_clean_handler_t   file_H[1];
 
 if (cce_location(L)) @{
-  cce_run_error_handlers_raise(L, upper_L);
+  cce_run_catch_handlers_raise(L, upper_L);
 @} else @{
   static char const * filename = "name.ext";
   ccsys_fd_t          fd, fdx;
@@ -4903,7 +4903,7 @@ if (cce_location(L)) @{
     ccsys_pread(L, fdx, inbuf, len, offset);
   @}
 
-  cce_run_clean_handlers(L);
+  cce_run_body_handlers(L);
 @}
 @end example
 
@@ -4921,7 +4921,7 @@ cce_clean_handler_t   filedes_H[1];
 cce_clean_handler_t   file_H[1];
 
 if (cce_location(L)) @{
-  cce_run_error_handlers_raise(L, upper_L);
+  cce_run_catch_handlers_raise(L, upper_L);
 @} else @{
   static char const * filename = "name.ext";
   ccsys_fd_t          fd, fdx;
@@ -4968,7 +4968,7 @@ if (cce_location(L)) @{
     ccsys_pread(L, fdx, inbuf, len, offset);
   @}
 
-  cce_run_clean_handlers(L);
+  cce_run_body_handlers(L);
 @}
 @end example
 
@@ -5049,13 +5049,13 @@ doit (cce_destination_t upper_L)
     cce_error_handler_t         backwards_H[1];
 
     if (cce_location(L)) @{
-      cce_run_error_handlers_raise(L, upper_L);
+      cce_run_catch_handlers_raise(L, upper_L);
     @} else @{
       ccsys_pipe(L, forwards);
       ccsys_handler_pipedes_init(L, forwards_H, forwards);
       ccsys_pipe(L, backwards);
       ccsys_handler_pipedes_init(L, backwards_H, backwards);
-      cce_run_clean_handlers(L);
+      cce_run_body_handlers(L);
     @}
 
     /* Here the pipes have been allocated.
@@ -5072,7 +5072,7 @@ doit (cce_destination_t upper_L)
     ccsys_pid_t         pid;
 
     if (cce_location(L)) @{
-      cce_run_error_handlers_raise(L, upper_L);
+      cce_run_catch_handlers_raise(L, upper_L);
     @} else @{
       pid = ccsys_fork(L);
       if (ccsys_in_parent_after_fork(pid)) @{
@@ -5096,7 +5096,7 @@ doit (cce_destination_t upper_L)
           ccsys_exit(status);
         @}
       @}
-      cce_run_clean_handlers(L);
+      cce_run_body_handlers(L);
     @}
   @}
 @}
@@ -5110,7 +5110,7 @@ doit_parent (cce_destination_t upper_L,
   cce_clean_handler_t oufd_H[1];
 
   if (cce_location(L)) @{
-    cce_run_error_handlers_raise(L, upper_L);
+    cce_run_catch_handlers_raise(L, upper_L);
   @} else @{
     ccsys_init_filedes_handler(L, infd_H, infd);
     ccsys_init_filedes_handler(L, oufd_H, oufd);
@@ -5167,7 +5167,7 @@ doit_parent (cce_destination_t upper_L,
       assert(0 == strncmp(buf, "hello parent", N));
     @}
 
-    cce_run_clean_handlers(L);
+    cce_run_body_handlers(L);
   @}
 @}
 
@@ -5179,7 +5179,7 @@ doit_child (ccsys_fd_t infd, ccsys_fd_t oufd)
   cce_clean_handler_t oufd_H[1];
 
   if (cce_location(L)) @{
-    cce_run_error_handlers_final(L);
+    cce_run_catch_handlers_final(L);
   @} else @{
     ccsys_init_filedes_handler(L, infd_H, infd);
     ccsys_init_filedes_handler(L, oufd_H, oufd);
@@ -5236,7 +5236,7 @@ doit_child (ccsys_fd_t infd, ccsys_fd_t oufd)
       assert(N == len);
     @}
 
-    cce_run_clean_handlers(L);
+    cce_run_body_handlers(L);
   @}
 @}
 @end smallexample
@@ -5269,13 +5269,13 @@ doit (cce_destination_t upper_L)
     cce_error_handler_t         backwards_H[1];
 
     if (cce_location(L)) @{
-      cce_run_error_handlers_raise(L, upper_L);
+      cce_run_catch_handlers_raise(L, upper_L);
     @} else @{
       ccsys_pipe(L, forwards);
       ccsys_handler_pipedes_init(L, forwards_H, forwards);
       ccsys_pipe(L, backwards);
       ccsys_handler_pipedes_init(L, backwards_H, backwards);
-      cce_run_clean_handlers(L);
+      cce_run_body_handlers(L);
     @}
 
     /* Here the pipes have been allocated.
@@ -5292,7 +5292,7 @@ doit (cce_destination_t upper_L)
     ccsys_pid_t         pid;
 
     if (cce_location(L)) @{
-      cce_run_error_handlers_raise(L, upper_L);
+      cce_run_catch_handlers_raise(L, upper_L);
     @} else @{
       pid = ccsys_fork(L);
       if (ccsys_in_parent_after_fork(pid)) @{
@@ -5316,7 +5316,7 @@ doit (cce_destination_t upper_L)
           ccsys_exit(status);
         @}
       @}
-      cce_run_clean_handlers(L);
+      cce_run_body_handlers(L);
     @}
   @}
 @}
@@ -5330,7 +5330,7 @@ doit_parent (cce_destination_t upper_L,
   cce_clean_handler_t oufd_H[1];
 
   if (cce_location(L)) @{
-    cce_run_error_handlers_raise(L, upper_L);
+    cce_run_catch_handlers_raise(L, upper_L);
   @} else @{
     ccsys_init_filedes_handler(L, infd_H, infd);
     ccsys_init_filedes_handler(L, oufd_H, oufd);
@@ -5391,7 +5391,7 @@ doit_parent (cce_destination_t upper_L,
       assert(0 == strncmp(buf, "hello parent", N));
     @}
 
-    cce_run_clean_handlers(L);
+    cce_run_body_handlers(L);
   @}
 @}
 
@@ -5403,7 +5403,7 @@ doit_child (ccsys_fd_t infd, ccsys_fd_t oufd)
   cce_clean_handler_t oufd_H[1];
 
   if (cce_location(L)) @{
-    cce_run_error_handlers_final(L);
+    cce_run_catch_handlers_final(L);
   @} else @{
     ccsys_init_filedes_handler(L, infd_H, infd);
     ccsys_init_filedes_handler(L, oufd_H, oufd);
@@ -5464,7 +5464,7 @@ doit_child (ccsys_fd_t infd, ccsys_fd_t oufd)
       assert(N == len);
     @}
 
-    cce_run_clean_handlers(L);
+    cce_run_body_handlers(L);
   @}
 @}
 @end smallexample
@@ -5707,7 +5707,7 @@ As usage example of @cfunc{ccsys_touch} see the following code:
 cce_location_t  L[1];
 
 if (cce_location(L)) @{
-  cce_run_error_handlers_final(L);
+  cce_run_catch_handlers_final(L);
 @} else @{
   ccsys_open_flags_t    flags;
   ccsys_open_mode_t     mode;
@@ -5716,7 +5716,7 @@ if (cce_location(L)) @{
   mode.data  = CCSYS_S_IRUSR | CCSYS_S_IWUSR;
   ccsys_touch(L, filename, flags, mode);
 
-  cce_run_clean_handlers(L);
+  cce_run_body_handlers(L);
 @}
 @end example
 
@@ -5796,7 +5796,7 @@ cce_location_t        L[1];
 volatile size_t       len = 1;
 
 if (CCE_EXCEPT == cce_location(L)) @{
-  cce_run_error_handlers_raise(L, upper_L);
+  cce_run_catch_handlers_raise(L, upper_L);
 @} else @{
   cce_location_t      inner_L[1];
 
@@ -5808,7 +5808,7 @@ if (CCE_EXCEPT == cce_location(L)) @{
         cce_retry(L);
       @}
     @}
-    cce_run_error_handlers_raise(inner_L, L);
+    cce_run_catch_handlers_raise(inner_L, L);
   @} else @{
     char      buf[len];
 
@@ -5816,9 +5816,9 @@ if (CCE_EXCEPT == cce_location(L)) @{
 
     /* Do something with "buf" here; usually copy it into
        another buffer. */
-    cce_run_clean_handlers(inner_L);
+    cce_run_body_handlers(inner_L);
   @}
-  cce_run_clean_handlers(L);
+  cce_run_body_handlers(L);
 @}
 @end example
 
@@ -5843,7 +5843,7 @@ cce_location_t        L[1];
 cce_clean_handler_t H[1];
 
 if (cce_location(L)) @{
-  cce_run_error_handlers_raise(L, upper_L);
+  cce_run_catch_handlers_raise(L, upper_L);
 @} else @{
   char *      buf;
 
@@ -5851,7 +5851,7 @@ if (cce_location(L)) @{
   ccsys_handler_malloc_init(L, H, buf);
 
   /* Do something with "buf" here. */
-  cce_run_clean_handlers(L);
+  cce_run_body_handlers(L);
 @}
 @end example
 
@@ -5953,7 +5953,7 @@ cce_clean_handler_t     dirstream_H[1];
 char const *            pathname = "./";
 
 if (cce_location(L)) @{
-  cce_run_error_handlers_final(L);
+  cce_run_catch_handlers_final(L);
 @} else @{
   ccsys_dir_t *         dirstream;
   ccsys_dirent_t *      direntry;
@@ -5966,7 +5966,7 @@ if (cce_location(L)) @{
     printf("%s\n", ccsys_ref_dirent_d_name(direntry));
     fflush(stdout);
   @}
-  cce_run_clean_handlers(L);
+  cce_run_body_handlers(L);
 @}
 @end example
 
@@ -6007,10 +6007,11 @@ We must remember that we can also open a directory with @cfunc{ccsys_open}, and 
 using the @code{CCSYS_O_PATH} flag as follows:
 
 @example
-cce_location_t  L[1];
+cce_location_t          L[1];
+cce_clean_handler_t     dirfd_H[1];
 
 if (cce_location(L)) @{
-  cce_run_error_handlers_final(L);
+  cce_run_catch_handlers_final(L);
 @} else @{
   char const *        dirname = "name.d";
   ccsys_open_flags_t  flags;
@@ -6022,12 +6023,41 @@ if (cce_location(L)) @{
   mode.data  = CCSYS_S_IRWXU;
   fd         = ccsys_open(L, dirname, flags, mode);
   dirfd      = ccsys_dirfd_from_fd(fd);
+  ccsys_init_dirfd_handler(L, dirfd_H, dirfd);
 
   /* Do something with "dirfd". */
 
-  cce_run_clean_handlers(L);
+  cce_run_body_handlers(L);
 @}
 @end example
+
+The handler documented here will ignore errors returned by @cfunc{close}, which is generally bad; we
+can use the source code of this handler as template to implement a more complete procedure.
+
+The following symbols are defined in the header file @file{ccsys.h}.
+
+
+@deftypefun void ccsys_init_dirfd_clean_handler (cce_destination_t @var{L}, cce_clean_handler_t * @var{H}, ccsys_dir_t * @var{dirdf})
+@deftypefunx void ccsys_init_dirfd_error_handler (cce_destination_t @var{L}, cce_error_handler_t * @var{H}, ccsys_dir_t * @var{dirdf})
+Register @var{H} as clean or error handler in the context of @var{L}.  The handler function will
+finalise the directory descriptor using the standard function @cfunc{close}; errors in @cfunc{close}
+are @strong{ignored}.
+@end deftypefun
+
+
+@deftypefn {Preprocessor Macro} void ccsys_init_dirfd_handler (cce_destination_t @var{L}, cce_clean_handler_t * @var{H}, ccsys_dir_t * @var{dirdf})
+@deftypefnx {Preprocessor Macro} void ccsys_init_dirfd_handler (cce_destination_t @var{L}, cce_error_handler_t * @var{H}, ccsys_dir_t * @var{dirdf})
+This preprocessor macro uses @code{_Generic} to dispatch the call according to the type of the
+pointer @var{H}; if the type is:
+
+@table @code
+@item cce_clean_handler_t
+The macro expands into a call to @cfunc{ccsys_init_dirfd_clean_handler}.
+
+@item cce_error_handler_t
+The macro expands into a call to @cfunc{ccsys_init_dirfd_error_handler}.
+@end table
+@end deftypefn
 
 @c page
 @node fs dirs creating
@@ -6075,14 +6105,14 @@ cce_location_t          L[1];
 cce_clean_handler_t   dirname_H[1];
 
 if (cce_location(L)) @{
-  cce_run_error_handlers_final(L);
+  cce_run_catch_handlers_final(L);
 @} else @{
   ccsys_open_mode_t     mode;
 
   mode.data = CCSYS_S_IRWXU;
   ccsys_mkdir(L, "name.d", mode);
   ccsys_init_rmdir_handler(L, dirname_H, "name.d");
-  cce_run_clean_handlers(L);
+  cce_run_body_handlers(L);
 @}
 @end example
 
@@ -6134,7 +6164,7 @@ cce_handler_t         dirname1_H[1];
 cce_handler_t         dirstream1_H[1];
 
 if (cce_location(L)) @{
-  cce_run_error_handlers_raise(L, upper_L);
+  cce_run_catch_handlers_raise(L, upper_L);
 @} else @{
   static char const * dirname1 = "name.d";
   static char const * dirname2 = "subname.d";
@@ -6172,7 +6202,7 @@ if (cce_location(L)) @{
     ccsys_unlinkat(L, dirfd1, dirname2, flags);
   @}
 
-  cce_run_clean_handlers(L);
+  cce_run_body_handlers(L);
 @}
 @end smallexample
 
@@ -6232,7 +6262,7 @@ cce_clean_handler_t filename_H[1];
 cce_clean_handler_t linkname_H[1];
 
 if (cce_location(L)) @{
-  cce_run_error_handlers_raise(L, upper_L);
+  cce_run_catch_handlers_raise(L, upper_L);
 @} else @{
   char const *        filename = "name.ext";
   char const *        linkname = "link.ext";
@@ -6267,7 +6297,7 @@ if (cce_location(L)) @{
     assert(ccsys_s_isreg(ccsys_ref_stat_st_mode(S)));
   @}
 
-  cce_run_clean_handlers(L);
+  cce_run_body_handlers(L);
 @}
 @end smallexample
 
@@ -6284,7 +6314,7 @@ cce_clean_handler_t filename_H[1];
 cce_clean_handler_t linkname_H[1];
 
 if (cce_location(L)) @{
-  cce_run_error_handlers_raise(L, upper_L);
+  cce_run_catch_handlers_raise(L, upper_L);
 @} else @{
   char const *        filename = "name.ext";
   char const *        linkname = "link.ext";
@@ -6316,7 +6346,7 @@ if (cce_location(L)) @{
     assert(ccsys_s_islnk(ccsys_ref_stat_st_mode(S)));
   @}
 
-  cce_run_clean_handlers(L);
+  cce_run_body_handlers(L);
 @}
 @end smallexample
 
@@ -6365,7 +6395,7 @@ cce_clean_handler_t filename_H[1];
 cce_clean_handler_t linkname_H[1];
 
 if (cce_location(L)) @{
-  cce_run_error_handlers_raise(L, upper_L);
+  cce_run_catch_handlers_raise(L, upper_L);
 @} else @{
   char const *        filename = "name.ext";
   char const *        linkname = "link.ext";
@@ -6399,7 +6429,7 @@ if (cce_location(L)) @{
     /* Do something with "realname". */
   @}
 
-  cce_run_clean_handlers(L);
+  cce_run_body_handlers(L);
 @}
 @end smallexample
 
@@ -6416,7 +6446,7 @@ cce_clean_handler_t filename_H[1];
 cce_clean_handler_t linkname_H[1];
 
 if (cce_location(L)) @{
-  cce_run_error_handlers_raise(L, upper_L);
+  cce_run_catch_handlers_raise(L, upper_L);
 @} else @{
   char const *        filename = "name.ext";
   char const *        linkname = "link.ext";
@@ -6450,7 +6480,7 @@ if (cce_location(L)) @{
     /* Do something with "realname". */
   @}
 
-  cce_run_clean_handlers(L);
+  cce_run_body_handlers(L);
 @}
 @end smallexample
 
@@ -6466,7 +6496,7 @@ cce_location_t        L[1];
 cce_clean_handler_t filename_H[1];
 
 if (cce_location(L)) @{
-  cce_run_error_handlers_raise(L, upper_L);
+  cce_run_catch_handlers_raise(L, upper_L);
 @} else @{
   char const *        filename = "name.ext";
 
@@ -6492,7 +6522,7 @@ if (cce_location(L)) @{
     /* Do something with "realname". */
   @}
 
-  cce_run_clean_handlers(L);
+  cce_run_body_handlers(L);
 @}
 @end smallexample
 
@@ -6527,7 +6557,7 @@ cce_clean_handler_t   filename_H[1];
 ccsys_at_link_t         lnk;
 
 if (cce_location(L)) @{
-  cce_run_error_handlers_final(L);
+  cce_run_catch_handlers_final(L);
 @} else @{
   ccsys_dirfd_t dirfd    = CCSYS_AT_FDCWD;
   char const *  filename = "name.ext";
@@ -6550,7 +6580,7 @@ if (cce_location(L)) @{
     ccsys_init_unlinkat_handler(L, filename_H, &lnk);
   @}
 
-  cce_run_clean_handlers(L);
+  cce_run_body_handlers(L);
 @}
 @end example
 
@@ -6627,7 +6657,7 @@ cce_clean_handler_t   fd_H[1];
 cce_clean_handler_t   file_H[1];
 
 if (cce_location(L)) @{
-  cce_run_error_handlers_final(L);
+  cce_run_catch_handlers_final(L);
 @} else @{
   ccsys_open_flags_t    flags;
   ccsys_open_mode_t     mode;
@@ -6638,7 +6668,7 @@ if (cce_location(L)) @{
   fd            = ccsys_open(L, "name.ext", flags, mode);
   ccsys_init_filedes_handler(L, fd_H, fd);
   ccsys_init_remove_handler(L, file_H, "name.ext");
-  cce_run_clean_handlers(L);
+  cce_run_body_handlers(L);
 @}
 @end example
 
@@ -6722,7 +6752,7 @@ As usage example of @cfunc{ccsys_rename} see the following code.
 cce_location_t        L[1];
 
 if (cce_location(L)) @{
-  cce_run_error_handlers_raise(L, upper_L);
+  cce_run_catch_handlers_raise(L, upper_L);
 @} else @{
   char const *        filename = "name.ext";
   char const *        newname  = "blue.ext";
@@ -6744,7 +6774,7 @@ if (cce_location(L)) @{
     assert(true  == ccsys_pathname_isreg(L, newname));
   @}
 
-  cce_run_clean_handlers(L);
+  cce_run_body_handlers(L);
 @}
 @end smallexample
 
@@ -6759,7 +6789,7 @@ As usage example of @cfunc{ccsys_renameat} see the following code.
 cce_location_t        L[1];
 
 if (cce_location(L)) @{
-  cce_run_error_handlers_raise(L, upper_L);
+  cce_run_catch_handlers_raise(L, upper_L);
 @} else @{
   char const *        filename = "name.ext";
   char const *        newname  = "blue.ext";
@@ -6782,7 +6812,7 @@ if (cce_location(L)) @{
     assert(true  == ccsys_pathname_isreg(L, newname));
   @}
 
-  cce_run_clean_handlers(L);
+  cce_run_body_handlers(L);
 @}
 @end smallexample
 
@@ -6797,7 +6827,7 @@ As usage example of @cfunc{ccsys_renameat2} see the following code.
 cce_location_t        L[1];
 
 if (cce_location(L)) @{
-  cce_run_error_handlers_raise(L, upper_L);
+  cce_run_catch_handlers_raise(L, upper_L);
 @} else @{
   char const *        filename = "name.ext";
   char const *        newname  = "blue.ext";
@@ -6825,7 +6855,7 @@ if (cce_location(L)) @{
     assert(true  == ccsys_pathname_isreg(L, newname));
   @}
 
-  cce_run_clean_handlers(L);
+  cce_run_body_handlers(L);
 @}
 @end smallexample
 
@@ -7204,7 +7234,7 @@ cce_clean_handler_t   filename_H[1];
 cce_clean_handler_t   filedes_H[1];
 
 if (cce_location(L)) @{
-  cce_run_error_handlers_raise(L, upper_L);
+  cce_run_catch_handlers_raise(L, upper_L);
 @} else @{
   static char const * filename = "name.ext";
 
@@ -7279,7 +7309,7 @@ if (cce_location(L)) @{
 #endif
   @}
 
-  cce_run_clean_handlers(L);
+  cce_run_body_handlers(L);
 @}
 @end smallexample
 
@@ -7299,7 +7329,7 @@ cce_clean_handler_t filedes_H[1];
 ccsys_at_link_t       lnk;
 
 if (cce_location(L)) @{
-  cce_run_error_handlers_raise(L, upper_L);
+  cce_run_catch_handlers_raise(L, upper_L);
 @} else @{
   static char const * dirname= "name.d";
   ccsys_dirfd_t       dirfd;
@@ -7397,7 +7427,7 @@ if (cce_location(L)) @{
 #endif
   @}
 
-  cce_run_clean_handlers(L);
+  cce_run_body_handlers(L);
 @}
 @end smallexample
 
@@ -7447,7 +7477,7 @@ As usage example for @cfunc{ccsys_chown} see the following code.
 cce_location_t        L[1];
 
 if (cce_location(L)) @{
-  cce_run_error_handlers_final(L);
+  cce_run_catch_handlers_final(L);
 @} else @{
   char const *        filename = "name.ext";
 
@@ -7469,7 +7499,7 @@ if (cce_location(L)) @{
     ccsys_chown(L, filename, uid, gid);
   @}
 
-  cce_run_clean_handlers(L);
+  cce_run_body_handlers(L);
 @}
 @end example
 
@@ -7485,7 +7515,7 @@ cce_location_t        L[1];
 cce_clean_handler_t filedes_H[1];
 
 if (cce_location(L)) @{
-    cce_run_error_handlers_final(L);
+    cce_run_catch_handlers_final(L);
 @} else @{
   char const *        filename = "name.ext";
   ccsys_fd_t          fd;
@@ -7509,7 +7539,7 @@ if (cce_location(L)) @{
     ccsys_fchown(L, fd, uid, gid);
   @}
 
-  cce_run_clean_handlers(L);
+  cce_run_body_handlers(L);
 @}
 @end example
 
@@ -7524,7 +7554,7 @@ As usage example for @cfunc{ccsys_lchown} see the following code.
 cce_location_t        L[1];
 
 if (cce_location(L)) @{
-  cce_run_error_handlers_final(L);
+  cce_run_catch_handlers_final(L);
 @} else @{
   char const *        filename = "name.ext";
   char const *        linkname = "link.ext";
@@ -7552,7 +7582,7 @@ if (cce_location(L)) @{
     ccsys_lchown(L, linkname, uid, gid);
   @}
 
-  cce_run_clean_handlers(L);
+  cce_run_body_handlers(L);
 @}
 @end example
 
@@ -7567,7 +7597,7 @@ As usage example for @cfunc{ccsys_fchownat} see the following code.
 cce_location_t        L[1];
 
 if (cce_location(L)) @{
-  cce_run_error_handlers_final(L);
+  cce_run_catch_handlers_final(L);
 @} else @{
   char const *        filename = "name.ext";
 
@@ -7591,7 +7621,7 @@ if (cce_location(L)) @{
     ccsys_fchownat(L, CCSYS_AT_FDCWD, filename, uid, gid, flags);
   @}
 
-  cce_run_clean_handlers(L);
+  cce_run_body_handlers(L);
 @}
 @end example
 
@@ -7635,7 +7665,7 @@ cce_location_t        L[1];
 cce_clean_handler_t filename_H[1];
 
 if (cce_location(L)) @{
-  cce_run_error_handlers_final(L);
+  cce_run_catch_handlers_final(L);
 @} else @{
   char const *        filename = "name.ext";
 
@@ -7668,7 +7698,7 @@ if (cce_location(L)) @{
     assert(CCSYS_S_IRWXU == (CCSYS_S_IRWXU & mode.data));
   @}
 
-  cce_run_clean_handlers(L);
+  cce_run_body_handlers(L);
 @}
 @end example
 
@@ -7685,7 +7715,7 @@ cce_clean_handler_t filename_H[1];
 cce_clean_handler_t filedes_H[1];
 
 if (cce_location(L)) @{
-  cce_run_error_handlers_final(L);
+  cce_run_catch_handlers_final(L);
 @} else @{
   char const *        filename = "name.ext";
   ccsys_fd_t          fd;
@@ -7720,7 +7750,7 @@ if (cce_location(L)) @{
     assert(CCSYS_S_IRWXU == (CCSYS_S_IRWXU & mode.data));
   @}
 
-  cce_run_clean_handlers(L);
+  cce_run_body_handlers(L);
 @}
 @end example
 
@@ -7736,7 +7766,7 @@ cce_location_t        L[1];
 cce_clean_handler_t filename_H[1];
 
 if (cce_location(L)) @{
-    cce_run_error_handlers_final(L);
+    cce_run_catch_handlers_final(L);
   @} else @{
   char const *        filename = "name.ext";
 
@@ -7771,7 +7801,7 @@ if (cce_location(L)) @{
     assert(CCSYS_S_IRWXU == (CCSYS_S_IRWXU & mode.data));
   @}
 
-  cce_run_clean_handlers(L);
+  cce_run_body_handlers(L);
 @}
 @end example
 
@@ -7811,7 +7841,7 @@ cce_location_t        L[1];
 cce_clean_handler_t filename_H[1];
 
 if (cce_location(L)) @{
-  cce_run_error_handlers_final(L);
+  cce_run_catch_handlers_final(L);
 @} else @{
   char const *        filename = "name.ext";
 
@@ -7858,7 +7888,7 @@ if (cce_location(L)) @{
     assert(false == ccsys_access(L, filename, mode));
   @}
 
-  cce_run_clean_handlers(L);
+  cce_run_body_handlers(L);
 @}
 @end example
 
@@ -7874,7 +7904,7 @@ cce_location_t        L[1];
 cce_clean_handler_t filename_H[1];
 
 if (cce_location(L)) @{
-  cce_run_error_handlers_final(L);
+  cce_run_catch_handlers_final(L);
 @} else @{
   char const *        filename = "name.ext";
 
@@ -7926,7 +7956,7 @@ if (cce_location(L)) @{
       ccsys_faccessat(L, CCSYS_AT_FDCWD, filename, mode, flags));
   @}
 
-  cce_run_clean_handlers(L);
+  cce_run_body_handlers(L);
 @}
 @end example
 
@@ -7966,7 +7996,7 @@ cce_clean_handler_t filename_H[1];
 cce_clean_handler_t filedes_H[1];
 
 if (cce_location(L)) @{
-  cce_run_error_handlers_final(L);
+  cce_run_catch_handlers_final(L);
 @} else @{
   char const *        filename = "name.ext";
   ccsys_fd_t          fd;
@@ -8015,7 +8045,7 @@ if (cce_location(L)) @{
     assert(100 == ccsys_luref(ccsys_ref_stat_st_size(S)));
   @}
 
-  cce_run_clean_handlers(L);
+  cce_run_body_handlers(L);
 @}
 @end example
 
@@ -8032,7 +8062,7 @@ cce_clean_handler_t filename_H[1];
 cce_clean_handler_t filedes_H[1];
 
 if (cce_location(L)) @{
-  cce_run_error_handlers_final(L);
+  cce_run_catch_handlers_final(L);
 @} else @{
   char const *        filename = "name.ext";
   ccsys_fd_t          fd;
@@ -8081,7 +8111,7 @@ if (cce_location(L)) @{
     assert(101 == ccsys_luref(ccsys_ref_stat_st_size(S)));
   @}
 
-  cce_run_clean_handlers(L);
+  cce_run_body_handlers(L);
 @}
 @end example
 
@@ -8162,7 +8192,7 @@ cce_location_t        L[1];
 cce_clean_handler_t filename_H[1];
 
 if (cce_location(L)) @{
-  cce_run_error_handlers_final(L);
+  cce_run_catch_handlers_final(L);
 @} else @{
   char const *        filename = "name.ext";
 
@@ -8206,7 +8236,7 @@ if (cce_location(L)) @{
     assert(0   == ccsys_luref(mtim.nanoseconds));
   @}
 
-  cce_run_clean_handlers(L);
+  cce_run_body_handlers(L);
 @}
 @end example
 
@@ -8223,7 +8253,7 @@ cce_clean_handler_t filename_H[1];
 cce_clean_handler_t filedes_H[1];
 
 if (cce_location(L)) @{
-  cce_run_error_handlers_final(L);
+  cce_run_catch_handlers_final(L);
 @} else @{
   char const *        filename = "name.ext";
   ccsys_fd_t          fd;
@@ -8267,7 +8297,7 @@ if (cce_location(L)) @{
     assert(0   == ccsys_luref(mtim.nanoseconds));
   @}
 
-  cce_run_clean_handlers(L);
+  cce_run_body_handlers(L);
 @}
 @end example
 
@@ -8283,7 +8313,7 @@ cce_location_t        L[1];
 cce_clean_handler_t filename_H[1];
 
 if (cce_location(L)) @{
-  cce_run_error_handlers_final(L);
+  cce_run_catch_handlers_final(L);
 @} else @{
   char const *        filename = "name.ext";
 
@@ -8325,7 +8355,7 @@ if (cce_location(L)) @{
     assert(0   == ccsys_luref(mtim.nanoseconds));
   @}
 
-  cce_run_clean_handlers(L);
+  cce_run_body_handlers(L);
 @}
 @end example
 
@@ -8342,7 +8372,7 @@ cce_clean_handler_t filename_H[1];
 cce_clean_handler_t linkname_H[1];
 
 if (cce_location(L)) @{
-  cce_run_error_handlers_final(L);
+  cce_run_catch_handlers_final(L);
 @} else @{
   char const *        filename = "name.ext";
   char const *        linkname = "link.ext";
@@ -8391,7 +8421,7 @@ if (cce_location(L)) @{
     assert(0   == ccsys_luref(mtim.nanoseconds));
   @}
 
-  cce_run_clean_handlers(L);
+  cce_run_body_handlers(L);
 @}
 @end example
 
@@ -8408,7 +8438,7 @@ cce_clean_handler_t filename_H[1];
 cce_clean_handler_t filedes_H[1];
 
 if (cce_location(L)) @{
-  cce_run_error_handlers_final(L);
+  cce_run_catch_handlers_final(L);
 @} else @{
   char const *        filename = "name.ext";
   ccsys_fd_t          fd;
@@ -8452,7 +8482,7 @@ if (cce_location(L)) @{
     assert(0   == ccsys_luref(mtim.nanoseconds));
   @}
 
-  cce_run_clean_handlers(L);
+  cce_run_body_handlers(L);
 @}
 @end example
 
@@ -8468,7 +8498,7 @@ cce_location_t        L[1];
 cce_clean_handler_t filename_H[1];
 
 if (cce_location(L)) @{
-  cce_run_error_handlers_final(L);
+  cce_run_catch_handlers_final(L);
 @} else @{
   char const *        filename = "name.ext";
 
@@ -8510,7 +8540,7 @@ if (cce_location(L)) @{
     assert(0   == ccsys_luref(mtim.nanoseconds));
   @}
 
-  cce_run_clean_handlers(L);
+  cce_run_body_handlers(L);
 @}
 @end example
 
@@ -8588,7 +8618,7 @@ cce_clean_handler_t filename_H[1];
 cce_clean_handler_t filedes_H[1];
 
 if (cce_location(L)) @{
-  cce_run_error_handlers_final(L);
+  cce_run_catch_handlers_final(L);
 @} else @{
   char        filename[] = "name.ext.XXXXXX";
 
@@ -8604,7 +8634,7 @@ if (cce_location(L)) @{
   /* Validate file existence. */
   assert(true == ccsys_pathname_isreg(L, filename));
 
-  cce_run_clean_handlers(L);
+  cce_run_body_handlers(L);
 @}
 @end example
 
@@ -8621,7 +8651,7 @@ cce_clean_handler_t filename_H[1];
 cce_clean_handler_t filedes_H[1];
 
 if (cce_location(L)) @{
-  cce_run_error_handlers_final(L);
+  cce_run_catch_handlers_final(L);
 @} else @{
   char        filename[] = "name.ext.XXXXXX";
 
@@ -8639,7 +8669,7 @@ if (cce_location(L)) @{
   /* Validate file existence. */
   assert(true == ccsys_pathname_isreg(L, filename));
 
-  cce_run_clean_handlers(L);
+  cce_run_body_handlers(L);
 @}
 @end example
 
@@ -8656,7 +8686,7 @@ cce_clean_handler_t filename_H[1];
 cce_clean_handler_t filedes_H[1];
 
 if (cce_location(L)) @{
-  cce_run_error_handlers_final(L);
+  cce_run_catch_handlers_final(L);
 @} else @{
   char        filename[] = "nameXXXXXX.ext";
 
@@ -8672,7 +8702,7 @@ if (cce_location(L)) @{
   /* Validate file existence. */
   assert(true == ccsys_pathname_isreg(L, filename));
 
-  cce_run_clean_handlers(L);
+  cce_run_body_handlers(L);
 @}
 @end example
 
@@ -8689,7 +8719,7 @@ cce_clean_handler_t filename_H[1];
 cce_clean_handler_t filedes_H[1];
 
 if (cce_location(L)) @{
-  cce_run_error_handlers_final(L);
+  cce_run_catch_handlers_final(L);
 @} else @{
   char        filename[] = "nameXXXXXX.ext";
 
@@ -8707,7 +8737,7 @@ if (cce_location(L)) @{
   /* Validate file existence. */
   assert(true == ccsys_pathname_isreg(L, filename));
 
-  cce_run_clean_handlers(L);
+  cce_run_body_handlers(L);
 @}
 @end example
 
@@ -8723,7 +8753,7 @@ cce_location_t        L[1];
 cce_clean_handler_t dirname_H[1];
 
 if (cce_location(L)) @{
-  cce_run_error_handlers_final(L);
+  cce_run_catch_handlers_final(L);
 @} else @{
   char        dirname[] = "name.d.XXXXXX";
 
@@ -8736,7 +8766,7 @@ if (cce_location(L)) @{
   /* Validate file existence. */
   assert(true == ccsys_pathname_isdir(L, dirname));
 
-  cce_run_clean_handlers(L);
+  cce_run_body_handlers(L);
 @}
 @end example
 
@@ -9148,7 +9178,7 @@ cce_location_t        L[1];
 ccsys_signal_bub_init();
 
 if (cce_location(L)) @{
-  cce_run_error_handlers_final(L);
+  cce_run_catch_handlers_final(L);
 @} else @{
   ccsys_signum_t      signum;
   bool                flag;
@@ -9159,7 +9189,7 @@ if (cce_location(L)) @{
   flag = ccsys_signal_bub_delivered(signum);
   cctests_assert(L, true == flag);
 
-  cce_run_clean_handlers(L);
+  cce_run_body_handlers(L);
 @}
 @end example
 

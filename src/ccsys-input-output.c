@@ -836,25 +836,25 @@ ccsys_init_stream_error_handler (cce_location_t * L, cce_error_handler_t * H, cc
 
 __attribute__((nonnull(1,2)))
 static void
-cce_handler_dirfd_function (cce_condition_t const * C CCE_UNUSED, cce_handler_t * H)
+cce_dirfd_handler_function (cce_condition_t const * C CCE_UNUSED, cce_handler_t * H)
 {
   close(H->filedes);
   if (0) { fprintf(stderr, "%s: done\n", __func__); }
 }
 
 void
-ccsys_clean_handler_dirfd_init (cce_location_t * L, cce_handler_t * H, ccsys_dirfd_t dirfd)
+ccsys_init_dirfd_clean_handler (cce_location_t * L, cce_clean_handler_t * H, ccsys_dirfd_t dirfd)
 {
-  H->function	= cce_handler_dirfd_function;
-  H->filedes	= dirfd.data;
+  H->handler.function	= cce_dirfd_handler_function;
+  H->handler.filedes	= dirfd.data;
   cce_register_clean_handler(L, H);
 }
 
 void
-ccsys_error_handler_dirfd_init (cce_location_t * L, cce_handler_t * H, ccsys_dirfd_t dirfd)
+ccsys_init_dirfd_error_handler (cce_location_t * L, cce_error_handler_t * H, ccsys_dirfd_t dirfd)
 {
-  H->function	= cce_handler_dirfd_function;
-  H->filedes	= dirfd.data;
+  H->handler.function	= cce_dirfd_handler_function;
+  H->handler.filedes	= dirfd.data;
   cce_register_error_handler(L, H);
 }
 

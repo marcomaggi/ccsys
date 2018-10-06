@@ -1882,6 +1882,19 @@ ccsys_decl void ccsys_init_dirstream_error_handler (cce_destination_t L, cce_err
 	   cce_clean_handler_t	*: ccsys_init_dirstream_clean_handler,	\
 	   cce_error_handler_t	*: ccsys_init_dirstream_error_handler)(L,H,R)
 
+/* ------------------------------------------------------------------ */
+
+ccsys_decl void ccsys_init_dirfd_clean_handler (cce_location_t * L, cce_clean_handler_t * H, ccsys_dirfd_t dirfd)
+  __attribute__((__nonnull__(1,2)));
+
+ccsys_decl void ccsys_init_dirfd_error_handler (cce_location_t * L, cce_error_handler_t * H, ccsys_dirfd_t dirfd)
+  __attribute__((__nonnull__(1,2)));
+
+#define ccsys_init_dirfd_handler(L,H,R)					\
+  _Generic((H),								\
+	   cce_clean_handler_t	*: ccsys_init_dirfd_clean_handler,	\
+	   cce_error_handler_t	*: ccsys_init_dirfd_error_handler)(L,H,R)
+
 
 /** --------------------------------------------------------------------
  ** File system: reading attributes.
