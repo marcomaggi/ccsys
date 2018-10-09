@@ -270,6 +270,9 @@ with, respectively, @option{--enable-glibc} and @option{--enable-linux}.  If a s
 available: the associated wrapper will raise an exception of type
 @objtype{cce_condition_unimplemented_t}.
 
+Pathname arguments are of type @objtype{ccstructs_pathname_I}, which is an interface defined by the
+library CCStructs, @ccstructsref{pathname, The @emph{pathname} interface}.
+
 @c page
 @node overview constants
 @section How system constants are handled
@@ -2217,7 +2220,7 @@ CCSYS__CS_LFS64_LINTFLAGS
 The following symbols are defined in the header file @file{ccsys.h}.
 
 
-@deftypefun long ccsys_pathconf (cce_destination_t @var{L}, char const * @var{pathname}, ccsys_pathconf_flag_enum_t @var{name})
+@deftypefun long ccsys_pathconf (cce_destination_t @var{L}, ccstructs_pathname_I @var{ptn}, ccsys_pathconf_flag_enum_t @var{name})
 Wrapper for @cfunc{pathconf}; @manpage{pathconf, Get configuration values for files}.
 @end deftypefun
 

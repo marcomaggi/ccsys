@@ -378,6 +378,10 @@
 @end macro
 @c @ref{\NODE\,\TITLE\,\TITLE\,*manpages*}
 
+@macro ccstructsref{NODE, TITLE}
+@ref{\NODE\,\TITLE\,\TITLE\,ccstructs}
+@end macro
+
 @c page
 @c ------------------------------------------------------------
 @c RNRS document macros.

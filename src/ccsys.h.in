@@ -120,7 +120,7 @@ extern "C" {
 
 #include <ccexceptions.h>
 //#include <ccmemory.h>
-//#include <ccstructs.h>
+#include <ccstructs.h>
 #include <stddef.h>
 #include <stdlib.h>
 #include <stdint.h>
@@ -1166,8 +1166,8 @@ enum ccsys_pathconf_flag_enum_t {
 
 typedef enum ccsys_pathconf_flag_enum_t		ccsys_pathconf_flag_enum_t;
 
-ccsys_decl long ccsys_pathconf (cce_destination_t L, char const * pathname, ccsys_pathconf_flag_enum_t name)
-  __attribute__((__nonnull__(1,2)));
+ccsys_decl long ccsys_pathconf (cce_destination_t L, ccstructs_pathname_I ptn, ccsys_pathconf_flag_enum_t name)
+  __attribute__((__nonnull__(1)));
 
 ccsys_decl long ccsys_fpathconf (cce_destination_t L, ccsys_fd_t fd, ccsys_pathconf_flag_enum_t name)
   __attribute__((__nonnull__(1)));

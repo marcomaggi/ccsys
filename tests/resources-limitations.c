@@ -111,7 +111,7 @@ test_2_1 (cce_destination_t upper_L)
     }
 
     {
-      rv = ccsys_pathconf(L, filename, CCSYS__PC_PATH_MAX);
+      rv = ccsys_pathconf(L, ccstructs_new_pathname_from_static_string(filename), CCSYS__PC_PATH_MAX);
       if (1) { fprintf(stderr, "%s: CCSYS__PC_PATH_MAX=%lu\n", __func__, rv); }
     }
 

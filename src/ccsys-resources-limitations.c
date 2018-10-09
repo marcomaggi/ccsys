@@ -88,11 +88,11 @@ ccsys_confstr (cce_destination_t L, ccsys_confstr_flag_enum_t name, char * bufpt
 
 #ifdef HAVE_PATHCONF
 long
-ccsys_pathconf (cce_destination_t L, char const * pathname, ccsys_pathconf_flag_enum_t name)
+ccsys_pathconf (cce_destination_t L, ccstructs_pathname_I ptn, ccsys_pathconf_flag_enum_t name)
 {
   long	rv;
   errno = 0;
-  rv = pathconf(pathname, name);
+  rv = pathconf(ccstructs_pathname_pointer(L, ptn), name);
   if (-1 == rv) {
     cce_raise(L, cce_condition_new_errno_clear());
   } else {
