@@ -101,8 +101,8 @@ test_handler_filedes (void)
       cce_run_catch_handlers_final(L);
       error_flag = true;
     } else {
-      ccsys_open_flags_t	flags = { .data = CCSYS_O_CREAT };
-      ccsys_open_mode_t		mode  = { .data = CCSYS_S_IRWXU };
+      ccsys_open_flags_t	flags = ccsys_new_open_flags(CCSYS_O_CREAT);
+      ccsys_open_mode_t		mode  = ccsys_new_open_mode(CCSYS_S_IRWXU);
       ccsys_fd_t		fd   = ccsys_open(L, ccstructs_new_pathname_from_static_string("name.ext"), flags, mode);
       ccsys_init_filedes_clean_handler(L, H, fd);
       cce_run_body_handlers(L);
@@ -123,9 +123,9 @@ test_handler_filedes (void)
       cce_run_catch_handlers_final(L);
       error_flag = true;
     } else {
-      ccsys_open_flags_t	flags = { .data = CCSYS_O_CREAT };
-      ccsys_open_mode_t		mode = { .data = CCSYS_S_IRWXU };
-      ccsys_fd_t		fd   = ccsys_open(L, ccstructs_new_pathname_from_static_string("name.ext"), flags, mode);
+      ccsys_open_flags_t	flags = ccsys_new_open_flags(CCSYS_O_CREAT);
+      ccsys_open_mode_t		mode  = ccsys_new_open_mode(CCSYS_S_IRWXU);
+      ccsys_fd_t		fd    = ccsys_open(L, ccstructs_new_pathname_from_static_string("name.ext"), flags, mode);
       ccsys_init_filedes_clean_handler(L, H, fd);
       cce_raise(L, cce_condition_new_unknown());
       cce_run_body_handlers(L);
@@ -201,8 +201,8 @@ test_handler_remove (void)
       error_flag = true;
     } else {
       ccstructs_pathname_I	filename = ccstructs_new_pathname_from_static_string("name.ext");
-      ccsys_open_flags_t	flags = { .data = CCSYS_O_CREAT };
-      ccsys_open_mode_t		mode = { .data = CCSYS_S_IRUSR|CCSYS_S_IWUSR };
+      ccsys_open_flags_t	flags = ccsys_new_open_flags(CCSYS_O_CREAT);
+      ccsys_open_mode_t		mode = ccsys_new_open_mode(CCSYS_S_IRUSR|CCSYS_S_IWUSR);
       ccsys_fd_t		fd = ccsys_open(L, filename, flags, mode);
       ccsys_init_filedes_clean_handler(L, filedes_H, fd);
       ccsys_init_remove_clean_handler(L, remove_H, filename);
@@ -225,9 +225,9 @@ test_handler_remove (void)
       error_flag = true;
     } else {
       ccstructs_pathname_I	filename = ccstructs_new_pathname_from_static_string("name.ext");
-      ccsys_open_flags_t	flags = { .data = CCSYS_O_CREAT };
-      ccsys_open_mode_t	mode = { .data = CCSYS_S_IRUSR|CCSYS_S_IWUSR };
-      ccsys_fd_t	fd   = ccsys_open(L, filename, flags, mode);
+      ccsys_open_flags_t	flags = ccsys_new_open_flags(CCSYS_O_CREAT);
+      ccsys_open_mode_t		mode = ccsys_new_open_mode(CCSYS_S_IRUSR|CCSYS_S_IWUSR);
+      ccsys_fd_t		fd   = ccsys_open(L, filename, flags, mode);
       ccsys_init_filedes_clean_handler(L, filedes_H, fd);
       ccsys_init_remove_clean_handler(L, remove_H, filename);
       cce_raise(L, cce_condition_new_unknown());
@@ -255,7 +255,7 @@ test_handler_rmdir (void)
       error_flag = true;
     } else {
       ccstructs_pathname_I	dirname = ccstructs_new_pathname_from_static_string("name.d");
-      ccsys_open_mode_t		mode = { .data = 0 };
+      ccsys_open_mode_t		mode = ccsys_new_open_mode(0);
       ccsys_mkdir(L, dirname, mode);
       ccsys_init_rmdir_handler(L, rmdir_H, dirname);
       cce_run_body_handlers(L);
@@ -276,7 +276,7 @@ test_handler_rmdir (void)
       error_flag = true;
     } else {
       ccstructs_pathname_I	dirname = ccstructs_new_pathname_from_static_string("name.d");
-      ccsys_open_mode_t		mode = { .data = 0 };
+      ccsys_open_mode_t		mode = ccsys_new_open_mode(0);
       ccsys_mkdir(L, dirname, mode);
       ccsys_init_rmdir_handler(L, rmdir_H, dirname);
       cce_raise(L, cce_condition_new_unknown());
