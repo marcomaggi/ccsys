@@ -790,22 +790,22 @@ Build and return a new instance.
 @end deftypefun
 
 
-@deftypefun ccsys_faccessat_flags_t ccsys_new_faccessat_flags (int @var{mode})
+@deftypefun ccsys_faccessat_flags_t ccsys_new_faccessat_flags (int @var{flags})
 Build and return a new instance.
 @end deftypefun
 
 
-@deftypefun ccsys_fchmodat_flags_t ccsys_new_fchmodat_flags (int @var{mode})
+@deftypefun ccsys_fchmodat_flags_t ccsys_new_fchmodat_flags (int @var{flags})
 Build and return a new instance.
 @end deftypefun
 
 
-@deftypefun ccsys_futimensat_flags_t ccsys_new_futimensat_flags (int @var{mode})
+@deftypefun ccsys_futimensat_flags_t ccsys_new_futimensat_flags (int @var{flags})
 Build and return a new instance.
 @end deftypefun
 
 
-@deftypefun ccsys_fstatat_flags_t ccsys_new_fstatat_flags (int @var{mode})
+@deftypefun ccsys_fstatat_flags_t ccsys_new_fstatat_flags (int @var{flags})
 Build and return a new instance.
 @end deftypefun
 
@@ -816,6 +816,16 @@ Build and return a new instance.
 
 
 @deftypefun ccsys_access_mode_t ccsys_new_access_mode (int @var{mode})
+Build and return a new instance.
+@end deftypefun
+
+
+@deftypefun ccsys_waitpid_options_t ccsys_new_waitpid_options (int @var{options})
+Build and return a new instance.
+@end deftypefun
+
+
+@deftypefun ccsys_exit_status_t ccsys_new_exit_status (int @var{status})
 Build and return a new instance.
 @end deftypefun
 

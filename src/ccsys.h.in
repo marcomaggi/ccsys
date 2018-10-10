@@ -260,6 +260,7 @@ typedef struct ccsys_dir_t			ccsys_dir_t;
   }
 
 CCSYS_SEMANTIC_TYPE_CTOR_INT(access_mode)
+CCSYS_SEMANTIC_TYPE_CTOR_INT(exit_status)
 CCSYS_SEMANTIC_TYPE_CTOR_INT(faccessat_flags)
 CCSYS_SEMANTIC_TYPE_CTOR_INT(fchmodat_flags)
 CCSYS_SEMANTIC_TYPE_CTOR_INT(fstatat_flags)
@@ -269,6 +270,7 @@ CCSYS_SEMANTIC_TYPE_CTOR_INT(open_mode)
 CCSYS_SEMANTIC_TYPE_CTOR_INT(renameat2_flags)
 CCSYS_SEMANTIC_TYPE_CTOR_INT(unlinkat_flags)
 CCSYS_SEMANTIC_TYPE_CTOR_INT(utimensat_flags)
+CCSYS_SEMANTIC_TYPE_CTOR_INT(waitpid_options)
 
 
 /** --------------------------------------------------------------------
