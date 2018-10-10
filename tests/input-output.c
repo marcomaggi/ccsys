@@ -589,10 +589,8 @@ test_6_2 (cce_destination_t upper_L)
 
     /* Create and open the file. */
     {
-      ccsys_open_flags_t	flags;
-      ccsys_open_mode_t		mode;
-      flags.data = CCSYS_O_CREAT | CCSYS_O_RDWR;
-      mode.data  = CCSYS_S_IRUSR | CCSYS_S_IWUSR;
+      ccsys_open_flags_t	flags = ccsys_new_open_flags(CCSYS_O_CREAT | CCSYS_O_RDWR);
+      ccsys_open_mode_t		mode  = ccsys_new_open_mode(CCSYS_S_IRUSR | CCSYS_S_IWUSR);
       fd = ccsys_open(L, filename, flags, mode);
       ccsys_init_filedes_handler(L, filedes_H, fd);
       ccsys_init_remove_handler(L, file_H, filename);
@@ -603,13 +601,12 @@ test_6_2 (cce_destination_t upper_L)
       size_t		N;
       size_t		len = 1024;
       uint8_t		buf[len];
-      ccsys_off_t	offset;
+      ccsys_off_t	offset = ccsys_dnew(0);
 
       for (size_t i=0; i<len; ++i) {
 	buf[i] = i%256;
       }
 
-      offset.data = 0;
       N = ccsys_pwrite(L, fd, buf, len, offset);
       cctests_assert(L, N == len);
     }
@@ -619,9 +616,8 @@ test_6_2 (cce_destination_t upper_L)
       size_t		N;
       size_t		len = 1024;
       uint8_t		buf[len];
-      ccsys_off_t	offset;
+      ccsys_off_t	offset = ccsys_dnew(0);
 
-      offset.data = 0;
       N = ccsys_pread(L, fd, buf, len, offset);
       cctests_assert(L, N == len);
       for (size_t i=0; i<len; ++i) {
@@ -658,10 +654,8 @@ test_7_1 (cce_destination_t upper_L)
 
     /* Create and open the file. */
     {
-      ccsys_open_flags_t	flags;
-      ccsys_open_mode_t		mode;
-      flags.data = CCSYS_O_CREAT | CCSYS_O_RDWR;
-      mode.data  = CCSYS_S_IRUSR | CCSYS_S_IWUSR;
+      ccsys_open_flags_t	flags = ccsys_new_open_flags(CCSYS_O_CREAT | CCSYS_O_RDWR);
+      ccsys_open_mode_t		mode  = ccsys_new_open_mode(CCSYS_S_IRUSR | CCSYS_S_IWUSR);
       fd = ccsys_open(L, filename, flags, mode);
       ccsys_init_filedes_handler(L, filedes_H, fd);
       ccsys_init_remove_handler(L, file_H, filename);
@@ -695,10 +689,8 @@ test_7_1 (cce_destination_t upper_L)
 
     /* Seeking. */
     {
-      ccsys_off_t	offset;
-      ccsys_whence_t	whence;
-      offset.data = 0;
-      whence.data = CCSYS_SEEK_SET;
+      ccsys_off_t	offset = ccsys_dnew(0);
+      ccsys_whence_t	whence = ccsys_dnew(CCSYS_SEEK_SET);
       offset = ccsys_lseek(L, fd, offset, whence);
       cctests_assert(L, 0 == offset.data);
     }
@@ -756,10 +748,8 @@ test_7_2 (cce_destination_t upper_L)
 
     /* Create and open the file. */
     {
-      ccsys_open_flags_t	flags;
-      ccsys_open_mode_t		mode;
-      flags.data = CCSYS_O_CREAT | CCSYS_O_RDWR;
-      mode.data  = CCSYS_S_IRUSR | CCSYS_S_IWUSR;
+      ccsys_open_flags_t	flags = ccsys_new_open_flags(CCSYS_O_CREAT | CCSYS_O_RDWR);
+      ccsys_open_mode_t		mode  = ccsys_new_open_mode(CCSYS_S_IRUSR | CCSYS_S_IWUSR);
       fd = ccsys_open(L, filename, flags, mode);
       ccsys_init_filedes_handler(L, filedes_H, fd);
       ccsys_init_remove_handler(L, file_H, filename);
@@ -771,7 +761,7 @@ test_7_2 (cce_destination_t upper_L)
       size_t		buf_len		= 25;
       uint8_t		bufs[buf_count][buf_len];
       ccsys_iovec_t	vec[buf_count];
-      ccsys_off_t	offset;
+      ccsys_off_t	offset = ccsys_dnew(0);
       size_t		N;
 
       /* Fill the buffers with some known data. */
@@ -788,7 +778,6 @@ test_7_2 (cce_destination_t upper_L)
 	ccsys_set_iovec_iov_len(&vec[i], buf_len);
       }
 
-      offset.data = 0;
       N = ccsys_pwritev(L, fd, vec, buf_count, offset);
       cctests_assert(L, N == (buf_count*buf_len));
     }
@@ -799,7 +788,7 @@ test_7_2 (cce_destination_t upper_L)
       size_t		buf_len		= 25;
       uint8_t		bufs[buf_count][buf_len];
       ccsys_iovec_t	vec[buf_count];
-      ccsys_off_t	offset;
+      ccsys_off_t	offset = ccsys_dnew(0);
       size_t		N;
 
       /* Initialise the vector of buffers. */
@@ -808,7 +797,6 @@ test_7_2 (cce_destination_t upper_L)
 	ccsys_set_iovec_iov_len(&vec[i], buf_len);
       }
 
-      offset.data = 0;
       N = ccsys_preadv(L, fd, vec, buf_count, offset);
       cctests_assert(L, N == (buf_count*buf_len));
 
@@ -849,11 +837,8 @@ test_8_1 (cce_destination_t upper_L)
 
     /* Create and open the file. */
     {
-      ccsys_open_flags_t	flags;
-      ccsys_open_mode_t		mode;
-
-      flags.data = CCSYS_O_CREAT | CCSYS_O_RDWR;
-      mode.data  = CCSYS_S_IRUSR | CCSYS_S_IWUSR;
+      ccsys_open_flags_t	flags = ccsys_new_open_flags(CCSYS_O_CREAT | CCSYS_O_RDWR);
+      ccsys_open_mode_t		mode = ccsys_new_open_mode(CCSYS_S_IRUSR | CCSYS_S_IWUSR);
       fd = ccsys_open(L, filename, flags, mode);
       ccsys_init_filedes_handler(L, filedes_H, fd);
       ccsys_init_remove_handler(L, file_H, filename);
@@ -870,9 +855,8 @@ test_8_1 (cce_destination_t upper_L)
     if (1) {
       size_t		len = 11;
       char const *	buf = "0123456789";
-      ccsys_off_t	offset;
+      ccsys_off_t	offset = ccsys_dnew(0);
 
-      offset.data = 0;
       ccsys_pwrite(L, fd, buf, len, offset);
     }
 
@@ -881,9 +865,8 @@ test_8_1 (cce_destination_t upper_L)
       static size_t const len = 11;
       char		inbuf[len];
       char const *	checkbuf = "0123456789";
-      ccsys_off_t	offset;
+      ccsys_off_t	offset = ccsys_dnew(0);
 
-      offset.data = 0;
       ccsys_pread(L, fdx, inbuf, len, offset);
       cctests_assert(L, 0 == strncmp(inbuf, checkbuf, len));
     }
@@ -917,11 +900,9 @@ test_8_2 (cce_destination_t upper_L)
 
     /* Create and open the file. */
     {
-      ccsys_open_flags_t	flags;
-      ccsys_open_mode_t		mode;
+      ccsys_open_flags_t	flags = ccsys_new_open_flags(CCSYS_O_CREAT | CCSYS_O_RDWR);
+      ccsys_open_mode_t		mode = ccsys_new_open_mode(CCSYS_S_IRUSR | CCSYS_S_IWUSR);
 
-      flags.data = CCSYS_O_CREAT | CCSYS_O_RDWR;
-      mode.data  = CCSYS_S_IRUSR | CCSYS_S_IWUSR;
       fd = ccsys_open(L, filename, flags, mode);
       ccsys_init_filedes_handler(L, filedes_H, fd);
       ccsys_init_remove_handler(L, file_H, filename);
@@ -940,9 +921,8 @@ test_8_2 (cce_destination_t upper_L)
     if (1) {
       size_t		len = 11;
       char const *	buf = "0123456789";
-      ccsys_off_t	offset;
+      ccsys_off_t	offset = ccsys_dnew(0);
 
-      offset.data = 0;
       ccsys_pwrite(L, fd, buf, len, offset);
     }
 
@@ -951,9 +931,8 @@ test_8_2 (cce_destination_t upper_L)
       static size_t const len = 11;
       char		inbuf[len];
       char const *	checkbuf = "0123456789";
-      ccsys_off_t	offset;
+      ccsys_off_t	offset = ccsys_dnew(0);
 
-      offset.data = 0;
       ccsys_pread(L, fdx, inbuf, len, offset);
       cctests_assert(L, 0 == strncmp(inbuf, checkbuf, len));
     }
@@ -987,11 +966,9 @@ test_8_3 (cce_destination_t upper_L)
 
     /* Create and open the file. */
     {
-      ccsys_open_flags_t	flags;
-      ccsys_open_mode_t		mode;
+      ccsys_open_flags_t	flags = ccsys_new_open_flags(CCSYS_O_CREAT | CCSYS_O_RDWR);
+      ccsys_open_mode_t		mode = ccsys_new_open_mode(CCSYS_S_IRUSR | CCSYS_S_IWUSR);
 
-      flags.data = CCSYS_O_CREAT | CCSYS_O_RDWR;
-      mode.data  = CCSYS_S_IRUSR | CCSYS_S_IWUSR;
       fd = ccsys_open(L, filename, flags, mode);
       ccsys_init_filedes_handler(L, filedes_H, fd);
       ccsys_init_remove_handler(L, file_H, filename);
@@ -999,10 +976,9 @@ test_8_3 (cce_destination_t upper_L)
 
     /* Duplicate the file descriptor. */
     if (1) {
-      ccsys_open_flags_t	flags;
+      ccsys_open_flags_t	flags = ccsys_new_open_flags(CCSYS_O_CLOEXEC);
 
-      flags.data	= CCSYS_O_CLOEXEC;
-      fdx.data		= 123;
+      fdx.data = 123;
       fdx = ccsys_dup3(L, fd, fdx, flags);
       cctests_assert(L, 123 == fdx.data);
     } else {
@@ -1013,9 +989,8 @@ test_8_3 (cce_destination_t upper_L)
     if (1) {
       size_t		len = 11;
       char const *	buf = "0123456789";
-      ccsys_off_t	offset;
+      ccsys_off_t	offset = ccsys_dnew(0);
 
-      offset.data = 0;
       ccsys_pwrite(L, fd, buf, len, offset);
     }
 
@@ -1024,9 +999,8 @@ test_8_3 (cce_destination_t upper_L)
       static size_t const len = 11;
       char		inbuf[len];
       char const *	checkbuf = "0123456789";
-      ccsys_off_t	offset;
+      ccsys_off_t	offset = ccsys_dnew(0);
 
-      offset.data = 0;
       ccsys_pread(L, fdx, inbuf, len, offset);
       cctests_assert(L, 0 == strncmp(inbuf, checkbuf, len));
     }
@@ -1090,10 +1064,9 @@ test_9_1 (cce_destination_t upper_L)
 
 	/* Wait for the child process. */
 	{
-	  ccsys_waitpid_options_t	options;
+	  ccsys_waitpid_options_t	options = ccsys_new_waitpid_options(0);
 	  ccsys_waitpid_status_t	wstatus;
 
-	  options.data = 0;
 	  ccsys_waitpid(L, pid, &wstatus, options);
 	}
       } else {
@@ -1101,8 +1074,7 @@ test_9_1 (cce_destination_t upper_L)
 
 	/* Terminate the child process. */
 	{
-	  ccsys_exit_status_t	status;
-	  status.data = CCSYS_EXIT_SUCCESS;
+	  ccsys_exit_status_t	status = ccsys_new_exit_status(CCSYS_EXIT_SUCCESS);
 	  ccsys__exit(status);
 	}
       }
@@ -1303,10 +1275,9 @@ test_9_2 (cce_destination_t upper_L)
 
 	/* Wait for the child process. */
 	{
-	  ccsys_waitpid_options_t	options;
+	  ccsys_waitpid_options_t	options = ccsys_new_waitpid_options(0);
 	  ccsys_waitpid_status_t	wstatus;
 
-	  options.data = 0;
 	  ccsys_waitpid(L, pid, &wstatus, options);
 	}
       } else {
@@ -1314,8 +1285,7 @@ test_9_2 (cce_destination_t upper_L)
 
 	/* Terminate the child process. */
 	{
-	  ccsys_exit_status_t	status;
-	  status.data = CCSYS_EXIT_SUCCESS;
+	  ccsys_exit_status_t	status = ccsys_new_exit_status(CCSYS_EXIT_SUCCESS);
 	  ccsys__exit(status);
 	}
       }
@@ -1506,13 +1476,12 @@ test_10_1 (cce_destination_t upper_L)
     /* Seek back to the beginning. */
     {
       long		offset;
-      ccsys_whence_t	whence;
+      ccsys_whence_t	whence = ccsys_dnew(CCSYS_SEEK_SET);
 
       offset = ccsys_ftell(L, stream);
       if (0) { fprintf(stderr, "%s: offset=%ld\n", __func__, offset); }
       cctests_assert(L, 11 == offset);
 
-      whence.data = CCSYS_SEEK_SET;
       ccsys_fseek(L, stream, 0L, whence);
     }
 
