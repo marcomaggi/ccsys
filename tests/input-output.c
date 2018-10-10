@@ -351,7 +351,7 @@ test_4_2 (cce_destination_t upper_L)
 
     /* Create the directory. */
     {
-      ccsys_open_mode_t	mode  = { .data = CCSYS_S_IRWXU };
+      ccsys_open_mode_t	mode  = ccsys_new_open_mode(CCSYS_S_IRWXU);
       ccsys_mkdir(L, dirname, mode);
       ccsys_init_rmdir_handler(L, dir_H, dirname);
     }
@@ -368,13 +368,11 @@ test_4_2 (cce_destination_t upper_L)
 
     /* Create the FIFO.  We will remove it upon exiting this context. */
     {
-      ccsys_open_mode_t	mode;
+      ccsys_open_mode_t		mode  = ccsys_new_open_mode(CCSYS_S_IRUSR | CCSYS_S_IWUSR);
+      ccsys_unlinkat_flags_t	flags = ccsys_new_unlinkat_flags(0);
 
-      mode.data = CCSYS_S_IRUSR | CCSYS_S_IWUSR;
       ccsys_mkfifoat(L, dirfd, fifoname, mode);
-      fifo_unlink_data.dirfd		= dirfd;
-      fifo_unlink_data.pathname		= fifoname;
-      fifo_unlink_data.flags.data	= 0;
+      fifo_unlink_data = ccsys_new_at_link(dirfd, fifoname, flags);
       ccsys_init_unlinkat_handler(L, fifo_H, &fifo_unlink_data);
     }
 
@@ -386,10 +384,9 @@ test_4_2 (cce_destination_t upper_L)
 
       /* Wait for the child process. */
       {
-	ccsys_waitpid_options_t	options;
+	ccsys_waitpid_options_t	options = ccsys_new_waitpid_options(0);
 	ccsys_waitpid_status_t	wstatus;
 
-	options.data = 0;
 	ccsys_waitpid(L, pid, &wstatus, options);
       }
     } else {
@@ -413,11 +410,9 @@ test_4_2_parent (cce_destination_t upper_L, ccsys_dirfd_t dirfd, ccstructs_pathn
   } else {
     /* Open the FIFO for reading. */
     {
-      ccsys_open_flags_t	flags;
-      ccsys_open_mode_t	mode;
+      ccsys_open_flags_t	flags = ccsys_new_open_flags(CCSYS_O_RDONLY);
+      ccsys_open_mode_t		mode  = ccsys_new_open_mode(0);
 
-      flags.data = CCSYS_O_RDONLY;
-      mode.data  = 0;
       if (0) { fprintf(stderr, "%s: open fifo for reading\n", __func__); }
       infd = ccsys_openat(L, dirfd, fifoname, flags, mode);
       if (0) { fprintf(stderr, "%s: open fifo for reading done\n", __func__); }
@@ -451,11 +446,9 @@ test_4_2_child (ccsys_dirfd_t dirfd, ccstructs_pathname_I fifoname)
   } else {
     /* Open the FIFO for writing. */
     {
-      ccsys_open_flags_t	flags;
-      ccsys_open_mode_t		mode;
+      ccsys_open_flags_t	flags = ccsys_new_open_flags(CCSYS_O_WRONLY);
+      ccsys_open_mode_t		mode  = ccsys_new_open_mode(0);
 
-      flags.data = CCSYS_O_WRONLY;
-      mode.data  = 0;
       if (0) { fprintf(stderr, "%s: open fifo for writing\n", __func__); }
       oufd = ccsys_openat(L, dirfd, fifoname, flags, mode);
       ccsys_init_filedes_handler(L, oufd_H, oufd);
@@ -473,8 +466,7 @@ test_4_2_child (ccsys_dirfd_t dirfd, ccstructs_pathname_I fifoname)
 
   /* Terminate the child process. */
   {
-    ccsys_exit_status_t	status;
-    status.data = CCSYS_EXIT_SUCCESS;
+    ccsys_exit_status_t	status = ccsys_new_exit_status(CCSYS_EXIT_SUCCESS);
     ccsys__exit(status);
   }
 }
@@ -494,12 +486,10 @@ test_5_1 (cce_destination_t upper_L)
     cce_run_catch_handlers_raise(L, upper_L);
   } else {
     ccstructs_pathname_I	filename = ccstructs_new_pathname_from_static_string("input-output-name.ext");
-    ccsys_open_flags_t	flags;
-    ccsys_open_mode_t	mode;
-    ccsys_fd_t		fd;
+    ccsys_open_flags_t		flags = ccsys_new_open_flags(CCSYS_O_CREAT);
+    ccsys_open_mode_t		mode  = ccsys_new_open_mode(CCSYS_S_IRUSR | CCSYS_S_IWUSR);
+    ccsys_fd_t			fd;
 
-    flags.data = CCSYS_O_CREAT;
-    mode.data  = CCSYS_S_IRUSR | CCSYS_S_IWUSR;
     fd = ccsys_open(L, filename, flags, mode);
     ccsys_close(L, fd);
     ccsys_remove(L, filename);
@@ -529,10 +519,8 @@ test_6_1 (cce_destination_t upper_L)
 
     /* Create and open the file. */
     {
-      ccsys_open_flags_t	flags;
-      ccsys_open_mode_t		mode;
-      flags.data = CCSYS_O_CREAT | CCSYS_O_RDWR;
-      mode.data  = CCSYS_S_IRUSR | CCSYS_S_IWUSR;
+      ccsys_open_flags_t	flags = ccsys_new_open_flags(CCSYS_O_CREAT | CCSYS_O_RDWR);
+      ccsys_open_mode_t		mode  = ccsys_new_open_mode(CCSYS_S_IRUSR | CCSYS_S_IWUSR);
       fd = ccsys_open(L, filename, flags, mode);
       ccsys_init_filedes_handler(L, filedes_H, fd);
       ccsys_init_remove_handler(L, file_H, filename);
@@ -554,10 +542,8 @@ test_6_1 (cce_destination_t upper_L)
 
     /* Seeking. */
     {
-      ccsys_off_t	offset;
-      ccsys_whence_t	whence;
-      offset.data = 0;
-      whence.data = CCSYS_SEEK_SET;
+      ccsys_off_t	offset = ccsys_dnew(0);
+      ccsys_whence_t	whence = ccsys_dnew(CCSYS_SEEK_SET);
       offset = ccsys_lseek(L, fd, offset, whence);
       cctests_assert(L, 0 == offset.data);
     }
