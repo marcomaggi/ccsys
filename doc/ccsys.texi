@@ -775,6 +775,11 @@ Build and return a new instance.
 @end deftypefun
 
 
+@deftypefun ccsys_linkat_flags_t ccsys_new_linkat_flags (int @var{flags})
+Build and return a new instance.
+@end deftypefun
+
+
 @deftypefun ccsys_unlinkat_flags_t ccsys_new_unlinkat_flags (int @var{flags})
 Build and return a new instance.
 @end deftypefun

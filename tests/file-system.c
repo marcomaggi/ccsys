@@ -608,34 +608,34 @@ test_4_3 (cce_destination_t upper_L)
 
       cctests_assert(L, true == ccsys_fstat(L, fd, &S));
 #if (1 == CCSYS_HAVE_STRUCT_STAT_ST_DEV)
-      fprintf(stderr, "%s: st_dev=%lu\n", __func__, (unsigned long)ccsys_ref_stat_st_dev(&S).data);
+      fprintf(stderr, "%s: st_dev=%lu\n", __func__, ccsys_luref(ccsys_ref_stat_st_dev(&S)));
 #endif
 #if (1 == CCSYS_HAVE_STRUCT_STAT_ST_INO)
-      fprintf(stderr, "%s: st_ino=%lu\n", __func__, (unsigned long)ccsys_ref_stat_st_ino(&S).data);
+      fprintf(stderr, "%s: st_ino=%lu\n", __func__, ccsys_luref(ccsys_ref_stat_st_ino(&S)));
 #endif
 #if (1 == CCSYS_HAVE_STRUCT_STAT_ST_MODE)
-      fprintf(stderr, "%s: st_mode=%lu\n", __func__, (unsigned long)ccsys_ref_stat_st_mode(&S).data);
+      fprintf(stderr, "%s: st_mode=%lu\n", __func__, ccsys_luref(ccsys_ref_stat_st_mode(&S)));
 #endif
 #if (1 == CCSYS_HAVE_STRUCT_STAT_ST_NLINK)
-      fprintf(stderr, "%s: st_nlink=%lu\n", __func__, (unsigned long)ccsys_ref_stat_st_nlink(&S).data);
+      fprintf(stderr, "%s: st_nlink=%lu\n", __func__, ccsys_luref(ccsys_ref_stat_st_nlink(&S)));
 #endif
 #if (1 == CCSYS_HAVE_STRUCT_STAT_ST_UID)
-      fprintf(stderr, "%s: st_uid=%lu\n", __func__, (unsigned long)ccsys_ref_stat_st_uid(&S).data);
+      fprintf(stderr, "%s: st_uid=%lu\n", __func__, ccsys_luref(ccsys_ref_stat_st_uid(&S)));
 #endif
 #if (1 == CCSYS_HAVE_STRUCT_STAT_ST_GID)
-      fprintf(stderr, "%s: st_gid=%lu\n", __func__, (unsigned long)ccsys_ref_stat_st_gid(&S).data);
+      fprintf(stderr, "%s: st_gid=%lu\n", __func__, ccsys_luref(ccsys_ref_stat_st_gid(&S)));
 #endif
 #if (1 == CCSYS_HAVE_STRUCT_STAT_ST_RDEV)
-      fprintf(stderr, "%s: st_rdev=%lu\n", __func__, (unsigned long)ccsys_ref_stat_st_rdev(&S).data);
+      fprintf(stderr, "%s: st_rdev=%lu\n", __func__, ccsys_luref(ccsys_ref_stat_st_rdev(&S)));
 #endif
 #if (1 == CCSYS_HAVE_STRUCT_STAT_ST_SIZE)
-      fprintf(stderr, "%s: st_size=%lu\n", __func__, (unsigned long)ccsys_ref_stat_st_size(&S).data);
+      fprintf(stderr, "%s: st_size=%lu\n", __func__, ccsys_luref(ccsys_ref_stat_st_size(&S)));
 #endif
 #if (1 == CCSYS_HAVE_STRUCT_STAT_ST_BLKSIZE)
-      fprintf(stderr, "%s: st_blksize=%lu\n", __func__, (unsigned long)ccsys_ref_stat_st_blksize(&S).data);
+      fprintf(stderr, "%s: st_blksize=%lu\n", __func__, ccsys_luref(ccsys_ref_stat_st_blksize(&S)));
 #endif
 #if (1 == CCSYS_HAVE_STRUCT_STAT_ST_BLOCKS)
-      fprintf(stderr, "%s: st_blocks=%lu\n", __func__, (unsigned long)ccsys_ref_stat_st_blocks(&S).data);
+      fprintf(stderr, "%s: st_blocks=%lu\n", __func__, ccsys_luref(ccsys_ref_stat_st_blocks(&S)));
 #endif
 #if (1 == CCSYS_HAVE_STRUCT_STAT_ST_ATIME)
       {
@@ -888,7 +888,7 @@ test_5_1 (cce_destination_t upper_L)
     cce_run_catch_handlers_raise(L, upper_L);
   } else {
     ccstructs_pathname_I	filename = ccstructs_new_pathname_from_static_string("file-system-name.ext");
-    ccstructs_pathname_I	linkname = ccstructs_new_pathname_from_static_string("link.ext");
+    ccstructs_pathname_I	linkname = ccstructs_new_pathname_from_static_string("file-system-link.ext");
 
     /* Create and open the file. */
     {
@@ -936,16 +936,14 @@ test_5_2 (cce_destination_t upper_L)
     cce_run_catch_handlers_raise(L, upper_L);
   } else {
     ccstructs_pathname_I	filename = ccstructs_new_pathname_from_static_string("file-system-name.ext");
-    ccstructs_pathname_I	linkname = ccstructs_new_pathname_from_static_string("link.ext");
+    ccstructs_pathname_I	linkname = ccstructs_new_pathname_from_static_string("file-system-link.ext");
 
     /* Create and open the file. */
     {
-      ccsys_open_flags_t	flags;
-      ccsys_open_mode_t		mode;
+      ccsys_open_flags_t	flags = ccsys_new_open_flags(CCSYS_O_CREAT);
+      ccsys_open_mode_t		mode  = ccsys_new_open_mode(CCSYS_S_IRUSR | CCSYS_S_IWUSR);
       ccsys_fd_t		fd;
 
-      flags.data = CCSYS_O_CREAT;
-      mode.data  = CCSYS_S_IRUSR | CCSYS_S_IWUSR;
       fd = ccsys_open(L, filename, flags, mode);
       ccsys_init_filedes_handler(L, filedes_H, fd);
       ccsys_init_remove_handler(L, filename_H, filename);
@@ -989,7 +987,7 @@ test_5_3_1 (cce_destination_t upper_L)
     char			dirname_buffer[1 + CCSYS_PATH_MAX];
     ccstructs_pathname_I	dirname;
     ccstructs_pathname_I	filename = ccstructs_new_pathname_from_static_string("file-system-name.ext");
-    ccstructs_pathname_I	linkname = ccstructs_new_pathname_from_static_string("link.ext");
+    ccstructs_pathname_I	linkname = ccstructs_new_pathname_from_static_string("file-system-link.ext");
     ccsys_dirfd_t		dirfd;
 
     /* Acquire  the current  working directory  name.  Open  the current
@@ -1007,12 +1005,10 @@ test_5_3_1 (cce_destination_t upper_L)
 
     /* Create and open the file. */
     {
-      ccsys_open_flags_t	flags;
-      ccsys_open_mode_t		mode;
+      ccsys_open_flags_t	flags = ccsys_new_open_flags(CCSYS_O_CREAT);
+      ccsys_open_mode_t		mode  = ccsys_new_open_mode(CCSYS_S_IRUSR | CCSYS_S_IWUSR);
       ccsys_fd_t		fd;
 
-      flags.data = CCSYS_O_CREAT;
-      mode.data  = CCSYS_S_IRUSR | CCSYS_S_IWUSR;
       fd = ccsys_openat(L, dirfd, filename, flags, mode);
       ccsys_init_filedes_handler(L, filedes_H, fd);
       ccsys_init_remove_handler(L, filename_H, filename);
@@ -1020,9 +1016,8 @@ test_5_3_1 (cce_destination_t upper_L)
 
     /* Create the link. */
     {
-      ccsys_linkat_flags_t	flags;
+      ccsys_linkat_flags_t	flags = ccsys_new_linkat_flags(0);
 
-      flags.data = 0;
       ccsys_linkat(L, dirfd, filename, dirfd, linkname, flags);
       ccsys_init_remove_handler(L, linkname_H, linkname);
     }
@@ -1056,24 +1051,21 @@ test_5_3_2 (cce_destination_t upper_L)
     cce_run_catch_handlers_raise(L, upper_L);
   } else {
     ccstructs_pathname_I	filename = ccstructs_new_pathname_from_static_string("file-system-name.ext");
-    ccstructs_pathname_I	linkname = ccstructs_new_pathname_from_static_string("link.ext");
+    ccstructs_pathname_I	linkname = ccstructs_new_pathname_from_static_string("file-system-link.ext");
 
     /* Create the file. */
     {
-      ccsys_open_flags_t	flags;
-      ccsys_open_mode_t		mode;
+      ccsys_open_flags_t	flags = ccsys_new_open_flags(CCSYS_O_CREAT);
+      ccsys_open_mode_t		mode = ccsys_new_open_mode(CCSYS_S_IRUSR | CCSYS_S_IWUSR);
 
-      flags.data = CCSYS_O_CREAT;
-      mode.data  = CCSYS_S_IRUSR | CCSYS_S_IWUSR;
       ccsys_touch(L, filename, flags, mode);
       ccsys_init_remove_handler(L, filename_H, filename);
     }
 
     /* Create the link. */
     {
-      ccsys_linkat_flags_t	flags;
+      ccsys_linkat_flags_t	flags = ccsys_new_linkat_flags(0);
 
-      flags.data = 0;
       ccsys_linkat(L, CCSYS_AT_FDCWD, filename, CCSYS_AT_FDCWD, linkname, flags);
       ccsys_init_remove_handler(L, linkname_H, linkname);
     }
@@ -1110,7 +1102,7 @@ test_5_4_1 (cce_destination_t upper_L)
     char			dirname_buffer[1 + CCSYS_PATH_MAX];
     ccstructs_pathname_I	dirname;
     ccstructs_pathname_I	filename = ccstructs_new_pathname_from_static_string("file-system-name.ext");
-    ccstructs_pathname_I	linkname = ccstructs_new_pathname_from_static_string("link.ext");
+    ccstructs_pathname_I	linkname = ccstructs_new_pathname_from_static_string("file-system-link.ext");
     ccsys_dirfd_t		dirfd;
 
     /* Acquire  the current  working directory  name.  Open  the current
@@ -1128,12 +1120,10 @@ test_5_4_1 (cce_destination_t upper_L)
 
     /* Create and open the file. */
     {
-      ccsys_open_flags_t	flags;
-      ccsys_open_mode_t		mode;
+      ccsys_open_flags_t	flags = ccsys_new_open_flags(CCSYS_O_CREAT);
+      ccsys_open_mode_t		mode = ccsys_new_open_mode(CCSYS_S_IRUSR | CCSYS_S_IWUSR);
       ccsys_fd_t		fd;
 
-      flags.data = CCSYS_O_CREAT;
-      mode.data  = CCSYS_S_IRUSR | CCSYS_S_IWUSR;
       fd = ccsys_openat(L, dirfd, filename, flags, mode);
       ccsys_init_filedes_handler(L, filedes_H, fd);
       ccsys_init_remove_handler(L, filename_H, filename);
@@ -1173,15 +1163,13 @@ test_5_4_2 (cce_destination_t upper_L)
     cce_run_catch_handlers_raise(L, upper_L);
   } else {
     ccstructs_pathname_I	filename = ccstructs_new_pathname_from_static_string("file-system-name.ext");
-    ccstructs_pathname_I	linkname = ccstructs_new_pathname_from_static_string("link.ext");
+    ccstructs_pathname_I	linkname = ccstructs_new_pathname_from_static_string("file-system-link.ext");
 
     /* Create the file. */
     {
-      ccsys_open_flags_t	flags;
-      ccsys_open_mode_t		mode;
+      ccsys_open_flags_t	flags = ccsys_new_open_flags(CCSYS_O_CREAT);
+      ccsys_open_mode_t		mode  = ccsys_new_open_mode(CCSYS_S_IRUSR | CCSYS_S_IWUSR);
 
-      flags.data = CCSYS_O_CREAT;
-      mode.data  = CCSYS_S_IRUSR | CCSYS_S_IWUSR;
       ccsys_touch(L, filename, flags, mode);
       ccsys_init_remove_handler(L, filename_H, filename);
     }
@@ -1221,15 +1209,13 @@ test_6_1 (cce_destination_t upper_L)
     cce_run_catch_handlers_raise(L, upper_L);
   } else {
     ccstructs_pathname_I	filename = ccstructs_new_pathname_from_static_string("file-system-name.ext");
-    ccstructs_pathname_I	linkname = ccstructs_new_pathname_from_static_string("link.ext");
+    ccstructs_pathname_I	linkname = ccstructs_new_pathname_from_static_string("file-system-link.ext");
 
     /* Create the file. */
     {
-      ccsys_open_flags_t	flags;
-      ccsys_open_mode_t		mode;
+      ccsys_open_flags_t	flags = ccsys_new_open_flags(CCSYS_O_CREAT);
+      ccsys_open_mode_t		mode = ccsys_new_open_mode(CCSYS_S_IRUSR | CCSYS_S_IWUSR);
 
-      flags.data = CCSYS_O_CREAT;
-      mode.data  = CCSYS_S_IRUSR | CCSYS_S_IWUSR;
       ccsys_touch(L, filename, flags, mode);
       ccsys_init_remove_handler(L, filename_H, filename);
     }
@@ -1271,15 +1257,13 @@ test_6_2 (cce_destination_t upper_L)
     cce_run_catch_handlers_raise(L, upper_L);
   } else {
     ccstructs_pathname_I	filename = ccstructs_new_pathname_from_static_string("file-system-name.ext");
-    ccstructs_pathname_I	linkname = ccstructs_new_pathname_from_static_string("link.ext");
+    ccstructs_pathname_I	linkname = ccstructs_new_pathname_from_static_string("file-system-link.ext");
 
     /* Create the file. */
     {
-      ccsys_open_flags_t	flags;
-      ccsys_open_mode_t		mode;
+      ccsys_open_flags_t	flags = ccsys_new_open_flags(CCSYS_O_CREAT);
+      ccsys_open_mode_t		mode = ccsys_new_open_mode(CCSYS_S_IRUSR | CCSYS_S_IWUSR);
 
-      flags.data = CCSYS_O_CREAT;
-      mode.data  = CCSYS_S_IRUSR | CCSYS_S_IWUSR;
       ccsys_touch(L, filename, flags, mode);
       ccsys_init_remove_handler(L, filename_H, filename);
     }
@@ -1323,11 +1307,9 @@ test_6_3_1 (cce_destination_t upper_L)
 
     /* Create the file. */
     {
-      ccsys_open_flags_t	flags;
-      ccsys_open_mode_t		mode;
+      ccsys_open_flags_t	flags = ccsys_new_open_flags(CCSYS_O_CREAT);
+      ccsys_open_mode_t		mode = ccsys_new_open_mode(CCSYS_S_IRUSR | CCSYS_S_IWUSR);
 
-      flags.data = CCSYS_O_CREAT;
-      mode.data  = CCSYS_S_IRUSR | CCSYS_S_IWUSR;
       ccsys_touch(L, filename, flags, mode);
       ccsys_init_remove_handler(L, filename_H, filename);
     }
@@ -1364,11 +1346,9 @@ test_6_3_2 (cce_destination_t upper_L)
 
     /* Create the file. */
     {
-      ccsys_open_flags_t	flags;
-      ccsys_open_mode_t		mode;
+      ccsys_open_flags_t	flags = ccsys_new_open_flags(CCSYS_O_CREAT);
+      ccsys_open_mode_t		mode = ccsys_new_open_mode(CCSYS_S_IRUSR | CCSYS_S_IWUSR);
 
-      flags.data = CCSYS_O_CREAT;
-      mode.data  = CCSYS_S_IRUSR | CCSYS_S_IWUSR;
       ccsys_touch(L, filename, flags, mode);
       ccsys_init_remove_handler(L, filename_H, filename);
     }
@@ -1405,11 +1385,9 @@ test_7_1 (cce_destination_t upper_L)
 
     /* Create the file. */
     {
-      ccsys_open_flags_t	flags;
-      ccsys_open_mode_t		mode;
+      ccsys_open_flags_t	flags = ccsys_new_open_flags(CCSYS_O_CREAT);
+      ccsys_open_mode_t		mode = ccsys_new_open_mode(CCSYS_S_IRUSR | CCSYS_S_IWUSR);
 
-      flags.data = CCSYS_O_CREAT;
-      mode.data  = CCSYS_S_IRUSR | CCSYS_S_IWUSR;
       ccsys_touch(L, filename, flags, mode);
       ccsys_init_remove_handler(L, filename_H, filename);
     }
@@ -1445,11 +1423,9 @@ test_7_2 (cce_destination_t upper_L)
 
     /* Create the file. */
     {
-      ccsys_open_flags_t	flags;
-      ccsys_open_mode_t		mode;
+      ccsys_open_flags_t	flags = ccsys_new_open_flags(CCSYS_O_CREAT);
+      ccsys_open_mode_t		mode = ccsys_new_open_mode(CCSYS_S_IRUSR | CCSYS_S_IWUSR);
 
-      flags.data = CCSYS_O_CREAT;
-      mode.data  = CCSYS_S_IRUSR | CCSYS_S_IWUSR;
       ccsys_touch(L, filename, flags, mode);
       ccsys_init_remove_handler(L, filename_H, filename);
     }
@@ -1489,11 +1465,9 @@ test_8_1 (cce_destination_t upper_L)
 
     /* Create the file. */
     {
-      ccsys_open_flags_t	flags;
-      ccsys_open_mode_t		mode;
+      ccsys_open_flags_t	flags = ccsys_new_open_flags(CCSYS_O_CREAT);
+      ccsys_open_mode_t		mode = ccsys_new_open_mode(CCSYS_S_IRUSR | CCSYS_S_IWUSR);
 
-      flags.data = CCSYS_O_CREAT;
-      mode.data  = CCSYS_S_IRUSR | CCSYS_S_IWUSR;
       ccsys_touch(L, filename, flags, mode);
       ccsys_init_remove_handler(L, filename_H, filename);
     }
@@ -1531,11 +1505,9 @@ test_8_2 (cce_destination_t upper_L)
 
     /* Create the file. */
     {
-      ccsys_open_flags_t	flags;
-      ccsys_open_mode_t		mode;
+      ccsys_open_flags_t	flags = ccsys_new_open_flags(CCSYS_O_CREAT);
+      ccsys_open_mode_t		mode = ccsys_new_open_mode(CCSYS_S_IRUSR | CCSYS_S_IWUSR);
 
-      flags.data = CCSYS_O_CREAT;
-      mode.data  = CCSYS_S_IRUSR | CCSYS_S_IWUSR;
       ccsys_touch(L, filename, flags, mode);
       ccsys_init_remove_handler(L, filename_H, filename);
     }
@@ -1618,11 +1590,9 @@ test_9_1 (cce_destination_t upper_L CCSYS_UNUSED)
 
     /* Create the file. */
     {
-      ccsys_open_flags_t	flags;
-      ccsys_open_mode_t		mode;
+      ccsys_open_flags_t	flags = ccsys_new_open_flags(CCSYS_O_CREAT);
+      ccsys_open_mode_t		mode = ccsys_new_open_mode(CCSYS_S_IRUSR | CCSYS_S_IWUSR);
 
-      flags.data = CCSYS_O_CREAT;
-      mode.data  = CCSYS_S_IRUSR | CCSYS_S_IWUSR;
       ccsys_touch(L, filename, flags, mode);
       ccsys_init_remove_handler(L, filename_H, filename);
     }
@@ -1655,15 +1625,13 @@ test_9_2 (cce_destination_t upper_L)
     cce_run_catch_handlers_raise(L, upper_L);
   } else {
     ccstructs_pathname_I	filename = ccstructs_new_pathname_from_static_string("file-system-name.ext");
-    ccstructs_pathname_I	linkname = ccstructs_new_pathname_from_static_string("link.ext");
+    ccstructs_pathname_I	linkname = ccstructs_new_pathname_from_static_string("file-system-link.ext");
 
     /* Create the file. */
     {
-      ccsys_open_flags_t	flags;
-      ccsys_open_mode_t		mode;
+      ccsys_open_flags_t	flags = ccsys_new_open_flags(CCSYS_O_CREAT);
+      ccsys_open_mode_t		mode = ccsys_new_open_mode(CCSYS_S_IRUSR | CCSYS_S_IWUSR);
 
-      flags.data = CCSYS_O_CREAT;
-      mode.data  = CCSYS_S_IRUSR | CCSYS_S_IWUSR;
       ccsys_touch(L, filename, flags, mode);
       ccsys_init_remove_handler(L, filename_H, filename);
     }
@@ -1707,11 +1675,9 @@ test_9_3 (cce_destination_t upper_L)
 
     /* Create the file. */
     {
-      ccsys_open_flags_t	flags;
-      ccsys_open_mode_t		mode;
+      ccsys_open_flags_t	flags = ccsys_new_open_flags(CCSYS_O_CREAT);
+      ccsys_open_mode_t		mode = ccsys_new_open_mode(CCSYS_S_IRUSR | CCSYS_S_IWUSR);
 
-      flags.data = CCSYS_O_CREAT;
-      mode.data  = CCSYS_S_IRUSR | CCSYS_S_IWUSR;
       fd = ccsys_open(L, filename, flags, mode);
       ccsys_init_filedes_handler(L, filedes_H, fd);
       ccsys_init_remove_handler(L, filename_H, filename);
@@ -1748,11 +1714,9 @@ test_9_4 (cce_destination_t upper_L)
 
     /* Create the file. */
     {
-      ccsys_open_flags_t	flags;
-      ccsys_open_mode_t		mode;
+      ccsys_open_flags_t	flags = ccsys_new_open_flags(CCSYS_O_CREAT);
+      ccsys_open_mode_t		mode = ccsys_new_open_mode(CCSYS_S_IRUSR | CCSYS_S_IWUSR);
 
-      flags.data = CCSYS_O_CREAT;
-      mode.data  = CCSYS_S_IRUSR | CCSYS_S_IWUSR;
       ccsys_touch(L, filename, flags, mode);
       ccsys_init_remove_handler(L, filename_H, filename);
     }
@@ -1792,20 +1756,17 @@ test_10_1 (cce_destination_t upper_L)
 
     /* Create the file. */
     {
-      ccsys_open_mode_t		mode;
-      ccsys_open_flags_t	flags;
+      ccsys_open_flags_t	flags = ccsys_new_open_flags(CCSYS_O_CREAT);
+      ccsys_open_mode_t		mode = ccsys_new_open_mode(0);
 
-      flags.data = CCSYS_O_CREAT;
-      mode.data  = 0;
       ccsys_touch(L, filename, flags, mode);
       ccsys_init_remove_handler(L, filename_H, filename);
     }
 
     /* Change mode. */
     {
-      ccsys_open_mode_t		mode;
+      ccsys_open_mode_t		mode = ccsys_new_open_mode(CCSYS_S_IRWXU);
 
-      mode.data  = CCSYS_S_IRWXU;
       ccsys_chmod(L, filename, mode);
     }
 
@@ -1843,11 +1804,9 @@ test_10_2 (cce_destination_t upper_L)
 
     /* Create the file. */
     {
-      ccsys_open_mode_t		mode;
-      ccsys_open_flags_t	flags;
+      ccsys_open_flags_t	flags = ccsys_new_open_flags(CCSYS_O_CREAT);
+      ccsys_open_mode_t		mode = ccsys_new_open_mode(0);
 
-      flags.data = CCSYS_O_CREAT;
-      mode.data  = 0;
       fd = ccsys_open(L, filename, flags, mode);
       ccsys_init_filedes_handler(L, filedes_H, fd);
       ccsys_init_remove_handler(L, filename_H, filename);
@@ -1855,9 +1814,8 @@ test_10_2 (cce_destination_t upper_L)
 
     /* Change mode. */
     {
-      ccsys_open_mode_t		mode;
+      ccsys_open_mode_t		mode = ccsys_new_open_mode(CCSYS_S_IRWXU);
 
-      mode.data  = CCSYS_S_IRWXU;
       ccsys_fchmod(L, fd, mode);
     }
 
@@ -1893,22 +1851,18 @@ test_10_3 (cce_destination_t upper_L)
 
     /* Create the file. */
     {
-      ccsys_open_mode_t		mode;
-      ccsys_open_flags_t	flags;
+      ccsys_open_flags_t	flags = ccsys_new_open_flags(CCSYS_O_CREAT);
+      ccsys_open_mode_t		mode = ccsys_new_open_mode(0);
 
-      flags.data = CCSYS_O_CREAT;
-      mode.data  = 0;
       ccsys_touch(L, filename, flags, mode);
       ccsys_init_remove_handler(L, filename_H, filename);
     }
 
     /* Change mode. */
     {
-      ccsys_open_mode_t		mode;
-      ccsys_fchmodat_flags_t	flags;
+      ccsys_open_mode_t		mode = ccsys_new_open_mode(CCSYS_S_IRWXU);
+      ccsys_fchmodat_flags_t	flags = ccsys_dnew(0);
 
-      mode.data  = CCSYS_S_IRWXU;
-      flags.data = 0;
       ccsys_fchmodat(L, CCSYS_AT_FDCWD, filename, mode, flags);
     }
 
@@ -1949,40 +1903,37 @@ test_11_1 (cce_destination_t upper_L)
 
     /* Create the file. */
     {
-      ccsys_open_mode_t		mode;
-      ccsys_open_flags_t	flags;
+      ccsys_open_flags_t	flags = ccsys_new_open_flags(CCSYS_O_CREAT);
+      ccsys_open_mode_t		mode = ccsys_new_open_mode(0);
 
-      flags.data = CCSYS_O_CREAT;
-      mode.data  = 0;
       ccsys_touch(L, filename, flags, mode);
       ccsys_init_remove_handler(L, filename_H, filename);
     }
 
     /* Testing permissions. */
     {
-      ccsys_access_mode_t	mode = { .data = CCSYS_R_OK };
+      ccsys_access_mode_t	mode = ccsys_new_access_mode(CCSYS_R_OK);
 
       cctests_assert(L, false == ccsys_access(L, filename, mode));
     }
 
     /* Change mode. */
     {
-      ccsys_open_mode_t		mode;
+      ccsys_open_mode_t		mode = ccsys_new_open_mode(CCSYS_S_IRUSR | CCSYS_S_IWUSR);
 
-      mode.data  = CCSYS_S_IRUSR | CCSYS_S_IWUSR;
       ccsys_chmod(L, filename, mode);
     }
 
     /* Testing read/write permissions. */
     {
-      ccsys_access_mode_t	mode = { .data = CCSYS_R_OK & CCSYS_W_OK };
+      ccsys_access_mode_t	mode = ccsys_new_access_mode(CCSYS_R_OK & CCSYS_W_OK);
 
       cctests_assert(L, true == ccsys_access(L, filename, mode));
     }
 
     /* Testing execute permissions. */
     {
-      ccsys_access_mode_t	mode = { .data = CCSYS_X_OK };
+      ccsys_access_mode_t	mode = ccsys_new_access_mode(CCSYS_X_OK);
 
       cctests_assert(L, false == ccsys_access(L, filename, mode));
     }
@@ -2008,43 +1959,40 @@ test_11_2 (cce_destination_t upper_L)
 
     /* Create the file. */
     {
-      ccsys_open_mode_t		mode;
-      ccsys_open_flags_t	flags;
+      ccsys_open_flags_t	flags = ccsys_new_open_flags(CCSYS_O_CREAT);
+      ccsys_open_mode_t		mode = ccsys_new_open_mode(0);
 
-      flags.data = CCSYS_O_CREAT;
-      mode.data  = 0;
       ccsys_touch(L, filename, flags, mode);
       ccsys_init_remove_handler(L, filename_H, filename);
     }
 
     /* Testing permissions. */
     {
-      ccsys_access_mode_t	mode  = { .data = CCSYS_R_OK };
-      ccsys_faccessat_flags_t	flags = { .data = 0 };
+      ccsys_access_mode_t	mode  = ccsys_new_access_mode(CCSYS_R_OK);
+      ccsys_faccessat_flags_t	flags = ccsys_dnew(0);
 
       cctests_assert(L, false == ccsys_faccessat(L, CCSYS_AT_FDCWD, filename, mode, flags));
     }
 
     /* Change mode. */
     {
-      ccsys_open_mode_t		mode;
+      ccsys_open_mode_t		mode = ccsys_new_open_mode(CCSYS_S_IRUSR | CCSYS_S_IWUSR);
 
-      mode.data  = CCSYS_S_IRUSR | CCSYS_S_IWUSR;
       ccsys_chmod(L, filename, mode);
     }
 
     /* Testing read/write permissions. */
     {
-      ccsys_access_mode_t	mode  = { .data = CCSYS_R_OK & CCSYS_W_OK };
-      ccsys_faccessat_flags_t	flags = { .data = 0 };
+      ccsys_access_mode_t	mode  = ccsys_new_access_mode(CCSYS_R_OK & CCSYS_W_OK);
+      ccsys_faccessat_flags_t	flags = ccsys_dnew(0);
 
       cctests_assert(L, true == ccsys_faccessat(L, CCSYS_AT_FDCWD, filename, mode, flags));
     }
 
     /* Testing execute permissions. */
     {
-      ccsys_access_mode_t	mode  = { .data = CCSYS_X_OK };
-      ccsys_faccessat_flags_t	flags = { .data = 0 };
+      ccsys_access_mode_t	mode  = ccsys_new_access_mode(CCSYS_X_OK);
+      ccsys_faccessat_flags_t	flags = ccsys_dnew(0);
 
       cctests_assert(L, false == ccsys_faccessat(L, CCSYS_AT_FDCWD, filename, mode, flags));
     }
@@ -2077,11 +2025,9 @@ test_12_1 (cce_destination_t upper_L)
 
     /* Create the file. */
     {
-      ccsys_open_mode_t		mode;
-      ccsys_open_flags_t	flags;
+      ccsys_open_flags_t	flags = ccsys_new_open_flags(CCSYS_O_CREAT | CCSYS_O_RDWR);
+      ccsys_open_mode_t		mode = ccsys_new_open_mode(CCSYS_S_IRUSR | CCSYS_S_IWUSR);
 
-      flags.data = CCSYS_O_CREAT | CCSYS_O_RDWR;
-      mode.data  = CCSYS_S_IRUSR | CCSYS_S_IWUSR;
       fd = ccsys_open(L, filename, flags, mode);
       ccsys_init_filedes_handler(L, filedes_H, fd);
       ccsys_init_remove_handler(L, filename_H, filename);
@@ -2143,11 +2089,9 @@ test_12_2 (cce_destination_t upper_L)
 
     /* Create the file. */
     {
-      ccsys_open_mode_t		mode;
-      ccsys_open_flags_t	flags;
+      ccsys_open_flags_t	flags = ccsys_new_open_flags(CCSYS_O_CREAT | CCSYS_O_RDWR);
+      ccsys_open_mode_t		mode = ccsys_new_open_mode(CCSYS_S_IRUSR | CCSYS_S_IWUSR);
 
-      flags.data = CCSYS_O_CREAT | CCSYS_O_RDWR;
-      mode.data  = CCSYS_S_IRUSR | CCSYS_S_IWUSR;
       fd = ccsys_open(L, filename, flags, mode);
       ccsys_init_filedes_handler(L, filedes_H, fd);
       ccsys_init_remove_handler(L, filename_H, filename);
@@ -2172,7 +2116,7 @@ test_12_2 (cce_destination_t upper_L)
 
     /* Truncate the file. */
     {
-      ccsys_off_t	len = { .data = 101 };
+      ccsys_off_t	len = ccsys_dnew(101);
 
       ccsys_ftruncate(L, fd, len);
     }
@@ -2212,11 +2156,9 @@ test_13_1 (cce_destination_t upper_L)
 
     /* Create the file. */
     {
-      ccsys_open_mode_t		mode;
-      ccsys_open_flags_t	flags;
+      ccsys_open_flags_t	flags = ccsys_new_open_flags(CCSYS_O_CREAT | CCSYS_O_RDWR);
+      ccsys_open_mode_t		mode = ccsys_new_open_mode(CCSYS_S_IRUSR | CCSYS_S_IWUSR);
 
-      flags.data = CCSYS_O_CREAT | CCSYS_O_RDWR;
-      mode.data  = CCSYS_S_IRUSR | CCSYS_S_IWUSR;
       ccsys_touch(L, filename, flags, mode);
       ccsys_init_remove_handler(L, filename_H, filename);
     }
@@ -2273,15 +2215,13 @@ test_13_2 (cce_destination_t upper_L)
     cce_run_catch_handlers_raise(L, upper_L);
   } else {
     ccstructs_pathname_I	filename = ccstructs_new_pathname_from_static_string("file-system-name.ext");
-    ccstructs_pathname_I	linkname = ccstructs_new_pathname_from_static_string("link.ext");
+    ccstructs_pathname_I	linkname = ccstructs_new_pathname_from_static_string("file-system-link.ext");
 
     /* Create the file. */
     {
-      ccsys_open_mode_t		mode;
-      ccsys_open_flags_t	flags;
+      ccsys_open_flags_t	flags = ccsys_new_open_flags(CCSYS_O_CREAT | CCSYS_O_RDWR);
+      ccsys_open_mode_t		mode = ccsys_new_open_mode(CCSYS_S_IRUSR | CCSYS_S_IWUSR);
 
-      flags.data = CCSYS_O_CREAT | CCSYS_O_RDWR;
-      mode.data  = CCSYS_S_IRUSR | CCSYS_S_IWUSR;
       ccsys_touch(L, filename, flags, mode);
       ccsys_init_remove_handler(L, filename_H, filename);
     }
@@ -2348,11 +2288,9 @@ test_13_3 (cce_destination_t upper_L)
 
     /* Create the file. */
     {
-      ccsys_open_mode_t		mode;
-      ccsys_open_flags_t	flags;
+      ccsys_open_flags_t	flags = ccsys_new_open_flags(CCSYS_O_CREAT | CCSYS_O_RDWR);
+      ccsys_open_mode_t		mode = ccsys_new_open_mode(CCSYS_S_IRUSR | CCSYS_S_IWUSR);
 
-      flags.data = CCSYS_O_CREAT | CCSYS_O_RDWR;
-      mode.data  = CCSYS_S_IRUSR | CCSYS_S_IWUSR;
       fd = ccsys_open(L, filename, flags, mode);
       ccsys_init_filedes_handler(L, filedes_H, fd);
       ccsys_init_remove_handler(L, filename_H, filename);
@@ -2412,11 +2350,9 @@ test_13_4 (cce_destination_t upper_L)
 
     /* Create the file. */
     {
-      ccsys_open_mode_t		mode;
-      ccsys_open_flags_t	flags;
+      ccsys_open_flags_t	flags = ccsys_new_open_flags(CCSYS_O_CREAT | CCSYS_O_RDWR);
+      ccsys_open_mode_t		mode = ccsys_new_open_mode(CCSYS_S_IRUSR | CCSYS_S_IWUSR);
 
-      flags.data = CCSYS_O_CREAT | CCSYS_O_RDWR;
-      mode.data  = CCSYS_S_IRUSR | CCSYS_S_IWUSR;
       ccsys_touch(L, filename, flags, mode);
       ccsys_init_remove_handler(L, filename_H, filename);
     }
@@ -2475,11 +2411,9 @@ test_13_5 (cce_destination_t upper_L)
 
     /* Create the file. */
     {
-      ccsys_open_mode_t		mode;
-      ccsys_open_flags_t	flags;
+      ccsys_open_flags_t	flags = ccsys_new_open_flags(CCSYS_O_CREAT | CCSYS_O_RDWR);
+      ccsys_open_mode_t		mode = ccsys_new_open_mode(CCSYS_S_IRUSR | CCSYS_S_IWUSR);
 
-      flags.data = CCSYS_O_CREAT | CCSYS_O_RDWR;
-      mode.data  = CCSYS_S_IRUSR | CCSYS_S_IWUSR;
       ccsys_touch(L, filename, flags, mode);
       ccsys_init_remove_handler(L, filename_H, filename);
     }
@@ -2487,14 +2421,13 @@ test_13_5 (cce_destination_t upper_L)
     /* Set the times. */
     {
       ccsys_timespec_t		T[2];
-      ccsys_utimensat_flags_t	flags;
+      ccsys_utimensat_flags_t	flags = ccsys_dnew(0);
 
       T[0].seconds.data		= 123;
       T[0].nanoseconds.data	= 0;
       T[1].seconds.data		= 456;
       T[1].nanoseconds.data	= 0;
 
-      flags.data = 0;
       ccsys_utimensat(L, CCSYS_AT_FDCWD, filename, T, flags);
     }
 
@@ -2542,11 +2475,9 @@ test_13_6 (cce_destination_t upper_L)
 
     /* Create the file. */
     {
-      ccsys_open_mode_t		mode;
-      ccsys_open_flags_t	flags;
+      ccsys_open_flags_t	flags = ccsys_new_open_flags(CCSYS_O_CREAT | CCSYS_O_RDWR);
+      ccsys_open_mode_t		mode = ccsys_new_open_mode(CCSYS_S_IRUSR | CCSYS_S_IWUSR);
 
-      flags.data = CCSYS_O_CREAT | CCSYS_O_RDWR;
-      mode.data  = CCSYS_S_IRUSR | CCSYS_S_IWUSR;
       fd = ccsys_open(L, filename, flags, mode);
       ccsys_init_filedes_handler(L, filedes_H, fd);
       ccsys_init_remove_handler(L, filename_H, filename);
@@ -2649,10 +2580,9 @@ test_14_2 (cce_destination_t upper_L)
 
     /* Create the file. */
     {
-      ccsys_open_flags_t	flags;
+      ccsys_open_flags_t	flags = ccsys_new_open_flags(CCSYS_O_CREAT | CCSYS_O_RDWR);
       ccsys_fd_t		fd;
 
-      flags.data = CCSYS_O_CREAT | CCSYS_O_RDWR;
       fd = ccsys_mkostemp(L, template, flags);
       ccsys_init_filedes_handler(L, filedes_H, fd);
       ccsys_init_remove_handler(L, filename_H, filename);
@@ -2723,10 +2653,9 @@ test_14_4 (cce_destination_t upper_L)
 
     /* Create the file. */
     {
-      ccsys_open_flags_t	flags;
+      ccsys_open_flags_t	flags = ccsys_new_open_flags(CCSYS_O_CREAT | CCSYS_O_RDWR);
       ccsys_fd_t		fd;
 
-      flags.data = CCSYS_O_CREAT | CCSYS_O_RDWR;
       fd = ccsys_mkostemps(L, template, 4, flags);
       ccsys_init_filedes_handler(L, filedes_H, fd);
       ccsys_init_remove_handler(L, filename_H, filename);
@@ -2800,20 +2729,17 @@ test_16_1 (cce_destination_t upper_L)
     ccsys_dirfd_t		dirfd;
 
     {
-      ccsys_open_mode_t     mode;
+      ccsys_open_mode_t     mode = ccsys_new_open_mode(CCSYS_S_IRWXU);
 
-      mode.data = CCSYS_S_IRWXU;
       ccsys_mkdir(L, dirname, mode);
       ccsys_init_rmdir_handler(L, rmdir_H, dirname);
     }
 
     {
-      ccsys_open_flags_t  flags;
-      ccsys_open_mode_t   mode;
+      ccsys_open_flags_t  flags = ccsys_new_open_flags(CCSYS_O_PATH);
+      ccsys_open_mode_t   mode  = ccsys_new_open_mode(CCSYS_S_IRWXU);
       ccsys_fd_t          fd;
 
-      flags.data = CCSYS_O_PATH;
-      mode.data  = CCSYS_S_IRWXU;
       fd         = ccsys_open(L, dirname, flags, mode);
       dirfd      = ccsys_dirfd_from_fd(fd);
       ccsys_init_dirfd_handler(L, dirfd_H, dirfd);
