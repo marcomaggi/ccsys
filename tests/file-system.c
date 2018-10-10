@@ -39,7 +39,7 @@ test_1_1_1 (cce_destination_t upper_L)
     if (1) { fprintf(stderr, "%s: %s\n", __func__, cce_condition_static_message(cce_condition(L))); }
     cce_run_catch_handlers_raise(L, upper_L);
   } else {
-    size_t	len = CCSYS_PATH_MAX;
+    size_t	len = 1+CCSYS_PATH_MAX;
     char	buf[len];
 
     ccsys_getcwd(L, buf, len);
@@ -124,11 +124,11 @@ static void
 test_1_3_child (cce_destination_t L)
 {
 #if (defined HAVE_CHDIR)
-  ccsys_chdir(L, "..");
+  ccsys_chdir(L, ccstructs_new_pathname_from_static_string(".."));
 
 #if (defined HAVE_GETCWD)
   {
-    size_t	len = CCSYS_PATH_MAX;
+    size_t	len = 1+CCSYS_PATH_MAX;
     char	buf[len];
     ccsys_getcwd(L, buf, len);
     if (0) { fprintf(stderr, "%s: current working directory: %s\n", __func__, buf); }
@@ -171,9 +171,9 @@ test_1_4_child (cce_destination_t upper_L)
   if (cce_location(L)) {
     cce_run_catch_handlers_raise(L, upper_L);
   } else {
-    static char const *	dirname  = "..";
-    ccsys_dir_t *	dirstream;
-    ccsys_dirfd_t	dirfd;
+    ccstructs_pathname_I	dirname = ccstructs_new_pathname_from_static_string("..");
+    ccsys_dir_t *		dirstream;
+    ccsys_dirfd_t		dirfd;
 
     dirstream = ccsys_opendir(L, dirname);
     ccsys_init_dirstream_handler(L, dirstream_H, dirstream);
@@ -183,7 +183,7 @@ test_1_4_child (cce_destination_t upper_L)
 
 #if (defined HAVE_GETCWD)
     {
-      size_t	len = CCSYS_PATH_MAX;
+      size_t	len = 1+CCSYS_PATH_MAX;
       char	buf[len];
       ccsys_getcwd(L, buf, len);
       if (0) { fprintf(stderr, "%s: current working directory: %s\n", __func__, buf); }
@@ -223,7 +223,7 @@ test_2_1 (cce_destination_t upper_L)
 {
   cce_location_t	L[1];
   cce_clean_handler_t	dirstream_H[1];
-  char const *		pathname = "./";
+  ccstructs_pathname_I	pathname = ccstructs_new_pathname_from_static_string("./");
 
   if (cce_location(L)) {
     cce_run_catch_handlers_raise(L, upper_L);
@@ -251,14 +251,14 @@ test_2_1 (cce_destination_t upper_L)
 void
 test_3_1 (cce_destination_t upper_L)
 {
-  cce_location_t          L[1];
-  cce_clean_handler_t   dirname_H[1];
-  char const *            dirname = "name.d";
+  cce_location_t			L[1];
+  ccsys_pathname_clean_handler_t	dirname_H[1];
 
   if (cce_location(L)) {
     cce_run_catch_handlers_raise(L, upper_L);
   } else {
-    ccsys_open_mode_t     mode;
+    ccstructs_pathname_I	dirname = ccstructs_new_pathname_from_static_string("name.d");
+    ccsys_open_mode_t		mode;
 
     mode.data = CCSYS_S_IRWXU;
     ccsys_mkdir(L, dirname, mode);
@@ -271,12 +271,12 @@ void
 test_3_2 (cce_destination_t upper_L)
 {
   cce_location_t	L[1];
-  char const *		dirname = "name.d";
 
   if (cce_location(L)) {
     cce_run_catch_handlers_raise(L, upper_L);
   } else {
-    ccsys_open_mode_t	mode;
+    ccstructs_pathname_I	dirname = ccstructs_new_pathname_from_static_string("name.d");
+    ccsys_open_mode_t		mode;
 
     mode.data = CCSYS_S_IRWXU;
     ccsys_mkdir(L, dirname, mode);
@@ -289,17 +289,17 @@ void
 test_3_3 (cce_destination_t upper_L)
 /* Create a diirectory with "ccsys_mkdirat()". */
 {
-  cce_location_t	L[1];
-  cce_clean_handler_t	dirname1_H[1];
-  cce_clean_handler_t	filedes_H[1];
+  cce_location_t			L[1];
+  ccsys_pathname_clean_handler_t	dirname1_H[1];
+  cce_clean_handler_t			filedes_H[1];
 
   if (cce_location(L)) {
     if (0) { fprintf(stderr, "%s: %s\n", __func__, cce_condition_static_message(cce_condition(L))); }
     cce_run_catch_handlers_raise(L, upper_L);
   } else {
-    static char const *	dirname1 = "name.d";
-    static char const * dirname2 = "subname.d";
-    ccsys_dirfd_t	dirfd1;
+    ccstructs_pathname_I	dirname1 = ccstructs_new_pathname_from_static_string("name.d");
+    ccstructs_pathname_I	dirname2 = ccstructs_new_pathname_from_static_string("subname.d");
+    ccsys_dirfd_t		dirfd1;
 
     /* Create the parent directory. */
     {
@@ -317,9 +317,9 @@ test_3_3 (cce_destination_t upper_L)
 
       flags.data = CCSYS_O_PATH;
       mode.data  = CCSYS_S_IRUSR | CCSYS_S_IWUSR;
-      fd     = ccsys_open(L, dirname1, flags, mode);
+      fd         = ccsys_open(L, dirname1, flags, mode);
       ccsys_init_filedes_handler(L, filedes_H, fd);
-      dirfd1 = ccsys_fd_to_dirfd(fd);
+      dirfd1     = ccsys_fd_to_dirfd(fd);
     }
 
     /* Create the subdirectory. */
@@ -497,14 +497,14 @@ test_4_1 (cce_destination_t upper_L)
 void
 test_4_2 (cce_destination_t upper_L)
 {
-  cce_location_t	  L[1];
-  cce_clean_handler_t   filename_H[1];
-  cce_clean_handler_t   filedes_H[1];
+  cce_location_t			L[1];
+  ccsys_pathname_clean_handler_t	filename_H[1];
+  cce_clean_handler_t			filedes_H[1];
 
   if (cce_location(L)) {
     cce_run_catch_handlers_raise(L, upper_L);
   } else {
-    static char const *	filename = "name.ext";
+    ccstructs_pathname_I	filename = ccstructs_new_pathname_from_static_string("name.ext");
 
     /* Create and open the file. */
     {
@@ -589,15 +589,15 @@ test_4_2 (cce_destination_t upper_L)
 void
 test_4_3 (cce_destination_t upper_L)
 {
-  cce_location_t	  L[1];
-  cce_clean_handler_t	  filename_H[1];
-  cce_clean_handler_t	  filedes_H[1];
+  cce_location_t			L[1];
+  ccsys_pathname_clean_handler_t	filename_H[1];
+  cce_clean_handler_t			filedes_H[1];
 
   if (cce_location(L)) {
     cce_run_catch_handlers_raise(L, upper_L);
   } else {
-    static char const *	filename = "name.ext";
-    ccsys_fd_t		fd;
+    ccstructs_pathname_I	filename = ccstructs_new_pathname_from_static_string("name.ext");
+    ccsys_fd_t			fd;
 
     /* Create and open the file. */
     {
@@ -681,20 +681,20 @@ test_4_3 (cce_destination_t upper_L)
 void
 test_4_4 (cce_destination_t upper_L)
 {
-  cce_location_t	L[1];
-  cce_clean_handler_t	dirname_H[1];
-  cce_clean_handler_t	dir_H[1];
-  cce_clean_handler_t	filename_H[1];
-  cce_clean_handler_t	filedes_H[1];
-  ccsys_at_link_t	lnk;
+  cce_location_t			L[1];
+  ccsys_pathname_clean_handler_t	dirname_H[1];
+  cce_clean_handler_t			dirstream_H[1];
+  cce_clean_handler_t			lnk_H[1];
+  cce_clean_handler_t			filedes_H[1];
+  ccsys_at_link_t			lnk;
 
   if (cce_location(L)) {
     cce_run_catch_handlers_raise(L, upper_L);
   } else {
-    static char const *	dirname= "name.d";
-    ccsys_dirfd_t	dirfd;
-    static char const *	filename = "name.ext";
-    ccsys_fd_t		fd;
+    ccstructs_pathname_I	dirname  = ccstructs_new_pathname_from_static_string("name.d");
+    ccsys_dirfd_t		dirfd;
+    ccstructs_pathname_I	filename = ccstructs_new_pathname_from_static_string("name.ext");
+    ccsys_fd_t			fd;
 
     /* Create the parent directory. */
     {
@@ -706,11 +706,11 @@ test_4_4 (cce_destination_t upper_L)
     /* Open the parent directory.  The descriptor in "dirfd" is released
        automatically when "dirstream" is released. */
     {
-      ccsys_dir_t *	dir;
+      ccsys_dir_t *	dirstream;
 
-      dir = ccsys_opendir(L, dirname);
-      ccsys_init_dirstream_handler(L, dir_H, dir);
-      dirfd = ccsys_dirfd(L, dir);
+      dirstream = ccsys_opendir(L, dirname);
+      ccsys_init_dirstream_handler(L, dirstream_H, dirstream);
+      dirfd = ccsys_dirfd(L, dirstream);
     }
 
     /* Create and open the file. */
@@ -725,7 +725,7 @@ test_4_4 (cce_destination_t upper_L)
       lnk.dirfd		= dirfd;
       lnk.pathname	= filename;
       lnk.flags.data	= 0;
-      ccsys_init_unlinkat_handler(L, filename_H, &lnk);
+      ccsys_init_unlinkat_handler(L, lnk_H, &lnk);
     }
 
     /* Inspect the file by pathname. */
@@ -801,14 +801,14 @@ test_4_4 (cce_destination_t upper_L)
 void
 test_4_5 (cce_destination_t upper_L)
 {
-  cce_location_t	  L[1];
-  cce_clean_handler_t   filename_H[1];
-  cce_clean_handler_t   filedes_H[1];
+  cce_location_t			L[1];
+  ccsys_pathname_clean_handler_t	filename_H[1];
+  cce_clean_handler_t			filedes_H[1];
 
   if (cce_location(L)) {
     cce_run_catch_handlers_raise(L, upper_L);
   } else {
-    static char const *	filename = "name.ext";
+    ccstructs_pathname_I	filename = ccstructs_new_pathname_from_static_string("name.ext");
 
     /* Create and open the file. */
     {
@@ -894,16 +894,16 @@ test_4_5 (cce_destination_t upper_L)
 void
 test_5_1 (cce_destination_t upper_L)
 {
-  cce_location_t	L[1];
-  cce_clean_handler_t	filename_H[1];
-  cce_clean_handler_t	filedes_H[1];
-  cce_clean_handler_t	linkname_H[1];
+  cce_location_t			L[1];
+  ccsys_pathname_clean_handler_t	filename_H[1];
+  cce_clean_handler_t			filedes_H[1];
+  ccsys_pathname_clean_handler_t	linkname_H[1];
 
   if (cce_location(L)) {
     cce_run_catch_handlers_raise(L, upper_L);
   } else {
-    char const *	filename = "name.ext";
-    char const *	linkname = "link.ext";
+    ccstructs_pathname_I	filename = ccstructs_new_pathname_from_static_string("name.ext");
+    ccstructs_pathname_I	linkname = ccstructs_new_pathname_from_static_string("link.ext");
 
     /* Create and open the file. */
     {
@@ -944,16 +944,16 @@ test_5_1 (cce_destination_t upper_L)
 void
 test_5_2 (cce_destination_t upper_L)
 {
-  cce_location_t	L[1];
-  cce_clean_handler_t	filename_H[1];
-  cce_clean_handler_t	filedes_H[1];
-  cce_clean_handler_t	linkname_H[1];
+  cce_location_t			L[1];
+  ccsys_pathname_clean_handler_t	filename_H[1];
+  cce_clean_handler_t			filedes_H[1];
+  ccsys_pathname_clean_handler_t	linkname_H[1];
 
   if (cce_location(L)) {
     cce_run_catch_handlers_raise(L, upper_L);
   } else {
-    char const *	filename = "name.ext";
-    char const *	linkname = "link.ext";
+    ccstructs_pathname_I	filename = ccstructs_new_pathname_from_static_string("name.ext");
+    ccstructs_pathname_I	linkname = ccstructs_new_pathname_from_static_string("link.ext");
 
     /* Create and open the file. */
     {
@@ -994,30 +994,32 @@ test_5_2 (cce_destination_t upper_L)
 void
 test_5_3_1 (cce_destination_t upper_L)
 {
-  cce_location_t	L[1];
-  cce_clean_handler_t	dir_H[1];
-  cce_clean_handler_t	filename_H[1];
-  cce_clean_handler_t	filedes_H[1];
-  cce_clean_handler_t	linkname_H[1];
+  cce_location_t			L[1];
+  cce_clean_handler_t			dirstream_H[1];
+  ccsys_pathname_clean_handler_t	filename_H[1];
+  cce_clean_handler_t			filedes_H[1];
+  ccsys_pathname_clean_handler_t	linkname_H[1];
 
   if (cce_location(L)) {
     cce_run_catch_handlers_raise(L, upper_L);
   } else {
-    char		dirname[CCSYS_PATH_MAX];
-    char const *	filename = "name.ext";
-    char const *	linkname = "link.ext";
-    ccsys_dirfd_t	dirfd;
+    char			dirname_buffer[1 + CCSYS_PATH_MAX];
+    ccstructs_pathname_I	dirname;
+    ccstructs_pathname_I	filename = ccstructs_new_pathname_from_static_string("name.ext");
+    ccstructs_pathname_I	linkname = ccstructs_new_pathname_from_static_string("link.ext");
+    ccsys_dirfd_t		dirfd;
 
     /* Acquire  the current  working directory  name.  Open  the current
        working  directory.   The  descriptor   in  "dirfd"  is  released
        automatically when "dirstream" is released. */
     {
-      ccsys_dir_t *	dir;
+      ccsys_dir_t *	dirstream;
 
-      ccsys_getcwd(L, dirname, CCSYS_PATH_MAX);
-      dir = ccsys_opendir(L, dirname);
-      ccsys_init_dirstream_handler(L, dir_H, dir);
-      dirfd = ccsys_dirfd(L, dir);
+      ccsys_getcwd(L, dirname_buffer, CCSYS_PATH_MAX);
+      dirname = ccstructs_new_pathname_from_dynamic_string(dirname_buffer);
+      dirstream = ccsys_opendir(L, dirname);
+      ccsys_init_dirstream_handler(L, dirstream_H, dirstream);
+      dirfd = ccsys_dirfd(L, dirstream);
     }
 
     /* Create and open the file. */
@@ -1062,16 +1064,16 @@ test_5_3_1 (cce_destination_t upper_L)
 void
 test_5_3_2 (cce_destination_t upper_L)
 {
-  cce_location_t	L[1];
-  cce_clean_handler_t	filename_H[1];
-  cce_clean_handler_t	linkname_H[1];
+  cce_location_t			L[1];
+  ccsys_pathname_clean_handler_t	filename_H[1];
+  ccsys_pathname_clean_handler_t	linkname_H[1];
 
   if (cce_location(L)) {
     if (0) { fprintf(stderr, "%s: %s\n", __func__, cce_condition_static_message(cce_condition(L))); }
     cce_run_catch_handlers_raise(L, upper_L);
   } else {
-    char const *	filename = "name.ext";
-    char const *	linkname = "link.ext";
+    ccstructs_pathname_I	filename = ccstructs_new_pathname_from_static_string("name.ext");
+    ccstructs_pathname_I	linkname = ccstructs_new_pathname_from_static_string("link.ext");
 
     /* Create the file. */
     {
@@ -1113,30 +1115,32 @@ test_5_3_2 (cce_destination_t upper_L)
 void
 test_5_4_1 (cce_destination_t upper_L)
 {
-  cce_location_t	L[1];
-  cce_clean_handler_t	dir_H[1];
-  cce_clean_handler_t	filename_H[1];
-  cce_clean_handler_t	filedes_H[1];
-  cce_clean_handler_t	linkname_H[1];
+  cce_location_t			L[1];
+  cce_clean_handler_t			dirstream_H[1];
+  ccsys_pathname_clean_handler_t	filename_H[1];
+  cce_clean_handler_t			filedes_H[1];
+  ccsys_pathname_clean_handler_t	linkname_H[1];
 
   if (cce_location(L)) {
     cce_run_catch_handlers_raise(L, upper_L);
   } else {
-    char		dirname[CCSYS_PATH_MAX];
-    char const *	filename = "name.ext";
-    char const *	linkname = "link.ext";
-    ccsys_dirfd_t	dirfd;
+    char			dirname_buffer[1 + CCSYS_PATH_MAX];
+    ccstructs_pathname_I	dirname;
+    ccstructs_pathname_I	filename = ccstructs_new_pathname_from_static_string("name.ext");
+    ccstructs_pathname_I	linkname = ccstructs_new_pathname_from_static_string("link.ext");
+    ccsys_dirfd_t		dirfd;
 
     /* Acquire  the current  working directory  name.  Open  the current
        working  directory.   The  descriptor   in  "dirfd"  is  released
        automatically when "dirstream" is released. */
     {
-      ccsys_dir_t *	dir;
+      ccsys_dir_t *	dirstream;
 
-      ccsys_getcwd(L, dirname, CCSYS_PATH_MAX);
-      dir = ccsys_opendir(L, dirname);
-      ccsys_init_dirstream_handler(L, dir_H, dir);
-      dirfd = ccsys_dirfd(L, dir);
+      ccsys_getcwd(L, dirname_buffer, CCSYS_PATH_MAX);
+      dirname   = ccstructs_new_pathname_from_dynamic_string(dirname_buffer);
+      dirstream = ccsys_opendir(L, dirname);
+      ccsys_init_dirstream_handler(L, dirstream_H, dirstream);
+      dirfd = ccsys_dirfd(L, dirstream);
     }
 
     /* Create and open the file. */
@@ -1178,15 +1182,15 @@ test_5_4_1 (cce_destination_t upper_L)
 void
 test_5_4_2 (cce_destination_t upper_L)
 {
-  cce_location_t	L[1];
-  cce_clean_handler_t	filename_H[1];
-  cce_clean_handler_t	linkname_H[1];
+  cce_location_t			L[1];
+  ccsys_pathname_clean_handler_t	filename_H[1];
+  ccsys_pathname_clean_handler_t	linkname_H[1];
 
   if (cce_location(L)) {
     cce_run_catch_handlers_raise(L, upper_L);
   } else {
-    char const *	filename = "name.ext";
-    char const *	linkname = "link.ext";
+    ccstructs_pathname_I	filename = ccstructs_new_pathname_from_static_string("name.ext");
+    ccstructs_pathname_I	linkname = ccstructs_new_pathname_from_static_string("link.ext");
 
     /* Create the file. */
     {
@@ -1225,16 +1229,16 @@ test_5_4_2 (cce_destination_t upper_L)
 void
 test_6_1 (cce_destination_t upper_L)
 {
-  cce_location_t	L[1];
-  cce_clean_handler_t	filename_H[1];
-  cce_clean_handler_t	linkname_H[1];
+  cce_location_t			L[1];
+  ccsys_pathname_clean_handler_t	filename_H[1];
+  ccsys_pathname_clean_handler_t	linkname_H[1];
 
   if (cce_location(L)) {
     if (1) { fprintf(stderr, "%s: %s\n", __func__, cce_condition_static_message(cce_condition(L))); }
     cce_run_catch_handlers_raise(L, upper_L);
   } else {
-    char const *	filename = "name.ext";
-    char const *	linkname = "link.ext";
+    ccstructs_pathname_I	filename = ccstructs_new_pathname_from_static_string("name.ext");
+    ccstructs_pathname_I	linkname = ccstructs_new_pathname_from_static_string("link.ext");
 
     /* Create the file. */
     {
@@ -1275,16 +1279,16 @@ test_6_1 (cce_destination_t upper_L)
 void
 test_6_2 (cce_destination_t upper_L)
 {
-  cce_location_t	L[1];
-  cce_clean_handler_t	filename_H[1];
-  cce_clean_handler_t	linkname_H[1];
+  cce_location_t			L[1];
+  ccsys_pathname_clean_handler_t	filename_H[1];
+  ccsys_pathname_clean_handler_t	linkname_H[1];
 
   if (cce_location(L)) {
     if (1) { fprintf(stderr, "%s: %s\n", __func__, cce_condition_static_message(cce_condition(L))); }
     cce_run_catch_handlers_raise(L, upper_L);
   } else {
-    char const *	filename = "name.ext";
-    char const *	linkname = "link.ext";
+    ccstructs_pathname_I	filename = ccstructs_new_pathname_from_static_string("name.ext");
+    ccstructs_pathname_I	linkname = ccstructs_new_pathname_from_static_string("link.ext");
 
     /* Create the file. */
     {
@@ -1325,14 +1329,14 @@ test_6_2 (cce_destination_t upper_L)
 void
 test_6_3_1 (cce_destination_t upper_L)
 {
-  cce_location_t	L[1];
-  cce_clean_handler_t	filename_H[1];
+  cce_location_t			L[1];
+  ccsys_pathname_clean_handler_t	filename_H[1];
 
   if (cce_location(L)) {
     if (1) { fprintf(stderr, "%s: %s\n", __func__, cce_condition_static_message(cce_condition(L))); }
     cce_run_catch_handlers_raise(L, upper_L);
   } else {
-    char const *	filename = "name.ext";
+    ccstructs_pathname_I	filename = ccstructs_new_pathname_from_static_string("name.ext");
 
     /* Create the file. */
     {
@@ -1365,15 +1369,15 @@ test_6_3_1 (cce_destination_t upper_L)
 void
 test_6_3_2 (cce_destination_t upper_L)
 {
-  cce_location_t	L[1];
-  cce_clean_handler_t	filename_H[1];
-  cce_clean_handler_t	realname_H[1];
+  cce_location_t			L[1];
+  ccsys_pathname_clean_handler_t	filename_H[1];
+  cce_clean_handler_t			realname_H[1];
 
   if (cce_location(L)) {
     if (1) { fprintf(stderr, "%s: %s\n", __func__, cce_condition_static_message(cce_condition(L))); }
     cce_run_catch_handlers_raise(L, upper_L);
   } else {
-    char const *	filename = "name.ext";
+    ccstructs_pathname_I	filename = ccstructs_new_pathname_from_static_string("name.ext");
 
     /* Create the file. */
     {
@@ -1388,11 +1392,11 @@ test_6_3_2 (cce_destination_t upper_L)
 
     /* Read the pathname. */
     {
-      char *	realname;
+      ccstructs_pathname_I	realname;
 
-      realname = ccsys_realpath(L, filename, NULL);
-      cce_init_handler_malloc(L, realname_H, realname);
-      if (1) { fprintf(stderr, "%s: %s\n", __func__, realname); }
+      realname = ccstructs_new_pathname_from_dynamic_string(ccsys_realpath(L, filename, NULL));
+      cce_init_handler_malloc(L, realname_H, (char *)ccstructs_pathname_pointer(L, realname));
+      if (1) { fprintf(stderr, "%s: %s\n", __func__, ccstructs_pathname_pointer(L, realname)); }
     }
 
     cce_run_body_handlers(L);
@@ -1407,14 +1411,14 @@ test_6_3_2 (cce_destination_t upper_L)
 void
 test_7_1 (cce_destination_t upper_L)
 {
-  cce_location_t	L[1];
-  cce_clean_handler_t	filename_H[1];
+  cce_location_t			L[1];
+  ccsys_pathname_clean_handler_t	filename_H[1];
 
   if (cce_location(L)) {
     if (1) { fprintf(stderr, "%s: %s\n", __func__, cce_condition_static_message(cce_condition(L))); }
     cce_run_catch_handlers_raise(L, upper_L);
   } else {
-    char const *	filename = "name.ext";
+    ccstructs_pathname_I	filename = ccstructs_new_pathname_from_static_string("name.ext");
 
     /* Create the file. */
     {
@@ -1447,14 +1451,14 @@ test_7_1 (cce_destination_t upper_L)
 void
 test_7_2 (cce_destination_t upper_L)
 {
-  cce_location_t	L[1];
-  cce_clean_handler_t	filename_H[1];
+  cce_location_t			L[1];
+  ccsys_pathname_clean_handler_t	filename_H[1];
 
   if (cce_location(L)) {
     if (1) { fprintf(stderr, "%s: %s\n", __func__, cce_condition_static_message(cce_condition(L))); }
     cce_run_catch_handlers_raise(L, upper_L);
   } else {
-    char const *	filename = "name.ext";
+    ccstructs_pathname_I	filename = ccstructs_new_pathname_from_static_string("name.ext");
 
     /* Create the file. */
     {
@@ -1489,16 +1493,16 @@ test_7_2 (cce_destination_t upper_L)
 void
 test_8_1 (cce_destination_t upper_L)
 {
-  cce_location_t	L[1];
-  cce_clean_handler_t	filename_H[1];
-  cce_clean_handler_t	newname_H[1];
+  cce_location_t			L[1];
+  ccsys_pathname_clean_handler_t	filename_H[1];
+  ccsys_pathname_clean_handler_t	newname_H[1];
 
   if (cce_location(L)) {
     if (1) { fprintf(stderr, "%s: %s\n", __func__, cce_condition_static_message(cce_condition(L))); }
     cce_run_catch_handlers_raise(L, upper_L);
   } else {
-    char const *	filename = "name.ext";
-    char const *	newname  = "blue.ext";
+    ccstructs_pathname_I	filename = ccstructs_new_pathname_from_static_string("name.ext");
+    ccstructs_pathname_I	newname  = ccstructs_new_pathname_from_static_string("blue.ext");
 
     /* Create the file. */
     {
@@ -1531,16 +1535,16 @@ test_8_1 (cce_destination_t upper_L)
 void
 test_8_2 (cce_destination_t upper_L)
 {
-  cce_location_t	L[1];
-  cce_clean_handler_t	filename_H[1];
-  cce_clean_handler_t	newname_H[1];
+  cce_location_t			L[1];
+  ccsys_pathname_clean_handler_t	filename_H[1];
+  ccsys_pathname_clean_handler_t	newname_H[1];
 
   if (cce_location(L)) {
     if (1) { fprintf(stderr, "%s: %s\n", __func__, cce_condition_static_message(cce_condition(L))); }
     cce_run_catch_handlers_raise(L, upper_L);
   } else {
-    char const *	filename = "name.ext";
-    char const *	newname  = "blue.ext";
+    ccstructs_pathname_I	filename = ccstructs_new_pathname_from_static_string("name.ext");
+    ccstructs_pathname_I	newname  = ccstructs_new_pathname_from_static_string("blue.ext");
 
     /* Create the file. */
     {
@@ -1574,9 +1578,9 @@ void
 test_8_3 (cce_destination_t upper_L CCSYS_UNUSED)
 {
 #if (1 == CCSYS_ON_LINUX)
-  cce_location_t	L[1];
-  cce_clean_handler_t	filename_H[1];
-  cce_clean_handler_t	newname_H[1];
+  cce_location_t			L[1];
+  ccsys_pathname_clean_handler_t	filename_H[1];
+  ccsys_pathname_clean_handler_t	newname_H[1];
 
   fprintf(stderr, "%s: running test for renameat2()\n", __func__);
 
@@ -1584,25 +1588,22 @@ test_8_3 (cce_destination_t upper_L CCSYS_UNUSED)
     if (1) { fprintf(stderr, "%s: %s\n", __func__, cce_condition_static_message(cce_condition(L))); }
     cce_run_catch_handlers_raise(L, upper_L);
   } else {
-    char const *	filename = "name.ext";
-    char const *	newname  = "blue.ext";
+    ccstructs_pathname_I	filename = ccstructs_new_pathname_from_static_string("name.ext");
+    ccstructs_pathname_I	newname  = ccstructs_new_pathname_from_static_string("blue.ext");
 
     /* Create the file. */
     {
-      ccsys_open_flags_t	flags;
-      ccsys_open_mode_t		mode;
+      ccsys_open_flags_t	flags = ccsys_new_open_flags(CCSYS_O_CREAT);
+      ccsys_open_mode_t		mode  = ccsys_new_open_mode(CCSYS_S_IRUSR | CCSYS_S_IWUSR);
 
-      flags.data = CCSYS_O_CREAT;
-      mode.data  = CCSYS_S_IRUSR | CCSYS_S_IWUSR;
       ccsys_touch(L, filename, flags, mode);
       ccsys_init_remove_handler(L, filename_H, filename);
     }
 
     /* Rename the pathname. */
     {
-      ccsys_renameat2_flags_t	flags;
+      ccsys_renameat2_flags_t	flags = ccsys_new_renameat2_flags(0);
 
-      flags.data = 0;
       ccsys_renameat2(L, CCSYS_AT_FDCWD, filename, CCSYS_AT_FDCWD, newname, flags);
       ccsys_init_remove_handler(L, newname_H, newname);
       cctests_assert(L, false == ccsys_pathname_isreg(L, filename));
@@ -1624,13 +1625,13 @@ test_8_3 (cce_destination_t upper_L CCSYS_UNUSED)
 void
 test_9_1 (cce_destination_t upper_L CCSYS_UNUSED)
 {
-  cce_location_t	L[1];
-  cce_clean_handler_t	filename_H[1];
+  cce_location_t			L[1];
+  ccsys_pathname_clean_handler_t	filename_H[1];
 
   if (cce_location(L)) {
     cce_run_catch_handlers_raise(L, upper_L);
   } else {
-    char const *	filename = "name.ext";
+    ccstructs_pathname_I	filename = ccstructs_new_pathname_from_static_string("name.ext");
 
     /* Create the file. */
     {
@@ -1663,15 +1664,15 @@ test_9_1 (cce_destination_t upper_L CCSYS_UNUSED)
 void
 test_9_2 (cce_destination_t upper_L)
 {
-  cce_location_t	L[1];
-  cce_clean_handler_t	filename_H[1];
-  cce_clean_handler_t	linkname_H[1];
+  cce_location_t			L[1];
+  ccsys_pathname_clean_handler_t	filename_H[1];
+  ccsys_pathname_clean_handler_t	linkname_H[1];
 
   if (cce_location(L)) {
     cce_run_catch_handlers_raise(L, upper_L);
   } else {
-    char const *	filename = "name.ext";
-    char const *	linkname = "link.ext";
+    ccstructs_pathname_I	filename = ccstructs_new_pathname_from_static_string("name.ext");
+    ccstructs_pathname_I	linkname = ccstructs_new_pathname_from_static_string("link.ext");
 
     /* Create the file. */
     {
@@ -1710,16 +1711,16 @@ test_9_2 (cce_destination_t upper_L)
 void
 test_9_3 (cce_destination_t upper_L)
 {
-  cce_location_t	L[1];
-  cce_clean_handler_t	filedes_H[1];
-  cce_clean_handler_t	filename_H[1];
+  cce_location_t			L[1];
+  cce_clean_handler_t			filedes_H[1];
+  ccsys_pathname_clean_handler_t	filename_H[1];
 
   if (cce_location(L)) {
     if (1) { fprintf(stderr, "%s: %s\n", __func__, cce_condition_static_message(cce_condition(L))); }
     cce_run_catch_handlers_raise(L, upper_L);
   } else {
-    char const *	filename = "name.ext";
-    ccsys_fd_t		fd;
+    ccstructs_pathname_I	filename = ccstructs_new_pathname_from_static_string("name.ext");
+    ccsys_fd_t			fd;
 
     /* Create the file. */
     {
@@ -1754,13 +1755,13 @@ void
 test_9_4 (cce_destination_t upper_L)
 {
   cce_location_t	L[1];
-  cce_clean_handler_t	filename_H[1];
+  ccsys_pathname_clean_handler_t	filename_H[1];
 
   if (cce_location(L)) {
     if (1) { fprintf(stderr, "%s: %s\n", __func__, cce_condition_static_message(cce_condition(L))); }
     cce_run_catch_handlers_raise(L, upper_L);
   } else {
-    char const *	filename = "name.ext";
+    ccstructs_pathname_I	filename = ccstructs_new_pathname_from_static_string("name.ext");
 
     /* Create the file. */
     {
@@ -1797,14 +1798,14 @@ test_10_1 (cce_destination_t upper_L)
 /* Testing "ccsys_chmod()".*/
 {
 #if (defined HAVE_CHMOD)
-  cce_location_t	L[1];
-  cce_clean_handler_t	filename_H[1];
+  cce_location_t			L[1];
+  ccsys_pathname_clean_handler_t	filename_H[1];
 
   if (cce_location(L)) {
     if (1) { fprintf(stderr, "%s: %s\n", __func__, cce_condition_static_message(cce_condition(L))); }
     cce_run_catch_handlers_raise(L, upper_L);
   } else {
-    char const *	filename = "name.ext";
+    ccstructs_pathname_I	filename = ccstructs_new_pathname_from_static_string("name.ext");
 
     /* Create the file. */
     {
@@ -1846,16 +1847,16 @@ test_10_2 (cce_destination_t upper_L)
 /* Testing "ccsys_fchmod()".*/
 {
 #if (defined HAVE_FCHMOD)
-  cce_location_t	L[1];
-  cce_clean_handler_t	filename_H[1];
-  cce_clean_handler_t	filedes_H[1];
+  cce_location_t			L[1];
+  ccsys_pathname_clean_handler_t	filename_H[1];
+  cce_clean_handler_t			filedes_H[1];
 
   if (cce_location(L)) {
     if (1) { fprintf(stderr, "%s: %s\n", __func__, cce_condition_static_message(cce_condition(L))); }
     cce_run_catch_handlers_raise(L, upper_L);
   } else {
-    char const *	filename = "name.ext";
-    ccsys_fd_t		fd;
+    ccstructs_pathname_I	filename = ccstructs_new_pathname_from_static_string("name.ext");
+    ccsys_fd_t			fd;
 
     /* Create the file. */
     {
@@ -1898,14 +1899,14 @@ test_10_3 (cce_destination_t upper_L)
 /* Testing "ccsys_fchmodat()".*/
 {
 #if (defined HAVE_FCHMODAT)
-  cce_location_t	L[1];
-  cce_clean_handler_t	filename_H[1];
+  cce_location_t			L[1];
+  ccsys_pathname_clean_handler_t	filename_H[1];
 
   if (cce_location(L)) {
     if (1) { fprintf(stderr, "%s: %s\n", __func__, cce_condition_static_message(cce_condition(L))); }
     cce_run_catch_handlers_raise(L, upper_L);
   } else {
-    char const *	filename = "name.ext";
+    ccstructs_pathname_I	filename = ccstructs_new_pathname_from_static_string("name.ext");
 
     /* Create the file. */
     {
@@ -1954,14 +1955,14 @@ test_11_1 (cce_destination_t upper_L)
 /* Testing "ccsys_access()".*/
 {
 #if (defined HAVE_ACCESS)
-  cce_location_t	L[1];
-  cce_clean_handler_t	filename_H[1];
+  cce_location_t			L[1];
+  ccsys_pathname_clean_handler_t	filename_H[1];
 
   if (cce_location(L)) {
     if (1) { fprintf(stderr, "%s: %s\n", __func__, cce_condition_static_message(cce_condition(L))); }
     cce_run_catch_handlers_raise(L, upper_L);
   } else {
-    char const *	filename = "name.ext";
+    ccstructs_pathname_I	filename = ccstructs_new_pathname_from_static_string("name.ext");
 
     /* Create the file. */
     {
@@ -2013,14 +2014,14 @@ test_11_2 (cce_destination_t upper_L)
 /* Testing "ccsys_faccessat()".*/
 {
 #if (defined HAVE_FACCESSAT)
-  cce_location_t	L[1];
-  cce_clean_handler_t	filename_H[1];
+  cce_location_t			L[1];
+  ccsys_pathname_clean_handler_t	filename_H[1];
 
   if (cce_location(L)) {
     if (1) { fprintf(stderr, "%s: %s\n", __func__, cce_condition_static_message(cce_condition(L))); }
     cce_run_catch_handlers_raise(L, upper_L);
   } else {
-    char const *	filename = "name.ext";
+    ccstructs_pathname_I	filename = ccstructs_new_pathname_from_static_string("name.ext");
 
     /* Create the file. */
     {
@@ -2080,16 +2081,16 @@ test_12_1 (cce_destination_t upper_L)
 /* Testing "ccsys_truncate()".*/
 {
 #if (defined HAVE_TRUNCATE)
-  cce_location_t	L[1];
-  cce_clean_handler_t	filename_H[1];
-  cce_clean_handler_t	filedes_H[1];
+  cce_location_t			L[1];
+  ccsys_pathname_clean_handler_t	filename_H[1];
+  cce_clean_handler_t			filedes_H[1];
 
   if (cce_location(L)) {
     if (1) { fprintf(stderr, "%s: %s\n", __func__, cce_condition_static_message(cce_condition(L))); }
     cce_run_catch_handlers_raise(L, upper_L);
   } else {
-    char const *	filename = "name.ext";
-    ccsys_fd_t		fd;
+    ccstructs_pathname_I	filename = ccstructs_new_pathname_from_static_string("name.ext");
+    ccsys_fd_t			fd;
 
     /* Create the file. */
     {
@@ -2146,16 +2147,16 @@ test_12_2 (cce_destination_t upper_L)
 /* Testing "ccsys_ftruncate()".*/
 {
 #if (defined HAVE_FTRUNCATE)
-  cce_location_t	L[1];
-  cce_clean_handler_t	filename_H[1];
-  cce_clean_handler_t	filedes_H[1];
+  cce_location_t			L[1];
+  ccsys_pathname_clean_handler_t	filename_H[1];
+  cce_clean_handler_t			filedes_H[1];
 
   if (cce_location(L)) {
     if (1) { fprintf(stderr, "%s: %s\n", __func__, cce_condition_static_message(cce_condition(L))); }
     cce_run_catch_handlers_raise(L, upper_L);
   } else {
-    char const *	filename = "name.ext";
-    ccsys_fd_t		fd;
+    ccstructs_pathname_I	filename = ccstructs_new_pathname_from_static_string("name.ext");
+    ccsys_fd_t			fd;
 
     /* Create the file. */
     {
@@ -2217,14 +2218,14 @@ test_13_1 (cce_destination_t upper_L)
 /* Testing "ccsys_utimes()".*/
 {
 #if (defined HAVE_UTIMES)
-  cce_location_t	L[1];
-  cce_clean_handler_t	filename_H[1];
+  cce_location_t			L[1];
+  ccsys_pathname_clean_handler_t	filename_H[1];
 
   if (cce_location(L)) {
     if (1) { fprintf(stderr, "%s: %s\n", __func__, cce_condition_static_message(cce_condition(L))); }
     cce_run_catch_handlers_raise(L, upper_L);
   } else {
-    char const *	filename = "name.ext";
+    ccstructs_pathname_I	filename = ccstructs_new_pathname_from_static_string("name.ext");
 
     /* Create the file. */
     {
@@ -2280,16 +2281,16 @@ test_13_2 (cce_destination_t upper_L)
 /* Testing "ccsys_lutimes()".*/
 {
 #if (defined HAVE_LUTIMES)
-  cce_location_t	L[1];
-  cce_clean_handler_t	filename_H[1];
-  cce_clean_handler_t	linkname_H[1];
+  cce_location_t			L[1];
+  ccsys_pathname_clean_handler_t	filename_H[1];
+  ccsys_pathname_clean_handler_t	linkname_H[1];
 
   if (cce_location(L)) {
     if (1) { fprintf(stderr, "%s: %s\n", __func__, cce_condition_static_message(cce_condition(L))); }
     cce_run_catch_handlers_raise(L, upper_L);
   } else {
-    char const *	filename = "name.ext";
-    char const *	linkname = "link.ext";
+    ccstructs_pathname_I	filename = ccstructs_new_pathname_from_static_string("name.ext");
+    ccstructs_pathname_I	linkname = ccstructs_new_pathname_from_static_string("link.ext");
 
     /* Create the file. */
     {
@@ -2351,16 +2352,16 @@ test_13_3 (cce_destination_t upper_L)
 /* Testing "ccsys_futimes()".*/
 {
 #if (defined HAVE_FUTIMES)
-  cce_location_t	L[1];
-  cce_clean_handler_t	filename_H[1];
-  cce_clean_handler_t	filedes_H[1];
+  cce_location_t			L[1];
+  ccsys_pathname_clean_handler_t	filename_H[1];
+  cce_clean_handler_t			filedes_H[1];
 
   if (cce_location(L)) {
     if (1) { fprintf(stderr, "%s: %s\n", __func__, cce_condition_static_message(cce_condition(L))); }
     cce_run_catch_handlers_raise(L, upper_L);
   } else {
-    char const *	filename = "name.ext";
-    ccsys_fd_t		fd;
+    ccstructs_pathname_I	filename = ccstructs_new_pathname_from_static_string("name.ext");
+    ccsys_fd_t			fd;
 
     /* Create the file. */
     {
@@ -2417,14 +2418,14 @@ test_13_4 (cce_destination_t upper_L)
 /* Testing "ccsys_futimesat()".*/
 {
 #if (defined HAVE_FUTIMESAT)
-  cce_location_t	L[1];
-  cce_clean_handler_t	filename_H[1];
+  cce_location_t			L[1];
+  ccsys_pathname_clean_handler_t	filename_H[1];
 
   if (cce_location(L)) {
     if (1) { fprintf(stderr, "%s: %s\n", __func__, cce_condition_static_message(cce_condition(L))); }
     cce_run_catch_handlers_raise(L, upper_L);
   } else {
-    char const *	filename = "name.ext";
+    ccstructs_pathname_I	filename = ccstructs_new_pathname_from_static_string("name.ext");
 
     /* Create the file. */
     {
@@ -2480,14 +2481,14 @@ test_13_5 (cce_destination_t upper_L)
 /* Testing "ccsys_utimensat()".*/
 {
 #if (defined HAVE_UTIMENSAT)
-  cce_location_t	L[1];
-  cce_clean_handler_t	filename_H[1];
+  cce_location_t			L[1];
+  ccsys_pathname_clean_handler_t	filename_H[1];
 
   if (cce_location(L)) {
     if (1) { fprintf(stderr, "%s: %s\n", __func__, cce_condition_static_message(cce_condition(L))); }
     cce_run_catch_handlers_raise(L, upper_L);
   } else {
-    char const *	filename = "name.ext";
+    ccstructs_pathname_I	filename = ccstructs_new_pathname_from_static_string("name.ext");
 
     /* Create the file. */
     {
@@ -2545,16 +2546,16 @@ test_13_6 (cce_destination_t upper_L)
 /* Testing "ccsys_futimens()".*/
 {
 #if (defined HAVE_FUTIMENS)
-  cce_location_t	L[1];
-  cce_clean_handler_t	filename_H[1];
-  cce_clean_handler_t	filedes_H[1];
+  cce_location_t			L[1];
+  ccsys_pathname_clean_handler_t	filename_H[1];
+  cce_clean_handler_t			filedes_H[1];
 
   if (cce_location(L)) {
     if (1) { fprintf(stderr, "%s: %s\n", __func__, cce_condition_static_message(cce_condition(L))); }
     cce_run_catch_handlers_raise(L, upper_L);
   } else {
-    char const *	filename = "name.ext";
-    ccsys_fd_t		fd;
+    ccstructs_pathname_I	filename = ccstructs_new_pathname_from_static_string("name.ext");
+    ccsys_fd_t			fd;
 
     /* Create the file. */
     {
@@ -2616,21 +2617,22 @@ test_14_1 (cce_destination_t upper_L)
 /* Testing "ccsys_mkstemp()".*/
 {
 #if (defined HAVE_MKSTEMP)
-  cce_location_t	L[1];
-  cce_clean_handler_t	filename_H[1];
-  cce_clean_handler_t	filedes_H[1];
+  cce_location_t			L[1];
+  ccsys_pathname_clean_handler_t	filename_H[1];
+  cce_clean_handler_t			filedes_H[1];
 
   if (cce_location(L)) {
     if (1) { fprintf(stderr, "%s: %s\n", __func__, cce_condition_static_message(cce_condition(L))); }
     cce_run_catch_handlers_raise(L, upper_L);
   } else {
-    char	filename[] = "name.ext.XXXXXX";
+    char			template[] = "name.ext.XXXXXX";
+    ccstructs_pathname_I	filename = ccstructs_new_pathname_from_dynamic_string(template);
 
     /* Create the file. */
     {
       ccsys_fd_t	fd;
 
-      fd = ccsys_mkstemp(L, filename);
+      fd = ccsys_mkstemp(L, template);
       ccsys_init_filedes_handler(L, filedes_H, fd);
       ccsys_init_remove_handler(L, filename_H, filename);
     }
@@ -2638,7 +2640,7 @@ test_14_1 (cce_destination_t upper_L)
     /* Validate file existence. */
     {
       cctests_assert(L, true == ccsys_pathname_isreg(L, filename));
-      if (1) { fprintf(stderr, "%s: tempname=%s\n", __func__, filename); }
+      if (1) { fprintf(stderr, "%s: tempname=%s\n", __func__, ccstructs_pathname_pointer(L, filename)); }
     }
 
     cce_run_body_handlers(L);
@@ -2651,15 +2653,16 @@ test_14_2 (cce_destination_t upper_L)
 /* Testing "ccsys_mkostemp()".*/
 {
 #if (defined HAVE_MKOSTEMP)
-  cce_location_t	L[1];
-  cce_clean_handler_t	filename_H[1];
-  cce_clean_handler_t	filedes_H[1];
+  cce_location_t			L[1];
+  ccsys_pathname_clean_handler_t	filename_H[1];
+  cce_clean_handler_t			filedes_H[1];
 
   if (cce_location(L)) {
     if (1) { fprintf(stderr, "%s: %s\n", __func__, cce_condition_static_message(cce_condition(L))); }
     cce_run_catch_handlers_raise(L, upper_L);
   } else {
-    char	filename[] = "name.ext.XXXXXX";
+    char			template[] = "name.ext.XXXXXX";
+    ccstructs_pathname_I	filename = ccstructs_new_pathname_from_dynamic_string(template);
 
     /* Create the file. */
     {
@@ -2667,7 +2670,7 @@ test_14_2 (cce_destination_t upper_L)
       ccsys_fd_t		fd;
 
       flags.data = CCSYS_O_CREAT | CCSYS_O_RDWR;
-      fd = ccsys_mkostemp(L, filename, flags);
+      fd = ccsys_mkostemp(L, template, flags);
       ccsys_init_filedes_handler(L, filedes_H, fd);
       ccsys_init_remove_handler(L, filename_H, filename);
     }
@@ -2675,7 +2678,7 @@ test_14_2 (cce_destination_t upper_L)
     /* Validate file existence. */
     {
       cctests_assert(L, true == ccsys_pathname_isreg(L, filename));
-      if (1) { fprintf(stderr, "%s: tempname=%s\n", __func__, filename); }
+      if (1) { fprintf(stderr, "%s: tempname=%s\n", __func__, ccstructs_pathname_pointer(L, filename)); }
     }
 
     cce_run_body_handlers(L);
@@ -2688,21 +2691,22 @@ test_14_3 (cce_destination_t upper_L)
 /* Testing "ccsys_mkstemps()".*/
 {
 #if (defined HAVE_MKSTEMPS)
-  cce_location_t	L[1];
-  cce_clean_handler_t	filename_H[1];
-  cce_clean_handler_t	filedes_H[1];
+  cce_location_t			L[1];
+  ccsys_pathname_clean_handler_t	filename_H[1];
+  cce_clean_handler_t			filedes_H[1];
 
   if (cce_location(L)) {
     if (1) { fprintf(stderr, "%s: %s\n", __func__, cce_condition_static_message(cce_condition(L))); }
     cce_run_catch_handlers_raise(L, upper_L);
   } else {
-    char	filename[] = "nameXXXXXX.ext";
+    char			template[] = "nameXXXXXX.ext";
+    ccstructs_pathname_I	filename = ccstructs_new_pathname_from_dynamic_string(template);
 
     /* Create the file. */
     {
       ccsys_fd_t	fd;
 
-      fd = ccsys_mkstemps(L, filename, 4);
+      fd = ccsys_mkstemps(L, template, 4);
       ccsys_init_filedes_handler(L, filedes_H, fd);
       ccsys_init_remove_handler(L, filename_H, filename);
     }
@@ -2710,7 +2714,7 @@ test_14_3 (cce_destination_t upper_L)
     /* Validate file existence. */
     {
       cctests_assert(L, true == ccsys_pathname_isreg(L, filename));
-      if (1) { fprintf(stderr, "%s: tempname=%s\n", __func__, filename); }
+      if (1) { fprintf(stderr, "%s: tempname=%s\n", __func__, ccstructs_pathname_pointer(L, filename)); }
     }
 
     cce_run_body_handlers(L);
@@ -2723,15 +2727,16 @@ test_14_4 (cce_destination_t upper_L)
 /* Testing "ccsys_mkostemps()".*/
 {
 #if (defined HAVE_MKOSTEMPS)
-  cce_location_t	L[1];
-  cce_clean_handler_t	filename_H[1];
-  cce_clean_handler_t	filedes_H[1];
+  cce_location_t			L[1];
+  ccsys_pathname_clean_handler_t	filename_H[1];
+  cce_clean_handler_t			filedes_H[1];
 
   if (cce_location(L)) {
     if (1) { fprintf(stderr, "%s: %s\n", __func__, cce_condition_static_message(cce_condition(L))); }
     cce_run_catch_handlers_raise(L, upper_L);
   } else {
-    char	filename[] = "nameXXXXXX.ext";
+    char			template[] = "nameXXXXXX.ext";
+    ccstructs_pathname_I	filename = ccstructs_new_pathname_from_dynamic_string(template);
 
     /* Create the file. */
     {
@@ -2739,7 +2744,7 @@ test_14_4 (cce_destination_t upper_L)
       ccsys_fd_t		fd;
 
       flags.data = CCSYS_O_CREAT | CCSYS_O_RDWR;
-      fd = ccsys_mkostemps(L, filename, 4, flags);
+      fd = ccsys_mkostemps(L, template, 4, flags);
       ccsys_init_filedes_handler(L, filedes_H, fd);
       ccsys_init_remove_handler(L, filename_H, filename);
     }
@@ -2747,7 +2752,7 @@ test_14_4 (cce_destination_t upper_L)
     /* Validate file existence. */
     {
       cctests_assert(L, true == ccsys_pathname_isreg(L, filename));
-      if (1) { fprintf(stderr, "%s: tempname=%s\n", __func__, filename); }
+      if (1) { fprintf(stderr, "%s: tempname=%s\n", __func__, ccstructs_pathname_pointer(L, filename)); }
     }
 
     cce_run_body_handlers(L);
@@ -2765,25 +2770,26 @@ test_15_1 (cce_destination_t upper_L)
 /* Testing "ccsys_mkdtemp()".*/
 {
 #if (defined HAVE_MKDTEMP)
-  cce_location_t	L[1];
-  cce_clean_handler_t	dirname_H[1];
+  cce_location_t			L[1];
+  ccsys_pathname_clean_handler_t	dirname_H[1];
 
   if (cce_location(L)) {
     if (1) { fprintf(stderr, "%s: %s\n", __func__, cce_condition_static_message(cce_condition(L))); }
     cce_run_catch_handlers_raise(L, upper_L);
   } else {
-    char	dirname[] = "name.d.XXXXXX";
+    char			template[] = "name.d.XXXXXX";
+    ccstructs_pathname_I	dirname = ccstructs_new_pathname_from_dynamic_string(template);
 
     /* Create the directory. */
     {
-      ccsys_mkdtemp(L, dirname);
+      ccsys_mkdtemp(L, template);
       ccsys_init_rmdir_handler(L, dirname_H, dirname);
     }
 
     /* Validate file existence. */
     {
       cctests_assert(L, true == ccsys_pathname_isdir(L, dirname));
-      if (1) { fprintf(stderr, "%s: tempname=%s\n", __func__, dirname); }
+      if (1) { fprintf(stderr, "%s: tempname=%s\n", __func__, ccstructs_pathname_pointer(L, dirname)); }
     }
 
     cce_run_body_handlers(L);
@@ -2800,15 +2806,15 @@ void
 test_16_1 (cce_destination_t upper_L)
 {
 #if (defined HAVE_MKDIR)
-  cce_location_t	L[1];
-  cce_clean_handler_t	rmdir_H[1];
-  cce_clean_handler_t	dirfd_H[1];
+  cce_location_t			L[1];
+  ccsys_pathname_clean_handler_t	rmdir_H[1];
+  cce_clean_handler_t			dirfd_H[1];
 
   if (cce_location(L)) {
     cce_run_catch_handlers_raise(L, upper_L);
   } else {
-    char const *        dirname = "name.d";
-    ccsys_dirfd_t       dirfd;
+    ccstructs_pathname_I	dirname = ccstructs_new_pathname_from_static_string("name.d");
+    ccsys_dirfd_t		dirfd;
 
     {
       ccsys_open_mode_t     mode;

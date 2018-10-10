@@ -103,7 +103,7 @@ test_handler_filedes (void)
     } else {
       ccsys_open_flags_t	flags = { .data = CCSYS_O_CREAT };
       ccsys_open_mode_t		mode  = { .data = CCSYS_S_IRWXU };
-      ccsys_fd_t		fd   = ccsys_open(L, "name.ext", flags, mode);
+      ccsys_fd_t		fd   = ccsys_open(L, ccstructs_new_pathname_from_static_string("name.ext"), flags, mode);
       ccsys_init_filedes_clean_handler(L, H, fd);
       cce_run_body_handlers(L);
       done_flag = true;
@@ -125,7 +125,7 @@ test_handler_filedes (void)
     } else {
       ccsys_open_flags_t	flags = { .data = CCSYS_O_CREAT };
       ccsys_open_mode_t		mode = { .data = CCSYS_S_IRWXU };
-      ccsys_fd_t		fd   = ccsys_open(L, "name.ext", flags, mode);
+      ccsys_fd_t		fd   = ccsys_open(L, ccstructs_new_pathname_from_static_string("name.ext"), flags, mode);
       ccsys_init_filedes_clean_handler(L, H, fd);
       cce_raise(L, cce_condition_new_unknown());
       cce_run_body_handlers(L);
@@ -190,9 +190,9 @@ test_handler_remove (void)
 {
   /* No error.  Clean call. */
   {
-    cce_location_t	L[1];
-    cce_clean_handler_t	filedes_H[1];
-    cce_clean_handler_t	remove_H[1];
+    cce_location_t			L[1];
+    cce_clean_handler_t			filedes_H[1];
+    ccsys_pathname_clean_handler_t	remove_H[1];
     volatile bool	done_flag  = false;
     volatile bool	error_flag = false;
 
@@ -200,11 +200,12 @@ test_handler_remove (void)
       cce_run_catch_handlers_final(L);
       error_flag = true;
     } else {
+      ccstructs_pathname_I	filename = ccstructs_new_pathname_from_static_string("name.ext");
       ccsys_open_flags_t	flags = { .data = CCSYS_O_CREAT };
-      ccsys_open_mode_t	mode = { .data = CCSYS_S_IRUSR|CCSYS_S_IWUSR };
-      ccsys_fd_t	fd = ccsys_open(L, "name.ext", flags, mode);
+      ccsys_open_mode_t		mode = { .data = CCSYS_S_IRUSR|CCSYS_S_IWUSR };
+      ccsys_fd_t		fd = ccsys_open(L, filename, flags, mode);
       ccsys_init_filedes_clean_handler(L, filedes_H, fd);
-      ccsys_init_remove_clean_handler(L, remove_H, "name.ext");
+      ccsys_init_remove_clean_handler(L, remove_H, filename);
       cce_run_body_handlers(L);
       done_flag = true;
     }
@@ -215,7 +216,7 @@ test_handler_remove (void)
   {
     cce_location_t	L[1];
     cce_clean_handler_t	filedes_H[1];
-    cce_clean_handler_t	remove_H[1];
+    ccsys_pathname_clean_handler_t	remove_H[1];
     volatile bool	done_flag  = false;
     volatile bool	error_flag = false;
 
@@ -223,11 +224,12 @@ test_handler_remove (void)
       cce_run_catch_handlers_final(L);
       error_flag = true;
     } else {
+      ccstructs_pathname_I	filename = ccstructs_new_pathname_from_static_string("name.ext");
       ccsys_open_flags_t	flags = { .data = CCSYS_O_CREAT };
       ccsys_open_mode_t	mode = { .data = CCSYS_S_IRUSR|CCSYS_S_IWUSR };
-      ccsys_fd_t	fd   = ccsys_open(L, "name.ext", flags, mode);
+      ccsys_fd_t	fd   = ccsys_open(L, filename, flags, mode);
       ccsys_init_filedes_clean_handler(L, filedes_H, fd);
-      ccsys_init_remove_clean_handler(L, remove_H, "name.ext");
+      ccsys_init_remove_clean_handler(L, remove_H, filename);
       cce_raise(L, cce_condition_new_unknown());
       cce_run_body_handlers(L);
       done_flag = true;
@@ -243,8 +245,8 @@ test_handler_rmdir (void)
 {
   /* No error.  Clean call. */
   {
-    cce_location_t	L[1];
-    cce_clean_handler_t	rmdir_H[1];
+    cce_location_t			L[1];
+    ccsys_pathname_clean_handler_t	rmdir_H[1];
     volatile bool	done_flag  = false;
     volatile bool	error_flag = false;
 
@@ -252,9 +254,10 @@ test_handler_rmdir (void)
       cce_run_catch_handlers_final(L);
       error_flag = true;
     } else {
-      ccsys_open_mode_t	mode = { .data = 0 };
-      ccsys_mkdir(L, "name.d", mode);
-      ccsys_init_rmdir_handler(L, rmdir_H, "name.d");
+      ccstructs_pathname_I	dirname = ccstructs_new_pathname_from_static_string("name.d");
+      ccsys_open_mode_t		mode = { .data = 0 };
+      ccsys_mkdir(L, dirname, mode);
+      ccsys_init_rmdir_handler(L, rmdir_H, dirname);
       cce_run_body_handlers(L);
       done_flag = true;
     }
@@ -263,8 +266,8 @@ test_handler_rmdir (void)
   }
   /* Error. */
   {
-    cce_location_t	L[1];
-    cce_clean_handler_t	rmdir_H[1];
+    cce_location_t			L[1];
+    ccsys_pathname_clean_handler_t	rmdir_H[1];
     volatile bool	done_flag  = false;
     volatile bool	error_flag = false;
 
@@ -272,9 +275,10 @@ test_handler_rmdir (void)
       cce_run_catch_handlers_final(L);
       error_flag = true;
     } else {
-      ccsys_open_mode_t	mode = { .data = 0 };
-      ccsys_mkdir(L, "name.d", mode);
-      ccsys_init_rmdir_handler(L, rmdir_H, "name.d");
+      ccstructs_pathname_I	dirname = ccstructs_new_pathname_from_static_string("name.d");
+      ccsys_open_mode_t		mode = { .data = 0 };
+      ccsys_mkdir(L, dirname, mode);
+      ccsys_init_rmdir_handler(L, rmdir_H, dirname);
       cce_raise(L, cce_condition_new_unknown());
       cce_run_body_handlers(L);
       done_flag = true;

@@ -86,11 +86,11 @@ ccsys_fork (cce_location_t * L)
 
 #ifdef HAVE_EXECV
 void
-ccsys_execv (cce_location_t * L, const char * filename, char * const argv [])
+ccsys_execv (cce_location_t * L, ccstructs_pathname_I filename, char * const argv [])
 {
   int	rv;
   errno = 0;
-  rv = execv(filename, argv);
+  rv = execv(ccstructs_pathname_pointer(L, filename), argv);
   if (-1 == rv) {
     cce_raise(L, cce_condition_new_errno_clear());
   }
@@ -99,11 +99,11 @@ ccsys_execv (cce_location_t * L, const char * filename, char * const argv [])
 
 #ifdef HAVE_EXECVE
 void
-ccsys_execve (cce_location_t * L, const char * filename, char * const argv [], char * const env [])
+ccsys_execve (cce_location_t * L, ccstructs_pathname_I filename, char * const argv [], char * const env [])
 {
   int	rv;
   errno = 0;
-  rv = execve(filename, argv, env);
+  rv = execve(ccstructs_pathname_pointer(L, filename), argv, env);
   if (-1 == rv) {
     cce_raise(L, cce_condition_new_errno_clear());
   }
@@ -112,11 +112,11 @@ ccsys_execve (cce_location_t * L, const char * filename, char * const argv [], c
 
 #ifdef HAVE_EXECVP
 void
-ccsys_execvp (cce_location_t * L, const char * filename, char * const argv [])
+ccsys_execvp (cce_location_t * L, ccstructs_pathname_I filename, char * const argv [])
 {
   int	rv;
   errno = 0;
-  rv = execvp(filename, argv);
+  rv = execvp(ccstructs_pathname_pointer(L, filename), argv);
   if (-1 == rv) {
     cce_raise(L, cce_condition_new_errno_clear());
   }

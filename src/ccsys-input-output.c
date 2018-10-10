@@ -60,11 +60,11 @@
 
 #ifdef HAVE_OPEN
 ccsys_fd_t
-ccsys_open (cce_location_t * L, const char *filename, ccsys_open_flags_t flags, ccsys_open_mode_t mode)
+ccsys_open (cce_location_t * L, ccstructs_pathname_I filename, ccsys_open_flags_t flags, ccsys_open_mode_t mode)
 {
   int	rv;
   errno = 0;
-  rv = open(filename, flags.data, mode.data);
+  rv = open(ccstructs_pathname_pointer(L, filename), flags.data, mode.data);
   if (-1 == rv) {
     cce_raise(L, cce_condition_new_errno_clear());
   } else {
@@ -76,11 +76,11 @@ ccsys_open (cce_location_t * L, const char *filename, ccsys_open_flags_t flags, 
 
 #ifdef HAVE_OPENAT
 ccsys_fd_t
-ccsys_openat (cce_location_t * L, ccsys_dirfd_t dirfd, const char *filename, ccsys_open_flags_t flags, ccsys_open_mode_t mode)
+ccsys_openat (cce_location_t * L, ccsys_dirfd_t dirfd, ccstructs_pathname_I filename, ccsys_open_flags_t flags, ccsys_open_mode_t mode)
 {
   int	rv;
   errno = 0;
-  rv = openat(dirfd.data, filename, flags.data, mode.data);
+  rv = openat(dirfd.data, ccstructs_pathname_pointer(L, filename), flags.data, mode.data);
   if (-1 == rv) {
     cce_raise(L, cce_condition_new_errno_clear());
   } else {
@@ -154,11 +154,11 @@ ccsys_pipe2 (cce_location_t * L, ccsys_fd_t pipefd[2], ccsys_open_flags_t flags)
 
 #ifdef HAVE_MKFIFO
 void
-ccsys_mkfifo (cce_location_t * L, const char * pathname, ccsys_open_mode_t mode)
+ccsys_mkfifo (cce_location_t * L, ccstructs_pathname_I pathname, ccsys_open_mode_t mode)
 {
   int	rv;
   errno = 0;
-  rv = mkfifo(pathname, mode.data);
+  rv = mkfifo(ccstructs_pathname_pointer(L, pathname), mode.data);
   if (-1 == rv) {
     cce_raise(L, cce_condition_new_errno_clear());
   }
@@ -167,11 +167,11 @@ ccsys_mkfifo (cce_location_t * L, const char * pathname, ccsys_open_mode_t mode)
 
 #ifdef HAVE_MKFIFOAT
 void
-ccsys_mkfifoat (cce_location_t * L, ccsys_dirfd_t dirfd, const char * pathname, ccsys_open_mode_t mode)
+ccsys_mkfifoat (cce_location_t * L, ccsys_dirfd_t dirfd, ccstructs_pathname_I pathname, ccsys_open_mode_t mode)
 {
   int	rv;
   errno = 0;
-  rv = mkfifoat(dirfd.data, pathname, mode.data);
+  rv = mkfifoat(dirfd.data, ccstructs_pathname_pointer(L, pathname), mode.data);
   if (-1 == rv) {
     cce_raise(L, cce_condition_new_errno_clear());
   }
@@ -598,12 +598,12 @@ ccsys_fdatasync (cce_destination_t L, ccsys_fd_t fd)
  ** ----------------------------------------------------------------- */
 
 ccsys_file_t
-ccsys_fopen (cce_destination_t L, char const * pathname, char const * mode)
+ccsys_fopen (cce_destination_t L, ccstructs_pathname_I pathname, char const * mode)
 {
   FILE *	rv;
 
   errno = 0;
-  rv = fopen(pathname, mode);
+  rv = fopen(ccstructs_pathname_pointer(L, pathname), mode);
   if (NULL != rv) {
     ccsys_file_t	stream = { .data = rv };
     return stream;
@@ -628,12 +628,12 @@ ccsys_fdopen (cce_destination_t L, ccsys_fd_t fd, char const * mode)
 }
 
 ccsys_file_t
-ccsys_freopen (cce_destination_t L, char const * pathname, char const * mode, ccsys_file_t in_stream)
+ccsys_freopen (cce_destination_t L, ccstructs_pathname_I pathname, char const * mode, ccsys_file_t in_stream)
 {
   FILE *	rv;
 
   errno = 0;
-  rv = freopen(pathname, mode, (FILE *)in_stream.data);
+  rv = freopen(ccstructs_pathname_pointer(L, pathname), mode, (FILE *)in_stream.data);
   if (NULL != rv) {
     ccsys_file_t	ou_stream = { .data = rv };
     return ou_stream;

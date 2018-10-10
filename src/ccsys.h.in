@@ -141,7 +141,7 @@ ccsys_decl int		ccsys_version_interface_age	(void)
 
 
 /** --------------------------------------------------------------------
- ** Semantic type definitions.
+ ** Semantic types: definitions.
  ** ----------------------------------------------------------------- */
 
 #define ccsys_dref(D)		((int)		((D).data))
@@ -243,6 +243,51 @@ struct ccsys_whence_t			{ int				data; };
 /* The ones below are opaque types. */
 
 typedef struct ccsys_dir_t			ccsys_dir_t;
+
+
+/** --------------------------------------------------------------------
+ ** Semantic types: constructors.
+ ** ----------------------------------------------------------------- */
+
+__attribute__((__always_inline__))
+static inline ccsys_open_flags_t
+ccsys_new_open_flags (int flags)
+{
+  ccsys_open_flags_t	F = {
+    .data	= flags
+  };
+  return F;
+}
+
+__attribute__((__always_inline__))
+static inline ccsys_renameat2_flags_t
+ccsys_new_renameat2_flags (int flags)
+{
+  ccsys_renameat2_flags_t	F = {
+    .data	= flags
+  };
+  return F;
+}
+
+__attribute__((__always_inline__))
+static inline ccsys_open_mode_t
+ccsys_new_open_mode (int mode)
+{
+  ccsys_open_mode_t	F = {
+    .data	= mode
+  };
+  return F;
+}
+
+__attribute__((__always_inline__))
+static inline ccsys_access_mode_t
+ccsys_new_access_mode (int mode)
+{
+  ccsys_access_mode_t	F = {
+    .data	= mode
+  };
+  return F;
+}
 
 
 /** --------------------------------------------------------------------
@@ -368,6 +413,24 @@ ccsys_timespec_is_zero (ccsys_timespec_t T)
 {
   return ((0 == T.seconds.data) && (0 == T.nanoseconds.data))? true : false;
 }
+
+
+/** --------------------------------------------------------------------
+ ** Type definitions: exception handlers.
+ ** ----------------------------------------------------------------- */
+
+typedef struct ccsys_pathname_clean_handler_t	ccsys_pathname_clean_handler_t;
+typedef struct ccsys_pathname_error_handler_t	ccsys_pathname_error_handler_t;
+
+struct ccsys_pathname_clean_handler_t {
+  cce_clean_handler_t	handler;
+  ccstructs_pathname_I	pathname;
+};
+
+struct ccsys_pathname_error_handler_t {
+  cce_error_handler_t	handler;
+  ccstructs_pathname_I	pathname;
+};
 
 
 /** --------------------------------------------------------------------
@@ -1578,13 +1641,13 @@ ccsys_fd_incr (ccsys_fd_t fd)
  ** Input/output: opening files.
  ** ----------------------------------------------------------------- */
 
-ccsys_decl ccsys_fd_t ccsys_open (cce_destination_t L, char const * filename,
+ccsys_decl ccsys_fd_t ccsys_open (cce_destination_t L, ccstructs_pathname_I filename,
 				  ccsys_open_flags_t flags, ccsys_open_mode_t mode)
-  __attribute__((__nonnull__(1,2)));
+  __attribute__((__nonnull__(1)));
 
-ccsys_decl ccsys_fd_t ccsys_openat (cce_destination_t L, ccsys_dirfd_t dirfd, char const *filename,
+ccsys_decl ccsys_fd_t ccsys_openat (cce_destination_t L, ccsys_dirfd_t dirfd, ccstructs_pathname_I filename,
 				    ccsys_open_flags_t flags, ccsys_open_mode_t mode)
-  __attribute__((__nonnull__(1, 3)));
+  __attribute__((__nonnull__(1)));
 
 
 /** --------------------------------------------------------------------
@@ -1615,11 +1678,11 @@ ccsys_decl void ccsys_init_pipedes_error_handler (cce_destination_t L, cce_error
  ** Input/output: creating FIFOs.
  ** ----------------------------------------------------------------- */
 
-ccsys_decl void ccsys_mkfifo (cce_destination_t L, char const * pathname, ccsys_open_mode_t mode)
-  __attribute__((__nonnull__(1,2)));
+ccsys_decl void ccsys_mkfifo (cce_destination_t L, ccstructs_pathname_I ptn, ccsys_open_mode_t mode)
+  __attribute__((__nonnull__(1)));
 
-ccsys_decl void ccsys_mkfifoat (cce_destination_t L, ccsys_dirfd_t dirfd, const char * pathname, ccsys_open_mode_t mode)
-  __attribute__((__nonnull__(1,3)));
+ccsys_decl void ccsys_mkfifoat (cce_destination_t L, ccsys_dirfd_t dirfd, ccstructs_pathname_I pathname, ccsys_open_mode_t mode)
+  __attribute__((__nonnull__(1)));
 
 
 /** --------------------------------------------------------------------
@@ -1764,14 +1827,14 @@ ccsys_decl void ccsys_fdatasync (cce_destination_t L, ccsys_fd_t fd)
  ** Input/output: streams.
  ** ----------------------------------------------------------------- */
 
-ccsys_decl ccsys_file_t ccsys_fopen (cce_destination_t L, char const * pathname, char const * mode)
-  __attribute__((__nonnull__(1,2,3)));
+ccsys_decl ccsys_file_t ccsys_fopen (cce_destination_t L, ccstructs_pathname_I ptn, char const * mode)
+  __attribute__((__nonnull__(1,3)));
 
 ccsys_decl ccsys_file_t ccsys_fdopen (cce_destination_t L, ccsys_fd_t fd, char const * mode)
   __attribute__((__nonnull__(1,3)));
 
-ccsys_decl ccsys_file_t ccsys_freopen (cce_destination_t L, char const * pathname, char const * mode, ccsys_file_t stream)
-  __attribute__((__nonnull__(1,2,3)));
+ccsys_decl ccsys_file_t ccsys_freopen (cce_destination_t L, ccstructs_pathname_I ptn, char const * mode, ccsys_file_t stream)
+  __attribute__((__nonnull__(1,3)));
 
 ccsys_decl void ccsys_fclose (cce_destination_t L, ccsys_file_t stream)
   __attribute__((__nonnull__(1)));
@@ -1837,8 +1900,8 @@ ccsys_decl bool ccsys_custom_getcwd (cce_destination_t L, char * buffer, size_t 
 ccsys_decl char * ccsys_get_current_dir_name (cce_destination_t L)
   __attribute__((__nonnull__(1)));
 
-ccsys_decl void ccsys_chdir (cce_destination_t L, char const * pathname)
-  __attribute__((__nonnull__(1,2)));
+ccsys_decl void ccsys_chdir (cce_destination_t L, ccstructs_pathname_I ptn)
+  __attribute__((__nonnull__(1)));
 
 ccsys_decl void ccsys_fchdir (cce_destination_t L, ccsys_dirfd_t dirfd)
   __attribute__((__nonnull__(1)));
@@ -1854,8 +1917,8 @@ CCSYS_STRUCT_GETTER(dirent_d_name, ccsys_dirent_t, char const *)
 
 /* ------------------------------------------------------------------ */
 
-ccsys_decl ccsys_dir_t * ccsys_opendir (cce_destination_t L, char const * pathname)
-  __attribute__((__nonnull__(1,2)));
+ccsys_decl ccsys_dir_t * ccsys_opendir (cce_destination_t L, ccstructs_pathname_I ptn)
+  __attribute__((__nonnull__(1)));
 
 ccsys_decl ccsys_dir_t * ccsys_fdopendir (cce_destination_t L, ccsys_dirfd_t dirfd)
   __attribute__((__nonnull__(1)));
@@ -1900,8 +1963,8 @@ ccsys_decl void ccsys_init_dirfd_error_handler (cce_location_t * L, cce_error_ha
  ** File system: reading attributes.
  ** ----------------------------------------------------------------- */
 
-ccsys_decl bool ccsys_stat (cce_destination_t L, char const * pathname, ccsys_stat_t * buf)
-  __attribute__((__nonnull__(1,2,3)));
+ccsys_decl bool ccsys_stat (cce_destination_t L, ccstructs_pathname_I ptn, ccsys_stat_t * buf)
+  __attribute__((__nonnull__(1,3)));
 
 ccsys_decl bool ccsys_rawfd_fstat (cce_destination_t L, int fd, ccsys_stat_t * buf)
   __attribute__((__nonnull__(1,3)));
@@ -1925,12 +1988,12 @@ ccsys_dirfd_fstat (cce_destination_t L, ccsys_dirfd_t fd, ccsys_stat_t * buf)
 	   ccsys_fd_t:		ccsys_fd_fstat,			\
 	   ccsys_dirfd_t:	ccsys_dirfd_fstat)(L,fd,buf)
 
-ccsys_decl bool ccsys_fstatat (cce_destination_t L, ccsys_dirfd_t fd, char const * pathname, ccsys_stat_t * buf,
+ccsys_decl bool ccsys_fstatat (cce_destination_t L, ccsys_dirfd_t fd, ccstructs_pathname_I ptn, ccsys_stat_t * buf,
 			       ccsys_fstatat_flags_t flags)
-  __attribute__((__nonnull__(1,3,4)));
+  __attribute__((__nonnull__(1,4)));
 
-ccsys_decl bool ccsys_lstat (cce_destination_t L, char const * pathname, ccsys_stat_t * buf)
-  __attribute__((__nonnull__(1,2,3)));
+ccsys_decl bool ccsys_lstat (cce_destination_t L, ccstructs_pathname_I ptn, ccsys_stat_t * buf)
+  __attribute__((__nonnull__(1,3)));
 
 /* ------------------------------------------------------------------ */
 
@@ -2000,52 +2063,52 @@ ccsys_decl bool ccsys_s_issock (ccsys_stat_mode_t F)
 
 /* ------------------------------------------------------------------ */
 
-ccsys_decl bool ccsys_pathname_exists (cce_destination_t L, char const * pathname)
-  __attribute__((__nonnull__(1,2)));
+ccsys_decl bool ccsys_pathname_exists (cce_destination_t L, ccstructs_pathname_I ptn)
+  __attribute__((__nonnull__(1)));
 
-ccsys_decl bool ccsys_pathname_isreg (cce_destination_t L, char const * pathname)
-  __attribute__((__nonnull__(1,2)));
+ccsys_decl bool ccsys_pathname_isreg (cce_destination_t L, ccstructs_pathname_I ptn)
+  __attribute__((__nonnull__(1)));
 
-ccsys_decl bool ccsys_pathname_isdir (cce_destination_t L, char const * pathname)
-  __attribute__((__nonnull__(1,2)));
+ccsys_decl bool ccsys_pathname_isdir (cce_destination_t L, ccstructs_pathname_I ptn)
+  __attribute__((__nonnull__(1)));
 
-ccsys_decl bool ccsys_pathname_uid_gid (cce_destination_t L, char const * pathname, ccsys_uid_t * uidp, ccsys_gid_t * gidp)
-  __attribute__((__nonnull__(1,2,3,4)));
+ccsys_decl bool ccsys_pathname_uid_gid (cce_destination_t L, ccstructs_pathname_I ptn, ccsys_uid_t * uidp, ccsys_gid_t * gidp)
+  __attribute__((__nonnull__(1,3,4)));
 
 
 /** --------------------------------------------------------------------
  ** File system: creating files.
  ** ----------------------------------------------------------------- */
 
-ccsys_decl void ccsys_touch (cce_destination_t L, const char *filename, ccsys_open_flags_t flags, ccsys_open_mode_t mode)
-  __attribute__((__nonnull__(1,2)));
+ccsys_decl void ccsys_touch (cce_destination_t L, ccstructs_pathname_I filename, ccsys_open_flags_t flags, ccsys_open_mode_t mode)
+  __attribute__((__nonnull__(1)));
 
 
 /** --------------------------------------------------------------------
  ** File system: creating and deleting directories.
  ** ----------------------------------------------------------------- */
 
-ccsys_decl void ccsys_mkdir (cce_destination_t L, char const * pathname, ccsys_open_mode_t mode)
-  __attribute__((__nonnull__(1,2)));
+ccsys_decl void ccsys_mkdir (cce_destination_t L, ccstructs_pathname_I ptn, ccsys_open_mode_t mode)
+  __attribute__((__nonnull__(1)));
 
-ccsys_decl void ccsys_mkdirat (cce_destination_t L, ccsys_dirfd_t fd, char const * pathname, ccsys_open_mode_t mode)
-  __attribute__((__nonnull__(1,3)));
+ccsys_decl void ccsys_mkdirat (cce_destination_t L, ccsys_dirfd_t fd, ccstructs_pathname_I ptn, ccsys_open_mode_t mode)
+  __attribute__((__nonnull__(1)));
 
-ccsys_decl void ccsys_rmdir (cce_destination_t L, char const * pathname)
-  __attribute__((__nonnull__(1,2)));
+ccsys_decl void ccsys_rmdir (cce_destination_t L, ccstructs_pathname_I ptn)
+  __attribute__((__nonnull__(1)));
 
 /* ------------------------------------------------------------------ */
 
-ccsys_decl void ccsys_init_rmdir_clean_handler (cce_destination_t L, cce_clean_handler_t * H, char const * pathname)
-  __attribute__((__nonnull__(1,2,3)));
+ccsys_decl void ccsys_init_rmdir_clean_handler (cce_destination_t L, ccsys_pathname_clean_handler_t * H, ccstructs_pathname_I ptn)
+  __attribute__((__nonnull__(1,2)));
 
-ccsys_decl void ccsys_init_rmdir_error_handler (cce_destination_t L, cce_error_handler_t * H, char const * pathname)
-  __attribute__((__nonnull__(1,2,3)));
+ccsys_decl void ccsys_init_rmdir_error_handler (cce_destination_t L, ccsys_pathname_error_handler_t * H, ccstructs_pathname_I ptn)
+  __attribute__((__nonnull__(1,2)));
 
 #define ccsys_init_rmdir_handler(L,H,R)					\
   _Generic((H),								\
-	   cce_clean_handler_t	*: ccsys_init_rmdir_clean_handler,	\
-	   cce_error_handler_t	*: ccsys_init_rmdir_error_handler)(L,H,R)
+	   ccsys_pathname_clean_handler_t	*: ccsys_init_rmdir_clean_handler,	\
+	   ccsys_pathname_error_handler_t	*: ccsys_init_rmdir_error_handler)(L,H,R)
 
 
 /** --------------------------------------------------------------------
@@ -2074,37 +2137,37 @@ ccsys_decl char * ccsys_mkdtemp (cce_destination_t L, char * template)
  ** File system: links.
  ** ----------------------------------------------------------------- */
 
-ccsys_decl void ccsys_link (cce_destination_t L, char const * oldname, char const * newname)
-  __attribute__((__nonnull__(1,2,3)));
+ccsys_decl void ccsys_link (cce_destination_t L, ccstructs_pathname_I oldname, ccstructs_pathname_I newname)
+  __attribute__((__nonnull__(1)));
 
 ccsys_decl void ccsys_linkat (cce_destination_t L,
-			      ccsys_dirfd_t oldfd, char const * oldname,
-			      ccsys_dirfd_t newfd, char const * newname,
+			      ccsys_dirfd_t oldfd, ccstructs_pathname_I oldname,
+			      ccsys_dirfd_t newfd, ccstructs_pathname_I newname,
 			      ccsys_linkat_flags_t flags)
-  __attribute__((__nonnull__(1,3,5)));
+  __attribute__((__nonnull__(1)));
 
-ccsys_decl void ccsys_symlink (cce_destination_t L, char const * oldname, char const * newname)
-  __attribute__((__nonnull__(1,2,3)));
+ccsys_decl void ccsys_symlink (cce_destination_t L, ccstructs_pathname_I oldname, ccstructs_pathname_I newname)
+  __attribute__((__nonnull__(1)));
 
-ccsys_decl void ccsys_symlinkat (cce_destination_t L, char const * oldname, ccsys_dirfd_t newdirfd, char const * newname)
-  __attribute__((__nonnull__(1,2,4)));
+ccsys_decl void ccsys_symlinkat (cce_destination_t L, ccstructs_pathname_I oldname, ccsys_dirfd_t newdirfd, ccstructs_pathname_I newname)
+  __attribute__((__nonnull__(1)));
 
-ccsys_decl size_t ccsys_readlink (cce_destination_t L, char const * filename, char * buffer, size_t size)
-  __attribute__((__nonnull__(1,2,3)));
+ccsys_decl size_t ccsys_readlink (cce_destination_t L, ccstructs_pathname_I filename, char * buffer, size_t size)
+  __attribute__((__nonnull__(1,3)));
 
-ccsys_decl size_t ccsys_readlinkat (cce_destination_t L, ccsys_dirfd_t dirfd, char const * filename, char * buffer, size_t size)
-  __attribute__((__nonnull__(1,3,4)));
+ccsys_decl size_t ccsys_readlinkat (cce_destination_t L, ccsys_dirfd_t dirfd, ccstructs_pathname_I filename, char * buffer, size_t size)
+  __attribute__((__nonnull__(1,4)));
 
-ccsys_decl char * ccsys_realpath (cce_destination_t L, char const * pathname, char * resolved_path)
-  __attribute__((__nonnull__(1,2),__returns_nonnull__));
+ccsys_decl char * ccsys_realpath (cce_destination_t L, ccstructs_pathname_I ptn, char * resolved_path)
+  __attribute__((__nonnull__(1),__returns_nonnull__));
 
 /* ------------------------------------------------------------------ */
 
-ccsys_decl void ccsys_unlink (cce_destination_t L, char const * pathname)
-  __attribute__((__nonnull__(1,2)));
+ccsys_decl void ccsys_unlink (cce_destination_t L, ccstructs_pathname_I ptn)
+  __attribute__((__nonnull__(1)));
 
-ccsys_decl void ccsys_unlinkat (cce_destination_t L, ccsys_dirfd_t dirfd, char const * pathname, ccsys_unlinkat_flags_t flags)
-  __attribute__((__nonnull__(1,3)));
+ccsys_decl void ccsys_unlinkat (cce_destination_t L, ccsys_dirfd_t dirfd, ccstructs_pathname_I ptn, ccsys_unlinkat_flags_t flags)
+  __attribute__((__nonnull__(1)));
 
 /* ------------------------------------------------------------------ */
 
@@ -2112,7 +2175,7 @@ typedef struct ccsys_at_link_t		ccsys_at_link_t;
 
 struct ccsys_at_link_t {
   ccsys_dirfd_t			dirfd;
-  char const *			pathname;
+  ccstructs_pathname_I		pathname;
   ccsys_unlinkat_flags_t	flags;
 };
 
@@ -2132,93 +2195,93 @@ ccsys_decl void ccsys_init_unlinkat_error_handler (cce_destination_t L, cce_erro
  ** File system: removing files.
  ** ----------------------------------------------------------------- */
 
-ccsys_decl void ccsys_remove (cce_destination_t L, char const * pathname)
-  __attribute__((__nonnull__(1,2)));
+ccsys_decl void ccsys_remove (cce_destination_t L, ccstructs_pathname_I ptn)
+  __attribute__((__nonnull__(1)));
 
 /* ------------------------------------------------------------------ */
 
-ccsys_decl void ccsys_init_remove_clean_handler (cce_destination_t L, cce_clean_handler_t * H, char const * pathname)
-  __attribute__((__nonnull__(1,2,3)));
+ccsys_decl void ccsys_init_remove_clean_handler (cce_destination_t L, ccsys_pathname_clean_handler_t * H, ccstructs_pathname_I ptn)
+  __attribute__((__nonnull__(1,2)));
 
-ccsys_decl void ccsys_init_remove_error_handler (cce_destination_t L, cce_error_handler_t * H, char const * pathname)
-  __attribute__((__nonnull__(1,2,3)));
+ccsys_decl void ccsys_init_remove_error_handler (cce_destination_t L, ccsys_pathname_error_handler_t * H, ccstructs_pathname_I ptn)
+  __attribute__((__nonnull__(1,2)));
 
 #define ccsys_init_remove_handler(L,H,R)				\
   _Generic((H),								\
-	   cce_clean_handler_t	*: ccsys_init_remove_clean_handler,	\
-	   cce_error_handler_t	*: ccsys_init_remove_error_handler)(L,H,R)
+	   ccsys_pathname_clean_handler_t	*: ccsys_init_remove_clean_handler,	\
+	   ccsys_pathname_error_handler_t	*: ccsys_init_remove_error_handler)(L,H,R)
 
 
 /** --------------------------------------------------------------------
  ** File system: renaming directory entries.
  ** ----------------------------------------------------------------- */
 
-ccsys_decl void ccsys_rename (cce_destination_t L, char const * oldname, char const * newname)
-  __attribute__((__nonnull__(1,2,3)));
+ccsys_decl void ccsys_rename (cce_destination_t L, ccstructs_pathname_I oldname, ccstructs_pathname_I newname)
+  __attribute__((__nonnull__(1)));
 
 ccsys_decl void ccsys_renameat (cce_destination_t L,
-				ccsys_dirfd_t old_dirfd, char const * oldname,
-				ccsys_dirfd_t new_dirfd, char const * newname)
-  __attribute__((__nonnull__(1,3,5)));
+				ccsys_dirfd_t old_dirfd, ccstructs_pathname_I oldname,
+				ccsys_dirfd_t new_dirfd, ccstructs_pathname_I newname)
+  __attribute__((__nonnull__(1)));
 
 ccsys_decl void ccsys_renameat2 (cce_destination_t L,
-				 ccsys_dirfd_t old_dirfd, char const * oldname,
-				 ccsys_dirfd_t new_dirfd, char const * newname,
+				 ccsys_dirfd_t old_dirfd, ccstructs_pathname_I oldname,
+				 ccsys_dirfd_t new_dirfd, ccstructs_pathname_I newname,
 				 ccsys_renameat2_flags_t flags)
-  __attribute__((__nonnull__(1,3,5)));
+  __attribute__((__nonnull__(1)));
 
 
 /** --------------------------------------------------------------------
  ** File system: changing owner.
  ** ----------------------------------------------------------------- */
 
-ccsys_decl void ccsys_chown (cce_destination_t L, char const * pathname, ccsys_uid_t owner, ccsys_gid_t group)
-  __attribute__((__nonnull__(1,2)));
+ccsys_decl void ccsys_chown (cce_destination_t L, ccstructs_pathname_I ptn, ccsys_uid_t owner, ccsys_gid_t group)
+  __attribute__((__nonnull__(1)));
 
 ccsys_decl void ccsys_fchown (cce_destination_t L, ccsys_fd_t filedes, ccsys_uid_t owner, ccsys_gid_t group)
   __attribute__((__nonnull__(1)));
 
-ccsys_decl void ccsys_lchown (cce_destination_t L, char const * pathname, ccsys_uid_t owner, ccsys_gid_t group)
-  __attribute__((__nonnull__(1,2)));
+ccsys_decl void ccsys_lchown (cce_destination_t L, ccstructs_pathname_I ptn, ccsys_uid_t owner, ccsys_gid_t group)
+  __attribute__((__nonnull__(1)));
 
-ccsys_decl void ccsys_fchownat (cce_destination_t L, ccsys_dirfd_t dirfd, char const * pathname,
+ccsys_decl void ccsys_fchownat (cce_destination_t L, ccsys_dirfd_t dirfd, ccstructs_pathname_I ptn,
 				ccsys_uid_t owner, ccsys_gid_t group, ccsys_fchownat_flags_t flags)
-  __attribute__((__nonnull__(1,3)));
+  __attribute__((__nonnull__(1)));
 
 
 /** --------------------------------------------------------------------
  ** File system: changing access permissions.
  ** ----------------------------------------------------------------- */
 
-ccsys_decl void ccsys_chmod (cce_destination_t L, char const * pathname, ccsys_open_mode_t mode)
-  __attribute__((__nonnull__(1,2)));
+ccsys_decl void ccsys_chmod (cce_destination_t L, ccstructs_pathname_I ptn, ccsys_open_mode_t mode)
+  __attribute__((__nonnull__(1)));
 
 ccsys_decl void ccsys_fchmod (cce_destination_t L, ccsys_fd_t filedes, ccsys_open_mode_t mode)
   __attribute__((__nonnull__(1)));
 
-ccsys_decl void ccsys_fchmodat (cce_destination_t L, ccsys_dirfd_t dirfd, char const * pathname,
+ccsys_decl void ccsys_fchmodat (cce_destination_t L, ccsys_dirfd_t dirfd, ccstructs_pathname_I ptn,
 				ccsys_open_mode_t mode, ccsys_fchmodat_flags_t flags)
-  __attribute__((__nonnull__(1,3)));
+  __attribute__((__nonnull__(1)));
 
 
 /** --------------------------------------------------------------------
  ** File system: testing access permissions.
  ** ----------------------------------------------------------------- */
 
-ccsys_decl bool ccsys_access (cce_destination_t L, char const * pathname, ccsys_access_mode_t how)
-  __attribute__((__nonnull__(1,2)));
+ccsys_decl bool ccsys_access (cce_destination_t L, ccstructs_pathname_I ptn, ccsys_access_mode_t how)
+  __attribute__((__nonnull__(1)));
 
-ccsys_decl bool ccsys_faccessat (cce_destination_t L, ccsys_dirfd_t dirfd, char const * pathname,
+ccsys_decl bool ccsys_faccessat (cce_destination_t L, ccsys_dirfd_t dirfd, ccstructs_pathname_I ptn,
 				 ccsys_access_mode_t how, ccsys_faccessat_flags_t flags)
-  __attribute__((__nonnull__(1,3)));
+  __attribute__((__nonnull__(1)));
 
 
 /** --------------------------------------------------------------------
  ** File system: truncating files.
  ** ----------------------------------------------------------------- */
 
-ccsys_decl void ccsys_truncate (cce_destination_t L, char const * pathname, ccsys_off_t length)
-  __attribute__((__nonnull__(1,2)));
+ccsys_decl void ccsys_truncate (cce_destination_t L, ccstructs_pathname_I ptn, ccsys_off_t length)
+  __attribute__((__nonnull__(1)));
 
 ccsys_decl void ccsys_ftruncate (cce_destination_t L, ccsys_fd_t filedes, ccsys_off_t length)
   __attribute__((__nonnull__(1)));
@@ -2228,26 +2291,26 @@ ccsys_decl void ccsys_ftruncate (cce_destination_t L, ccsys_fd_t filedes, ccsys_
  ** File system: file times.
  ** ----------------------------------------------------------------- */
 
-ccsys_decl void ccsys_utimes (cce_destination_t L, char const * pathname, ccsys_timeval_t const T[2])
-  __attribute__((__nonnull__(1,2,3)));
+ccsys_decl void ccsys_utimes (cce_destination_t L, ccstructs_pathname_I ptn, ccsys_timeval_t const T[2])
+  __attribute__((__nonnull__(1,3)));
 
-ccsys_decl void ccsys_utimensat (cce_destination_t L, ccsys_dirfd_t dirfd, char const * pathname,
+ccsys_decl void ccsys_utimensat (cce_destination_t L, ccsys_dirfd_t dirfd, ccstructs_pathname_I ptn,
 				 ccsys_timespec_t const T[2], ccsys_utimensat_flags_t flags)
-  __attribute__((__nonnull__(1,3,4)));
+  __attribute__((__nonnull__(1,4)));
 
 ccsys_decl void ccsys_futimens (cce_destination_t L, ccsys_fd_t fd, ccsys_timespec_t const T[2])
   __attribute__((__nonnull__(1,3)));
 
 /* ------------------------------------------------------------------ */
 
-ccsys_decl void ccsys_lutimes (cce_destination_t L, char const * pathname, ccsys_timeval_t const T[2])
-  __attribute__((__nonnull__(1,2,3)));
+ccsys_decl void ccsys_lutimes (cce_destination_t L, ccstructs_pathname_I ptn, ccsys_timeval_t const T[2])
+  __attribute__((__nonnull__(1,3)));
 
 ccsys_decl void ccsys_futimes (cce_destination_t L, ccsys_fd_t filedes, ccsys_timeval_t const T[2])
   __attribute__((__nonnull__(1,3)));
 
-ccsys_decl void ccsys_futimesat (cce_destination_t L, ccsys_dirfd_t dirfd, char const * pathname, ccsys_timeval_t const T[2])
-  __attribute__((__nonnull__(1,3,4)));
+ccsys_decl void ccsys_futimesat (cce_destination_t L, ccsys_dirfd_t dirfd, ccstructs_pathname_I ptn, ccsys_timeval_t const T[2])
+  __attribute__((__nonnull__(1,4)));
 
 
 /** --------------------------------------------------------------------
@@ -2278,14 +2341,14 @@ ccsys_in_child_after_fork (ccsys_pid_t pid)
 
 /* ------------------------------------------------------------------ */
 
-ccsys_decl void ccsys_execv (cce_destination_t L, char const * filename, char * const argv [])
-  __attribute__((__nonnull__(1,2,3)));
+ccsys_decl void ccsys_execv (cce_destination_t L, ccstructs_pathname_I filename, char * const argv [])
+  __attribute__((__nonnull__(1,3)));
 
-ccsys_decl void ccsys_execve (cce_destination_t L, char const * filename, char * const argv [], char * const env [])
-  __attribute__((__nonnull__(1,2,3,4)));
+ccsys_decl void ccsys_execve (cce_destination_t L, ccstructs_pathname_I filename, char * const argv [], char * const env [])
+  __attribute__((__nonnull__(1,3,4)));
 
-ccsys_decl void ccsys_execvp (cce_destination_t L, char const * filename, char * const argv [])
-  __attribute__((__nonnull__(1,2,3)));
+ccsys_decl void ccsys_execvp (cce_destination_t L, ccstructs_pathname_I filename, char * const argv [])
+  __attribute__((__nonnull__(1,3)));
 
 /* ------------------------------------------------------------------ */
 

@@ -133,6 +133,7 @@ included in the section entitled ``@gnu{} Free Documentation License''.
 * version::                     Version functions.
 * defines::                     General preprocessor symbols.
 * semantic::                    Semantic types.
+* handlers::                    Exception handlers.
 * enums::                       Enumerated constants.
 * prog::                        Basic program/system interface.
 * res::                         Resources and limitations.
@@ -335,7 +336,7 @@ int open(const char *pathname, int flags, mode_t mode);
 while the @value{PACKAGE} wrapper has the prototype:
 
 @example
-ccsys_fd_t ccsys_open (cce_location_t * L, char const * filename,
+ccsys_fd_t ccsys_open (cce_location_t * L, ccstructs_pathname_I filename,
    ccsys_open_flags_t flags, ccsys_open_mode_t mode);
 @end example
 
@@ -460,6 +461,7 @@ return values.
 @menu
 * semantic typedefs::           Semantic type definitions.
 * semantic macros::             Semantic type macros.
+* semantic ctors::              Semantic type constructors.
 @end menu
 
 @c page
@@ -753,6 +755,62 @@ Expand into:
 ((unsigned long) ((@var{D}).data))
 @end example
 @end deftypefn
+
+@c page
+@node semantic ctors
+@section Semantic type constructors
+
+
+@deftypefun ccsys_open_flags_t ccsys_new_open_flags (int @var{flags})
+Build and return a new instance.
+@end deftypefun
+
+
+@deftypefun ccsys_renameat2_flags_t ccsys_new_renameat2_flags (int @var{flags})
+Build and return a new instance.
+@end deftypefun
+
+
+@deftypefun ccsys_open_mode_t ccsys_new_open_mode (int @var{mode})
+Build and return a new instance.
+@end deftypefun
+
+
+@deftypefun ccsys_access_mode_t ccsys_new_access_mode (int @var{mode})
+Build and return a new instance.
+@end deftypefun
+
+@c page
+@node handlers
+@chapter Exception handlers
+
+
+@deftp {Struct Typedef} ccsys_pathname_clean_handler_t
+Type of exception handlers used to remove file or directories by pathname.  It has the following
+fields:
+
+@table @code
+@item cce_clean_handler_t handler
+The clean handler.
+
+@item ccstructs_pathname_I pathname
+The pathname specification.
+@end table
+@end deftp
+
+
+@deftp {Struct Typedef} ccsys_pathname_error_handler_t
+Type of exception handlers used to remove file or directories by pathname.  It has the following
+fields:
+
+@table @code
+@item cce_error_handler_t handler
+The error handler.
+
+@item ccstructs_pathname_I pathname
+The pathname specification.
+@end table
+@end deftp
 
 @c page
 @node enums
@@ -3703,7 +3761,7 @@ generate the first argument to @cfunc{ccsys_select}; @ref{io select, ccsys_selec
 The following symbols are defined in the header file @file{ccsys.h}.
 
 
-@deftypefun ccsys_fd_t ccsys_open (cce_destination_t @var{L}, char const * @var{filename}, ccsys_open_flags_t @var{flags}, ccsys_open_mode_t @var{mode})
+@deftypefun ccsys_fd_t ccsys_open (cce_destination_t @var{L}, ccstructs_pathname_I @var{filename}, ccsys_open_flags_t @var{flags}, ccsys_open_mode_t @var{mode})
 Wrapper for @cfunc{open}.  @manpage{open, Open and possibly create a file}.
 
 The argument @var{flags} is meant to be a bitwise combination of the constants of type
@@ -3714,7 +3772,7 @@ The argument @var{mode} is meant to be a bitwise combination of the constants of
 @end deftypefun
 
 
-@deftypefun ccsys_fd_t ccsys_openat (cce_destination_t @var{L}, ccsys_dirfd_t @var{filedes}, char const * @var{filename}, ccsys_open_flags_t @var{flags}, ccsys_open_mode_t @var{mode})
+@deftypefun ccsys_fd_t ccsys_openat (cce_destination_t @var{L}, ccsys_dirfd_t @var{filedes}, ccstructs_pathname_I @var{filename}, ccsys_open_flags_t @var{flags}, ccsys_open_mode_t @var{mode})
 Wrapper for @cfunc{openat}.  @manpage{openat, Open and possibly create a file}.
 
 The argument @var{flags} is meant to be a bitwise combination of the constants of type
@@ -3728,25 +3786,29 @@ The argument @var{mode} is meant to be a bitwise combination of the constants of
 We can use  @cfunc{ccsys_openat} as follows:
 
 @example
-cce_location_t          L[1];
-cce_clean_handler_t   dir_H[1];
-cce_clean_handler_t   dirstream_H[1];
-cce_clean_handler_t   file_H[1];
+cce_location_t                  L[1];
+ccsys_pathname_clean_handler_t  dir_H[1];
+cce_clean_handler_t             dirstream_H[1];
+cce_clean_handler_t             file_H[1];
 
 if (cce_location(L)) @{
   cce_run_catch_handlers_final(L);
 @} else @{
   static char const * dirname  = "dir.d";
   static char const * filename = "name.ext";
+  ccstructs_pathname_I  DN = \
+     ccstructs_new_pathname_from_static_string(L, dirname);
+  ccstructs_pathname_I  FN = \
+     ccstructs_new_pathname_from_static_string(L, filename);
   ccsys_dirfd_t       dirfd;
 
   /* Create the directory. */
   @{
-    ccsys_open_mode_t   mode;
+    ccsys_open_mode_t     mode;
 
     mode.data = CCSYS_S_IRWXU;
-    ccsys_mkdir(L, dirname, mode);
-    ccsys_init_rmdir_handler(L, dir_H, dirname);
+    ccsys_mkdir(L, DN, mode);
+    ccsys_init_rmdir_handler(L, dir_H, DN);
   @}
 
   /* Open the directory.  The descriptor in "dirfd" is released
@@ -3754,7 +3816,7 @@ if (cce_location(L)) @{
   @{
     ccsys_dir_t *     dirstream;
 
-    dirstream = ccsys_opendir(L, dirname);
+    dirstream = ccsys_opendir(L, DN);
     ccsys_init_dirstream_handler(L, dirstream_H, dirstream);
     dirfd = ccsys_dirfd(L, dirstream);
   @}
@@ -3767,7 +3829,7 @@ if (cce_location(L)) @{
 
     flags.data = CCSYS_O_CREAT;
     mode.data  = CCSYS_S_IRUSR | CCSYS_S_IWUSR;
-    fd = ccsys_openat(L, dirfd, filename, flags, mode);
+    fd = ccsys_openat(L, dirfd, FN, flags, mode);
     ccsys_init_filedes_handler(L, file_H, fd);
 
     /* Do something with "fd" here. */
@@ -3778,7 +3840,7 @@ if (cce_location(L)) @{
     ccsys_unlinkat_flags_t flags;
 
     flags.data = 0;
-    ccsys_unlinkat(L, dirfd, filename, flags);
+    ccsys_unlinkat(L, dirfd, FN, flags);
   @}
 
   cce_run_body_handlers(L);
@@ -3955,7 +4017,7 @@ if (cce_location(L)) @{
 The following symbols are defined in the header file @file{ccsys.h}.
 
 
-@deftypefun void ccsys_mkfifo (cce_destination_t @var{L}, char const * @var{pathname}, ccsys_open_mode_t @var{mode})
+@deftypefun void ccsys_mkfifo (cce_destination_t @var{L}, ccstructs_pathname_I @var{pathname}, ccsys_open_mode_t @var{mode})
 Wrapper for @cfunc{mkfifo}.  @manpage{mkfifo, Make a FIFO special file}.
 
 The argument @var{mode} is meant to be a bitwise combination of the constants of type
@@ -3963,7 +4025,7 @@ The argument @var{mode} is meant to be a bitwise combination of the constants of
 @end deftypefun
 
 
-@deftypefun void ccsys_mkfifoat (cce_destination_t @var{L}, ccsys_dirfd_t @var{dirfd}, char const * @var{pathname}, ccsys_open_mode_t @var{mode})
+@deftypefun void ccsys_mkfifoat (cce_destination_t @var{L}, ccsys_dirfd_t @var{dirfd}, ccstructs_pathname_I @var{pathname}, ccsys_open_mode_t @var{mode})
 Wrapper for @cfunc{mkfifoat}.  @manpage{mkfifoat, Make a FIFO special file}.
 
 The argument @var{mode} is meant to be a bitwise combination of the constants of type
@@ -4001,19 +4063,20 @@ waits for the child process to terminate.
 
 @smallexample
 void sample_parent (cce_destination_t upper_L,
-                    char const * fifoname);
-void sample_child  (char const * fifoname);
+                    ccstructs_pathname_I fifoname);
+void sample_child  (ccstructs_pathname_I fifoname);
 
 void
 sample (void)
 @{
-  cce_location_t        L[1];
-  cce_clean_handler_t fifo_H[1];
+  cce_location_t                  L[1];
+  ccsys_pathname_clean_handler_t  fifo_H[1];
 
   if (cce_location(L)) @{
     cce_run_catch_handlers_final(L);
   @} else @{
-    static char const * fifoname = "fifo.ext";
+    ccstructs_pathname_I fifoname =
+      ccstructs_new_pathname_from_static_string("fifo.ext");
     ccsys_pid_t         pid;
 
     /* Create the FIFO. */
@@ -4045,10 +4108,10 @@ sample (void)
 @}
 
 void
-sample_parent (cce_destination_t upper_L, char const * fifoname)
+sample_parent (cce_destination_t upper_L, ccstructs_pathname_I fifoname)
 @{
   cce_location_t        L[1];
-  cce_clean_handler_t infd_H[1];
+  cce_clean_handler_t   infd_H[1];
   ccsys_fd_t            infd;
 
   if (cce_location(L)) @{
@@ -4076,7 +4139,7 @@ sample_parent (cce_destination_t upper_L, char const * fifoname)
 @}
 
 void
-sample_child  (char const * fifoname)
+sample_child  (ccstructs_pathname_I fifoname)
 @{
   cce_location_t        L[1];
   ccsys_fd_t            oufd;
@@ -4141,23 +4204,25 @@ removes the directory; waits for the child process to terminate.
 
 @smallexample
 void sample_parent (cce_destination_t upper_L,
-                    ccsys_dirfd_t dirfd, char const * fifoname);
-void sample_child  (ccsys_dirfd_t dirfd, char const * fifoname);
+                    ccsys_dirfd_t dirfd, ccstructs_pathname_I fifoname);
+void sample_child  (ccsys_dirfd_t dirfd, ccstructs_pathname_I fifoname);
 
 void
 sample (void)
 @{
-  cce_location_t        L[1];
-  cce_clean_handler_t dir_H[1];
-  cce_clean_handler_t dirstream_H[1];
-  cce_clean_handler_t fifo_H[1];
+  cce_location_t                  L[1];
+  ccsys_pathname_clean_handler_t  dir_H[1];
+  cce_clean_handler_t   dirstream_H[1];
+  cce_clean_handler_t   fifo_H[1];
   ccsys_at_link_t       fifo_unlink_data;
 
   if (cce_location(L)) @{
     cce_run_catch_handlers_final(L);
   @} else @{
-    static char const * dirname  = "name.d";
-    static char const * fifoname = "fifo.ext";
+    ccstructs_pathname_I dirname  =
+       ccstructs_new_pathname_from_static_string("name.d");
+    ccstructs_pathname_I fifoname =
+       ccstructs_new_pathname_from_static_string("fifo.ext");
     ccsys_dirfd_t       dirfd;
     ccsys_pid_t         pid;
 
@@ -4210,7 +4275,7 @@ sample (void)
 
 void
 sample_parent (cce_destination_t upper_L,
-               ccsys_dirfd_t dirfd, char const * fifoname)
+               ccsys_dirfd_t dirfd, ccstructs_pathname_I fifoname)
 @{
   cce_location_t        L[1];
   cce_clean_handler_t infd_H[1];
@@ -4241,7 +4306,7 @@ sample_parent (cce_destination_t upper_L,
 @}
 
 void
-sample_child (ccsys_dirfd_t dirfd, char const * fifoname)
+sample_child (ccsys_dirfd_t dirfd, ccstructs_pathname_I fifoname)
 @{
   cce_location_t        L[1];
   ccsys_fd_t            oufd;
@@ -4304,7 +4369,8 @@ cce_clean_handler_t   H[1];
 if (cce_location(L)) @{
   cce_run_catch_handlers_raise(L, upper_L);
 @} else @{
-  static char const * filename = "name.ext";
+  ccstructs_pathname_I filename =
+    ccstructs_new_pathname_from_static_string("name.ext");
   ccsys_open_flags_t  flags;
   ccsys_open_mode_t   mode;
   ccsys_fd_t          fd;
@@ -4396,14 +4462,15 @@ As example of using @cfunc{ccsys_read} and @cfunc{ccsys_write} see the following
 file, writes bytes to it, reads bytes from it, closes the file, removes the file.
 
 @example
-cce_location_t          L[1];
-cce_clean_handler_t   filedes_H[1];
-cce_clean_handler_t   file_H[1];
+cce_location_t                  L[1];
+cce_clean_handler_t             filedes_H[1];
+ccsys_pathname_clean_handler_t  file_H[1];
 
 if (cce_location(L)) @{
   cce_run_catch_handlers_raise(L, upper_L);
 @} else @{
-  static char const * filename = "name.ext";
+  ccstructs_pathname_I filename =
+    ccstructs_new_pathname_from_static_string("name.ext");
   ccsys_fd_t          fd;
 
   /* Create and open the file. */
@@ -4458,14 +4525,15 @@ As example of using @cfunc{ccsys_pread} and @cfunc{ccsys_pwrite} see the followi
 a file, writes bytes to it, reads bytes from it, closes the file, removes the file.
 
 @example
-cce_location_t          L[1];
-cce_clean_handler_t   filedes_H[1];
-cce_clean_handler_t   file_H[1];
+cce_location_t                  L[1];
+cce_clean_handler_t             filedes_H[1];
+ccsys_pathname_clean_handler_t  file_H[1];
 
 if (cce_location(L)) @{
   cce_run_catch_handlers_raise(L, upper_L);
 @} else @{
-  static char const * filename = "name.ext";
+  ccstructs_pathname_I filename =
+    ccstructs_new_pathname_from_static_string("name.ext");
   ccsys_fd_t          fd;
 
   /* Create and open the file. */
@@ -4607,14 +4675,15 @@ As example of using @cfunc{ccsys_readv} and @cfunc{ccsys_writev} see the followi
 a file, writes bytes to it, reads bytes from it, closes the file, removes the file.
 
 @example
-cce_location_t          L[1];
-cce_clean_handler_t   filedes_H[1];
-cce_clean_handler_t   file_H[1];
+cce_location_t                  L[1];
+cce_clean_handler_t             filedes_H[1];
+ccsys_pathname_clean_handler_t  file_H[1];
 
 if (cce_location(L)) @{
   cce_run_catch_handlers_raise(L, upper_L);
 @} else @{
-  static char const * filename = "name.ext";
+  ccstructs_pathname_I filename =
+    ccstructs_new_pathname_from_static_string("name.ext");
   ccsys_fd_t          fd;
 
   /* Create and open the file. */
@@ -4691,14 +4760,15 @@ As example of using @cfunc{ccsys_preadv} and @cfunc{ccsys_pwritev} see the follo
 opens a file, writes bytes to it, reads bytes from it, closes the file, removes the file.
 
 @example
-cce_location_t          L[1];
-cce_clean_handler_t   filedes_H[1];
-cce_clean_handler_t   file_H[1];
+cce_location_t                  L[1];
+cce_clean_handler_t             filedes_H[1];
+ccsys_pathname_clean_handler_t  file_H[1];
 
 if (cce_location(L)) @{
   cce_run_catch_handlers_raise(L, upper_L);
 @} else @{
-  static char const * filename = "name.ext";
+  ccstructs_pathname_I filename =
+    ccstructs_new_pathname_from_static_string("name.ext");
   ccsys_fd_t          fd;
 
   /* Create and open the file. */
@@ -4799,14 +4869,15 @@ As example of using @cfunc{ccsys_dup} see the following code which opens a file,
 descriptor, writes bytes to it, reads bytes from it, closes the file, removes the file.
 
 @example
-cce_location_t          L[1];
-cce_clean_handler_t   filedes_H[1];
-cce_clean_handler_t   file_H[1];
+cce_location_t                  L[1];
+cce_clean_handler_t             filedes_H[1];
+ccsys_pathname_clean_handler_t  file_H[1];
 
 if (cce_location(L)) @{
   cce_run_catch_handlers_raise(L, upper_L);
  @} else @{
-  static char const * filename = "name.ext";
+  ccstructs_pathname_I filename =
+    ccstructs_new_pathname_from_static_string("name.ext");
   ccsys_fd_t          fd, fdx;
 
   /* Create and open the file. */
@@ -4857,14 +4928,15 @@ As example of using @cfunc{ccsys_dup2} see the following code which opens a file
 file descriptor, writes bytes to it, reads bytes from it, closes the file, removes the file.
 
 @example
-cce_location_t          L[1];
-cce_clean_handler_t   filedes_H[1];
-cce_clean_handler_t   file_H[1];
+cce_location_t                  L[1];
+cce_clean_handler_t             filedes_H[1];
+ccsys_pathname_clean_handler_t  file_H[1];
 
 if (cce_location(L)) @{
   cce_run_catch_handlers_raise(L, upper_L);
 @} else @{
-  static char const * filename = "name.ext";
+  ccstructs_pathname_I filename =
+    ccstructs_new_pathname_from_static_string("name.ext");
   ccsys_fd_t          fd, fdx;
 
   /* Create and open the file. */
@@ -4919,14 +4991,15 @@ As example of using @cfunc{ccsys_dup3} see the following code which opens a file
 file descriptor, writes bytes to it, reads bytes from it, closes the file, removes the file.
 
 @example
-cce_location_t          L[1];
-cce_clean_handler_t   filedes_H[1];
-cce_clean_handler_t   file_H[1];
+cce_location_t                  L[1];
+cce_clean_handler_t             filedes_H[1];
+ccsys_pathname_clean_handler_t  file_H[1];
 
 if (cce_location(L)) @{
   cce_run_catch_handlers_raise(L, upper_L);
 @} else @{
-  static char const * filename = "name.ext";
+  ccstructs_pathname_I filename =
+    ccstructs_new_pathname_from_static_string("name.ext");
   ccsys_fd_t          fd, fdx;
 
   /* Create and open the file. */
@@ -5525,7 +5598,7 @@ A wrapper for @objtype{FILE *}.
 @end deftp
 
 
-@deftypefun ccsys_file_t ccsys_fopen (cce_destination_t @var{L}, char const * @var{pathname}, char const * @var{mode})
+@deftypefun ccsys_file_t ccsys_fopen (cce_destination_t @var{L}, ccstructs_pathname_I @var{pathname}, char const * @var{mode})
 Wrapper for @cfunc{fopen}; @manpage{fopen, Stream open functions}.
 @end deftypefun
 
@@ -5535,7 +5608,7 @@ Wrapper for @cfunc{fdopen}; @manpage{fdopen, Stream open functions}.
 @end deftypefun
 
 
-@deftypefun ccsys_file_t ccsys_freopen (cce_destination_t @var{L}, char const * @var{pathname}, char const * @var{mode}, ccsys_file_t @var{stream})
+@deftypefun ccsys_file_t ccsys_freopen (cce_destination_t @var{L}, ccstructs_pathname_I @var{pathname}, char const * @var{mode}, ccsys_file_t @var{stream})
 Wrapper for @cfunc{freopen}; @manpage{freopen, Stream open functions}.
 @end deftypefun
 
@@ -5689,7 +5762,7 @@ Wrapper for @cfunc{fileno}; @manpage{fileno, Check and reset stream status}.
 The following symbols are defined in the header file @file{ccsys.h}.
 
 
-@deftypefun void ccsys_touch (cce_destination_t @var{L}, const char * @var{filename}, ccsys_open_flags_t @var{flags}, ccsys_open_mode_t @var{mode})
+@deftypefun void ccsys_touch (cce_destination_t @var{L}, ccstructs_pathname_I @var{filename}, ccsys_open_flags_t @var{flags}, ccsys_open_mode_t @var{mode})
 Create a file by opening it and then closing it; the arguments are the same of @cfunc{ccsys_open};
 @ref{io open, ccsys_open}.
 
@@ -5762,7 +5835,7 @@ directory}.
 @end deftypefun
 
 
-@deftypefun void ccsys_chdir (cce_destination_t @var{L}, char const * @var{pathname})
+@deftypefun void ccsys_chdir (cce_destination_t @var{L}, ccstructs_pathname_I @var{pathname})
 Wrapper for @cfunc{chdir}; @manpage{chdir, Change the current working directory}.
 @end deftypefun
 
@@ -5785,7 +5858,7 @@ As usage example for @cfunc{ccsys_getcwd} with a previously allocated stack buff
 following code.
 
 @example
-size_t  len = CCSYS_PATH_MAX;
+size_t  len = 1+CCSYS_PATH_MAX;
 char    buf[len];
 
 ccsys_getcwd(upper_L, buf, len);
@@ -5918,7 +5991,7 @@ Return a pointer to the field @code{d_name} of a @objtype{struct dirent}.
 The following symbols are defined in the header file @file{ccsys.h}.
 
 
-@deftypefun {ccsys_dir_t *} ccsys_opendir (cce_destination_t @var{L}, char const * @var{pathname})
+@deftypefun {ccsys_dir_t *} ccsys_opendir (cce_destination_t @var{L}, ccstructs_pathname_I @var{pathname})
 Wrapper for @cfunc{opendir}; @manpage{opendir, Open a directory}.
 @end deftypefun
 
@@ -5953,7 +6026,8 @@ closing it with @cfunc{closedir}:
 @example
 cce_location_t          L[1];
 cce_clean_handler_t     dirstream_H[1];
-char const *            pathname = "./";
+ccstructs_pathname_I    pathname =
+  ccstructs_new_pathname_from_static_string("./");
 
 if (cce_location(L)) @{
   cce_run_catch_handlers_final(L);
@@ -6011,13 +6085,14 @@ using the @code{CCSYS_O_PATH} flag as follows:
 
 @example
 cce_location_t        L[1];
-cce_clean_handler_t   rmdir_H[1];
+ccsys_pathname_clean_handler_t   rmdir_H[1];
 cce_clean_handler_t   dirfd_H[1];
 
 if (cce_location(L)) @{
   cce_run_catch_handlers_raise(L, upper_L);
 @} else @{
-  char const *        dirname = "name.d";
+  ccstructs_pathname_I dirname =
+    ccstructs_new_pathname_from_static_string("name.d");
   ccsys_dirfd_t       dirfd;
 
   @{
@@ -6091,17 +6166,17 @@ The macro expands into a call to @cfunc{ccsys_init_dirfd_error_handler}.
 The following symbols are defined in the header file @file{ccsys.h}.
 
 
-@deftypefun void ccsys_mkdir (cce_destination_t @var{L}, char const * @var{pathname}, ccsys_open_mode_t @var{mode})
+@deftypefun void ccsys_mkdir (cce_destination_t @var{L}, ccstructs_pathname_I @var{pathname}, ccsys_open_mode_t @var{mode})
 Wrapper for @cfunc{mkdir}; @manpage{mkdir, Create a directory}.
 @end deftypefun
 
 
-@deftypefun void ccsys_mkdirat (cce_destination_t @var{L}, ccsys_fd_t @var{fd}, char const * @var{pathname}, ccsys_open_mode_t @var{mode})
+@deftypefun void ccsys_mkdirat (cce_destination_t @var{L}, ccsys_fd_t @var{fd}, ccstructs_pathname_I @var{pathname}, ccsys_open_mode_t @var{mode})
 Wrapper for @cfunc{mkdirat}; @manpage{mkdirat, Create a directory}.
 @end deftypefun
 
 
-@deftypefun void ccsys_rmdir (cce_destination_t @var{L}, char const * @var{pathname})
+@deftypefun void ccsys_rmdir (cce_destination_t @var{L}, ccstructs_pathname_I @var{pathname})
 Wrapper for @cfunc{rmdir}; @manpage{rmdir, Delete a directory}.
 @end deftypefun
 
@@ -6114,8 +6189,8 @@ We can remove @strong{empty} temporary directories with the standard function @c
 follows:
 
 @example
-cce_location_t          L[1];
-cce_clean_handler_t   dirname_H[1];
+cce_location_t                  L[1];
+ccsys_pathname_clean_handler_t  dirname_H[1];
 
 if (cce_location(L)) @{
   cce_run_catch_handlers_final(L);
@@ -6135,8 +6210,8 @@ Remember that a good way to create temporary files is to use the function @cfunc
 implemented by the @gnu{} C Library.
 
 
-@deftypefun void ccsys_init_rmdir_clean_handler (cce_destination_t @var{L}, cce_clean_handler_t * @var{H}, char const * @var{pathname})
-@deftypefunx void ccsys_init_rmdir_error_handler (cce_destination_t @var{L}, cce_error_handler_t * @var{H}, char const * @var{pathname})
+@deftypefun void ccsys_init_rmdir_clean_handler (cce_destination_t @var{L}, ccsys_pathname_clean_handler_t * @var{H}, ccstructs_pathname_I @var{pathname})
+@deftypefunx void ccsys_init_rmdir_error_handler (cce_destination_t @var{L}, ccsys_pathname_error_handler_t * @var{H}, ccstructs_pathname_I @var{pathname})
 Register @var{H} as clean or error handler in the context of @var{L}.  The handler function will
 remove the directory whose pathname is @var{pathname} using the standard function @cfunc{rmdir};
 errors in @cfunc{rmdir} are @strong{ignored}.  The directory is removed only if it is empty.
@@ -6150,16 +6225,16 @@ exit to @var{L}.
 @end deftypefun
 
 
-@deftypefn {Preprocessor Macro} void ccsys_init_rmdir_handler (cce_destination_t @var{L}, cce_clean_handler_t * @var{H}, char const * @var{pathname})
-@deftypefnx {Preprocessor Macro} void ccsys_init_rmdir_handler (cce_destination_t @var{L}, cce_error_handler_t * @var{H}, char const * @var{pathname})
+@deftypefn {Preprocessor Macro} void ccsys_init_rmdir_handler (cce_destination_t @var{L}, ccsys_pathname_clean_handler_t * @var{H}, ccstructs_pathname_I @var{pathname})
+@deftypefnx {Preprocessor Macro} void ccsys_init_rmdir_handler (cce_destination_t @var{L}, ccsys_pathname_error_handler_t * @var{H}, ccstructs_pathname_I @var{pathname})
 This preprocessor macro uses @code{_Generic} to dispatch the call according to the type of the
 pointer @var{H}; if the type is:
 
 @table @code
-@item cce_clean_handler_t
+@item ccsys_pathname_clean_handler_t
 The macro expands into a call to @cfunc{ccsys_init_rmdir_clean_handler}.
 
-@item cce_error_handler_t
+@item ccsys_pathname_error_handler_t
 The macro expands into a call to @cfunc{ccsys_init_rmdir_error_handler}.
 @end table
 @end deftypefn
@@ -6179,8 +6254,10 @@ cce_handler_t         dirstream1_H[1];
 if (cce_location(L)) @{
   cce_run_catch_handlers_raise(L, upper_L);
 @} else @{
-  static char const * dirname1 = "name.d";
-  static char const * dirname2 = "subname.d";
+  ccstructs_pathname_I dirname1 =
+    ccstructs_new_pathname_from_static_string("name.d");
+  ccstructs_pathname_I dirname2 =
+    ccstructs_new_pathname_from_static_string("subname.d");
   ccsys_dirfd_t       dirfd1;
 
   /* Create the parent directory. */
@@ -6238,22 +6315,22 @@ if (cce_location(L)) @{
 The following symbols are defined in the header file @file{ccsys.h}.
 
 
-@deftypefun void ccsys_link (cce_destination_t @var{L}, char const * @var{oldname}, char const * @var{newname})
+@deftypefun void ccsys_link (cce_destination_t @var{L}, ccstructs_pathname_I @var{oldname}, ccstructs_pathname_I @var{newname})
 Wrapper for @cfunc{link}.
 @end deftypefun
 
 
-@deftypefun void ccsys_linkat (cce_destination_t @var{L}, ccsys_dirfd_t @var{old_dirfd}, char const * @var{oldname}, ccsys_dirfd_t @var{new_dirfd}, char const * @var{newname}, ccsys_linkat_flags_t @var{flags})
+@deftypefun void ccsys_linkat (cce_destination_t @var{L}, ccsys_dirfd_t @var{old_dirfd}, ccstructs_pathname_I @var{oldname}, ccsys_dirfd_t @var{new_dirfd}, ccstructs_pathname_I @var{newname}, ccsys_linkat_flags_t @var{flags})
 Wrapper for @cfunc{linkat}.
 @end deftypefun
 
 
-@deftypefun void ccsys_symlink (cce_destination_t @var{L}, char const * @var{oldname}, char const * @var{newname})
+@deftypefun void ccsys_symlink (cce_destination_t @var{L}, ccstructs_pathname_I @var{oldname}, ccstructs_pathname_I @var{newname})
 Wrapper for @cfunc{symlink}.
 @end deftypefun
 
 
-@deftypefun void ccsys_symlinkat (cce_destination_t @var{L}, char const * @var{oldname}, ccsys_dirfd_t @var{newdirfd}, char const * @var{newname})
+@deftypefun void ccsys_symlinkat (cce_destination_t @var{L}, ccstructs_pathname_I @var{oldname}, ccsys_dirfd_t @var{newdirfd}, ccstructs_pathname_I @var{newname})
 Wrapper for @cfunc{symlinkat}.
 @end deftypefun
 
@@ -6270,15 +6347,17 @@ Wrapper for @cfunc{symlinkat}.
 As usage example of @cfunc{ccsys_linkat} see the following code:
 
 @smallexample
-cce_location_t        L[1];
-cce_clean_handler_t filename_H[1];
-cce_clean_handler_t linkname_H[1];
+cce_location_t                  L[1];
+ccsys_pathname_clean_handler_t  filename_H[1];
+ccsys_pathname_clean_handler_t  linkname_H[1];
 
 if (cce_location(L)) @{
   cce_run_catch_handlers_raise(L, upper_L);
 @} else @{
-  char const *        filename = "name.ext";
-  char const *        linkname = "link.ext";
+  ccstructs_pathname_I filename =
+    ccstructs_new_pathname_from_static_string("name.ext");
+  ccstructs_pathname_I linkname =
+    ccstructs_new_pathname_from_static_string("name.ext");
 
   /* Create the file. */
   @{
@@ -6322,15 +6401,17 @@ if (cce_location(L)) @{
 As usage example of @cfunc{ccsys_symlinkat} see the following code:
 
 @smallexample
-cce_location_t        L[1];
-cce_clean_handler_t filename_H[1];
-cce_clean_handler_t linkname_H[1];
+cce_location_t                  L[1];
+ccsys_pathname_clean_handler_t  filename_H[1];
+ccsys_pathname_clean_handler_t  linkname_H[1];
 
 if (cce_location(L)) @{
   cce_run_catch_handlers_raise(L, upper_L);
 @} else @{
-  char const *        filename = "name.ext";
-  char const *        linkname = "link.ext";
+  ccstructs_pathname_I filename =
+    ccstructs_new_pathname_from_static_string("name.ext");
+  ccstructs_pathname_I linkname =
+    ccstructs_new_pathname_from_static_string("link.ext");
 
   /* Create and open the file. */
   @{
@@ -6371,21 +6452,21 @@ if (cce_location(L)) @{
 The following symbols are defined in the header file @file{ccsys.h}.
 
 
-@deftypefun size_t ccsys_readlink (cce_destination_t @var{L}, char const * @var{filename}, char * @var{buffer}, size_t @var{size})
+@deftypefun size_t ccsys_readlink (cce_destination_t @var{L}, ccstructs_pathname_I @var{filename}, char * @var{buffer}, size_t @var{size})
 Wrapper for @cfunc{readlink}.  Notice the return value of type @objtype{size_t}, rather than the
 original @objtype{ssize_t}: the wrapper function returns a non--negative integer because the error
 conditions cause a non--local exit.
 @end deftypefun
 
 
-@deftypefun size_t ccsys_readlinkat (cce_destination_t @var{L}, ccsys_dirfd_t @var{dirfd}, char const * @var{filename}, char * @var{buffer}, size_t @var{size})
+@deftypefun size_t ccsys_readlinkat (cce_destination_t @var{L}, ccsys_dirfd_t @var{dirfd}, ccstructs_pathname_I @var{filename}, char * @var{buffer}, size_t @var{size})
 Wrapper for @cfunc{readlinkat}.  Notice the return value of type @objtype{size_t}, rather than the
 original @objtype{ssize_t}: the wrapper function returns a non--negative integer because the error
 conditions cause a non--local exit.
 @end deftypefun
 
 
-@deftypefun {char *} ccsys_realpath (cce_destination_t @var{L}, char const * @var{pathname}, char * @var{resolved_path})
+@deftypefun {char *} ccsys_realpath (cce_destination_t @var{L}, ccstructs_pathname_I @var{pathname}, char * @var{resolved_path})
 Wrapper for @cfunc{realpath}.  Notice that this function never returns @cnull{}.
 @end deftypefun
 
@@ -6404,14 +6485,16 @@ As usage example of @cfunc{ccsys_readlink} see the following code.
 
 @smallexample
 cce_location_t        L[1];
-cce_clean_handler_t filename_H[1];
-cce_clean_handler_t linkname_H[1];
+ccsys_pathname_clean_handler_t filename_H[1];
+ccsys_pathname_clean_handler_t linkname_H[1];
 
 if (cce_location(L)) @{
   cce_run_catch_handlers_raise(L, upper_L);
 @} else @{
-  char const *        filename = "name.ext";
-  char const *        linkname = "link.ext";
+  ccstructs_pathname_I filename =
+    ccstructs_new_pathname_from_static_string("name.ext");
+  ccstructs_pathname_I linkname =
+    ccstructs_new_pathname_from_static_string("link.ext");
 
   /* Create and open the file. */
   @{
@@ -6454,15 +6537,17 @@ if (cce_location(L)) @{
 As usage example of @cfunc{ccsys_readlinkat} see the following code.
 
 @smallexample
-cce_location_t        L[1];
-cce_clean_handler_t filename_H[1];
-cce_clean_handler_t linkname_H[1];
+cce_location_t                  L[1];
+ccsys_pathname_clean_handler_t  filename_H[1];
+ccsys_pathname_clean_handler_t  linkname_H[1];
 
 if (cce_location(L)) @{
   cce_run_catch_handlers_raise(L, upper_L);
 @} else @{
-  char const *        filename = "name.ext";
-  char const *        linkname = "link.ext";
+  ccstructs_pathname_I filename =
+    ccstructs_new_pathname_from_static_string("name.ext");
+  ccstructs_pathname_I linkname =
+    ccstructs_new_pathname_from_static_string("link.ext");
 
   /* Create and open the file. */
   @{
@@ -6505,13 +6590,14 @@ if (cce_location(L)) @{
 As usage example of @cfunc{ccsys_realpath} see the following code.
 
 @smallexample
-cce_location_t        L[1];
-cce_clean_handler_t filename_H[1];
+cce_location_t                  L[1];
+ccsys_pathname_clean_handler_t  filename_H[1];
 
 if (cce_location(L)) @{
   cce_run_catch_handlers_raise(L, upper_L);
 @} else @{
-  char const *        filename = "name.ext";
+  ccstructs_pathname_I filename =
+    ccstructs_new_pathname_from_static_string("name.ext");
 
   /* Create and open the file. */
   @{
@@ -6547,12 +6633,12 @@ if (cce_location(L)) @{
 The following symbols are defined in the header file @file{ccsys.h}.
 
 
-@deftypefun void ccsys_unlink (cce_destination_t @var{L}, char const * @var{filename})
+@deftypefun void ccsys_unlink (cce_destination_t @var{L}, ccstructs_pathname_I @var{filename})
 Wrapper for @cfunc{unlink}; @manpage{unlink, Delete a name and possibly the file it refers to}.
 @end deftypefun
 
 
-@deftypefun void ccsys_unlinkat (cce_destination_t @var{L}, ccsys_dirfd_t @var{dirfd}, char const * @var{filename}, ccsys_unlinkat_flags_t @var{flags})
+@deftypefun void ccsys_unlinkat (cce_destination_t @var{L}, ccsys_dirfd_t @var{dirfd}, ccstructs_pathname_I @var{filename}, ccsys_unlinkat_flags_t @var{flags})
 Wrapper for @cfunc{unlinkat}; @manpage{unlinkat, Delete a name and possibly the file it refers to}.
 @end deftypefun
 
@@ -6573,7 +6659,8 @@ if (cce_location(L)) @{
   cce_run_catch_handlers_final(L);
 @} else @{
   ccsys_dirfd_t dirfd    = CCSYS_AT_FDCWD;
-  char const *  filename = "name.ext";
+  ccstructs_pathname_I filename =
+    ccstructs_new_pathname_from_static_string("name.ext");
   ccsys_fd_t    fd;
 
   @{
@@ -6611,7 +6698,7 @@ fields:
 @item ccsys_dirfd_t dirfd
 The file descriptor of the directory to which the pathname is relative.
 
-@item char const * pathname
+@item ccstructs_pathname_I pathname
 The pathname to unlink.  It must be an @asciiz{} representation of the pathname; it is @strong{not}
 duplicated by this handler and it must exist for the whole usage extent of the handler.
 
@@ -6652,7 +6739,7 @@ The macro expands into a call to @cfunc{ccsys_init_unlinkat_error_handler}.
 The following symbols are defined in the header file @file{ccsys.h}.
 
 
-@deftypefun void ccsys_remove (cce_destination_t @var{L}, char const * @var{pathname})
+@deftypefun void ccsys_remove (cce_destination_t @var{L}, ccstructs_pathname_I @var{pathname})
 Wrapper for @cfunc{remove}; @manpage{remove, Remove a file or directory}.  This function removes
 both files and empty directories.
 @end deftypefun
@@ -6665,9 +6752,12 @@ both files and empty directories.
 We can remove temporary files with the standard function @cfunc{remove} as follows:
 
 @example
-cce_location_t          L[1];
-cce_clean_handler_t   fd_H[1];
-cce_clean_handler_t   file_H[1];
+cce_location_t                  L[1];
+cce_clean_handler_t             fd_H[1];
+ccsys_pathname_clean_handler_t  file_H[1];
+
+ccstructs_pathname_I    filename =
+  ccstructs_new_pathname_from_static_string("name.ext");
 
 if (cce_location(L)) @{
   cce_run_catch_handlers_final(L);
@@ -6678,9 +6768,9 @@ if (cce_location(L)) @{
 
   flags.data    = CCSYS_O_CREAT;
   mode.data     = CCSYS_S_IRUSR | CCSYS_S_IWUSR;
-  fd            = ccsys_open(L, "name.ext", flags, mode);
+  fd            = ccsys_open(L, filename, flags, mode);
   ccsys_init_filedes_handler(L, fd_H, fd);
-  ccsys_init_remove_handler(L, file_H, "name.ext");
+  ccsys_init_remove_handler(L, file_H, filename);
   cce_run_body_handlers(L);
 @}
 @end example
@@ -6693,8 +6783,8 @@ Remember that a good way to create temporary files is to use the @posix{} standa
 The following symbols are defined in the header file @file{ccsys.h}.
 
 
-@deftypefun void ccsys_init_remove_clean_handler (cce_destination_t @var{L}, cce_clean_handler_t * @var{H}, char const * @var{pathname})
-@deftypefunx void ccsys_init_remove_error_handler (cce_destination_t @var{L}, cce_error_handler_t * @var{H}, char const * @var{pathname})
+@deftypefun void ccsys_init_remove_clean_handler (cce_destination_t @var{L}, ccsys_pathname_clean_handler_t * @var{H}, ccstructs_pathname_I @var{pathname})
+@deftypefunx void ccsys_init_remove_error_handler (cce_destination_t @var{L}, ccsys_pathname_error_handler_t * @var{H}, ccstructs_pathname_I @var{pathname})
 Register @var{H} as clean or error handler in the context of @var{L}.  The handler function will
 remove the file whose pathname is @var{pathname} using the standard function @cfunc{remove}; errors
 in @cfunc{remove} are @strong{ignored}.
@@ -6708,16 +6798,16 @@ exit to @var{L}.
 @end deftypefun
 
 
-@deftypefn {Preprocessor Macro} void ccsys_init_remove_handler (cce_destination_t @var{L}, cce_clean_handler_t * @var{H}, char const * @var{pathname})
-@deftypefnx {Preprocessor Macro} void ccsys_init_remove_handler (cce_destination_t @var{L}, cce_error_handler_t * @var{H}, char const * @var{pathname})
+@deftypefn {Preprocessor Macro} void ccsys_init_remove_handler (cce_destination_t @var{L}, ccsys_pathname_clean_handler_t * @var{H}, ccstructs_pathname_I @var{pathname})
+@deftypefnx {Preprocessor Macro} void ccsys_init_remove_handler (cce_destination_t @var{L}, ccsys_pathname_error_handler_t * @var{H}, ccstructs_pathname_I @var{pathname})
 This preprocessor macro uses @code{_Generic} to dispatch the call according to the type of the
 pointer @var{H}; if the type is:
 
 @table @code
-@item cce_clean_handler_t
+@item ccsys_pathname_clean_handler_t
 The macro expands into a call to @cfunc{ccsys_init_remove_clean_handler}.
 
-@item cce_error_handler_t
+@item ccsys_pathname_error_handler_t
 The macro expands into a call to @cfunc{ccsys_init_remove_error_handler}.
 @end table
 @end deftypefn
@@ -6730,17 +6820,17 @@ The macro expands into a call to @cfunc{ccsys_init_remove_error_handler}.
 The following symbols are defined in the header file @file{ccsys.h}.
 
 
-@deftypefun void ccsys_rename (cce_destination_t @var{L}, char const * @var{oldname}, char const * @var{newname})
+@deftypefun void ccsys_rename (cce_destination_t @var{L}, ccstructs_pathname_I @var{oldname}, ccstructs_pathname_I @var{newname})
 Wrapper for @cfunc{rename}; @manpage{rename, Change the name or location of a file}.
 @end deftypefun
 
 
-@deftypefun void ccsys_renameat (cce_destination_t @var{L}, ccsys_dirfd_t @var{old_dirfd}, char const * @var{oldname}, ccsys_dirfd_t @var{new_dirfd}, char const * @var{newname})
+@deftypefun void ccsys_renameat (cce_destination_t @var{L}, ccsys_dirfd_t @var{old_dirfd}, ccstructs_pathname_I @var{oldname}, ccsys_dirfd_t @var{new_dirfd}, ccstructs_pathname_I @var{newname})
 Wrapper for @cfunc{renameat}; @manpage{renameat, Change the name or location of a file}.
 @end deftypefun
 
 
-@deftypefun void ccsys_renameat2 (cce_destination_t @var{L}, ccsys_dirfd_t @var{old_dirfd}, char const * @var{oldname}, ccsys_dirfd_t @var{new_dirfd}, char const * @var{newname}, ccsys_renameat2_flags_t @var{flags})
+@deftypefun void ccsys_renameat2 (cce_destination_t @var{L}, ccsys_dirfd_t @var{old_dirfd}, ccstructs_pathname_I @var{oldname}, ccsys_dirfd_t @var{new_dirfd}, ccstructs_pathname_I @var{newname}, ccsys_renameat2_flags_t @var{flags})
 Wrapper for @cfunc{renameat2}; @manpage{renameat2, Change the name or location of a file}.
 
 @quotation
@@ -6767,8 +6857,10 @@ cce_location_t        L[1];
 if (cce_location(L)) @{
   cce_run_catch_handlers_raise(L, upper_L);
 @} else @{
-  char const *        filename = "name.ext";
-  char const *        newname  = "blue.ext";
+  ccstructs_pathname_I filename =
+    ccstructs_new_pathname_from_static_string("name.ext");
+  ccstructs_pathname_I newname =
+    ccstructs_new_pathname_from_static_string("blue.ext");
 
   /* Create the file. */
   @{
@@ -6804,8 +6896,10 @@ cce_location_t        L[1];
 if (cce_location(L)) @{
   cce_run_catch_handlers_raise(L, upper_L);
 @} else @{
-  char const *        filename = "name.ext";
-  char const *        newname  = "blue.ext";
+  ccstructs_pathname_I filename =
+    ccstructs_new_pathname_from_static_string("name.ext");
+  ccstructs_pathname_I newname =
+    ccstructs_new_pathname_from_static_string("blue.ext");
 
   /* Create the file. */
   @{
@@ -6842,8 +6936,10 @@ cce_location_t        L[1];
 if (cce_location(L)) @{
   cce_run_catch_handlers_raise(L, upper_L);
 @} else @{
-  char const *        filename = "name.ext";
-  char const *        newname  = "blue.ext";
+  ccstructs_pathname_I filename =
+    ccstructs_new_pathname_from_static_string("name.ext");
+  ccstructs_pathname_I newname =
+    ccstructs_new_pathname_from_static_string("blue.ext");
 
   /* Create the file. */
   @{
@@ -6916,7 +7012,7 @@ Wrapper type for @objtype{struct stat}.
 @end deftp
 
 
-@deftypefun bool ccsys_stat (cce_destination_t @var{L}, char const * @var{pathname}, ccsys_stat_t * @var{S})
+@deftypefun bool ccsys_stat (cce_destination_t @var{L}, ccstructs_pathname_I @var{pathname}, ccsys_stat_t * @var{S})
 Wrapper for @cfunc{stat}; @manpage{stat, Get file status}.
 @end deftypefun
 
@@ -6927,12 +7023,12 @@ Wrapper for @cfunc{fstat}; @manpage{fstat, Get file status}.
 @end deftypefun
 
 
-@deftypefun bool ccsys_fstatat (cce_destination_t @var{L}, ccsys_dirfd_t @var{fd}, char const * @var{pathname}, ccsys_stat_t * @var{S}, ccsys_fstatat_flags_t @var{flags})
+@deftypefun bool ccsys_fstatat (cce_destination_t @var{L}, ccsys_dirfd_t @var{fd}, ccstructs_pathname_I @var{pathname}, ccsys_stat_t * @var{S}, ccsys_fstatat_flags_t @var{flags})
 Wrapper for @cfunc{fstatat}; @manpage{fstatat, Get file status}.
 @end deftypefun
 
 
-@deftypefun bool ccsys_lstat (cce_destination_t @var{L}, char const * @var{pathname}, ccsys_stat_t * @var{S})
+@deftypefun bool ccsys_lstat (cce_destination_t @var{L}, ccstructs_pathname_I @var{pathname}, ccsys_stat_t * @var{S})
 Wrapper for @cfunc{lstat}; @manpage{lstat, Get file status}.
 @end deftypefun
 
@@ -7213,22 +7309,22 @@ Return @true{} if @var{F} describes a socket.
 The following symbols are defined in the header file @file{ccsys.h}.
 
 
-@deftypefun bool ccsys_pathname_exists (cce_destination_t @var{L}, char const * @var{pathname})
+@deftypefun bool ccsys_pathname_exists (cce_destination_t @var{L}, ccstructs_pathname_I @var{pathname})
 Return @true{} if @var{pathname} exists; otherwise return @false{}.
 @end deftypefun
 
 
-@deftypefun bool ccsys_pathname_isreg (cce_destination_t @var{L}, char const * @var{pathname})
+@deftypefun bool ccsys_pathname_isreg (cce_destination_t @var{L}, ccstructs_pathname_I @var{pathname})
 Return @true{} if @var{pathname} exists and it represents a regular file; otherwise return @false{}.
 @end deftypefun
 
 
-@deftypefun bool ccsys_pathname_isdir (cce_destination_t @var{L}, char const * @var{pathname})
+@deftypefun bool ccsys_pathname_isdir (cce_destination_t @var{L}, ccstructs_pathname_I @var{pathname})
 Return @true{} if @var{pathname} exists and it represents a directory; otherwise return @false{}.
 @end deftypefun
 
 
-@deftypefun bool ccsys_pathname_uid_gid (cce_destination_t @var{L}, char const * @var{pathname}, ccsys_uid_t * @var{uidp}, ccsys_gid_t * @var{gidp})
+@deftypefun bool ccsys_pathname_uid_gid (cce_destination_t @var{L}, ccstructs_pathname_I @var{pathname}, ccsys_uid_t * @var{uidp}, ccsys_gid_t * @var{gidp})
 Return @true{} if @var{pathname} exists; otherwise return @false{}.  If the pathname exists: the
 variable referenced by @var{uidp} is set to the @uid{} of the pathname; the variable referenced by
 @var{gidp} is set to the @gid{} of the pathname.
@@ -7242,14 +7338,15 @@ variable referenced by @var{uidp} is set to the @uid{} of the pathname; the vari
 As usage example of @cfunc{ccsys_stat} see the following code.
 
 @smallexample
-cce_location_t          L[1];
-cce_clean_handler_t   filename_H[1];
-cce_clean_handler_t   filedes_H[1];
+cce_location_t                  L[1];
+ccsys_pathname_clean_handler_t  filename_H[1];
+cce_clean_handler_t             filedes_H[1];
 
 if (cce_location(L)) @{
   cce_run_catch_handlers_raise(L, upper_L);
 @} else @{
-  static char const * filename = "name.ext";
+  ccstructs_pathname_I filename =
+    ccstructs_new_pathname_from_static_string("name.ext");
 
   /* Create and open the file. */
   @{
@@ -7344,9 +7441,11 @@ ccsys_at_link_t       lnk;
 if (cce_location(L)) @{
   cce_run_catch_handlers_raise(L, upper_L);
 @} else @{
-  static char const * dirname= "name.d";
+  ccstructs_pathname_I dirname =
+    ccstructs_new_pathname_from_static_string("name.d");
+  ccstructs_pathname_I filename =
+    ccstructs_new_pathname_from_static_string("name.ext");
   ccsys_dirfd_t       dirfd;
-  static char const * filename = "name.ext";
   ccsys_fd_t          fd;
 
   /* Create the parent directory. */
@@ -7452,7 +7551,7 @@ if (cce_location(L)) @{
 The following symbols are defined in the header file @file{ccsys.h}.
 
 
-@deftypefun void ccsys_chown (cce_destination_t @var{L}, char const * @var{pathname}, uid_t @var{owner}, gid_t @var{group})
+@deftypefun void ccsys_chown (cce_destination_t @var{L}, ccstructs_pathname_I @var{pathname}, uid_t @var{owner}, gid_t @var{group})
 Wrapper for @cfunc{chown}; @manpage{chown, Change ownership of a file}.
 @end deftypefun
 
@@ -7462,12 +7561,12 @@ Wrapper for @cfunc{fchown}; @manpage{chown, Change ownership of a file}.
 @end deftypefun
 
 
-@deftypefun void ccsys_lchown (cce_destination_t @var{L}, char const * @var{pathname}, uid_t @var{owner}, gid_t @var{group})
+@deftypefun void ccsys_lchown (cce_destination_t @var{L}, ccstructs_pathname_I @var{pathname}, uid_t @var{owner}, gid_t @var{group})
 Wrapper for @cfunc{lchown}; @manpage{chown, Change ownership of a file}.
 @end deftypefun
 
 
-@deftypefun void ccsys_fchownat (cce_destination_t @var{L}, ccsys_dirfd_t @var{dirfd}, char const * @var{pathname}, uid_t @var{owner}, gid_t @var{group}, ccsys_fchownat_flags_t @var{flags})
+@deftypefun void ccsys_fchownat (cce_destination_t @var{L}, ccsys_dirfd_t @var{dirfd}, ccstructs_pathname_I @var{pathname}, uid_t @var{owner}, gid_t @var{group}, ccsys_fchownat_flags_t @var{flags})
 Wrapper for @cfunc{fchownat}; @manpage{chown, Change ownership of a file}.
 @end deftypefun
 
@@ -7492,7 +7591,8 @@ cce_location_t        L[1];
 if (cce_location(L)) @{
   cce_run_catch_handlers_final(L);
 @} else @{
-  char const *        filename = "name.ext";
+  ccstructs_pathname_I filename =
+    ccstructs_new_pathname_from_static_string("name.ext");
 
   /* Create the file. */
   @{
@@ -7530,7 +7630,8 @@ cce_clean_handler_t filedes_H[1];
 if (cce_location(L)) @{
     cce_run_catch_handlers_final(L);
 @} else @{
-  char const *        filename = "name.ext";
+  ccstructs_pathname_I filename =
+    ccstructs_new_pathname_from_static_string("name.ext");
   ccsys_fd_t          fd;
 
   /* Create the file. */
@@ -7569,8 +7670,10 @@ cce_location_t        L[1];
 if (cce_location(L)) @{
   cce_run_catch_handlers_final(L);
 @} else @{
-  char const *        filename = "name.ext";
-  char const *        linkname = "link.ext";
+  ccstructs_pathname_I filename =
+    ccstructs_new_pathname_from_static_string("name.ext");
+  ccstructs_pathname_I linkname =
+    ccstructs_new_pathname_from_static_string("link.ext");
 
   /* Create the file. */
   @{
@@ -7612,7 +7715,8 @@ cce_location_t        L[1];
 if (cce_location(L)) @{
   cce_run_catch_handlers_final(L);
 @} else @{
-  char const *        filename = "name.ext";
+  ccstructs_pathname_I filename =
+    ccstructs_new_pathname_from_static_string("name.ext");
 
   /* Create the file. */
   @{
@@ -7646,7 +7750,7 @@ if (cce_location(L)) @{
 The following symbols are defined in the header file @file{ccsys.h}.
 
 
-@deftypefun void ccsys_chmod (cce_destination_t @var{L}, char const * @var{pathname}, ccsys_open_mode_t @var{mode})
+@deftypefun void ccsys_chmod (cce_destination_t @var{L}, ccstructs_pathname_I @var{pathname}, ccsys_open_mode_t @var{mode})
 Wrapper for @cfunc{chmod}; @manpage{chmod, Change permissions of a file}.
 @end deftypefun
 
@@ -7656,7 +7760,7 @@ Wrapper for @cfunc{fchmod}; @manpage{fchmod, Change permissions of a file}.
 @end deftypefun
 
 
-@deftypefun void ccsys_fchmodat (cce_destination_t @var{L}, ccsys_dirfd_t @var{dirfd}, char const * @var{pathname}, ccsys_open_mode_t @var{mode}, ccsys_fchmodat_flags_t @var{flags})
+@deftypefun void ccsys_fchmodat (cce_destination_t @var{L}, ccsys_dirfd_t @var{dirfd}, ccstructs_pathname_I @var{pathname}, ccsys_open_mode_t @var{mode}, ccsys_fchmodat_flags_t @var{flags})
 Wrapper for @cfunc{fchmodat}; @manpage{fchmodat, Change permissions of a file}.
 @end deftypefun
 
@@ -7674,13 +7778,14 @@ Wrapper for @cfunc{fchmodat}; @manpage{fchmodat, Change permissions of a file}.
 As usage example of @cfunc{ccsys_chmod} see the following code.
 
 @example
-cce_location_t        L[1];
-cce_clean_handler_t filename_H[1];
+cce_location_t                  L[1];
+ccsys_pathname_clean_handler_t  filename_H[1];
 
 if (cce_location(L)) @{
   cce_run_catch_handlers_final(L);
 @} else @{
-  char const *        filename = "name.ext";
+  ccstructs_pathname_I filename =
+    ccstructs_new_pathname_from_static_string("name.ext");
 
   /* Create the file. */
   @{
@@ -7723,14 +7828,15 @@ if (cce_location(L)) @{
 As usage example of @cfunc{ccsys_fchmod} see the following code.
 
 @example
-cce_location_t        L[1];
-cce_clean_handler_t filename_H[1];
-cce_clean_handler_t filedes_H[1];
+cce_location_t                  L[1];
+ccsys_pathname_clean_handler_t  filename_H[1];
+cce_clean_handler_t             filedes_H[1];
 
 if (cce_location(L)) @{
   cce_run_catch_handlers_final(L);
 @} else @{
-  char const *        filename = "name.ext";
+  ccstructs_pathname_I filename =
+    ccstructs_new_pathname_from_static_string("name.ext");
   ccsys_fd_t          fd;
 
   /* Create the file. */
@@ -7775,13 +7881,14 @@ if (cce_location(L)) @{
 As usage example of @cfunc{ccsys_fchmodat} see the following code.
 
 @example
-cce_location_t        L[1];
-cce_clean_handler_t filename_H[1];
+cce_location_t                  L[1];
+ccsys_pathname_clean_handler_t  filename_H[1];
 
 if (cce_location(L)) @{
     cce_run_catch_handlers_final(L);
   @} else @{
-  char const *        filename = "name.ext";
+  ccstructs_pathname_I filename =
+    ccstructs_new_pathname_from_static_string("name.ext");
 
   /* Create the file. */
   @{
@@ -7826,13 +7933,13 @@ if (cce_location(L)) @{
 The following symbols are defined in the header file @file{ccsys.h}.
 
 
-@deftypefun bool ccsys_access (cce_destination_t @var{L}, char const * @var{pathname}, ccsys_access_mode_t @var{how})
+@deftypefun bool ccsys_access (cce_destination_t @var{L}, ccstructs_pathname_I @var{pathname}, ccsys_access_mode_t @var{how})
 Wrapper for @cfunc{access}; @manpage{access, Check user's permissions for a file}.  If access is
 granted: return @true{}; otherwise return @false{}.
 @end deftypefun
 
 
-@deftypefun bool ccsys_faccessat (cce_destination_t @var{L}, ccsys_dirfd_t @var{dirfd}, char const * @var{pathname}, ccsys_access_mode_t @var{how}, ccsys_faccessat_flags_t @var{flags})
+@deftypefun bool ccsys_faccessat (cce_destination_t @var{L}, ccsys_dirfd_t @var{dirfd}, ccstructs_pathname_I @var{pathname}, ccsys_access_mode_t @var{how}, ccsys_faccessat_flags_t @var{flags})
 Wrapper for @cfunc{faccessat}; @manpage{faccessat, Check user's permissions for a file}.  If access
 is granted: return @true{}; otherwise return @false{}.
 @end deftypefun
@@ -7850,13 +7957,14 @@ is granted: return @true{}; otherwise return @false{}.
 As usage example of @cfunc{ccsys_access} see the following code.
 
 @example
-cce_location_t        L[1];
-cce_clean_handler_t filename_H[1];
+cce_location_t                  L[1];
+ccsys_pathname_clean_handler_t  filename_H[1];
 
 if (cce_location(L)) @{
   cce_run_catch_handlers_final(L);
 @} else @{
-  char const *        filename = "name.ext";
+  ccstructs_pathname_I filename =
+    ccstructs_new_pathname_from_static_string("name.ext");
 
   /* Create the file. */
   @{
@@ -7913,13 +8021,14 @@ if (cce_location(L)) @{
 As usage example of @cfunc{ccsys_faccessat} see the following code.
 
 @example
-cce_location_t        L[1];
-cce_clean_handler_t filename_H[1];
+cce_location_t                  L[1];
+ccsys_pathname_clean_handler_t  filename_H[1];
 
 if (cce_location(L)) @{
   cce_run_catch_handlers_final(L);
 @} else @{
-  char const *        filename = "name.ext";
+  ccstructs_pathname_I filename =
+    ccstructs_new_pathname_from_static_string("name.ext");
 
   /* Create the file. */
   @{
@@ -7981,7 +8090,7 @@ if (cce_location(L)) @{
 The following symbols are defined in the header file @file{ccsys.h}.
 
 
-@deftypefun void ccsys_truncate (cce_destination_t @var{L}, char const * @var{pathname}, ccsys_off_t @var{length})
+@deftypefun void ccsys_truncate (cce_destination_t @var{L}, ccstructs_pathname_I @var{pathname}, ccsys_off_t @var{length})
 Wrapper for @cfunc{truncate}; @manpage{truncate, Truncate a file to a specified length}.
 @end deftypefun
 
@@ -8004,14 +8113,15 @@ Wrapper for @cfunc{ftruncate}; @manpage{ftruncate, Truncate a file to a specifie
 As usage example of @cfunc{truncate} see the following code.
 
 @example
-cce_location_t        L[1];
-cce_clean_handler_t filename_H[1];
-cce_clean_handler_t filedes_H[1];
+cce_location_t                  L[1];
+ccsys_pathname_clean_handler_t  filename_H[1];
+cce_clean_handler_t             filedes_H[1];
 
 if (cce_location(L)) @{
   cce_run_catch_handlers_final(L);
 @} else @{
-  char const *        filename = "name.ext";
+  ccstructs_pathname_I filename =
+    ccstructs_new_pathname_from_static_string("name.ext");
   ccsys_fd_t          fd;
 
   /* Create the file. */
@@ -8070,14 +8180,15 @@ if (cce_location(L)) @{
 As usage example of @cfunc{ftruncate} see the following code.
 
 @example
-cce_location_t        L[1];
-cce_clean_handler_t filename_H[1];
-cce_clean_handler_t filedes_H[1];
+cce_location_t                  L[1];
+ccsys_pathname_clean_handler_t  filename_H[1];
+cce_clean_handler_t             filedes_H[1];
 
 if (cce_location(L)) @{
   cce_run_catch_handlers_final(L);
 @} else @{
-  char const *        filename = "name.ext";
+  ccstructs_pathname_I filename =
+    ccstructs_new_pathname_from_static_string("name.ext");
   ccsys_fd_t          fd;
 
   /* Create the file. */
@@ -8143,7 +8254,7 @@ nanoseconds field in calls to @cfunc{ccsys_utimensat} and @cfunc{futimens}.
 @end deftypevr
 
 
-@deftypefun void ccsys_utimensat (cce_destination_t @var{L}, ccsys_dirfd_t @var{dirfd}, char const * @var{pathname}, ccsys_timespec_t const @var{T} [2], ccsys_utimensat_flags_t @var{flags})
+@deftypefun void ccsys_utimensat (cce_destination_t @var{L}, ccsys_dirfd_t @var{dirfd}, ccstructs_pathname_I @var{pathname}, ccsys_timespec_t const @var{T} [2], ccsys_utimensat_flags_t @var{flags})
 Wrapper for @cfunc{utimensat}; @manpage{utimensat, Change file timestamps}.
 @end deftypefun
 
@@ -8153,12 +8264,12 @@ Wrapper for @cfunc{futimens}; @manpage{futimens, Change file timestamps}.
 @end deftypefun
 
 
-@deftypefun void ccsys_utimes (cce_destination_t @var{L}, char const * @var{pathname}, ccsys_timeval_t const @var{TVP} [2])
+@deftypefun void ccsys_utimes (cce_destination_t @var{L}, ccstructs_pathname_I @var{pathname}, ccsys_timeval_t const @var{TVP} [2])
 Wrapper for @cfunc{utimes}; @manpage{utimes, Change file timestamps}.
 @end deftypefun
 
 
-@deftypefun void ccsys_lutimes (cce_destination_t @var{L}, char const * @var{pathname}, ccsys_timeval_t const @var{TVP} [2])
+@deftypefun void ccsys_lutimes (cce_destination_t @var{L}, ccstructs_pathname_I @var{pathname}, ccsys_timeval_t const @var{TVP} [2])
 Wrapper for @cfunc{lutimes}; @manpage{lutimes, Change file timestamps}.
 
 @quotation
@@ -8176,7 +8287,7 @@ Wrapper for @cfunc{futimes}; @manpage{futimes, Change file timestamps}.
 @end deftypefun
 
 
-@deftypefun void ccsys_futimesat (cce_destination_t @var{L}, ccsys_dirfd_t @var{dirfd}, char const * @var{pathname}, ccsys_timeval_t const @var{T} [2])
+@deftypefun void ccsys_futimesat (cce_destination_t @var{L}, ccsys_dirfd_t @var{dirfd}, ccstructs_pathname_I @var{pathname}, ccsys_timeval_t const @var{T} [2])
 Wrapper for @cfunc{futimesat}; @manpage{futimesat, Change file timestamps}.
 
 @quotation
@@ -8201,13 +8312,14 @@ Wrapper for @cfunc{futimesat}; @manpage{futimesat, Change file timestamps}.
 As usage example of @cfunc{ccsys_utimensat} see the following code.
 
 @example
-cce_location_t        L[1];
-cce_clean_handler_t filename_H[1];
+cce_location_t                  L[1];
+ccsys_pathname_clean_handler_t  filename_H[1];
 
 if (cce_location(L)) @{
   cce_run_catch_handlers_final(L);
 @} else @{
-  char const *        filename = "name.ext";
+  ccstructs_pathname_I filename =
+    ccstructs_new_pathname_from_static_string("name.ext");
 
   /* Create the file. */
   @{
@@ -8261,14 +8373,15 @@ if (cce_location(L)) @{
 As usage example of @cfunc{ccsys_futimens} see the following code.
 
 @example
-cce_location_t        L[1];
-cce_clean_handler_t filename_H[1];
-cce_clean_handler_t filedes_H[1];
+cce_location_t                  L[1];
+ccsys_pathname_clean_handler_t  filename_H[1];
+cce_clean_handler_t             filedes_H[1];
 
 if (cce_location(L)) @{
   cce_run_catch_handlers_final(L);
 @} else @{
-  char const *        filename = "name.ext";
+  ccstructs_pathname_I filename =
+    ccstructs_new_pathname_from_static_string("name.ext");
   ccsys_fd_t          fd;
 
   /* Create the file. */
@@ -8322,13 +8435,14 @@ if (cce_location(L)) @{
 As usage example of @cfunc{ccsys_utimes} see the following code.
 
 @example
-cce_location_t        L[1];
-cce_clean_handler_t filename_H[1];
+cce_location_t                  L[1];
+ccsys_pathname_clean_handler_t  filename_H[1];
 
 if (cce_location(L)) @{
   cce_run_catch_handlers_final(L);
 @} else @{
-  char const *        filename = "name.ext";
+  ccstructs_pathname_I filename =
+    ccstructs_new_pathname_from_static_string("name.ext");
 
   /* Create the file. */
   @{
@@ -8380,15 +8494,17 @@ if (cce_location(L)) @{
 As usage example of @cfunc{ccsys_lutimes} see the following code.
 
 @example
-cce_location_t        L[1];
-cce_clean_handler_t filename_H[1];
-cce_clean_handler_t linkname_H[1];
+cce_location_t                  L[1];
+ccsys_pathname_clean_handler_t  filename_H[1];
+ccsys_pathname_clean_handler_t  linkname_H[1];
 
 if (cce_location(L)) @{
   cce_run_catch_handlers_final(L);
 @} else @{
-  char const *        filename = "name.ext";
-  char const *        linkname = "link.ext";
+  ccstructs_pathname_I filename =
+    ccstructs_new_pathname_from_static_string("name.ext");
+  ccstructs_pathname_I linkname =
+    ccstructs_new_pathname_from_static_string("link.ext");
 
   /* Create the file. */
   @{
@@ -8446,14 +8562,15 @@ if (cce_location(L)) @{
 As usage example of @cfunc{ccsys_futimes} see the following code.
 
 @example
-cce_location_t        L[1];
-cce_clean_handler_t filename_H[1];
-cce_clean_handler_t filedes_H[1];
+cce_location_t                  L[1];
+ccsys_pathname_clean_handler_t  filename_H[1];
+cce_clean_handler_t             filedes_H[1];
 
 if (cce_location(L)) @{
   cce_run_catch_handlers_final(L);
 @} else @{
-  char const *        filename = "name.ext";
+  ccstructs_pathname_I filename =
+    ccstructs_new_pathname_from_static_string("name.ext");
   ccsys_fd_t          fd;
 
   /* Create the file. */
@@ -8507,13 +8624,14 @@ if (cce_location(L)) @{
 As usage example of @cfunc{ccsys_futimesat} see the following code.
 
 @example
-cce_location_t        L[1];
-cce_clean_handler_t filename_H[1];
+cce_location_t                  L[1];
+ccsys_pathname_clean_handler_t  filename_H[1];
 
 if (cce_location(L)) @{
   cce_run_catch_handlers_final(L);
 @} else @{
-  char const *        filename = "name.ext";
+  ccstructs_pathname_I filename =
+    ccstructs_new_pathname_from_static_string("name.ext");
 
   /* Create the file. */
   @{
@@ -8626,22 +8744,24 @@ mutate @var{template}.
 As usage example of @cfunc{ccsys_mkstemp} see the following code.
 
 @example
-cce_location_t        L[1];
-cce_clean_handler_t filename_H[1];
-cce_clean_handler_t filedes_H[1];
+cce_location_t                  L[1];
+ccsys_pathname_clean_handler_t  filename_H[1];
+cce_clean_handler_t             filedes_H[1];
 
 if (cce_location(L)) @{
   cce_run_catch_handlers_final(L);
 @} else @{
-  char        filename[] = "name.ext.XXXXXX";
+  char                  template[] = "name.ext.XXXXXX";
+  ccstructs_pathname_I  filename   =
+    ccstructs_new_pathname_from_dynamic_string(template);
 
   /* Create the file. */
   @{
     ccsys_fd_t        fd;
 
-    fd = ccsys_mkstemp(L, filename);
+    fd = ccsys_mkstemp(L, template);
     ccsys_init_filedes_handler(L, filedes_H, fd);
-    ccsys_init_remove_handler(L, filename_H, filename);
+    ccsys_init_remove_handler(L, filename_H, template);
   @}
 
   /* Validate file existence. */
@@ -8659,14 +8779,16 @@ if (cce_location(L)) @{
 As usage example of @cfunc{ccsys_mkostemp} see the following code.
 
 @example
-cce_location_t        L[1];
-cce_clean_handler_t filename_H[1];
-cce_clean_handler_t filedes_H[1];
+cce_location_t                  L[1];
+ccsys_pathname_clean_handler_t  filename_H[1];
+cce_clean_handler_t             filedes_H[1];
 
 if (cce_location(L)) @{
   cce_run_catch_handlers_final(L);
 @} else @{
-  char        filename[] = "name.ext.XXXXXX";
+  char                  template[] = "name.ext.XXXXXX";
+  ccstructs_pathname_I  filename   =
+    ccstructs_new_pathname_from_dynamic_string(template);
 
   /* Create the file. */
   @{
@@ -8674,7 +8796,7 @@ if (cce_location(L)) @{
     ccsys_fd_t                fd;
 
     flags.data = CCSYS_O_CREAT | CCSYS_O_RDWR;
-    fd = ccsys_mkostemp(L, filename, flags);
+    fd = ccsys_mkostemp(L, template, flags);
     ccsys_init_filedes_handler(L, filedes_H, fd);
     ccsys_init_remove_handler(L, filename_H, filename);
   @}
@@ -8694,20 +8816,22 @@ if (cce_location(L)) @{
 As usage example of @cfunc{ccsys_mkstemps} see the following code.
 
 @example
-cce_location_t        L[1];
-cce_clean_handler_t filename_H[1];
-cce_clean_handler_t filedes_H[1];
+cce_location_t                  L[1];
+ccsys_pathname_clean_handler_t  filename_H[1];
+cce_clean_handler_t             filedes_H[1];
 
 if (cce_location(L)) @{
   cce_run_catch_handlers_final(L);
 @} else @{
-  char        filename[] = "nameXXXXXX.ext";
+  char                  template[] = "nameXXXXXX.ext";
+  ccstructs_pathname_I  filename   =
+    ccstructs_new_pathname_from_dynamic_string(template);
 
   /* Create the file. */
   @{
     ccsys_fd_t        fd;
 
-    fd = ccsys_mkstemps(L, filename, 4);
+    fd = ccsys_mkstemps(L, template, 4);
     ccsys_init_filedes_handler(L, filedes_H, fd);
     ccsys_init_remove_handler(L, filename_H, filename);
   @}
@@ -8727,14 +8851,16 @@ if (cce_location(L)) @{
 As usage example of @cfunc{ccsys_mkostemps} see the following code.
 
 @example
-cce_location_t        L[1];
-cce_clean_handler_t filename_H[1];
-cce_clean_handler_t filedes_H[1];
+cce_location_t                  L[1];
+ccsys_pathname_clean_handler_t  filename_H[1];
+cce_clean_handler_t             filedes_H[1];
 
 if (cce_location(L)) @{
   cce_run_catch_handlers_final(L);
 @} else @{
-  char        filename[] = "nameXXXXXX.ext";
+  char                  template[] = "nameXXXXXX.ext";
+  ccstructs_pathname_I  filename   =
+    ccstructs_new_pathname_from_dynamic_string(template);
 
   /* Create the file. */
   @{
@@ -8742,7 +8868,7 @@ if (cce_location(L)) @{
     ccsys_fd_t                fd;
 
     flags.data = CCSYS_O_CREAT | CCSYS_O_RDWR;
-    fd = ccsys_mkostemps(L, filename, 4, flags);
+    fd = ccsys_mkostemps(L, template, 4, flags);
     ccsys_init_filedes_handler(L, filedes_H, fd);
     ccsys_init_remove_handler(L, filename_H, filename);
   @}
@@ -8762,17 +8888,19 @@ if (cce_location(L)) @{
 As usage example of @cfunc{ccsys_mkdtemp} see the following code.
 
 @example
-cce_location_t        L[1];
-cce_clean_handler_t dirname_H[1];
+cce_location_t                  L[1];
+ccsys_pathname_clean_handler_t  dirname_H[1];
 
 if (cce_location(L)) @{
   cce_run_catch_handlers_final(L);
 @} else @{
-  char        dirname[] = "name.d.XXXXXX";
+  char                  template[] = "name.d.XXXXXX";
+  ccstructs_pathname_I  dirname   =
+    ccstructs_new_pathname_from_dynamic_string(template);
 
   /* Create the directory. */
   @{
-    ccsys_mkdtemp(L, dirname);
+    ccsys_mkdtemp(L, template);
     ccsys_init_rmdir_handler(L, dirname_H, dirname);
   @}
 
@@ -8933,17 +9061,17 @@ the current process is the @strong{child} after the call to @cfunc{ccsys_fork}; 
 The following symbols are defined in the header file @file{ccsys.h}.
 
 
-@deftypefun void ccsys_execv (cce_destination_t @var{L}, char const * @var{filename}, char * const @var{argv} [])
+@deftypefun void ccsys_execv (cce_destination_t @var{L}, ccstructs_pathname_I @var{filename}, char * const @var{argv} [])
 Wrapper for @cfunc{execv}.
 @end deftypefun
 
 
-@deftypefun void ccsys_execve (cce_destination_t @var{L}, char const * @var{filename}, char * const @var{argv} [], char * const @var{env} [])
+@deftypefun void ccsys_execve (cce_destination_t @var{L}, ccstructs_pathname_I @var{filename}, char * const @var{argv} [], char * const @var{env} [])
 Wrapper for @cfunc{execve}.
 @end deftypefun
 
 
-@deftypefun void ccsys_execvp (cce_destination_t @var{L}, char const * @var{filename}, char * const @var{argv} [])
+@deftypefun void ccsys_execvp (cce_destination_t @var{L}, ccstructs_pathname_I @var{filename}, char * const @var{argv} [])
 Wrapper for @cfunc{execvp}.
 @end deftypefun
 

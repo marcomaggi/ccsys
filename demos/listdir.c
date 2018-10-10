@@ -65,7 +65,7 @@ list_dirs (const char * pathname)
     ccsys_dir_t *	dirstream;
     ccsys_dirent_t *	direntry;
 
-    dirstream = ccsys_opendir(L, pathname);
+    dirstream = ccsys_opendir(L, ccstructs_new_pathname_from_dynamic_string(pathname));
     ccsys_init_dirstream_clean_handler(L, dirstream_H, dirstream);
     while ((direntry = ccsys_readdir(L, dirstream))) {
       printf("%s\n", ccsys_ref_dirent_d_name(direntry));

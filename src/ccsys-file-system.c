@@ -69,7 +69,7 @@
 
 #if ((defined HAVE_OPEN) && (defined HAVE_CLOSE))
 void
-ccsys_touch (cce_destination_t L, const char *filename, ccsys_open_flags_t flags, ccsys_open_mode_t mode)
+ccsys_touch (cce_destination_t L, ccstructs_pathname_I filename, ccsys_open_flags_t flags, ccsys_open_mode_t mode)
 {
   ccsys_fd_t	fd;
 
@@ -85,11 +85,11 @@ ccsys_touch (cce_destination_t L, const char *filename, ccsys_open_flags_t flags
 
 #ifdef HAVE_OPENDIR
 ccsys_dir_t *
-ccsys_opendir (cce_location_t * L, char const * pathname)
+ccsys_opendir (cce_location_t * L, ccstructs_pathname_I pathname)
 {
   DIR *	rv;
   errno = 0;
-  rv = opendir(pathname);
+  rv = opendir(ccstructs_pathname_pointer(L, pathname));
   if (NULL != rv) {
     return (ccsys_dir_t *)rv;
   } else {
@@ -210,12 +210,12 @@ ccsys_ref_dirent_d_name (ccsys_dirent_t const * S)
 
 #ifdef HAVE_STAT
 bool
-ccsys_stat (cce_location_t * L, char const * pathname, ccsys_stat_t * _buf)
+ccsys_stat (cce_location_t * L, ccstructs_pathname_I pathname, ccsys_stat_t * _buf)
 {
   struct stat *	buf = (struct stat *)_buf;
   int		rv;
   errno = 0;
-  rv = stat(pathname, buf);
+  rv = stat(ccstructs_pathname_pointer(L, pathname), buf);
   if (0 == rv) {
     return true;
   } else {
@@ -260,12 +260,12 @@ ccsys_rawfd_fstat (cce_location_t * L, int rawfd, ccsys_stat_t * _buf)
 
 #ifdef HAVE_FSTATAT
 bool
-ccsys_fstatat (cce_destination_t L, ccsys_dirfd_t dirfd, char const * pathname, ccsys_stat_t * _buf, ccsys_fstatat_flags_t flags)
+ccsys_fstatat (cce_destination_t L, ccsys_dirfd_t dirfd, ccstructs_pathname_I pathname, ccsys_stat_t * _buf, ccsys_fstatat_flags_t flags)
 {
   CCSYS_PC(struct stat, buf, _buf);
   int		rv;
   errno = 0;
-  rv = fstatat(dirfd.data, pathname, buf, flags.data);
+  rv = fstatat(dirfd.data, ccstructs_pathname_pointer(L, pathname), buf, flags.data);
   if (0 == rv) {
     return true;
   } else {
@@ -285,12 +285,12 @@ ccsys_fstatat (cce_destination_t L, ccsys_dirfd_t dirfd, char const * pathname, 
 
 #ifdef HAVE_LSTAT
 bool
-ccsys_lstat (cce_location_t * L, char const * pathname, ccsys_stat_t * _buf)
+ccsys_lstat (cce_location_t * L, ccstructs_pathname_I pathname, ccsys_stat_t * _buf)
 {
   struct stat *	buf = (struct stat *)_buf;
   int		rv;
   errno = 0;
-  rv = lstat(pathname, buf);
+  rv = lstat(ccstructs_pathname_pointer(L, pathname), buf);
   if (0 == rv) {
     return true;
   } else {
@@ -708,7 +708,7 @@ ccsys_s_issock (ccsys_stat_mode_t F)
  ** ----------------------------------------------------------------- */
 
 bool
-ccsys_pathname_exists (cce_destination_t L, char const * pathname)
+ccsys_pathname_exists (cce_destination_t L, ccstructs_pathname_I pathname)
 {
   ccsys_stat_t	S[1];
 
@@ -716,7 +716,7 @@ ccsys_pathname_exists (cce_destination_t L, char const * pathname)
 }
 
 bool
-ccsys_pathname_isreg (cce_destination_t L, char const * pathname)
+ccsys_pathname_isreg (cce_destination_t L, ccstructs_pathname_I pathname)
 {
   ccsys_stat_t	S[1];
 
@@ -728,7 +728,7 @@ ccsys_pathname_isreg (cce_destination_t L, char const * pathname)
 }
 
 bool
-ccsys_pathname_isdir (cce_destination_t L, char const * pathname)
+ccsys_pathname_isdir (cce_destination_t L, ccstructs_pathname_I pathname)
 {
   ccsys_stat_t	S[1];
 
@@ -740,7 +740,7 @@ ccsys_pathname_isdir (cce_destination_t L, char const * pathname)
 }
 
 bool
-ccsys_pathname_uid_gid (cce_destination_t L, char const * pathname, ccsys_uid_t * uidp, ccsys_gid_t * gidp)
+ccsys_pathname_uid_gid (cce_destination_t L, ccstructs_pathname_I pathname, ccsys_uid_t * uidp, ccsys_gid_t * gidp)
 {
   ccsys_stat_t	S[1];
 
@@ -807,11 +807,11 @@ ccsys_get_current_dir_name (cce_destination_t L)
 
 #ifdef HAVE_CHDIR
 void
-ccsys_chdir (cce_location_t * L, char const * pathname)
+ccsys_chdir (cce_location_t * L, ccstructs_pathname_I pathname)
 {
   int	rv;
   errno = 0;
-  rv = chdir(pathname);
+  rv = chdir(ccstructs_pathname_pointer(L, pathname));
   if (-1 == rv) {
     cce_raise(L, cce_condition_new_errno_clear());
   }
@@ -838,11 +838,11 @@ ccsys_fchdir (cce_location_t * L, ccsys_dirfd_t dirfd)
 
 #ifdef HAVE_MKDIR
 void
-ccsys_mkdir (cce_location_t * L, char const * pathname, ccsys_open_mode_t mode)
+ccsys_mkdir (cce_location_t * L, ccstructs_pathname_I pathname, ccsys_open_mode_t mode)
 {
   int	rv;
   errno = 0;
-  rv = mkdir(pathname, mode.data);
+  rv = mkdir(ccstructs_pathname_pointer(L, pathname), mode.data);
   if (-1 == rv) {
     cce_raise(L, cce_condition_new_errno_clear());
   }
@@ -851,11 +851,11 @@ ccsys_mkdir (cce_location_t * L, char const * pathname, ccsys_open_mode_t mode)
 
 #ifdef HAVE_MKDIRAT
 void
-ccsys_mkdirat (cce_location_t * L, ccsys_dirfd_t fd, char const * pathname, ccsys_open_mode_t mode)
+ccsys_mkdirat (cce_location_t * L, ccsys_dirfd_t fd, ccstructs_pathname_I pathname, ccsys_open_mode_t mode)
 {
   int	rv;
   errno = 0;
-  rv = mkdirat(fd.data, pathname, mode.data);
+  rv = mkdirat(fd.data, ccstructs_pathname_pointer(L, pathname), mode.data);
   if (-1 == rv) {
     cce_raise(L, cce_condition_new_errno_clear());
   }
@@ -864,11 +864,11 @@ ccsys_mkdirat (cce_location_t * L, ccsys_dirfd_t fd, char const * pathname, ccsy
 
 #ifdef HAVE_RMDIR
 void
-ccsys_rmdir (cce_location_t * L, char const * pathname)
+ccsys_rmdir (cce_location_t * L, ccstructs_pathname_I pathname)
 {
   int	rv;
   errno = 0;
-  rv = rmdir(pathname);
+  rv = rmdir(ccstructs_pathname_pointer(L, pathname));
   if (-1 == rv) {
     cce_raise(L, cce_condition_new_errno_clear());
   }
@@ -880,27 +880,36 @@ ccsys_rmdir (cce_location_t * L, char const * pathname)
 #ifdef HAVE_RMDIR
 __attribute__((nonnull(1,2)))
 static void
-cce_rmdir_handler_function (const cce_condition_t * C CCE_UNUSED, cce_handler_t * H)
+cce_rmdir_handler_function (const cce_condition_t * C CCE_UNUSED, cce_handler_t * _H)
 {
-  if (0) { fprintf(stderr, "%s: removing '%s'\n", __func__, H->pathname); }
-  rmdir(H->pathname);
-  if (0) { fprintf(stderr, "%s: done\n", __func__); }
+  cce_location_t	L[1];
+
+  if (cce_location(L)) {
+    cce_run_catch_handlers_final(L);
+  } else {
+    CCSYS_PC(ccsys_pathname_clean_handler_t, H, _H);
+
+    if (0) { fprintf(stderr, "%s: removing '%s'\n", __func__, ccstructs_pathname_pointer(L, H->pathname)); }
+    rmdir(ccstructs_pathname_pointer(L, H->pathname));
+    if (0) { fprintf(stderr, "%s: done\n", __func__); }
+    cce_run_body_handlers(L);
+  }
 }
 
 void
-ccsys_init_rmdir_clean_handler (cce_location_t * L, cce_clean_handler_t * H, char const * pathname)
+ccsys_init_rmdir_clean_handler (cce_location_t * L, ccsys_pathname_clean_handler_t * H, ccstructs_pathname_I pathname)
 {
-  H->handler.function	= cce_rmdir_handler_function;
-  H->handler.pathname	= (char *)pathname;
-  cce_register_clean_handler(L, H);
+  H->handler.handler.function	= cce_rmdir_handler_function;
+  H->pathname			= pathname;
+  cce_register_clean_handler(L, &(H->handler));
 }
 
 void
-ccsys_init_rmdir_error_handler (cce_location_t * L, cce_error_handler_t * H, char const * pathname)
+ccsys_init_rmdir_error_handler (cce_location_t * L, ccsys_pathname_error_handler_t * H, ccstructs_pathname_I pathname)
 {
-  H->handler.function	= cce_rmdir_handler_function;
-  H->handler.pathname	= (char *)pathname;
-  cce_register_error_handler(L, H);
+  H->handler.handler.function	= cce_rmdir_handler_function;
+  H->pathname			= pathname;
+  cce_register_error_handler(L, &(H->handler));
 }
 #endif
 
@@ -1002,11 +1011,11 @@ ccsys_mkdtemp (cce_location_t * L, char * template)
 
 #ifdef HAVE_LINK
 void
-ccsys_link (cce_location_t * L, const char * oldname, const char * newname)
+ccsys_link (cce_location_t * L, ccstructs_pathname_I oldname, ccstructs_pathname_I newname)
 {
   int	rv;
   errno = 0;
-  rv = link(oldname, newname);
+  rv = link(ccstructs_pathname_pointer(L, oldname), ccstructs_pathname_pointer(L, newname));
   if (-1 == rv) {
     cce_raise(L, cce_condition_new_errno_clear());
   }
@@ -1016,13 +1025,15 @@ ccsys_link (cce_location_t * L, const char * oldname, const char * newname)
 #ifdef HAVE_LINKAT
 void
 ccsys_linkat (cce_location_t * L,
-	      ccsys_dirfd_t oldfd, const char * oldname,
-	      ccsys_dirfd_t newfd, const char * newname,
+	      ccsys_dirfd_t oldfd, ccstructs_pathname_I oldname,
+	      ccsys_dirfd_t newfd, ccstructs_pathname_I newname,
 	      ccsys_linkat_flags_t flags)
 {
   int	rv;
   errno = 0;
-  rv = linkat(oldfd.data, oldname, newfd.data, newname, flags.data);
+  rv = linkat(oldfd.data, ccstructs_pathname_pointer(L, oldname),
+	      newfd.data, ccstructs_pathname_pointer(L, newname),
+	      flags.data);
   if (-1 == rv) {
     cce_raise(L, cce_condition_new_errno_clear());
   }
@@ -1033,11 +1044,11 @@ ccsys_linkat (cce_location_t * L,
 
 #ifdef HAVE_SYMLINK
 void
-ccsys_symlink (cce_location_t * L, const char * oldname, const char * newname)
+ccsys_symlink (cce_location_t * L, ccstructs_pathname_I oldname, ccstructs_pathname_I newname)
 {
   int	rv;
   errno = 0;
-  rv = symlink(oldname, newname);
+  rv = symlink(ccstructs_pathname_pointer(L, oldname), ccstructs_pathname_pointer(L, newname));
   if (-1 == rv) {
     cce_raise(L, cce_condition_new_errno_clear());
   }
@@ -1046,11 +1057,11 @@ ccsys_symlink (cce_location_t * L, const char * oldname, const char * newname)
 
 #ifdef HAVE_SYMLINKAT
 void
-ccsys_symlinkat (cce_location_t * L, const char * oldname, ccsys_dirfd_t newdirfd, const char * newname)
+ccsys_symlinkat (cce_location_t * L, ccstructs_pathname_I oldname, ccsys_dirfd_t newdirfd, ccstructs_pathname_I newname)
 {
   int	rv;
   errno = 0;
-  rv = symlinkat(oldname, newdirfd.data, newname);
+  rv = symlinkat(ccstructs_pathname_pointer(L, oldname), newdirfd.data, ccstructs_pathname_pointer(L, newname));
   if (-1 == rv) {
     cce_raise(L, cce_condition_new_errno_clear());
   }
@@ -1059,11 +1070,11 @@ ccsys_symlinkat (cce_location_t * L, const char * oldname, ccsys_dirfd_t newdirf
 
 #ifdef HAVE_READLINK
 size_t
-ccsys_readlink (cce_location_t * L, char const * pathname, char * buffer, size_t size)
+ccsys_readlink (cce_location_t * L, ccstructs_pathname_I pathname, char * buffer, size_t size)
 {
   ssize_t	rv;
   errno = 0;
-  rv = readlink(pathname, buffer, size);
+  rv = readlink(ccstructs_pathname_pointer(L, pathname), buffer, size);
   if (-1 == rv) {
     cce_raise(L, cce_condition_new_errno_clear());
   } else {
@@ -1074,11 +1085,11 @@ ccsys_readlink (cce_location_t * L, char const * pathname, char * buffer, size_t
 
 #ifdef HAVE_READLINKAT
 size_t
-ccsys_readlinkat (cce_location_t * L, ccsys_dirfd_t dirfd, char const * pathname, char * buffer, size_t size)
+ccsys_readlinkat (cce_location_t * L, ccsys_dirfd_t dirfd, ccstructs_pathname_I pathname, char * buffer, size_t size)
 {
   ssize_t	rv;
   errno = 0;
-  rv = readlinkat(dirfd.data, pathname, buffer, size);
+  rv = readlinkat(dirfd.data, ccstructs_pathname_pointer(L, pathname), buffer, size);
   if (-1 == rv) {
     cce_raise(L, cce_condition_new_errno_clear());
   } else {
@@ -1089,11 +1100,11 @@ ccsys_readlinkat (cce_location_t * L, ccsys_dirfd_t dirfd, char const * pathname
 
 #ifdef HAVE_REALPATH
 char *
-ccsys_realpath (cce_location_t * L, char const * pathname, char * resolved_path)
+ccsys_realpath (cce_location_t * L, ccstructs_pathname_I pathname, char * resolved_path)
 {
   char *	rv;
   errno = 0;
-  rv = realpath(pathname, resolved_path);
+  rv = realpath(ccstructs_pathname_pointer(L, pathname), resolved_path);
   if (rv) {
     return rv;
   } else {
@@ -1106,11 +1117,11 @@ ccsys_realpath (cce_location_t * L, char const * pathname, char * resolved_path)
 
 #ifdef HAVE_UNLINK
 void
-ccsys_unlink (cce_location_t * L, char const * pathname)
+ccsys_unlink (cce_location_t * L, ccstructs_pathname_I pathname)
 {
   int	rv;
   errno = 0;
-  rv = unlink(pathname);
+  rv = unlink(ccstructs_pathname_pointer(L, pathname));
   if (-1 == rv) {
     cce_raise(L, cce_condition_new_errno_clear());
   }
@@ -1119,11 +1130,11 @@ ccsys_unlink (cce_location_t * L, char const * pathname)
 
 #ifdef HAVE_UNLINKAT
 void
-ccsys_unlinkat (cce_location_t * L, ccsys_dirfd_t dirfd, char const * pathname, ccsys_unlinkat_flags_t flags)
+ccsys_unlinkat (cce_location_t * L, ccsys_dirfd_t dirfd, ccstructs_pathname_I pathname, ccsys_unlinkat_flags_t flags)
 {
   int	rv;
   errno = 0;
-  rv = unlinkat(dirfd.data, pathname, flags.data);
+  rv = unlinkat(dirfd.data, ccstructs_pathname_pointer(L, pathname), flags.data);
   if (-1 == rv) {
     cce_raise(L, cce_condition_new_errno_clear());
   }
@@ -1137,9 +1148,16 @@ __attribute__((nonnull(1,2)))
 static void
 cce_unlinkat_handler_function (const cce_condition_t * C CCE_UNUSED, cce_handler_t * H)
 {
-  ccsys_at_link_t *	lnk	= H->pointer;
-  unlinkat(lnk->dirfd.data, lnk->pathname, lnk->flags.data);
-  if (0) { fprintf(stderr, "%s: done unlinking '%s'\n", __func__, lnk->pathname); }
+  cce_location_t	L[1];
+
+  if (cce_location(L)) {
+    cce_run_catch_handlers_final(L);
+  } else {
+    ccsys_at_link_t *	lnk	= H->pointer;
+    unlinkat(lnk->dirfd.data, ccstructs_pathname_pointer(L, lnk->pathname), lnk->flags.data);
+    if (0) { fprintf(stderr, "%s: done unlinking '%s'\n", __func__, ccstructs_pathname_pointer(L, lnk->pathname)); }
+    cce_run_body_handlers(L);
+  }
 }
 
 void
@@ -1166,11 +1184,11 @@ ccsys_init_unlinkat_error_handler (cce_location_t * L, cce_error_handler_t * H, 
 
 #ifdef HAVE_REMOVE
 void
-ccsys_remove (cce_location_t * L, char const * pathname)
+ccsys_remove (cce_location_t * L, ccstructs_pathname_I pathname)
 {
   int	rv;
   errno = 0;
-  rv = remove(pathname);
+  rv = remove(ccstructs_pathname_pointer(L, pathname));
   if (-1 == rv) {
     cce_raise(L, cce_condition_new_errno_clear());
   }
@@ -1179,31 +1197,39 @@ ccsys_remove (cce_location_t * L, char const * pathname)
 
 /* ------------------------------------------------------------------ */
 
+#ifdef HAVE_REMOVE
 __attribute__((nonnull(1,2)))
 static void
-cce_remove_handler_function (const cce_condition_t * C CCE_UNUSED, cce_handler_t * H)
+cce_remove_handler_function (const cce_condition_t * C CCE_UNUSED, cce_handler_t * _H)
 {
-#ifdef HAVE_REMOVE
-  remove(H->pathname);
-  if (0) { fprintf(stderr, "%s: done removing '%s'\n", __func__, H->pathname); }
+  cce_location_t	L[1];
+
+  if (cce_location(L)) {
+    cce_run_catch_handlers_final(L);
+  } else {
+    CCSYS_PC(ccsys_pathname_clean_handler_t, H, _H);
+    remove(ccstructs_pathname_pointer(L, H->pathname));
+    if (0) { fprintf(stderr, "%s: done removing '%s'\n", __func__, ccstructs_pathname_pointer(L, H->pathname)); }
+    cce_run_body_handlers(L);
+  }
+}
+
+void
+ccsys_init_remove_clean_handler (cce_location_t * L, ccsys_pathname_clean_handler_t * H, ccstructs_pathname_I pathname)
+{
+  H->handler.handler.function	= cce_remove_handler_function;
+  H->pathname			= pathname;
+  cce_register_clean_handler(L, &(H->handler));
+}
+
+void
+ccsys_init_remove_error_handler (cce_location_t * L, ccsys_pathname_error_handler_t * H, ccstructs_pathname_I pathname)
+{
+  H->handler.handler.function	= cce_remove_handler_function;
+  H->pathname			= pathname;
+  cce_register_error_handler(L, &(H->handler));
+}
 #endif
-}
-
-void
-ccsys_init_remove_clean_handler (cce_location_t * L, cce_clean_handler_t * H, char const * pathname)
-{
-  H->handler.function	= cce_remove_handler_function;
-  H->handler.pathname	= (char *)pathname;
-  cce_register_clean_handler(L, H);
-}
-
-void
-ccsys_init_remove_error_handler (cce_location_t * L, cce_error_handler_t * H, char const * pathname)
-{
-  H->handler.function	= cce_remove_handler_function;
-  H->handler.pathname	= (char *)pathname;
-  cce_register_error_handler(L, H);
-}
 
 
 /** --------------------------------------------------------------------
@@ -1212,11 +1238,12 @@ ccsys_init_remove_error_handler (cce_location_t * L, cce_error_handler_t * H, ch
 
 #ifdef HAVE_RENAME
 void
-ccsys_rename (cce_location_t * L, const char * oldname, const char * newname)
+ccsys_rename (cce_location_t * L, ccstructs_pathname_I oldname, ccstructs_pathname_I newname)
 {
   int	rv;
   errno = 0;
-  rv = rename(oldname, newname);
+  rv = rename(ccstructs_pathname_pointer(L, oldname),
+	      ccstructs_pathname_pointer(L, newname));
   if (-1 == rv) {
     cce_raise(L, cce_condition_new_errno_clear());
   }
@@ -1226,12 +1253,13 @@ ccsys_rename (cce_location_t * L, const char * oldname, const char * newname)
 #ifdef HAVE_RENAMEAT
 void
 ccsys_renameat (cce_destination_t L,
-		ccsys_dirfd_t old_dirfd, char const * oldname,
-		ccsys_dirfd_t new_dirfd, char const * newname)
+		ccsys_dirfd_t old_dirfd, ccstructs_pathname_I oldname,
+		ccsys_dirfd_t new_dirfd, ccstructs_pathname_I newname)
 {
   int	rv;
   errno = 0;
-  rv = renameat(old_dirfd.data, oldname, new_dirfd.data, newname);
+  rv = renameat(old_dirfd.data, ccstructs_pathname_pointer(L, oldname),
+		new_dirfd.data, ccstructs_pathname_pointer(L, newname));
   if (-1 == rv) {
     cce_raise(L, cce_condition_new_errno_clear());
   }
@@ -1241,13 +1269,16 @@ ccsys_renameat (cce_destination_t L,
 #if (defined CCSYS_ON_LINUX)
 void
 ccsys_renameat2 (cce_destination_t L,
-		 ccsys_dirfd_t old_dirfd, char const * oldname,
-		 ccsys_dirfd_t new_dirfd, char const * newname,
+		 ccsys_dirfd_t old_dirfd, ccstructs_pathname_I oldname,
+		 ccsys_dirfd_t new_dirfd, ccstructs_pathname_I newname,
 		 ccsys_renameat2_flags_t flags)
 {
   int	rv;
   errno = 0;
-  rv = syscall(SYS_renameat2, old_dirfd.data, oldname, new_dirfd.data, newname, flags.data);
+  rv = syscall(SYS_renameat2,
+	       old_dirfd.data, ccstructs_pathname_pointer(L, oldname),
+	       new_dirfd.data, ccstructs_pathname_pointer(L, newname),
+	       flags.data);
   if (-1 == rv) {
     cce_raise(L, cce_condition_new_errno_clear());
   }
@@ -1261,11 +1292,11 @@ ccsys_renameat2 (cce_destination_t L,
 
 #ifdef HAVE_CHOWN
 void
-ccsys_chown (cce_location_t * L, char const * pathname, ccsys_uid_t owner, ccsys_gid_t group)
+ccsys_chown (cce_location_t * L, ccstructs_pathname_I pathname, ccsys_uid_t owner, ccsys_gid_t group)
 {
   int	rv;
   errno = 0;
-  rv = chown(pathname, owner.data, group.data);
+  rv = chown(ccstructs_pathname_pointer(L, pathname), owner.data, group.data);
   if (-1 == rv) {
     cce_raise(L, cce_condition_new_errno_clear());
   }
@@ -1287,11 +1318,11 @@ ccsys_fchown (cce_location_t * L, ccsys_fd_t filedes, ccsys_uid_t owner, ccsys_g
 
 #ifdef HAVE_LCHOWN
 void
-ccsys_lchown (cce_location_t * L, char const * pathname, ccsys_uid_t owner, ccsys_gid_t group)
+ccsys_lchown (cce_location_t * L, ccstructs_pathname_I pathname, ccsys_uid_t owner, ccsys_gid_t group)
 {
   int	rv;
   errno = 0;
-  rv = lchown(pathname, owner.data, group.data);
+  rv = lchown(ccstructs_pathname_pointer(L, pathname), owner.data, group.data);
   if (-1 == rv) {
     cce_raise(L, cce_condition_new_errno_clear());
   }
@@ -1300,12 +1331,12 @@ ccsys_lchown (cce_location_t * L, char const * pathname, ccsys_uid_t owner, ccsy
 
 #ifdef HAVE_FCHOWNAT
 void
-ccsys_fchownat (cce_location_t * L, ccsys_dirfd_t dirfd, char const * pathname, ccsys_uid_t owner, ccsys_gid_t group,
+ccsys_fchownat (cce_location_t * L, ccsys_dirfd_t dirfd, ccstructs_pathname_I pathname, ccsys_uid_t owner, ccsys_gid_t group,
 		ccsys_fchownat_flags_t flags)
 {
   int	rv;
   errno = 0;
-  rv = fchownat(dirfd.data, pathname, owner.data, group.data, flags.data);
+  rv = fchownat(dirfd.data, ccstructs_pathname_pointer(L, pathname), owner.data, group.data, flags.data);
   if (-1 == rv) {
     cce_raise(L, cce_condition_new_errno_clear());
   }
@@ -1319,11 +1350,11 @@ ccsys_fchownat (cce_location_t * L, ccsys_dirfd_t dirfd, char const * pathname, 
 
 #ifdef HAVE_CHMOD
 void
-ccsys_chmod (cce_location_t * L, char const * pathname, ccsys_open_mode_t mode)
+ccsys_chmod (cce_location_t * L, ccstructs_pathname_I pathname, ccsys_open_mode_t mode)
 {
   int	rv;
   errno = 0;
-  rv = chmod(pathname, mode.data);
+  rv = chmod(ccstructs_pathname_pointer(L, pathname), mode.data);
   if (-1 == rv) {
     cce_raise(L, cce_condition_new_errno_clear());
   }
@@ -1345,11 +1376,11 @@ ccsys_fchmod (cce_location_t * L, ccsys_fd_t filedes, ccsys_open_mode_t mode)
 
 #ifdef HAVE_FCHMODAT
 void
-ccsys_fchmodat (cce_location_t * L, ccsys_dirfd_t dirfd, char const * pathname, ccsys_open_mode_t mode, ccsys_fchmodat_flags_t flags)
+ccsys_fchmodat (cce_location_t * L, ccsys_dirfd_t dirfd, ccstructs_pathname_I pathname, ccsys_open_mode_t mode, ccsys_fchmodat_flags_t flags)
 {
   int	rv;
   errno = 0;
-  rv = fchmodat(dirfd.data, pathname, mode.data, flags.data);
+  rv = fchmodat(dirfd.data, ccstructs_pathname_pointer(L, pathname), mode.data, flags.data);
   if (-1 == rv) {
     cce_raise(L, cce_condition_new_errno_clear());
   }
@@ -1363,11 +1394,11 @@ ccsys_fchmodat (cce_location_t * L, ccsys_dirfd_t dirfd, char const * pathname, 
 
 #ifdef HAVE_ACCESS
 bool
-ccsys_access (cce_location_t * L, char const * pathname, ccsys_access_mode_t how)
+ccsys_access (cce_location_t * L, ccstructs_pathname_I pathname, ccsys_access_mode_t how)
 {
   int	rv;
   errno = 0;
-  rv = access(pathname, how.data);
+  rv = access(ccstructs_pathname_pointer(L, pathname), how.data);
   if (0 == rv) {
     return true;
   } else if (CCSYS_EACCES == errno) {
@@ -1380,12 +1411,12 @@ ccsys_access (cce_location_t * L, char const * pathname, ccsys_access_mode_t how
 
 #ifdef HAVE_FACCESSAT
 bool
-ccsys_faccessat (cce_location_t * L, ccsys_dirfd_t dirfd, char const * pathname,
+ccsys_faccessat (cce_location_t * L, ccsys_dirfd_t dirfd, ccstructs_pathname_I pathname,
 		 ccsys_access_mode_t  how, ccsys_faccessat_flags_t flags)
 {
   int	rv;
   errno = 0;
-  rv = faccessat(dirfd.data, pathname, how.data, flags.data);
+  rv = faccessat(dirfd.data, ccstructs_pathname_pointer(L, pathname), how.data, flags.data);
   if (0 == rv) {
     return true;
   } else if (CCSYS_EACCES == errno) {
@@ -1403,11 +1434,11 @@ ccsys_faccessat (cce_location_t * L, ccsys_dirfd_t dirfd, char const * pathname,
 
 #ifdef HAVE_TRUNCATE
 void
-ccsys_truncate (cce_location_t * L, char const * pathname, ccsys_off_t length)
+ccsys_truncate (cce_location_t * L, ccstructs_pathname_I pathname, ccsys_off_t length)
 {
   int	rv;
   errno = 0;
-  rv = truncate(pathname, (off_t)(length.data));
+  rv = truncate(ccstructs_pathname_pointer(L, pathname), (off_t)(length.data));
   if (-1 == rv) {
     cce_raise(L, cce_condition_new_errno_clear());
   }
@@ -1434,11 +1465,11 @@ ccsys_ftruncate (cce_location_t * L, ccsys_fd_t filedes, ccsys_off_t length)
 
 #ifdef HAVE_UTIMES
 void
-ccsys_utimes (cce_location_t * L, char const * pathname, ccsys_timeval_t const T[2])
+ccsys_utimes (cce_location_t * L, ccstructs_pathname_I pathname, ccsys_timeval_t const T[2])
 {
   int	rv;
   errno = 0;
-  rv = utimes(pathname, (struct timeval const *)T);
+  rv = utimes(ccstructs_pathname_pointer(L, pathname), (struct timeval const *)T);
   if (-1 == rv) {
     cce_raise(L, cce_condition_new_errno_clear());
   }
@@ -1447,12 +1478,12 @@ ccsys_utimes (cce_location_t * L, char const * pathname, ccsys_timeval_t const T
 
 #ifdef HAVE_UTIMENSAT
 void
-ccsys_utimensat (cce_destination_t L, ccsys_dirfd_t dirfd, char const * pathname,
+ccsys_utimensat (cce_destination_t L, ccsys_dirfd_t dirfd, ccstructs_pathname_I pathname,
 		 ccsys_timespec_t const T[2], ccsys_utimensat_flags_t flags)
 {
   int	rv;
   errno = 0;
-  rv = utimensat(dirfd.data, pathname, (struct timespec const *)T, flags.data);
+  rv = utimensat(dirfd.data, ccstructs_pathname_pointer(L, pathname), (struct timespec const *)T, flags.data);
   if (-1 == rv) {
     cce_raise(L, cce_condition_new_errno_clear());
   }
@@ -1476,11 +1507,11 @@ ccsys_futimens (cce_destination_t L, ccsys_fd_t fd, ccsys_timespec_t const T[2])
 
 #if ((defined HAVE_LUTIMES) && (1 == CCSYS_ON_LINUX))
 void
-ccsys_lutimes (cce_location_t * L, char const * pathname,  ccsys_timeval_t const T[2])
+ccsys_lutimes (cce_location_t * L, ccstructs_pathname_I pathname,  ccsys_timeval_t const T[2])
 {
   int	rv;
   errno = 0;
-  rv = lutimes(pathname, (const struct timeval *)T);
+  rv = lutimes(ccstructs_pathname_pointer(L, pathname), (const struct timeval *)T);
   if (-1 == rv) {
     cce_raise(L, cce_condition_new_errno_clear());
   }
@@ -1502,11 +1533,11 @@ ccsys_futimes (cce_location_t * L, ccsys_fd_t filedes,  ccsys_timeval_t const T[
 
 #if ((defined HAVE_FUTIMESAT) && (1 == CCSYS_ON_LINUX))
 void
-ccsys_futimesat (cce_destination_t L, ccsys_dirfd_t dirfd, char const * pathname, ccsys_timeval_t const T[2])
+ccsys_futimesat (cce_destination_t L, ccsys_dirfd_t dirfd, ccstructs_pathname_I pathname, ccsys_timeval_t const T[2])
 {
   int	rv;
   errno = 0;
-  rv = futimesat(dirfd.data, pathname, (struct timeval const *)T);
+  rv = futimesat(dirfd.data, ccstructs_pathname_pointer(L, pathname), (struct timeval const *)T);
   if (-1 == rv) {
     cce_raise(L, cce_condition_new_errno_clear());
   }

@@ -90,14 +90,14 @@ test_2_1 (cce_destination_t upper_L)
 /* Test for "ccsys_pathconf()"". */
 {
 #if (defined HAVE_PATHCONF)
-  cce_location_t	L[1];
-  cce_clean_handler_t	filename_H[1];
+  cce_location_t			L[1];
+  ccsys_pathname_clean_handler_t	filename_H[1];
 
   if (cce_location(L)) {
     cce_run_catch_handlers_raise(L, upper_L);
   } else {
-    char const *	filename = "name.ext";
-    long		rv;
+    ccstructs_pathname_I	filename = ccstructs_new_pathname_from_static_string("name.ext");
+    long			rv;
 
     /* Create the file. */
     {
@@ -111,7 +111,7 @@ test_2_1 (cce_destination_t upper_L)
     }
 
     {
-      rv = ccsys_pathconf(L, ccstructs_new_pathname_from_static_string(filename), CCSYS__PC_PATH_MAX);
+      rv = ccsys_pathconf(L, filename, CCSYS__PC_PATH_MAX);
       if (1) { fprintf(stderr, "%s: CCSYS__PC_PATH_MAX=%lu\n", __func__, rv); }
     }
 
@@ -127,14 +127,14 @@ test_2_2 (cce_destination_t upper_L)
 /* Test for "ccsys_fpathconf()"". */
 {
 #if (defined HAVE_FPATHCONF)
-  cce_location_t	L[1];
-  cce_clean_handler_t	filename_H[1];
-  cce_clean_handler_t	filedes_H[1];
+  cce_location_t			L[1];
+  ccsys_pathname_clean_handler_t	filename_H[1];
+  cce_clean_handler_t			filedes_H[1];
 
   if (cce_location(L)) {
     cce_run_catch_handlers_raise(L, upper_L);
   } else {
-    char const *	filename = "name.ext";
+    ccstructs_pathname_I	filename = ccstructs_new_pathname_from_static_string("name.ext");
     ccsys_fd_t		fd;
     long		rv;
 
