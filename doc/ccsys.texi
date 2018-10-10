@@ -719,6 +719,15 @@ Enumerated constants}.
 @section Semantic type macros
 
 
+@deftypefn {Preprocessor Macro} ccsys_dnew (@var{D})
+Expands into:
+
+@example
+@{ .data = (@var{D}) @}
+@end example
+@end deftypefn
+
+
 @deftypefn {Preprocessor Macro} {int} ccsys_dref (struct @var{D})
 Helper macro that extracts a value from a semantic type and casts it to an @code{int}.  Expand into:
 
@@ -762,6 +771,11 @@ Expand into:
 
 
 @deftypefun ccsys_open_flags_t ccsys_new_open_flags (int @var{flags})
+Build and return a new instance.
+@end deftypefun
+
+
+@deftypefun ccsys_unlinkat_flags_t ccsys_new_unlinkat_flags (int @var{flags})
 Build and return a new instance.
 @end deftypefun
 
@@ -4212,9 +4226,9 @@ sample (void)
 @{
   cce_location_t                  L[1];
   ccsys_pathname_clean_handler_t  dir_H[1];
-  cce_clean_handler_t   dirstream_H[1];
-  cce_clean_handler_t   fifo_H[1];
-  ccsys_at_link_t       fifo_unlink_data;
+  cce_clean_handler_t             dirstream_H[1];
+  cce_clean_handler_t             fifo_H[1];
+  ccsys_at_link_t                 fifo_unlink_data;
 
   if (cce_location(L)) @{
     cce_run_catch_handlers_final(L);
@@ -4228,27 +4242,26 @@ sample (void)
 
     /* Create the directory. */
     @{
-      ccsys_open_mode_t mode;
-      mode.data = CCSYS_S_IRWXU;
+      ccsys_open_mode_t mode = ccsys_new_open_mode(CCSYS_S_IRWXU);
       ccsys_mkdir(L, dirname, mode);
       ccsys_init_rmdir_handler(L, dir_H, dirname);
     @}
 
     /* Open the directory. */
     @{
-      ccsys_dir_t *     dirstream;
-      dirstream = ccsys_opendir(L, dirname);
+      ccsys_dir_t *  dirstream = ccsys_opendir(L, dirname);
       ccsys_init_dirstream_handler(L, dirstream_H, dirstream);
       dirfd = ccsys_dirfd(L, dirstream);
     @}
 
     /* Create the FIFO. */
     @{
-      ccsys_open_mode_t mode;
-      mode.data = CCSYS_S_IRUSR | CCSYS_S_IWUSR;
+      ccsys_open_mode_t         mode =
+         ccsys_new_open_mode(CCSYS_S_IRUSR | CCSYS_S_IWUSR);
+      ccsys_unlinkat_flags_t    unlinkat_flags = ccsys_dnew(0);
+
       ccsys_mkfifoat(L, dirfd, fifoname, mode);
-      fifo_unlink_data.dirfd    = dirfd;
-      fifo_unlink_data.pathname = fifoname;
+      fifo_unlink_data = ccsys_new_at_link(dirfd, fifoname, unlinkat_flags);
       ccsys_init_unlinkat_handler(L, fifo_H, &fifo_unlink_data);
     @}
 
@@ -6651,8 +6664,8 @@ We can remove temporary files with the standard function @cfunc{unlinkat} as fol
 
 @example
 cce_location_t          L[1];
-cce_clean_handler_t   filedes_H[1];
-cce_clean_handler_t   filename_H[1];
+cce_clean_handler_t     filedes_H[1];
+cce_clean_handler_t     filename_H[1];
 ccsys_at_link_t         lnk;
 
 if (cce_location(L)) @{
@@ -6674,9 +6687,9 @@ if (cce_location(L)) @{
   @}
 
   @{
-    lnk.dirfd      = dirfd;
-    lnk.pathname   = filename;
-    lnk.flags.data = 0;
+    ccsys_unlinkat_flags_t	unlinkat_flags = ccsys_dnew(0);
+
+    lnk = ccsys_new_at_link(dirfd, filename, unlinkat_flags);
     ccsys_init_unlinkat_handler(L, filename_H, &lnk);
   @}
 
@@ -6707,6 +6720,11 @@ Flags for the unlinking operation.  We can use these, for example, to unlink a d
 a file.
 @end table
 @end deftp
+
+
+@deftypefun ccsys_at_link_t ccsys_new_at_link (ccsys_dirfd_t @var{dirfd}, ccstructs_pathname_I @var{pathname}, ccsys_unlinkat_flags_t @var{flags})
+Build and return a new instance.
+@end deftypefun
 
 
 @deftypefun void ccsys_init_unlinkat_clean_handler (cce_destination_t @var{L}, cce_clean_handler_t * @var{H}, ccsys_at_link_t * @var{lnk})
@@ -7431,12 +7449,12 @@ if (cce_location(L)) @{
 As usage example of @cfunc{ccsys_fstatat} see the following code.
 
 @smallexample
-cce_location_t        L[1];
-cce_handler_t         dirname_H[1];
-cce_handler_t         dir_H[1];
-cce_clean_handler_t filename_H[1];
-cce_clean_handler_t filedes_H[1];
-ccsys_at_link_t       lnk;
+cce_location_t          L[1];
+cce_handler_t           dirname_H[1];
+cce_handler_t           dir_H[1];
+cce_clean_handler_t     filename_H[1];
+cce_clean_handler_t     filedes_H[1];
+ccsys_at_link_t         lnk;
 
 if (cce_location(L)) @{
   cce_run_catch_handlers_raise(L, upper_L);
@@ -7466,15 +7484,15 @@ if (cce_location(L)) @{
 
   /* Create and open the file. */
   @{
-    ccsys_open_flags_t        flags;
-    ccsys_open_mode_t         mode;
+    ccsys_open_flags_t          flags =
+      ccsys_new_open_flags(CCSYS_O_CREAT);
+    ccsys_open_mode_t           mode  =
+      ccsys_new_open_mode(CCSYS_S_IRUSR | CCSYS_S_IWUSR);
+    ccsys_unlinkat_flags_t      unlinkat_flags = ccsys_dnew(0);
 
-    flags.data = CCSYS_O_CREAT;
-    mode.data  = CCSYS_S_IRUSR | CCSYS_S_IWUSR;
     fd = ccsys_openat(L, dirfd, filename, flags, mode);
     ccsys_init_filedes_handler(L, filedes_H, fd);
-    lnk.dirfd         = dirfd;
-    lnk.pathname      = filename;
+    lnk = ccsys_new_at_link(dirfd, filename, unlinkat_flags);
     ccsys_init_unlinkat_handler(L, filename_H, &lnk);
   @}
 

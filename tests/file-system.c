@@ -257,10 +257,9 @@ test_3_1 (cce_destination_t upper_L)
   if (cce_location(L)) {
     cce_run_catch_handlers_raise(L, upper_L);
   } else {
-    ccstructs_pathname_I	dirname = ccstructs_new_pathname_from_static_string("name.d");
-    ccsys_open_mode_t		mode;
+    ccstructs_pathname_I	dirname = ccstructs_new_pathname_from_static_string("file-system-name.d");
+    ccsys_open_mode_t		mode    = ccsys_new_open_mode(CCSYS_S_IRWXU);
 
-    mode.data = CCSYS_S_IRWXU;
     ccsys_mkdir(L, dirname, mode);
     ccsys_init_rmdir_handler(L, dirname_H, dirname);
     cce_run_body_handlers(L);
@@ -275,10 +274,9 @@ test_3_2 (cce_destination_t upper_L)
   if (cce_location(L)) {
     cce_run_catch_handlers_raise(L, upper_L);
   } else {
-    ccstructs_pathname_I	dirname = ccstructs_new_pathname_from_static_string("name.d");
-    ccsys_open_mode_t		mode;
+    ccstructs_pathname_I	dirname = ccstructs_new_pathname_from_static_string("file-system-name.d");
+    ccsys_open_mode_t		mode    = ccsys_new_open_mode(CCSYS_S_IRWXU);
 
-    mode.data = CCSYS_S_IRWXU;
     ccsys_mkdir(L, dirname, mode);
     ccsys_rmdir(L, dirname);
     cce_run_body_handlers(L);
@@ -297,13 +295,13 @@ test_3_3 (cce_destination_t upper_L)
     if (0) { fprintf(stderr, "%s: %s\n", __func__, cce_condition_static_message(cce_condition(L))); }
     cce_run_catch_handlers_raise(L, upper_L);
   } else {
-    ccstructs_pathname_I	dirname1 = ccstructs_new_pathname_from_static_string("name.d");
-    ccstructs_pathname_I	dirname2 = ccstructs_new_pathname_from_static_string("subname.d");
+    ccstructs_pathname_I	dirname1 = ccstructs_new_pathname_from_static_string("file-system-name.d");
+    ccstructs_pathname_I	dirname2 = ccstructs_new_pathname_from_static_string("file-system-subname.d");
     ccsys_dirfd_t		dirfd1;
 
     /* Create the parent directory. */
     {
-      ccsys_open_mode_t	mode  = { .data = CCSYS_S_IRWXU };
+      ccsys_open_mode_t	mode  = ccsys_new_open_mode(CCSYS_S_IRWXU);
       ccsys_mkdir(L, dirname1, mode);
       ccsys_init_rmdir_handler(L, dirname1_H, dirname1);
     }
@@ -311,12 +309,10 @@ test_3_3 (cce_destination_t upper_L)
     /* Open  the  parent  directory.   The  descriptor  in  "dirfd1"  is
        released automatically when "fd" is released. */
     {
-      ccsys_open_flags_t	flags;
-      ccsys_open_mode_t		mode;
+      ccsys_open_flags_t	flags = ccsys_new_open_flags(CCSYS_O_PATH);
+      ccsys_open_mode_t		mode  = ccsys_new_open_mode(CCSYS_S_IRUSR | CCSYS_S_IWUSR);
       ccsys_fd_t		fd;
 
-      flags.data = CCSYS_O_PATH;
-      mode.data  = CCSYS_S_IRUSR | CCSYS_S_IWUSR;
       fd         = ccsys_open(L, dirname1, flags, mode);
       ccsys_init_filedes_handler(L, filedes_H, fd);
       dirfd1     = ccsys_fd_to_dirfd(fd);
@@ -324,15 +320,14 @@ test_3_3 (cce_destination_t upper_L)
 
     /* Create the subdirectory. */
     {
-      ccsys_open_mode_t	mode  = { .data = CCSYS_S_IRWXU };
+      ccsys_open_mode_t	mode  = ccsys_new_open_mode(CCSYS_S_IRWXU);
 
       ccsys_mkdirat(L, dirfd1, dirname2, mode);
     }
 
     /* Remove the subdirectory. */
     {
-      ccsys_unlinkat_flags_t      flags;
-      flags.data = CCSYS_AT_REMOVEDIR;
+      ccsys_unlinkat_flags_t      flags = ccsys_new_unlinkat_flags(CCSYS_AT_REMOVEDIR);
       ccsys_unlinkat(L, dirfd1, dirname2, flags);
     }
 
@@ -353,7 +348,7 @@ test_4_1 (cce_destination_t upper_L)
 
 #if (1 == CCSYS_HAVE_STRUCT_STAT_ST_DEV)
   {
-    ccsys_dev_t	F = { .data = ++i };
+    ccsys_dev_t	F = ccsys_dnew(++i);
     ccsys_set_stat_st_dev(&S, F);
     cctests_assert(upper_L, i == ccsys_ldref(ccsys_ref_stat_st_dev(&S)));
   }
@@ -361,7 +356,7 @@ test_4_1 (cce_destination_t upper_L)
 
 #if (1 == CCSYS_HAVE_STRUCT_STAT_ST_INO)
   {
-    ccsys_ino_t	F = { .data = ++i };
+    ccsys_ino_t	F = ccsys_dnew(++i);
     ccsys_set_stat_st_ino(&S, F);
     cctests_assert(upper_L, i == ccsys_ldref(ccsys_ref_stat_st_ino(&S)));
   }
@@ -369,7 +364,7 @@ test_4_1 (cce_destination_t upper_L)
 
 #if (1 == CCSYS_HAVE_STRUCT_STAT_ST_MODE)
   {
-    ccsys_stat_mode_t	F = { .data = ++i };
+    ccsys_stat_mode_t	F = ccsys_dnew(++i);
     ccsys_set_stat_st_mode(&S, F);
     cctests_assert(upper_L, i == ccsys_ldref(ccsys_ref_stat_st_mode(&S)));
   }
@@ -377,7 +372,7 @@ test_4_1 (cce_destination_t upper_L)
 
 #if (1 == CCSYS_HAVE_STRUCT_STAT_ST_NLINK)
   {
-    ccsys_nlink_t	F = { .data = ++i };
+    ccsys_nlink_t	F = ccsys_dnew(++i);
     ccsys_set_stat_st_nlink(&S, F);
     cctests_assert(upper_L, i == ccsys_ldref(ccsys_ref_stat_st_nlink(&S)));
   }
@@ -385,7 +380,7 @@ test_4_1 (cce_destination_t upper_L)
 
 #if (1 == CCSYS_HAVE_STRUCT_STAT_ST_UID)
   {
-    ccsys_uid_t	F = { .data = ++i };
+    ccsys_uid_t	F = ccsys_dnew(++i);
     ccsys_set_stat_st_uid(&S, F);
     cctests_assert(upper_L, i == ccsys_ldref(ccsys_ref_stat_st_uid(&S)));
   }
@@ -393,7 +388,7 @@ test_4_1 (cce_destination_t upper_L)
 
 #if (1 == CCSYS_HAVE_STRUCT_STAT_ST_GID)
   {
-    ccsys_gid_t	F = { .data = ++i };
+    ccsys_gid_t	F = ccsys_dnew(++i);
     ccsys_set_stat_st_gid(&S, F);
     cctests_assert(upper_L, i == ccsys_ldref(ccsys_ref_stat_st_gid(&S)));
   }
@@ -401,7 +396,7 @@ test_4_1 (cce_destination_t upper_L)
 
 #if (1 == CCSYS_HAVE_STRUCT_STAT_ST_RDEV)
   {
-    ccsys_dev_t	F = { .data = ++i };
+    ccsys_dev_t	F = ccsys_dnew(++i);
     ccsys_set_stat_st_rdev(&S, F);
     cctests_assert(upper_L, i == ccsys_ldref(ccsys_ref_stat_st_rdev(&S)));
   }
@@ -409,7 +404,7 @@ test_4_1 (cce_destination_t upper_L)
 
 #if (1 == CCSYS_HAVE_STRUCT_STAT_ST_SIZE)
   {
-    ccsys_off_t	F = { .data = ++i };
+    ccsys_off_t	F = ccsys_dnew(++i);
     ccsys_set_stat_st_size(&S, F);
     cctests_assert(upper_L, i == ccsys_ldref(ccsys_ref_stat_st_size(&S)));
   }
@@ -417,7 +412,7 @@ test_4_1 (cce_destination_t upper_L)
 
 #if (1 == CCSYS_HAVE_STRUCT_STAT_ST_BLKSIZE)
   {
-    ccsys_blksize_t	F = { .data = ++i };
+    ccsys_blksize_t	F = ccsys_dnew(++i);
     ccsys_set_stat_st_blksize(&S, F);
     cctests_assert(upper_L, i == ccsys_ldref(ccsys_ref_stat_st_blksize(&S)));
   }
@@ -425,7 +420,7 @@ test_4_1 (cce_destination_t upper_L)
 
 #if (1 == CCSYS_HAVE_STRUCT_STAT_ST_BLOCKS)
   {
-    ccsys_blkcnt_t	F = { .data = ++i };
+    ccsys_blkcnt_t	F = ccsys_dnew(++i);
     ccsys_set_stat_st_blocks(&S, F);
     cctests_assert(upper_L, i == ccsys_ldref(ccsys_ref_stat_st_blocks(&S)));
   }
@@ -504,16 +499,14 @@ test_4_2 (cce_destination_t upper_L)
   if (cce_location(L)) {
     cce_run_catch_handlers_raise(L, upper_L);
   } else {
-    ccstructs_pathname_I	filename = ccstructs_new_pathname_from_static_string("name.ext");
+    ccstructs_pathname_I	filename = ccstructs_new_pathname_from_static_string("file-system-name.ext");
 
     /* Create and open the file. */
     {
-      ccsys_open_flags_t	flags;
-      ccsys_open_mode_t		mode;
+      ccsys_open_flags_t	flags = ccsys_new_open_flags(CCSYS_O_CREAT);
+      ccsys_open_mode_t		mode  = ccsys_new_open_mode(CCSYS_S_IRUSR | CCSYS_S_IWUSR);
       ccsys_fd_t		fd;
 
-      flags.data = CCSYS_O_CREAT;
-      mode.data  = CCSYS_S_IRUSR | CCSYS_S_IWUSR;
       fd = ccsys_open(L, filename, flags, mode);
       ccsys_init_filedes_handler(L, filedes_H, fd);
       ccsys_init_remove_handler(L, filename_H, filename);
@@ -596,16 +589,14 @@ test_4_3 (cce_destination_t upper_L)
   if (cce_location(L)) {
     cce_run_catch_handlers_raise(L, upper_L);
   } else {
-    ccstructs_pathname_I	filename = ccstructs_new_pathname_from_static_string("name.ext");
+    ccstructs_pathname_I	filename = ccstructs_new_pathname_from_static_string("file-system-name.ext");
     ccsys_fd_t			fd;
 
     /* Create and open the file. */
     {
-      ccsys_open_flags_t	flags;
-      ccsys_open_mode_t		mode;
+      ccsys_open_flags_t	flags = ccsys_new_open_flags(CCSYS_O_CREAT);
+      ccsys_open_mode_t		mode  = ccsys_new_open_mode(CCSYS_S_IRUSR | CCSYS_S_IWUSR);
 
-      flags.data = CCSYS_O_CREAT;
-      mode.data	 = CCSYS_S_IRUSR | CCSYS_S_IWUSR;
       fd = ccsys_open(L, filename, flags, mode);
       ccsys_init_filedes_handler(L, filedes_H, fd);
       ccsys_init_remove_handler(L, filename_H, filename);
@@ -691,14 +682,14 @@ test_4_4 (cce_destination_t upper_L)
   if (cce_location(L)) {
     cce_run_catch_handlers_raise(L, upper_L);
   } else {
-    ccstructs_pathname_I	dirname  = ccstructs_new_pathname_from_static_string("name.d");
+    ccstructs_pathname_I	dirname  = ccstructs_new_pathname_from_static_string("file-system-name.d");
     ccsys_dirfd_t		dirfd;
-    ccstructs_pathname_I	filename = ccstructs_new_pathname_from_static_string("name.ext");
+    ccstructs_pathname_I	filename = ccstructs_new_pathname_from_static_string("file-system-name.ext");
     ccsys_fd_t			fd;
 
     /* Create the parent directory. */
     {
-      ccsys_open_mode_t	mode  = { .data = CCSYS_S_IRWXU };
+      ccsys_open_mode_t	mode  = ccsys_new_open_mode(CCSYS_S_IRWXU);
       ccsys_mkdir(L, dirname, mode);
       ccsys_init_rmdir_clean_handler(L, dirname_H, dirname);
     }
@@ -715,25 +706,21 @@ test_4_4 (cce_destination_t upper_L)
 
     /* Create and open the file. */
     {
-      ccsys_open_flags_t	flags;
-      ccsys_open_mode_t		mode;
+      ccsys_open_flags_t	flags = ccsys_new_open_flags(CCSYS_O_CREAT);
+      ccsys_open_mode_t		mode  = ccsys_new_open_mode(CCSYS_S_IRUSR | CCSYS_S_IWUSR);
+      ccsys_unlinkat_flags_t	unlinkat_flags = ccsys_dnew(0);
 
-      flags.data = CCSYS_O_CREAT;
-      mode.data  = CCSYS_S_IRUSR | CCSYS_S_IWUSR;
       fd = ccsys_openat(L, dirfd, filename, flags, mode);
       ccsys_init_filedes_handler(L, filedes_H, fd);
-      lnk.dirfd		= dirfd;
-      lnk.pathname	= filename;
-      lnk.flags.data	= 0;
+      lnk = ccsys_new_at_link(dirfd, filename, unlinkat_flags);
       ccsys_init_unlinkat_handler(L, lnk_H, &lnk);
     }
 
     /* Inspect the file by pathname. */
     {
       ccsys_stat_t		S;
-      ccsys_fstatat_flags_t	flags;
+      ccsys_fstatat_flags_t	flags = ccsys_dnew(0);
 
-      flags.data = 0;
       cctests_assert(L, true == ccsys_fstatat(L, dirfd, filename, &S, flags));
 
 #if (1 == CCSYS_HAVE_STRUCT_STAT_ST_DEV)
@@ -808,16 +795,14 @@ test_4_5 (cce_destination_t upper_L)
   if (cce_location(L)) {
     cce_run_catch_handlers_raise(L, upper_L);
   } else {
-    ccstructs_pathname_I	filename = ccstructs_new_pathname_from_static_string("name.ext");
+    ccstructs_pathname_I	filename = ccstructs_new_pathname_from_static_string("file-system-name.ext");
 
     /* Create and open the file. */
     {
-      ccsys_open_flags_t	flags;
-      ccsys_open_mode_t		mode;
+      ccsys_open_flags_t	flags = ccsys_new_open_flags(CCSYS_O_CREAT);
+      ccsys_open_mode_t		mode  = ccsys_new_open_mode(CCSYS_S_IRUSR | CCSYS_S_IWUSR);
       ccsys_fd_t		fd;
 
-      flags.data = CCSYS_O_CREAT;
-      mode.data  = CCSYS_S_IRUSR | CCSYS_S_IWUSR;
       fd = ccsys_open(L, filename, flags, mode);
       ccsys_init_filedes_handler(L, filedes_H, fd);
       ccsys_init_remove_handler(L, filename_H, filename);
@@ -830,34 +815,34 @@ test_4_5 (cce_destination_t upper_L)
       cctests_assert(L, true == ccsys_lstat(L, filename, &S));
 
 #if (1 == CCSYS_HAVE_STRUCT_STAT_ST_DEV)
-      fprintf(stderr, "%s: st_dev=%lu\n", __func__, (unsigned long)ccsys_ref_stat_st_dev(&S).data);
+      fprintf(stderr, "%s: st_dev=%lu\n", __func__, ccsys_luref(ccsys_ref_stat_st_dev(&S)));
 #endif
 #if (1 == CCSYS_HAVE_STRUCT_STAT_ST_INO)
-      fprintf(stderr, "%s: st_ino=%lu\n", __func__, (unsigned long)ccsys_ref_stat_st_ino(&S).data);
+      fprintf(stderr, "%s: st_ino=%lu\n", __func__, ccsys_luref(ccsys_ref_stat_st_ino(&S)));
 #endif
 #if (1 == CCSYS_HAVE_STRUCT_STAT_ST_MODE)
-      fprintf(stderr, "%s: st_mode=%lu\n", __func__, (unsigned long)ccsys_ref_stat_st_mode(&S).data);
+      fprintf(stderr, "%s: st_mode=%lu\n", __func__, ccsys_luref(ccsys_ref_stat_st_mode(&S)));
 #endif
 #if (1 == CCSYS_HAVE_STRUCT_STAT_ST_NLINK)
-      fprintf(stderr, "%s: st_nlink=%lu\n", __func__, (unsigned long)ccsys_ref_stat_st_nlink(&S).data);
+      fprintf(stderr, "%s: st_nlink=%lu\n", __func__, ccsys_luref(ccsys_ref_stat_st_nlink(&S)));
 #endif
 #if (1 == CCSYS_HAVE_STRUCT_STAT_ST_UID)
-      fprintf(stderr, "%s: st_uid=%lu\n", __func__, (unsigned long)ccsys_ref_stat_st_uid(&S).data);
+      fprintf(stderr, "%s: st_uid=%lu\n", __func__, ccsys_luref(ccsys_ref_stat_st_uid(&S)));
 #endif
 #if (1 == CCSYS_HAVE_STRUCT_STAT_ST_GID)
-      fprintf(stderr, "%s: st_gid=%lu\n", __func__, (unsigned long)ccsys_ref_stat_st_gid(&S).data);
+      fprintf(stderr, "%s: st_gid=%lu\n", __func__, ccsys_luref(ccsys_ref_stat_st_gid(&S)));
 #endif
 #if (1 == CCSYS_HAVE_STRUCT_STAT_ST_RDEV)
-      fprintf(stderr, "%s: st_rdev=%lu\n", __func__, (unsigned long)ccsys_ref_stat_st_rdev(&S).data);
+      fprintf(stderr, "%s: st_rdev=%lu\n", __func__, ccsys_luref(ccsys_ref_stat_st_rdev(&S)));
 #endif
 #if (1 == CCSYS_HAVE_STRUCT_STAT_ST_SIZE)
-      fprintf(stderr, "%s: st_size=%lu\n", __func__, (unsigned long)ccsys_ref_stat_st_size(&S).data);
+      fprintf(stderr, "%s: st_size=%lu\n", __func__, ccsys_luref(ccsys_ref_stat_st_size(&S)));
 #endif
 #if (1 == CCSYS_HAVE_STRUCT_STAT_ST_BLKSIZE)
-      fprintf(stderr, "%s: st_blksize=%lu\n", __func__, (unsigned long)ccsys_ref_stat_st_blksize(&S).data);
+      fprintf(stderr, "%s: st_blksize=%lu\n", __func__, ccsys_luref(ccsys_ref_stat_st_blksize(&S)));
 #endif
 #if (1 == CCSYS_HAVE_STRUCT_STAT_ST_BLOCKS)
-      fprintf(stderr, "%s: st_blocks=%lu\n", __func__, (unsigned long)ccsys_ref_stat_st_blocks(&S).data);
+      fprintf(stderr, "%s: st_blocks=%lu\n", __func__, ccsys_luref(ccsys_ref_stat_st_blocks(&S)));
 #endif
 #if (1 == CCSYS_HAVE_STRUCT_STAT_ST_ATIME)
       {
@@ -902,17 +887,15 @@ test_5_1 (cce_destination_t upper_L)
   if (cce_location(L)) {
     cce_run_catch_handlers_raise(L, upper_L);
   } else {
-    ccstructs_pathname_I	filename = ccstructs_new_pathname_from_static_string("name.ext");
+    ccstructs_pathname_I	filename = ccstructs_new_pathname_from_static_string("file-system-name.ext");
     ccstructs_pathname_I	linkname = ccstructs_new_pathname_from_static_string("link.ext");
 
     /* Create and open the file. */
     {
-      ccsys_open_flags_t	flags;
-      ccsys_open_mode_t		mode;
+      ccsys_open_flags_t	flags = ccsys_new_open_flags(CCSYS_O_CREAT);
+      ccsys_open_mode_t		mode  = ccsys_new_open_mode(CCSYS_S_IRUSR | CCSYS_S_IWUSR);
       ccsys_fd_t		fd;
 
-      flags.data = CCSYS_O_CREAT;
-      mode.data  = CCSYS_S_IRUSR | CCSYS_S_IWUSR;
       fd = ccsys_open(L, filename, flags, mode);
       ccsys_init_filedes_handler(L, filedes_H, fd);
       ccsys_init_remove_handler(L, filename_H, filename);
@@ -952,7 +935,7 @@ test_5_2 (cce_destination_t upper_L)
   if (cce_location(L)) {
     cce_run_catch_handlers_raise(L, upper_L);
   } else {
-    ccstructs_pathname_I	filename = ccstructs_new_pathname_from_static_string("name.ext");
+    ccstructs_pathname_I	filename = ccstructs_new_pathname_from_static_string("file-system-name.ext");
     ccstructs_pathname_I	linkname = ccstructs_new_pathname_from_static_string("link.ext");
 
     /* Create and open the file. */
@@ -1005,7 +988,7 @@ test_5_3_1 (cce_destination_t upper_L)
   } else {
     char			dirname_buffer[1 + CCSYS_PATH_MAX];
     ccstructs_pathname_I	dirname;
-    ccstructs_pathname_I	filename = ccstructs_new_pathname_from_static_string("name.ext");
+    ccstructs_pathname_I	filename = ccstructs_new_pathname_from_static_string("file-system-name.ext");
     ccstructs_pathname_I	linkname = ccstructs_new_pathname_from_static_string("link.ext");
     ccsys_dirfd_t		dirfd;
 
@@ -1072,7 +1055,7 @@ test_5_3_2 (cce_destination_t upper_L)
     if (0) { fprintf(stderr, "%s: %s\n", __func__, cce_condition_static_message(cce_condition(L))); }
     cce_run_catch_handlers_raise(L, upper_L);
   } else {
-    ccstructs_pathname_I	filename = ccstructs_new_pathname_from_static_string("name.ext");
+    ccstructs_pathname_I	filename = ccstructs_new_pathname_from_static_string("file-system-name.ext");
     ccstructs_pathname_I	linkname = ccstructs_new_pathname_from_static_string("link.ext");
 
     /* Create the file. */
@@ -1126,7 +1109,7 @@ test_5_4_1 (cce_destination_t upper_L)
   } else {
     char			dirname_buffer[1 + CCSYS_PATH_MAX];
     ccstructs_pathname_I	dirname;
-    ccstructs_pathname_I	filename = ccstructs_new_pathname_from_static_string("name.ext");
+    ccstructs_pathname_I	filename = ccstructs_new_pathname_from_static_string("file-system-name.ext");
     ccstructs_pathname_I	linkname = ccstructs_new_pathname_from_static_string("link.ext");
     ccsys_dirfd_t		dirfd;
 
@@ -1189,7 +1172,7 @@ test_5_4_2 (cce_destination_t upper_L)
   if (cce_location(L)) {
     cce_run_catch_handlers_raise(L, upper_L);
   } else {
-    ccstructs_pathname_I	filename = ccstructs_new_pathname_from_static_string("name.ext");
+    ccstructs_pathname_I	filename = ccstructs_new_pathname_from_static_string("file-system-name.ext");
     ccstructs_pathname_I	linkname = ccstructs_new_pathname_from_static_string("link.ext");
 
     /* Create the file. */
@@ -1237,7 +1220,7 @@ test_6_1 (cce_destination_t upper_L)
     if (1) { fprintf(stderr, "%s: %s\n", __func__, cce_condition_static_message(cce_condition(L))); }
     cce_run_catch_handlers_raise(L, upper_L);
   } else {
-    ccstructs_pathname_I	filename = ccstructs_new_pathname_from_static_string("name.ext");
+    ccstructs_pathname_I	filename = ccstructs_new_pathname_from_static_string("file-system-name.ext");
     ccstructs_pathname_I	linkname = ccstructs_new_pathname_from_static_string("link.ext");
 
     /* Create the file. */
@@ -1287,7 +1270,7 @@ test_6_2 (cce_destination_t upper_L)
     if (1) { fprintf(stderr, "%s: %s\n", __func__, cce_condition_static_message(cce_condition(L))); }
     cce_run_catch_handlers_raise(L, upper_L);
   } else {
-    ccstructs_pathname_I	filename = ccstructs_new_pathname_from_static_string("name.ext");
+    ccstructs_pathname_I	filename = ccstructs_new_pathname_from_static_string("file-system-name.ext");
     ccstructs_pathname_I	linkname = ccstructs_new_pathname_from_static_string("link.ext");
 
     /* Create the file. */
@@ -1336,7 +1319,7 @@ test_6_3_1 (cce_destination_t upper_L)
     if (1) { fprintf(stderr, "%s: %s\n", __func__, cce_condition_static_message(cce_condition(L))); }
     cce_run_catch_handlers_raise(L, upper_L);
   } else {
-    ccstructs_pathname_I	filename = ccstructs_new_pathname_from_static_string("name.ext");
+    ccstructs_pathname_I	filename = ccstructs_new_pathname_from_static_string("file-system-name.ext");
 
     /* Create the file. */
     {
@@ -1377,7 +1360,7 @@ test_6_3_2 (cce_destination_t upper_L)
     if (1) { fprintf(stderr, "%s: %s\n", __func__, cce_condition_static_message(cce_condition(L))); }
     cce_run_catch_handlers_raise(L, upper_L);
   } else {
-    ccstructs_pathname_I	filename = ccstructs_new_pathname_from_static_string("name.ext");
+    ccstructs_pathname_I	filename = ccstructs_new_pathname_from_static_string("file-system-name.ext");
 
     /* Create the file. */
     {
@@ -1418,7 +1401,7 @@ test_7_1 (cce_destination_t upper_L)
     if (1) { fprintf(stderr, "%s: %s\n", __func__, cce_condition_static_message(cce_condition(L))); }
     cce_run_catch_handlers_raise(L, upper_L);
   } else {
-    ccstructs_pathname_I	filename = ccstructs_new_pathname_from_static_string("name.ext");
+    ccstructs_pathname_I	filename = ccstructs_new_pathname_from_static_string("file-system-name.ext");
 
     /* Create the file. */
     {
@@ -1458,7 +1441,7 @@ test_7_2 (cce_destination_t upper_L)
     if (1) { fprintf(stderr, "%s: %s\n", __func__, cce_condition_static_message(cce_condition(L))); }
     cce_run_catch_handlers_raise(L, upper_L);
   } else {
-    ccstructs_pathname_I	filename = ccstructs_new_pathname_from_static_string("name.ext");
+    ccstructs_pathname_I	filename = ccstructs_new_pathname_from_static_string("file-system-name.ext");
 
     /* Create the file. */
     {
@@ -1501,7 +1484,7 @@ test_8_1 (cce_destination_t upper_L)
     if (1) { fprintf(stderr, "%s: %s\n", __func__, cce_condition_static_message(cce_condition(L))); }
     cce_run_catch_handlers_raise(L, upper_L);
   } else {
-    ccstructs_pathname_I	filename = ccstructs_new_pathname_from_static_string("name.ext");
+    ccstructs_pathname_I	filename = ccstructs_new_pathname_from_static_string("file-system-name.ext");
     ccstructs_pathname_I	newname  = ccstructs_new_pathname_from_static_string("blue.ext");
 
     /* Create the file. */
@@ -1543,7 +1526,7 @@ test_8_2 (cce_destination_t upper_L)
     if (1) { fprintf(stderr, "%s: %s\n", __func__, cce_condition_static_message(cce_condition(L))); }
     cce_run_catch_handlers_raise(L, upper_L);
   } else {
-    ccstructs_pathname_I	filename = ccstructs_new_pathname_from_static_string("name.ext");
+    ccstructs_pathname_I	filename = ccstructs_new_pathname_from_static_string("file-system-name.ext");
     ccstructs_pathname_I	newname  = ccstructs_new_pathname_from_static_string("blue.ext");
 
     /* Create the file. */
@@ -1588,7 +1571,7 @@ test_8_3 (cce_destination_t upper_L CCSYS_UNUSED)
     if (1) { fprintf(stderr, "%s: %s\n", __func__, cce_condition_static_message(cce_condition(L))); }
     cce_run_catch_handlers_raise(L, upper_L);
   } else {
-    ccstructs_pathname_I	filename = ccstructs_new_pathname_from_static_string("name.ext");
+    ccstructs_pathname_I	filename = ccstructs_new_pathname_from_static_string("file-system-name.ext");
     ccstructs_pathname_I	newname  = ccstructs_new_pathname_from_static_string("blue.ext");
 
     /* Create the file. */
@@ -1631,7 +1614,7 @@ test_9_1 (cce_destination_t upper_L CCSYS_UNUSED)
   if (cce_location(L)) {
     cce_run_catch_handlers_raise(L, upper_L);
   } else {
-    ccstructs_pathname_I	filename = ccstructs_new_pathname_from_static_string("name.ext");
+    ccstructs_pathname_I	filename = ccstructs_new_pathname_from_static_string("file-system-name.ext");
 
     /* Create the file. */
     {
@@ -1671,7 +1654,7 @@ test_9_2 (cce_destination_t upper_L)
   if (cce_location(L)) {
     cce_run_catch_handlers_raise(L, upper_L);
   } else {
-    ccstructs_pathname_I	filename = ccstructs_new_pathname_from_static_string("name.ext");
+    ccstructs_pathname_I	filename = ccstructs_new_pathname_from_static_string("file-system-name.ext");
     ccstructs_pathname_I	linkname = ccstructs_new_pathname_from_static_string("link.ext");
 
     /* Create the file. */
@@ -1719,7 +1702,7 @@ test_9_3 (cce_destination_t upper_L)
     if (1) { fprintf(stderr, "%s: %s\n", __func__, cce_condition_static_message(cce_condition(L))); }
     cce_run_catch_handlers_raise(L, upper_L);
   } else {
-    ccstructs_pathname_I	filename = ccstructs_new_pathname_from_static_string("name.ext");
+    ccstructs_pathname_I	filename = ccstructs_new_pathname_from_static_string("file-system-name.ext");
     ccsys_fd_t			fd;
 
     /* Create the file. */
@@ -1761,7 +1744,7 @@ test_9_4 (cce_destination_t upper_L)
     if (1) { fprintf(stderr, "%s: %s\n", __func__, cce_condition_static_message(cce_condition(L))); }
     cce_run_catch_handlers_raise(L, upper_L);
   } else {
-    ccstructs_pathname_I	filename = ccstructs_new_pathname_from_static_string("name.ext");
+    ccstructs_pathname_I	filename = ccstructs_new_pathname_from_static_string("file-system-name.ext");
 
     /* Create the file. */
     {
@@ -1805,7 +1788,7 @@ test_10_1 (cce_destination_t upper_L)
     if (1) { fprintf(stderr, "%s: %s\n", __func__, cce_condition_static_message(cce_condition(L))); }
     cce_run_catch_handlers_raise(L, upper_L);
   } else {
-    ccstructs_pathname_I	filename = ccstructs_new_pathname_from_static_string("name.ext");
+    ccstructs_pathname_I	filename = ccstructs_new_pathname_from_static_string("file-system-name.ext");
 
     /* Create the file. */
     {
@@ -1855,7 +1838,7 @@ test_10_2 (cce_destination_t upper_L)
     if (1) { fprintf(stderr, "%s: %s\n", __func__, cce_condition_static_message(cce_condition(L))); }
     cce_run_catch_handlers_raise(L, upper_L);
   } else {
-    ccstructs_pathname_I	filename = ccstructs_new_pathname_from_static_string("name.ext");
+    ccstructs_pathname_I	filename = ccstructs_new_pathname_from_static_string("file-system-name.ext");
     ccsys_fd_t			fd;
 
     /* Create the file. */
@@ -1906,7 +1889,7 @@ test_10_3 (cce_destination_t upper_L)
     if (1) { fprintf(stderr, "%s: %s\n", __func__, cce_condition_static_message(cce_condition(L))); }
     cce_run_catch_handlers_raise(L, upper_L);
   } else {
-    ccstructs_pathname_I	filename = ccstructs_new_pathname_from_static_string("name.ext");
+    ccstructs_pathname_I	filename = ccstructs_new_pathname_from_static_string("file-system-name.ext");
 
     /* Create the file. */
     {
@@ -1962,7 +1945,7 @@ test_11_1 (cce_destination_t upper_L)
     if (1) { fprintf(stderr, "%s: %s\n", __func__, cce_condition_static_message(cce_condition(L))); }
     cce_run_catch_handlers_raise(L, upper_L);
   } else {
-    ccstructs_pathname_I	filename = ccstructs_new_pathname_from_static_string("name.ext");
+    ccstructs_pathname_I	filename = ccstructs_new_pathname_from_static_string("file-system-name.ext");
 
     /* Create the file. */
     {
@@ -2021,7 +2004,7 @@ test_11_2 (cce_destination_t upper_L)
     if (1) { fprintf(stderr, "%s: %s\n", __func__, cce_condition_static_message(cce_condition(L))); }
     cce_run_catch_handlers_raise(L, upper_L);
   } else {
-    ccstructs_pathname_I	filename = ccstructs_new_pathname_from_static_string("name.ext");
+    ccstructs_pathname_I	filename = ccstructs_new_pathname_from_static_string("file-system-name.ext");
 
     /* Create the file. */
     {
@@ -2089,7 +2072,7 @@ test_12_1 (cce_destination_t upper_L)
     if (1) { fprintf(stderr, "%s: %s\n", __func__, cce_condition_static_message(cce_condition(L))); }
     cce_run_catch_handlers_raise(L, upper_L);
   } else {
-    ccstructs_pathname_I	filename = ccstructs_new_pathname_from_static_string("name.ext");
+    ccstructs_pathname_I	filename = ccstructs_new_pathname_from_static_string("file-system-name.ext");
     ccsys_fd_t			fd;
 
     /* Create the file. */
@@ -2155,7 +2138,7 @@ test_12_2 (cce_destination_t upper_L)
     if (1) { fprintf(stderr, "%s: %s\n", __func__, cce_condition_static_message(cce_condition(L))); }
     cce_run_catch_handlers_raise(L, upper_L);
   } else {
-    ccstructs_pathname_I	filename = ccstructs_new_pathname_from_static_string("name.ext");
+    ccstructs_pathname_I	filename = ccstructs_new_pathname_from_static_string("file-system-name.ext");
     ccsys_fd_t			fd;
 
     /* Create the file. */
@@ -2225,7 +2208,7 @@ test_13_1 (cce_destination_t upper_L)
     if (1) { fprintf(stderr, "%s: %s\n", __func__, cce_condition_static_message(cce_condition(L))); }
     cce_run_catch_handlers_raise(L, upper_L);
   } else {
-    ccstructs_pathname_I	filename = ccstructs_new_pathname_from_static_string("name.ext");
+    ccstructs_pathname_I	filename = ccstructs_new_pathname_from_static_string("file-system-name.ext");
 
     /* Create the file. */
     {
@@ -2289,7 +2272,7 @@ test_13_2 (cce_destination_t upper_L)
     if (1) { fprintf(stderr, "%s: %s\n", __func__, cce_condition_static_message(cce_condition(L))); }
     cce_run_catch_handlers_raise(L, upper_L);
   } else {
-    ccstructs_pathname_I	filename = ccstructs_new_pathname_from_static_string("name.ext");
+    ccstructs_pathname_I	filename = ccstructs_new_pathname_from_static_string("file-system-name.ext");
     ccstructs_pathname_I	linkname = ccstructs_new_pathname_from_static_string("link.ext");
 
     /* Create the file. */
@@ -2360,7 +2343,7 @@ test_13_3 (cce_destination_t upper_L)
     if (1) { fprintf(stderr, "%s: %s\n", __func__, cce_condition_static_message(cce_condition(L))); }
     cce_run_catch_handlers_raise(L, upper_L);
   } else {
-    ccstructs_pathname_I	filename = ccstructs_new_pathname_from_static_string("name.ext");
+    ccstructs_pathname_I	filename = ccstructs_new_pathname_from_static_string("file-system-name.ext");
     ccsys_fd_t			fd;
 
     /* Create the file. */
@@ -2425,7 +2408,7 @@ test_13_4 (cce_destination_t upper_L)
     if (1) { fprintf(stderr, "%s: %s\n", __func__, cce_condition_static_message(cce_condition(L))); }
     cce_run_catch_handlers_raise(L, upper_L);
   } else {
-    ccstructs_pathname_I	filename = ccstructs_new_pathname_from_static_string("name.ext");
+    ccstructs_pathname_I	filename = ccstructs_new_pathname_from_static_string("file-system-name.ext");
 
     /* Create the file. */
     {
@@ -2488,7 +2471,7 @@ test_13_5 (cce_destination_t upper_L)
     if (1) { fprintf(stderr, "%s: %s\n", __func__, cce_condition_static_message(cce_condition(L))); }
     cce_run_catch_handlers_raise(L, upper_L);
   } else {
-    ccstructs_pathname_I	filename = ccstructs_new_pathname_from_static_string("name.ext");
+    ccstructs_pathname_I	filename = ccstructs_new_pathname_from_static_string("file-system-name.ext");
 
     /* Create the file. */
     {
@@ -2554,7 +2537,7 @@ test_13_6 (cce_destination_t upper_L)
     if (1) { fprintf(stderr, "%s: %s\n", __func__, cce_condition_static_message(cce_condition(L))); }
     cce_run_catch_handlers_raise(L, upper_L);
   } else {
-    ccstructs_pathname_I	filename = ccstructs_new_pathname_from_static_string("name.ext");
+    ccstructs_pathname_I	filename = ccstructs_new_pathname_from_static_string("file-system-name.ext");
     ccsys_fd_t			fd;
 
     /* Create the file. */
@@ -2625,7 +2608,7 @@ test_14_1 (cce_destination_t upper_L)
     if (1) { fprintf(stderr, "%s: %s\n", __func__, cce_condition_static_message(cce_condition(L))); }
     cce_run_catch_handlers_raise(L, upper_L);
   } else {
-    char			template[] = "name.ext.XXXXXX";
+    char			template[] = "file-system-name.ext.XXXXXX";
     ccstructs_pathname_I	filename = ccstructs_new_pathname_from_dynamic_string(template);
 
     /* Create the file. */
@@ -2661,7 +2644,7 @@ test_14_2 (cce_destination_t upper_L)
     if (1) { fprintf(stderr, "%s: %s\n", __func__, cce_condition_static_message(cce_condition(L))); }
     cce_run_catch_handlers_raise(L, upper_L);
   } else {
-    char			template[] = "name.ext.XXXXXX";
+    char			template[] = "file-system-name.ext.XXXXXX";
     ccstructs_pathname_I	filename = ccstructs_new_pathname_from_dynamic_string(template);
 
     /* Create the file. */
@@ -2777,7 +2760,7 @@ test_15_1 (cce_destination_t upper_L)
     if (1) { fprintf(stderr, "%s: %s\n", __func__, cce_condition_static_message(cce_condition(L))); }
     cce_run_catch_handlers_raise(L, upper_L);
   } else {
-    char			template[] = "name.d.XXXXXX";
+    char			template[] = "file-system-name.d.XXXXXX";
     ccstructs_pathname_I	dirname = ccstructs_new_pathname_from_dynamic_string(template);
 
     /* Create the directory. */
@@ -2813,7 +2796,7 @@ test_16_1 (cce_destination_t upper_L)
   if (cce_location(L)) {
     cce_run_catch_handlers_raise(L, upper_L);
   } else {
-    ccstructs_pathname_I	dirname = ccstructs_new_pathname_from_static_string("name.d");
+    ccstructs_pathname_I	dirname = ccstructs_new_pathname_from_static_string("file-system-name.d");
     ccsys_dirfd_t		dirfd;
 
     {

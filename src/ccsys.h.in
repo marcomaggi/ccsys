@@ -144,6 +144,7 @@ ccsys_decl int		ccsys_version_interface_age	(void)
  ** Semantic types: definitions.
  ** ----------------------------------------------------------------- */
 
+#define ccsys_dnew(D)		{ .data = (D) }
 #define ccsys_dref(D)		((int)		((D).data))
 #define ccsys_uref(D)		((unsigned int)	((D).data))
 #define ccsys_ldref(D)		((long)		((D).data))
@@ -249,45 +250,20 @@ typedef struct ccsys_dir_t			ccsys_dir_t;
  ** Semantic types: constructors.
  ** ----------------------------------------------------------------- */
 
-__attribute__((__always_inline__))
-static inline ccsys_open_flags_t
-ccsys_new_open_flags (int flags)
-{
-  ccsys_open_flags_t	F = {
-    .data	= flags
-  };
-  return F;
-}
+#define CCSYS_SEMANTIC_TYPE_CTOR_INT(STEM)	\
+  __attribute__((__always_inline__))		\
+  static inline ccsys_ ## STEM ## _t		\
+  ccsys_new_ ## STEM (int flags)		\
+  {						\
+    ccsys_ ## STEM ## _t F = { .data = flags }; \
+    return F;					\
+  }
 
-__attribute__((__always_inline__))
-static inline ccsys_renameat2_flags_t
-ccsys_new_renameat2_flags (int flags)
-{
-  ccsys_renameat2_flags_t	F = {
-    .data	= flags
-  };
-  return F;
-}
-
-__attribute__((__always_inline__))
-static inline ccsys_open_mode_t
-ccsys_new_open_mode (int mode)
-{
-  ccsys_open_mode_t	F = {
-    .data	= mode
-  };
-  return F;
-}
-
-__attribute__((__always_inline__))
-static inline ccsys_access_mode_t
-ccsys_new_access_mode (int mode)
-{
-  ccsys_access_mode_t	F = {
-    .data	= mode
-  };
-  return F;
-}
+CCSYS_SEMANTIC_TYPE_CTOR_INT(access_mode)
+CCSYS_SEMANTIC_TYPE_CTOR_INT(open_flags)
+CCSYS_SEMANTIC_TYPE_CTOR_INT(unlinkat_flags)
+CCSYS_SEMANTIC_TYPE_CTOR_INT(renameat2_flags)
+CCSYS_SEMANTIC_TYPE_CTOR_INT(open_mode)
 
 
 /** --------------------------------------------------------------------
@@ -2178,6 +2154,18 @@ struct ccsys_at_link_t {
   ccstructs_pathname_I		pathname;
   ccsys_unlinkat_flags_t	flags;
 };
+
+__attribute__((__always_inline__))
+static inline ccsys_at_link_t
+ccsys_new_at_link (ccsys_dirfd_t dirfd, ccstructs_pathname_I pathname, ccsys_unlinkat_flags_t flags)
+{
+  ccsys_at_link_t	S = {
+    .dirfd	= dirfd,
+    .pathname	= pathname,
+    .flags	= flags
+  };
+  return S;
+}
 
 ccsys_decl void ccsys_init_unlinkat_clean_handler (cce_destination_t L, cce_clean_handler_t * H, ccsys_at_link_t * lnk)
   __attribute__((__nonnull__(1,2,3)));

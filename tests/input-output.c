@@ -39,7 +39,7 @@ test_1_1 (cce_destination_t upper_L)
   if (cce_location(L)) {
     cce_run_catch_handlers_raise(L, upper_L);
   } else {
-    ccstructs_pathname_I	filename = ccstructs_new_pathname_from_static_string("name.ext");
+    ccstructs_pathname_I	filename = ccstructs_new_pathname_from_static_string("input-output-name.ext");
     ccsys_open_flags_t	flags;
     ccsys_open_mode_t	mode;
     ccsys_fd_t		fd;
@@ -69,8 +69,8 @@ test_2_1 (cce_destination_t upper_L)
     fprintf(stderr, "%s: %s\n", __func__, cce_condition_static_message(cce_condition(L)));
     cce_run_catch_handlers_raise(L, upper_L);
   } else {
-    ccstructs_pathname_I	filename = ccstructs_new_pathname_from_static_string("name.ext");
-    ccstructs_pathname_I	dirname  = ccstructs_new_pathname_from_static_string("name.d");
+    ccstructs_pathname_I	filename = ccstructs_new_pathname_from_static_string("input-output-name.ext");
+    ccstructs_pathname_I	dirname  = ccstructs_new_pathname_from_static_string("input-output-name.d");
     ccsys_dirfd_t	dirfd;
 
     /* Create the directory. */
@@ -219,7 +219,7 @@ test_4_1 (cce_destination_t upper_L)
   if (cce_location(L)) {
     cce_run_catch_handlers_raise(L, upper_L);
   } else {
-    ccstructs_pathname_I	fifoname = ccstructs_new_pathname_from_static_string("fifo.ext");
+    ccstructs_pathname_I	fifoname = ccstructs_new_pathname_from_static_string("input-output-fifo.ext");
     ccsys_pid_t		pid;
 
     /* Create the FIFO.  We will remove it upon exiting this context. */
@@ -353,8 +353,8 @@ test_4_2 (cce_destination_t upper_L)
   if (cce_location(L)) {
     cce_run_catch_handlers_raise(L, upper_L);
   } else {
-    ccstructs_pathname_I	dirname = ccstructs_new_pathname_from_static_string("name.d");
-    ccstructs_pathname_I	fifoname = ccstructs_new_pathname_from_static_string("fifo.ext");
+    ccstructs_pathname_I	dirname = ccstructs_new_pathname_from_static_string("input-output-name.d");
+    ccstructs_pathname_I	fifoname = ccstructs_new_pathname_from_static_string("input-output-fifo.ext");
     ccsys_dirfd_t	dirfd;
     ccsys_pid_t		pid;
 
@@ -502,7 +502,7 @@ test_5_1 (cce_destination_t upper_L)
   if (cce_location(L)) {
     cce_run_catch_handlers_raise(L, upper_L);
   } else {
-    ccstructs_pathname_I	filename = ccstructs_new_pathname_from_static_string("name.ext");
+    ccstructs_pathname_I	filename = ccstructs_new_pathname_from_static_string("input-output-name.ext");
     ccsys_open_flags_t	flags;
     ccsys_open_mode_t	mode;
     ccsys_fd_t		fd;
@@ -533,7 +533,7 @@ test_6_1 (cce_destination_t upper_L)
   if (cce_location(L)) {
     cce_run_catch_handlers_raise(L, upper_L);
   } else {
-    ccstructs_pathname_I	filename = ccstructs_new_pathname_from_static_string("name.ext");
+    ccstructs_pathname_I	filename = ccstructs_new_pathname_from_static_string("input-output-name.ext");
     ccsys_fd_t		fd;
 
     /* Create and open the file. */
@@ -600,14 +600,14 @@ test_6_2 (cce_destination_t upper_L)
    remove the file. */
 {
 #if ((defined HAVE_PREAD) && (defined HAVE_PWRITE))
-  cce_location_t	  L[1];
-  cce_clean_handler_t   filedes_H[1];
-  ccsys_pathname_clean_handler_t   file_H[1];
+  cce_location_t			L[1];
+  cce_clean_handler_t			filedes_H[1];
+  ccsys_pathname_clean_handler_t	file_H[1];
 
   if (cce_location(L)) {
     cce_run_catch_handlers_raise(L, upper_L);
   } else {
-    ccstructs_pathname_I	filename = ccstructs_new_pathname_from_static_string("name.ext");
+    ccstructs_pathname_I	filename = ccstructs_new_pathname_from_static_string("input-output-name.ext");
     ccsys_fd_t		fd;
 
     /* Create and open the file. */
@@ -676,7 +676,7 @@ test_7_1 (cce_destination_t upper_L)
   if (cce_location(L)) {
     cce_run_catch_handlers_raise(L, upper_L);
   } else {
-    ccstructs_pathname_I	filename = ccstructs_new_pathname_from_static_string("name.ext");
+    ccstructs_pathname_I	filename = ccstructs_new_pathname_from_static_string("input-output-name.ext");
     ccsys_fd_t		fd;
 
     /* Create and open the file. */
@@ -774,7 +774,7 @@ test_7_2 (cce_destination_t upper_L)
   if (cce_location(L)) {
     cce_run_catch_handlers_raise(L, upper_L);
   } else {
-    ccstructs_pathname_I	filename = ccstructs_new_pathname_from_static_string("name.ext");
+    ccstructs_pathname_I	filename = ccstructs_new_pathname_from_static_string("input-output-name.ext");
     ccsys_fd_t		fd;
 
     /* Create and open the file. */
@@ -867,7 +867,7 @@ test_8_1 (cce_destination_t upper_L)
     fprintf(stderr, "%s: %s\n", __func__, cce_condition_static_message(cce_condition(L)));
     cce_run_catch_handlers_raise(L, upper_L);
   } else {
-    ccstructs_pathname_I	filename = ccstructs_new_pathname_from_static_string("name.ext");
+    ccstructs_pathname_I	filename = ccstructs_new_pathname_from_static_string("input-output-name.ext");
     ccsys_fd_t		fd, fdx;
 
     /* Create and open the file. */
@@ -935,7 +935,7 @@ test_8_2 (cce_destination_t upper_L)
     fprintf(stderr, "%s: %s\n", __func__, cce_condition_static_message(cce_condition(L)));
     cce_run_catch_handlers_raise(L, upper_L);
   } else {
-    ccstructs_pathname_I	filename = ccstructs_new_pathname_from_static_string("name.ext");
+    ccstructs_pathname_I	filename = ccstructs_new_pathname_from_static_string("input-output-name.ext");
     ccsys_fd_t		fd, fdx;
 
     /* Create and open the file. */
@@ -1005,7 +1005,7 @@ test_8_3 (cce_destination_t upper_L)
     fprintf(stderr, "%s: %s\n", __func__, cce_condition_static_message(cce_condition(L)));
     cce_run_catch_handlers_raise(L, upper_L);
   } else {
-    ccstructs_pathname_I	filename = ccstructs_new_pathname_from_static_string("name.ext");
+    ccstructs_pathname_I	filename = ccstructs_new_pathname_from_static_string("input-output-name.ext");
     ccsys_fd_t		fd, fdx;
 
     /* Create and open the file. */
@@ -1505,7 +1505,7 @@ test_10_1 (cce_destination_t upper_L)
     if (1) { fprintf(stderr, "%s: %s\n", __func__, cce_condition_static_message(cce_condition(L))); }
     cce_run_catch_handlers_raise(L, upper_L);
   } else {
-    ccstructs_pathname_I	filename = ccstructs_new_pathname_from_static_string("name.ext");
+    ccstructs_pathname_I	filename = ccstructs_new_pathname_from_static_string("input-output-name.ext");
     char const *	mode     = "w+";
     ccsys_file_t	stream;
 
@@ -1588,7 +1588,7 @@ test_10_2 (cce_destination_t upper_L)
     if (1) { fprintf(stderr, "%s: %s\n", __func__, cce_condition_static_message(cce_condition(L))); }
     cce_run_catch_handlers_raise(L, upper_L);
   } else {
-    ccstructs_pathname_I	filename = ccstructs_new_pathname_from_static_string("name.ext");
+    ccstructs_pathname_I	filename = ccstructs_new_pathname_from_static_string("input-output-name.ext");
     char const *	mode     = "w+";
     ccsys_file_t	stream;
 
