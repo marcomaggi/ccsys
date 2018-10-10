@@ -708,7 +708,7 @@ test_4_4 (cce_destination_t upper_L)
     {
       ccsys_open_flags_t	flags = ccsys_new_open_flags(CCSYS_O_CREAT);
       ccsys_open_mode_t		mode  = ccsys_new_open_mode(CCSYS_S_IRUSR | CCSYS_S_IWUSR);
-      ccsys_unlinkat_flags_t	unlinkat_flags = ccsys_dnew(0);
+      ccsys_unlinkat_flags_t	unlinkat_flags = ccsys_new_unlinkat_flags(0);
 
       fd = ccsys_openat(L, dirfd, filename, flags, mode);
       ccsys_init_filedes_handler(L, filedes_H, fd);
@@ -719,7 +719,7 @@ test_4_4 (cce_destination_t upper_L)
     /* Inspect the file by pathname. */
     {
       ccsys_stat_t		S;
-      ccsys_fstatat_flags_t	flags = ccsys_dnew(0);
+      ccsys_fstatat_flags_t	flags = ccsys_new_fstatat_flags(0);
 
       cctests_assert(L, true == ccsys_fstatat(L, dirfd, filename, &S, flags));
 
@@ -1861,7 +1861,7 @@ test_10_3 (cce_destination_t upper_L)
     /* Change mode. */
     {
       ccsys_open_mode_t		mode = ccsys_new_open_mode(CCSYS_S_IRWXU);
-      ccsys_fchmodat_flags_t	flags = ccsys_dnew(0);
+      ccsys_fchmodat_flags_t	flags = ccsys_new_fchmodat_flags(0);
 
       ccsys_fchmodat(L, CCSYS_AT_FDCWD, filename, mode, flags);
     }
@@ -1969,7 +1969,7 @@ test_11_2 (cce_destination_t upper_L)
     /* Testing permissions. */
     {
       ccsys_access_mode_t	mode  = ccsys_new_access_mode(CCSYS_R_OK);
-      ccsys_faccessat_flags_t	flags = ccsys_dnew(0);
+      ccsys_faccessat_flags_t	flags = ccsys_new_faccessat_flags(0);
 
       cctests_assert(L, false == ccsys_faccessat(L, CCSYS_AT_FDCWD, filename, mode, flags));
     }
@@ -1984,7 +1984,7 @@ test_11_2 (cce_destination_t upper_L)
     /* Testing read/write permissions. */
     {
       ccsys_access_mode_t	mode  = ccsys_new_access_mode(CCSYS_R_OK & CCSYS_W_OK);
-      ccsys_faccessat_flags_t	flags = ccsys_dnew(0);
+      ccsys_faccessat_flags_t	flags = ccsys_new_faccessat_flags(0);
 
       cctests_assert(L, true == ccsys_faccessat(L, CCSYS_AT_FDCWD, filename, mode, flags));
     }
@@ -1992,7 +1992,7 @@ test_11_2 (cce_destination_t upper_L)
     /* Testing execute permissions. */
     {
       ccsys_access_mode_t	mode  = ccsys_new_access_mode(CCSYS_X_OK);
-      ccsys_faccessat_flags_t	flags = ccsys_dnew(0);
+      ccsys_faccessat_flags_t	flags = ccsys_new_faccessat_flags(0);
 
       cctests_assert(L, false == ccsys_faccessat(L, CCSYS_AT_FDCWD, filename, mode, flags));
     }
@@ -2421,7 +2421,7 @@ test_13_5 (cce_destination_t upper_L)
     /* Set the times. */
     {
       ccsys_timespec_t		T[2];
-      ccsys_utimensat_flags_t	flags = ccsys_dnew(0);
+      ccsys_utimensat_flags_t	flags = ccsys_new_utimensat_flags(0);
 
       T[0].seconds.data		= 123;
       T[0].nanoseconds.data	= 0;

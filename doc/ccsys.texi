@@ -790,6 +790,26 @@ Build and return a new instance.
 @end deftypefun
 
 
+@deftypefun ccsys_faccessat_flags_t ccsys_new_faccessat_flags (int @var{mode})
+Build and return a new instance.
+@end deftypefun
+
+
+@deftypefun ccsys_fchmodat_flags_t ccsys_new_fchmodat_flags (int @var{mode})
+Build and return a new instance.
+@end deftypefun
+
+
+@deftypefun ccsys_futimensat_flags_t ccsys_new_futimensat_flags (int @var{mode})
+Build and return a new instance.
+@end deftypefun
+
+
+@deftypefun ccsys_fstatat_flags_t ccsys_new_fstatat_flags (int @var{mode})
+Build and return a new instance.
+@end deftypefun
+
+
 @deftypefun ccsys_open_mode_t ccsys_new_open_mode (int @var{mode})
 Build and return a new instance.
 @end deftypefun
