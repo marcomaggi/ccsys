@@ -714,6 +714,11 @@ constants of type @objtype{ccsys_getauxval_type_flags_t}; @ref{ccsys_getauxval_t
 Enumerated constants}.
 @end deftp
 
+@anchor{ccsys_utimensat_flags_t}
+@deftp {Semantic Type} ccsys_utimensat_flags_t
+Type of exact integers representing the flags for @cfunc{ccsys_utimensat}.
+@end deftp
+
 @c page
 @node semantic macros
 @section Semantic type macros
@@ -801,11 +806,6 @@ Build and return a new instance.
 
 
 @deftypefun ccsys_fchownat_flags_t ccsys_new_fchownat_flags (int @var{flags})
-Build and return a new instance.
-@end deftypefun
-
-
-@deftypefun ccsys_futimensat_flags_t ccsys_new_futimensat_flags (int @var{flags})
 Build and return a new instance.
 @end deftypefun
 
