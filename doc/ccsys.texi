@@ -800,6 +800,11 @@ Build and return a new instance.
 @end deftypefun
 
 
+@deftypefun ccsys_fchownat_flags_t ccsys_new_fchownat_flags (int @var{flags})
+Build and return a new instance.
+@end deftypefun
+
+
 @deftypefun ccsys_futimensat_flags_t ccsys_new_futimensat_flags (int @var{flags})
 Build and return a new instance.
 @end deftypefun
@@ -826,6 +831,31 @@ Build and return a new instance.
 
 
 @deftypefun ccsys_exit_status_t ccsys_new_exit_status (int @var{status})
+Build and return a new instance.
+@end deftypefun
+
+
+@deftypefun ccsys_utimensat_flags_t ccsys_new_utimensat_flags (int @var{fd})
+Build and return a new instance.
+@end deftypefun
+
+
+@deftypefun ccsys_off_t ccsys_new_off (int64_t @var{offset})
+Build and return a new instance.
+@end deftypefun
+
+
+@deftypefun ccsys_whence_t ccsys_new_whence (ccsys_whence_enum_t @var{whence})
+Build and return a new instance.
+@end deftypefun
+
+
+@deftypefun ccsys_fd_t ccsys_new_fd (int @var{fd})
+Build and return a new instance.
+@end deftypefun
+
+
+@deftypefun ccsys_signum_t ccsys_new_signum (int @var{signum})
 Build and return a new instance.
 @end deftypefun
 
@@ -1889,10 +1919,9 @@ if (cce_location(L)) @{
     cce_run_catch_handlers_raise(L, upper_L);
   @}
 @} else @{
-  ccsys_getauxval_type_t  type;
+  ccsys_getauxval_type_t  type = ccsys_dnew(CCSYS_AT_BASE);
   unsigned long           rv;
 
-  type.data = CCSYS_AT_BASE;
   rv = ccsys_getauxval(L, type);
 
   fprintf(stderr, "AT_BASE=%lu\n", rv);
@@ -3119,11 +3148,10 @@ if (cce_location(L)) @{
 
   count = ccsys_getgrouplist_acquire_groups_number(L, username);
   @{
-    ccsys_gid_t       gid;
+    ccsys_gid_t       gid = ccsys_dnew(0);
     int               ngroups = count;
     ccsys_gid_t       groups[ngroups];
 
-    gid.data = 0;
     ccsys_getgrouplist(L, username, gid, groups, &ngroups);
 
     for (int i=0; i<ngroups; ++i) @{
@@ -3853,9 +3881,8 @@ if (cce_location(L)) @{
 
   /* Create the directory. */
   @{
-    ccsys_open_mode_t     mode;
+    ccsys_open_mode_t  mode = ccsys_new_open_mode(CCSYS_S_IRWXU);
 
-    mode.data = CCSYS_S_IRWXU;
     ccsys_mkdir(L, DN, mode);
     ccsys_init_rmdir_handler(L, dir_H, DN);
   @}
@@ -3872,12 +3899,12 @@ if (cce_location(L)) @{
 
   /* Open the file. */
   @{
-    ccsys_open_flags_t    flags;
-    ccsys_open_mode_t     mode;
-    ccsys_fd_t            fd;
+    ccsys_open_flags_t  flags =
+       ccsys_new_open_flags(CCSYS_O_CREAT);
+    ccsys_open_mode_t   mode  =
+       ccsys_new_open_mode(CCSYS_S_IRUSR | CCSYS_S_IWUSR);
+    ccsys_fd_t          fd;
 
-    flags.data = CCSYS_O_CREAT;
-    mode.data  = CCSYS_S_IRUSR | CCSYS_S_IWUSR;
     fd = ccsys_openat(L, dirfd, FN, flags, mode);
     ccsys_init_filedes_handler(L, file_H, fd);
 
@@ -3886,9 +3913,8 @@ if (cce_location(L)) @{
 
   /* Remove the file. */
   @{
-    ccsys_unlinkat_flags_t flags;
+    ccsys_unlinkat_flags_t flags = ccsys_new_unlinkat_flags(0);
 
-    flags.data = 0;
     ccsys_unlinkat(L, dirfd, FN, flags);
   @}
 
@@ -4029,8 +4055,8 @@ if (cce_location(L)) @{
 
   /* Create the pipe. */
   @{
-    ccsys_open_flags_t        flags;
-    flags.data = CCSYS_O_CLOEXEC;
+    ccsys_open_flags_t  flags = ccsys_new_open_flags(CCSYS_O_CLOEXEC);
+
     ccsys_pipe2(L, pipefd, flags);
     ccsys_handler_pipedes_init(L, H, pipefd);
   @}
@@ -4130,8 +4156,9 @@ sample (void)
 
     /* Create the FIFO. */
     @{
-      ccsys_open_mode_t         mode;
-      mode.data = CCSYS_S_IRUSR | CCSYS_S_IWUSR;
+      ccsys_open_mode_t  mode =
+         ccsys_new_open_mode(CCSYS_S_IRUSR | CCSYS_S_IWUSR);
+
       ccsys_mkfifo(L, fifoname, mode);
       ccsys_init_remove_handler(L, fifo_H, fifoname);
     @}
@@ -4143,9 +4170,10 @@ sample (void)
 
       /* Wait for the child process. */
       @{
-        ccsys_waitpid_options_t options;
+        ccsys_waitpid_options_t options =
+           ccsys_new_waitpid_options(0);
         ccsys_waitpid_status_t  wstatus;
-        options.data = 0;
+
         ccsys_waitpid(L, pid, &wstatus, options);
       @}
     @} else @{
@@ -4168,10 +4196,8 @@ sample_parent (cce_destination_t upper_L, ccstructs_pathname_I fifoname)
   @} else @{
     /* Open the FIFO for reading. */
     @{
-      ccsys_open_flags_t        flags;
-      ccsys_open_mode_t         mode;
-      flags.data = CCSYS_O_RDONLY;
-      mode.data  = 0;
+      ccsys_open_flags_t  flags = ccsys_new_open_flags(CCSYS_O_RDONLY);
+      ccsys_open_mode_t   mode  = ccsys_new_open_mode(0);
       infd = ccsys_open(L, fifoname, flags, mode);
       ccsys_init_filedes_handler(L, infd_H, infd);
     @}
@@ -4199,10 +4225,8 @@ sample_child  (ccstructs_pathname_I fifoname)
   @} else @{
     /* Open the FIFO for writing. */
     @{
-      ccsys_open_flags_t        flags;
-      ccsys_open_mode_t         mode;
-      flags.data = CCSYS_O_WRONLY;
-      mode.data  = 0;
+      ccsys_open_flags_t  flags = ccsys_new_open_flags(CCSYS_O_WRONLY);
+      ccsys_open_mode_t   mode  = ccsys_new_open_mode(0);
       oufd = ccsys_open(L, fifoname, flags, mode);
       ccsys_init_filedes_handler(L, oufd_H, oufd);
     @}
@@ -4218,8 +4242,8 @@ sample_child  (ccstructs_pathname_I fifoname)
 
   /* Terminate the child process. */
   @{
-    ccsys_exit_status_t status;
-    status.data = CCSYS_EXIT_SUCCESS;
+    ccsys_exit_status_t  status =
+      ccsys_new_exit_status(CCSYS_EXIT_SUCCESS);
     ccsys_exit(status);
   @}
 @}
@@ -4307,10 +4331,9 @@ sample (void)
 
       /* Wait for the child process. */
       @{
-        ccsys_waitpid_options_t options;
+        ccsys_waitpid_options_t options = ccsys_new_waitpid_options(0);
         ccsys_waitpid_status_t  wstatus;
 
-        options.data = 0;
         ccsys_waitpid(L, pid, &wstatus, options);
       @}
     @} else @{
@@ -4334,10 +4357,8 @@ sample_parent (cce_destination_t upper_L,
   @} else @{
     /* Open the FIFO for reading. */
     @{
-      ccsys_open_flags_t        flags;
-      ccsys_open_mode_t         mode;
-      flags.data = CCSYS_O_RDONLY;
-      mode.data  = 0;
+      ccsys_open_flags_t  flags = ccsys_new_open_flags(CCSYS_O_RDONLY);
+      ccsys_open_mode_t   mode  = ccsys_new_open_mode(0);
       infd = ccsys_openat(L, dirfd, fifoname, flags, mode);
       ccsys_init_filedes_handler(L, infd_H, infd);
     @}
@@ -4365,10 +4386,8 @@ sample_child (ccsys_dirfd_t dirfd, ccstructs_pathname_I fifoname)
   @} else @{
     /* Open the FIFO for writing. */
     @{
-      ccsys_open_flags_t        flags;
-      ccsys_open_mode_t         mode;
-      flags.data = CCSYS_O_WRONLY;
-      mode.data  = 0;
+      ccsys_open_flags_t  flags = ccsys_new_open_flags(CCSYS_O_WRONLY);
+      ccsys_open_mode_t   mode  = ccsys_new_open_mode(0);
       oufd = ccsys_openat(L, dirfd, fifoname, flags, mode);
       ccsys_init_filedes_handler(L, oufd_H, oufd);
     @}
@@ -4384,8 +4403,8 @@ sample_child (ccsys_dirfd_t dirfd, ccstructs_pathname_I fifoname)
 
   /* Terminate the child process. */
   @{
-    ccsys_exit_status_t status;
-    status.data = CCSYS_EXIT_SUCCESS;
+    ccsys_exit_status_t status =
+      ccsys_new_exit_status(CCSYS_EXIT_SUCCESS);
     ccsys_exit(status);
   @}
 @}
@@ -4419,12 +4438,12 @@ if (cce_location(L)) @{
 @} else @{
   ccstructs_pathname_I filename =
     ccstructs_new_pathname_from_static_string("name.ext");
-  ccsys_open_flags_t  flags;
-  ccsys_open_mode_t   mode;
+  ccsys_open_flags_t  flags =
+    ccsys_new_open_flags(CCSYS_O_CREAT);
+  ccsys_open_mode_t   mode  =
+    ccsys_new_open_mode(CCSYS_S_IRUSR | CCSYS_S_IWUSR);
   ccsys_fd_t          fd;
 
-  flags.data = CCSYS_O_CREAT;
-  mode.data  = CCSYS_S_IRUSR | CCSYS_S_IWUSR;
   fd = ccsys_open(L, filename, flags, mode);
   ccsys_init_filedes_handler(L, H, fd);
 
@@ -4523,10 +4542,11 @@ if (cce_location(L)) @{
 
   /* Create and open the file. */
   @{
-    ccsys_open_flags_t        flags;
-    ccsys_open_mode_t         mode;
-    flags.data = CCSYS_O_CREAT | CCSYS_O_RDWR;
-    mode.data  = CCSYS_S_IRUSR | CCSYS_S_IWUSR;
+    ccsys_open_flags_t  flags =
+      ccsys_new_open_flags(CCSYS_O_CREAT | CCSYS_O_RDWR);
+    ccsys_open_mode_t   mode  =
+      ccsys_new_open_mode(CCSYS_S_IRUSR | CCSYS_S_IWUSR);
+
     fd = ccsys_open(L, filename, flags, mode);
     ccsys_init_filedes_handler(L, filedes_H, fd);
     ccsys_init_remove_handler(L, file_H, filename);
@@ -4545,10 +4565,8 @@ if (cce_location(L)) @{
 
   /* Seeking. */
   @{
-    ccsys_off_t       offset;
-    ccsys_whence_t    whence;
-    offset.data = 0;
-    whence.data = CCSYS_SEEK_SET;
+    ccsys_off_t       offset = ccsys_dnew(0);
+    ccsys_whence_t    whence = ccsys_dnew(CCSYS_SEEK_SET);
     offset = ccsys_lseek(L, fd, offset, whence);
   @}
 
@@ -4586,10 +4604,10 @@ if (cce_location(L)) @{
 
   /* Create and open the file. */
   @{
-    ccsys_open_flags_t        flags;
-    ccsys_open_mode_t         mode;
-    flags.data = CCSYS_O_CREAT | CCSYS_O_RDWR;
-    mode.data  = CCSYS_S_IRUSR | CCSYS_S_IWUSR;
+    ccsys_open_flags_t  flags =
+      ccsys_new_open_flags(CCSYS_O_CREAT | CCSYS_O_RDWR);
+    ccsys_open_mode_t   mode  =
+      ccsys_new_open_mode(CCSYS_S_IRUSR | CCSYS_S_IWUSR);
     fd = ccsys_open(L, filename, flags, mode);
     ccsys_init_filedes_handler(L, filedes_H, fd);
     ccsys_init_remove_handler(L, file_H, filename);
@@ -4600,11 +4618,10 @@ if (cce_location(L)) @{
     size_t            N;
     size_t            len = 1024;
     uint8_t           buf[len];
-    ccsys_off_t       offset;
+    ccsys_off_t       offset = ccsys_new_off(0);
     for (size_t i=0; i<len; ++i) @{
       buf[i] = i%256;
     @}
-    offset.data = 0;
     N = ccsys_pwrite(L, fd, buf, len, offset);
   @}
 
@@ -4613,9 +4630,8 @@ if (cce_location(L)) @{
     size_t            N;
     size_t            len = 1024;
     uint8_t           buf[len];
-    ccsys_off_t       offset;
+    ccsys_off_t       offset = ccsys_new_off(0);
 
-    offset.data = 0;
     N = ccsys_pread(L, fd, buf, len, offset);
   @}
   cce_run_body_handlers(L);
@@ -4736,10 +4752,10 @@ if (cce_location(L)) @{
 
   /* Create and open the file. */
   @{
-    ccsys_open_flags_t        flags;
-    ccsys_open_mode_t         mode;
-    flags.data = CCSYS_O_CREAT | CCSYS_O_RDWR;
-    mode.data  = CCSYS_S_IRUSR | CCSYS_S_IWUSR;
+    ccsys_open_flags_t        flags =
+      ccsys_new_open_flags(CCSYS_O_CREAT | CCSYS_O_RDWR);
+    ccsys_open_mode_t         mode  =
+      ccsys_new_open_mode(CCSYS_S_IRUSR | CCSYS_S_IWUSR);
     fd = ccsys_open(L, filename, flags, mode);
     ccsys_init_filedes_handler(L, filedes_H, fd);
     ccsys_init_remove_handler(L, file_H, filename);
@@ -4771,10 +4787,8 @@ if (cce_location(L)) @{
 
   /* Seeking. */
   @{
-    ccsys_off_t       offset;
-    ccsys_whence_t    whence;
-    offset.data = 0;
-    whence.data = CCSYS_SEEK_SET;
+    ccsys_off_t       offset = ccsys_new_off(0);
+    ccsys_whence_t    whence = ccsys_new_whence(CCSYS_SEEK_SET);
     offset = ccsys_lseek(L, fd, offset, whence);
   @}
 
@@ -4821,10 +4835,11 @@ if (cce_location(L)) @{
 
   /* Create and open the file. */
   @{
-    ccsys_open_flags_t        flags;
-    ccsys_open_mode_t         mode;
-    flags.data = CCSYS_O_CREAT | CCSYS_O_RDWR;
-    mode.data  = CCSYS_S_IRUSR | CCSYS_S_IWUSR;
+    ccsys_open_flags_t  flags =
+      ccsys_new_open_flags(CCSYS_O_CREAT | CCSYS_O_RDWR);
+    ccsys_open_mode_t   mode  =
+      ccsys_new_open_mode(CCSYS_S_IRUSR | CCSYS_S_IWUSR);
+
     fd = ccsys_open(L, filename, flags, mode);
     ccsys_init_filedes_handler(L, filedes_H, fd);
     ccsys_init_remove_handler(L, file_H, filename);
@@ -4836,7 +4851,7 @@ if (cce_location(L)) @{
     size_t            buf_len         = 25;
     uint8_t           bufs[buf_count][buf_len];
     ccsys_iovec_t     vec[buf_count];
-    ccsys_off_t       offset;
+    ccsys_off_t       offset = ccsys_new_off(0);
     size_t            N;
 
     /* Fill the buffers with some known data. */
@@ -4852,7 +4867,6 @@ if (cce_location(L)) @{
       *ccsys_iovec_iov_len(&vec[i])   = buf_len;
     @}
 
-    offset.data = 0;
     N = ccsys_pwritev(L, fd, vec, buf_count, offset);
   @}
 
@@ -4862,7 +4876,7 @@ if (cce_location(L)) @{
     size_t            buf_len         = 25;
     uint8_t           bufs[buf_count][buf_len];
     ccsys_iovec_t     vec[buf_count];
-    ccsys_off_t       offset;
+    ccsys_off_t       offset = ccsys_new_off(0);
     size_t            N;
 
     /* Initialise the vector of buffers. */
@@ -4871,7 +4885,6 @@ if (cce_location(L)) @{
       *ccsys_iovec_iov_len(&vec[i])   = buf_len;
     @}
 
-    offset.data = 0;
     N = ccsys_preadv(L, fd, vec, buf_count, offset);
   @}
 
@@ -4930,11 +4943,11 @@ if (cce_location(L)) @{
 
   /* Create and open the file. */
   @{
-    ccsys_open_flags_t        flags;
-    ccsys_open_mode_t         mode;
+    ccsys_open_flags_t  flags =
+      ccsys_new_open_flags(CCSYS_O_CREAT | CCSYS_O_RDWR);
+    ccsys_open_mode_t   mode  =
+      ccsys_new_open_mode(CCSYS_S_IRUSR | CCSYS_S_IWUSR);
 
-    flags.data = CCSYS_O_CREAT | CCSYS_O_RDWR;
-    mode.data  = CCSYS_S_IRUSR | CCSYS_S_IWUSR;
     fd = ccsys_open(L, filename, flags, mode);
     ccsys_init_filedes_handler(L, filedes_H, fd);
     ccsys_init_remove_handler(L, file_H, filename);
@@ -4947,9 +4960,8 @@ if (cce_location(L)) @{
   @{
     size_t            len = 11;
     char const *      buf = "0123456789";
-    ccsys_off_t       offset;
+    ccsys_off_t       offset = ccsys_new_off(0);
 
-    offset.data = 0;
     ccsys_pwrite(L, fd, buf, len, offset);
    @}
 
@@ -4957,9 +4969,8 @@ if (cce_location(L)) @{
   @{
     size_t            len = 11;
     char              inbuf[len];
-    ccsys_off_t       offset;
+    ccsys_off_t       offset = ccsys_new_off(0);
 
-    offset.data = 0;
     ccsys_pread(L, fdx, inbuf, len, offset);
    @}
 
@@ -4989,11 +5000,11 @@ if (cce_location(L)) @{
 
   /* Create and open the file. */
   @{
-    ccsys_open_flags_t        flags;
-    ccsys_open_mode_t         mode;
+    ccsys_open_flags_t  flags =
+      ccsys_new_open_flags(CCSYS_O_CREAT | CCSYS_O_RDWR);
+    ccsys_open_mode_t   mode  =
+      ccsys_new_open_mode(CCSYS_S_IRUSR | CCSYS_S_IWUSR);
 
-    flags.data = CCSYS_O_CREAT | CCSYS_O_RDWR;
-    mode.data  = CCSYS_S_IRUSR | CCSYS_S_IWUSR;
     fd = ccsys_open(L, filename, flags, mode);
     ccsys_init_filedes_handler(L, filedes_H, fd);
     ccsys_init_remove_handler(L, file_H, filename);
@@ -5010,9 +5021,8 @@ if (cce_location(L)) @{
   @{
     size_t            len = 11;
     char const *      buf = "0123456789";
-    ccsys_off_t       offset;
+    ccsys_off_t       offset = ccsys_new_off(0);
 
-    offset.data = 0;
     ccsys_pwrite(L, fd, buf, len, offset);
   @}
 
@@ -5020,9 +5030,8 @@ if (cce_location(L)) @{
   @{
     size_t            len = 11;
     char              inbuf[len];
-    ccsys_off_t       offset;
+    ccsys_off_t       offset = ccsys_new_off(0);
 
-    offset.data = 0;
     ccsys_pread(L, fdx, inbuf, len, offset);
   @}
 
@@ -5052,11 +5061,11 @@ if (cce_location(L)) @{
 
   /* Create and open the file. */
   @{
-    ccsys_open_flags_t        flags;
-    ccsys_open_mode_t         mode;
+    ccsys_open_flags_t  flags =
+      ccsys_new_open_flags(CCSYS_O_CREAT | CCSYS_O_RDWR);
+    ccsys_open_mode_t   mode  =
+      ccsys_new_open_mode(CCSYS_S_IRUSR | CCSYS_S_IWUSR);
 
-    flags.data = CCSYS_O_CREAT | CCSYS_O_RDWR;
-    mode.data  = CCSYS_S_IRUSR | CCSYS_S_IWUSR;
     fd = ccsys_open(L, filename, flags, mode);
     ccsys_init_filedes_handler(L, filedes_H, fd);
     ccsys_init_remove_handler(L, file_H, filename);
@@ -5064,10 +5073,10 @@ if (cce_location(L)) @{
 
   /* Duplicate the file descriptor. */
   @{
-    ccsys_open_flags_t        flags;
+    ccsys_open_flags_t  flags =
+      ccsys_new_open_flags(CCSYS_O_CLOEXEC);
 
-    flags.data        = CCSYS_O_CLOEXEC;
-    fdx.data          = 123;
+    fdx = ccsys_new_fd(123);
     fdx = ccsys_dup3(L, fd, fdx, flags);
     assert(123 == fdx.data);
   @}
@@ -5076,9 +5085,8 @@ if (cce_location(L)) @{
   @{
     size_t            len = 11;
     char const *      buf = "0123456789";
-    ccsys_off_t       offset;
+    ccsys_off_t       offset = ccsys_new_off(0);
 
-    offset.data = 0;
     ccsys_pwrite(L, fd, buf, len, offset);
   @}
 
@@ -5086,9 +5094,8 @@ if (cce_location(L)) @{
   @{
     static size_t const len = 11;
     char              inbuf[len];
-    ccsys_off_t       offset;
+    ccsys_off_t       offset = ccsys_new_off(0);
 
-    offset.data = 0;
     ccsys_pread(L, fdx, inbuf, len, offset);
   @}
 
@@ -5204,10 +5211,10 @@ doit (cce_destination_t upper_L)
 
         /* Wait for the child process. */
         @{
-          ccsys_waitpid_options_t       options;
-          ccsys_waitpid_status_t        wstatus;
+          ccsys_waitpid_options_t  options =
+            ccsys_new_waitpid_options(0);
+          ccsys_waitpid_status_t   wstatus;
 
-          options.data = 0;
           ccsys_waitpid(L, pid, &wstatus, options);
         @}
       @} else @{
@@ -5215,8 +5222,8 @@ doit (cce_destination_t upper_L)
 
         /* Terminate the child process. */
         @{
-          ccsys_exit_status_t   status;
-          status.data = CCSYS_EXIT_SUCCESS;
+          ccsys_exit_status_t   status =
+            ccsys_new_exit_status(CCSYS_EXIT_SUCCESS);
           ccsys_exit(status);
         @}
       @}
@@ -5424,10 +5431,10 @@ doit (cce_destination_t upper_L)
 
         /* Wait for the child process. */
         @{
-          ccsys_waitpid_options_t       options;
-          ccsys_waitpid_status_t        wstatus;
+          ccsys_waitpid_options_t  options =
+            ccsys_new_waitpid_options(0);
+          ccsys_waitpid_status_t   wstatus;
 
-          options.data = 0;
           ccsys_waitpid(L, pid, &wstatus, options);
         @}
       @} else @{
@@ -5435,8 +5442,8 @@ doit (cce_destination_t upper_L)
 
         /* Terminate the child process. */
         @{
-          ccsys_exit_status_t   status;
-          status.data = CCSYS_EXIT_SUCCESS;
+          ccsys_exit_status_t   status =
+            ccsys_new_exit_status(CCSYS_EXIT_SUCCESS);
           ccsys_exit(status);
         @}
       @}
@@ -5817,7 +5824,9 @@ Create a file by opening it and then closing it; the arguments are the same of @
 Calling this function is equivalent to executing the code:
 
 @example
-ccsys_fd_t      fd;
+ccstructs_pathname_I  filename =
+  ccstructs_new_pathname_from_static_string("name.ext");
+ccsys_fd_t            fd;
 
 fd = ccsys_open(L, filename, flags, mode);
 ccsys_close(L, fd);
@@ -5833,11 +5842,13 @@ cce_location_t  L[1];
 if (cce_location(L)) @{
   cce_run_catch_handlers_final(L);
 @} else @{
-  ccsys_open_flags_t    flags;
-  ccsys_open_mode_t     mode;
+  ccstructs_pathname_I  filename =
+    ccstructs_new_pathname_from_static_string("name.ext");
+  ccsys_open_flags_t    flags =
+    ccsys_new_open_flags(CCSYS_O_CREAT);
+  ccsys_open_mode_t     mode  =
+    ccsys_new_open_mode(CCSYS_S_IRUSR | CCSYS_S_IWUSR);
 
-  flags.data = CCSYS_O_CREAT;
-  mode.data  = CCSYS_S_IRUSR | CCSYS_S_IWUSR;
   ccsys_touch(L, filename, flags, mode);
 
   cce_run_body_handlers(L);
@@ -6131,10 +6142,10 @@ The macro expands into a call to @cfunc{ccsys_init_dirstream_error_handler}.
 We must remember that we can also open a directory with @cfunc{ccsys_open}, and similar functions,
 using the @code{CCSYS_O_PATH} flag as follows:
 
-@example
-cce_location_t        L[1];
-ccsys_pathname_clean_handler_t   rmdir_H[1];
-cce_clean_handler_t   dirfd_H[1];
+@smallexample
+cce_location_t                  L[1];
+ccsys_pathname_clean_handler_t  rmdir_H[1];
+cce_clean_handler_t             dirfd_H[1];
 
 if (cce_location(L)) @{
   cce_run_catch_handlers_raise(L, upper_L);
@@ -6144,20 +6155,17 @@ if (cce_location(L)) @{
   ccsys_dirfd_t       dirfd;
 
   @{
-    ccsys_open_mode_t     mode;
+    ccsys_open_mode_t  mode = ccsys_new_open_mode(CCSYS_S_IRWXU);
 
-    mode.data = CCSYS_S_IRWXU;
     ccsys_mkdir(L, dirname, mode);
     ccsys_init_rmdir_handler(L, rmdir_H, dirname);
   @}
 
   @{
-    ccsys_open_flags_t  flags;
-    ccsys_open_mode_t   mode;
+    ccsys_open_flags_t  flags = ccsys_new_open_flags(CCSYS_O_PATH);
+    ccsys_open_mode_t   mode  = ccsys_new_open_mode(CCSYS_S_IRWXU);
     ccsys_fd_t          fd;
 
-    flags.data = CCSYS_O_PATH;
-    mode.data  = CCSYS_S_IRWXU;
     fd         = ccsys_open(L, dirname, flags, mode);
     dirfd      = ccsys_dirfd_from_fd(fd);
     ccsys_init_dirfd_handler(L, dirfd_H, dirfd);
@@ -6165,7 +6173,7 @@ if (cce_location(L)) @{
 
   cce_run_body_handlers(L);
 @}
-@end example
+@end smallexample
 
 The handler documented here will ignore errors returned by @cfunc{close}, which is generally bad; we
 can use the source code of this handler as template to implement a more complete procedure.
@@ -6243,11 +6251,12 @@ ccsys_pathname_clean_handler_t  dirname_H[1];
 if (cce_location(L)) @{
   cce_run_catch_handlers_final(L);
 @} else @{
-  ccsys_open_mode_t     mode;
+  ccstructs_pathname_I  dirname =
+    ccstructs_new_pathname_from_static_string("name.d");
+  ccsys_open_mode_t  mode = ccsys_new_open_mode(CCSYS_S_IRWXU);
 
-  mode.data = CCSYS_S_IRWXU;
-  ccsys_mkdir(L, "name.d", mode);
-  ccsys_init_rmdir_handler(L, dirname_H, "name.d");
+  ccsys_mkdir(L, dirname, mode);
+  ccsys_init_rmdir_handler(L, dirname_H, dirname);
   cce_run_body_handlers(L);
 @}
 @end example
@@ -6310,8 +6319,7 @@ if (cce_location(L)) @{
 
   /* Create the parent directory. */
   @{
-    ccsys_open_mode_t mode;
-    mode.data = CCSYS_S_IRWXU;
+    ccsys_open_mode_t mode = ccsys_new_open_mode(CCSYS_S_IRWXU);
     ccsys_mkdir(L, dirname1, mode);
     ccsys_clean_handler_rmdir_init(L, dirname1_H, dirname1);
   @}
@@ -6328,15 +6336,14 @@ if (cce_location(L)) @{
 
   /* Create the subdirectory. */
   @{
-    ccsys_open_mode_t mode;
-    mode.data = CCSYS_S_IRWXU;
+    ccsys_open_mode_t mode = ccsys_new_open_mode(CCSYS_S_IRWXU);
     ccsys_mkdirat(L, dirfd1, dirname2, mode);
   @}
 
   /* Remove the subdirectory. */
   @{
-    ccsys_unlinkat_flags_t      flags;
-    flags.data = CCSYS_AT_REMOVEDIR;
+    ccsys_unlinkat_flags_t flags =
+      ccsys_new_unlinkat_flags(CCSYS_AT_REMOVEDIR);
     ccsys_unlinkat(L, dirfd1, dirname2, flags);
   @}
 
@@ -6409,12 +6416,12 @@ if (cce_location(L)) @{
 
   /* Create the file. */
   @{
-    ccsys_open_flags_t        flags;
-    ccsys_open_mode_t         mode;
-    ccsys_fd_t                fd;
+    ccsys_open_flags_t  flags =
+      ccsys_new_open_flags(CCSYS_O_CREAT);
+    ccsys_open_mode_t   mode  =
+      ccsys_new_open_mode(CCSYS_S_IRUSR | CCSYS_S_IWUSR);
+    ccsys_fd_t          fd;
 
-    flags.data = CCSYS_O_CREAT;
-    mode.data  = CCSYS_S_IRUSR | CCSYS_S_IWUSR;
     fd = ccsys_openat(L, CCSYS_AT_FDCWD, filename, flags, mode);
     ccsys_close(L, fd);
     ccsys_init_remove_handler(L, filename_H, filename);
@@ -6422,9 +6429,8 @@ if (cce_location(L)) @{
 
   /* Create the link. */
   @{
-    ccsys_linkat_flags_t      flags;
+    ccsys_linkat_flags_t  flags = ccsys_new_linkat_flags(0);
 
-    flags.data = 0;
     ccsys_linkat(L, CCSYS_AT_FDCWD, filename, CCSYS_AT_FDCWD, linkname, flags);
     ccsys_init_remove_handler(L, linkname_H, linkname);
   @}
@@ -6463,12 +6469,12 @@ if (cce_location(L)) @{
 
   /* Create and open the file. */
   @{
-    ccsys_open_flags_t        flags;
-    ccsys_open_mode_t         mode;
-    ccsys_fd_t                fd;
+    ccsys_open_flags_t  flags =
+      ccsys_new_open_flags(CCSYS_O_CREAT);
+    ccsys_open_mode_t   mode  =
+      ccsys_new_open_mode(CCSYS_S_IRUSR | CCSYS_S_IWUSR);
+    ccsys_fd_t          fd;
 
-    flags.data = CCSYS_O_CREAT;
-    mode.data  = CCSYS_S_IRUSR | CCSYS_S_IWUSR;
     fd = ccsys_openat(L, CCSYS_AT_FDCWD, filename, flags, mode);
     ccsys_close(L, fd);
     ccsys_init_remove_handler(L, filename_H, filename);
@@ -6546,12 +6552,12 @@ if (cce_location(L)) @{
 
   /* Create and open the file. */
   @{
-    ccsys_open_flags_t        flags;
-    ccsys_open_mode_t         mode;
-    ccsys_fd_t                fd;
+    ccsys_open_flags_t  flags =
+      ccsys_new_open_flags(CCSYS_O_CREAT);
+    ccsys_open_mode_t   mode  =
+      ccsys_new_open_mode(CCSYS_S_IRUSR | CCSYS_S_IWUSR);
+    ccsys_fd_t          fd;
 
-    flags.data = CCSYS_O_CREAT;
-    mode.data  = CCSYS_S_IRUSR | CCSYS_S_IWUSR;
     fd = ccsys_open(L, filename, flags, mode);
     ccsys_close(L, fd);
     ccsys_init_remove_handler(L, filename_H, filename);
@@ -6599,12 +6605,12 @@ if (cce_location(L)) @{
 
   /* Create and open the file. */
   @{
-    ccsys_open_flags_t        flags;
-    ccsys_open_mode_t         mode;
-    ccsys_fd_t                fd;
+    ccsys_open_flags_t  flags =
+      ccsys_new_open_flags(CCSYS_O_CREAT);
+    ccsys_open_mode_t   mode  =
+      ccsys_new_open_mode(CCSYS_S_IRUSR | CCSYS_S_IWUSR);
+    ccsys_fd_t          fd;
 
-    flags.data = CCSYS_O_CREAT;
-    mode.data  = CCSYS_S_IRUSR | CCSYS_S_IWUSR;
     fd = ccsys_open(L, filename, flags, mode);
     ccsys_close(L, fd);
     ccsys_init_remove_handler(L, filename_H, filename);
@@ -6649,12 +6655,12 @@ if (cce_location(L)) @{
 
   /* Create and open the file. */
   @{
-    ccsys_open_flags_t        flags;
-    ccsys_open_mode_t         mode;
-    ccsys_fd_t                fd;
+    ccsys_open_flags_t  flags =
+      ccsys_new_open_flags(CCSYS_O_CREAT);
+    ccsys_open_mode_t   mode  =
+      ccsys_new_open_mode(CCSYS_S_IRUSR | CCSYS_S_IWUSR);
+    ccsys_fd_t          fd;
 
-    flags.data = CCSYS_O_CREAT;
-    mode.data  = CCSYS_S_IRUSR | CCSYS_S_IWUSR;
     fd = ccsys_open(L, filename, flags, mode);
     ccsys_close(L, fd);
     ccsys_init_remove_handler(L, filename_H, filename);
@@ -6712,17 +6718,18 @@ if (cce_location(L)) @{
   ccsys_fd_t    fd;
 
   @{
-    ccsys_open_flags_t    flags;
-    ccsys_open_mode_t     mode;
+    ccsys_open_flags_t  flags =
+      ccsys_new_open_flags(CCSYS_O_CREAT);
+    ccsys_open_mode_t   mode  =
+      ccsys_new_open_mode(CCSYS_S_IRUSR | CCSYS_S_IWUSR);
 
-    flags.data = CCSYS_O_CREAT;
-    mode.data  = CCSYS_S_IRUSR | CCSYS_S_IWUSR;
-    fd         = ccsys_open(L, dirfd, "name.ext", flags, mode);
+    fd = ccsys_open(L, dirfd, filename, flags, mode);
     ccsys_init_filedes_handler(L, filedes_H, fd);
   @}
 
   @{
-    ccsys_unlinkat_flags_t	unlinkat_flags = ccsys_dnew(0);
+    ccsys_unlinkat_flags_t  unlinkat_flags =
+      ccsys_new_unlinkat_flags(0);
 
     lnk = ccsys_new_at_link(dirfd, filename, unlinkat_flags);
     ccsys_init_unlinkat_handler(L, filename_H, &lnk);
@@ -6815,13 +6822,13 @@ ccstructs_pathname_I    filename =
 if (cce_location(L)) @{
   cce_run_catch_handlers_final(L);
 @} else @{
-  ccsys_open_flags_t    flags;
-  ccsys_open_mode_t     mode;
-  ccsys_fd_t            fd;
+  ccsys_open_flags_t  flags =
+    ccsys_new_open_flags(CCSYS_O_CREAT);
+  ccsys_open_mode_t   mode  =
+    ccsys_new_open_mode(CCSYS_S_IRUSR | CCSYS_S_IWUSR);
+  ccsys_fd_t          fd;
 
-  flags.data    = CCSYS_O_CREAT;
-  mode.data     = CCSYS_S_IRUSR | CCSYS_S_IWUSR;
-  fd            = ccsys_open(L, filename, flags, mode);
+  fd = ccsys_open(L, filename, flags, mode);
   ccsys_init_filedes_handler(L, fd_H, fd);
   ccsys_init_remove_handler(L, file_H, filename);
   cce_run_body_handlers(L);
@@ -6917,11 +6924,11 @@ if (cce_location(L)) @{
 
   /* Create the file. */
   @{
-    ccsys_open_flags_t        flags;
-    ccsys_open_mode_t         mode;
+    ccsys_open_flags_t  flags =
+      ccsys_new_open_flags(CCSYS_O_CREAT);
+    ccsys_open_mode_t   mode  =
+      ccsys_new_open_mode(CCSYS_S_IRUSR | CCSYS_S_IWUSR);
 
-    flags.data = CCSYS_O_CREAT;
-    mode.data  = CCSYS_S_IRUSR | CCSYS_S_IWUSR;
     ccsys_touch(L, filename, flags, mode);
   @}
 
@@ -6956,11 +6963,11 @@ if (cce_location(L)) @{
 
   /* Create the file. */
   @{
-    ccsys_open_flags_t        flags;
-    ccsys_open_mode_t         mode;
+    ccsys_open_flags_t  flags =
+      ccsys_new_open_flags(CCSYS_O_CREAT);
+    ccsys_open_mode_t   mode  =
+      ccsys_new_open_mode(CCSYS_S_IRUSR | CCSYS_S_IWUSR);
 
-    flags.data = CCSYS_O_CREAT;
-    mode.data  = CCSYS_S_IRUSR | CCSYS_S_IWUSR;
     ccsys_touch(L, filename, flags, mode);
   @}
 
@@ -6996,19 +7003,18 @@ if (cce_location(L)) @{
 
   /* Create the file. */
   @{
-    ccsys_open_flags_t        flags;
-    ccsys_open_mode_t         mode;
+    ccsys_open_flags_t  flags =
+      ccsys_new_open_flags(CCSYS_O_CREAT);
+    ccsys_open_mode_t   mode  =
+      ccsys_new_open_mode(CCSYS_S_IRUSR | CCSYS_S_IWUSR);
 
-    flags.data = CCSYS_O_CREAT;
-    mode.data  = CCSYS_S_IRUSR | CCSYS_S_IWUSR;
     ccsys_touch(L, filename, flags, mode);
   @}
 
   /* Rename the pathname. */
   @{
-    ccsys_renameat2_flags_t   flags;
+    ccsys_renameat2_flags_t  flags = ccsys_new_renameat2_flags(0);
 
-    flags.data = 0;
     ccsys_renameat2(L,
                     CCSYS_AT_FDCWD, filename,
                     CCSYS_AT_FDCWD, newname,
@@ -7403,12 +7409,12 @@ if (cce_location(L)) @{
 
   /* Create and open the file. */
   @{
-    ccsys_open_flags_t        flags;
-    ccsys_open_mode_t         mode;
-    ccsys_fd_t                fd;
+    ccsys_open_flags_t  flags =
+      ccsys_new_open_flags(CCSYS_O_CREAT);
+    ccsys_open_mode_t   mode  =
+      ccsys_new_open_mode(CCSYS_S_IRUSR | CCSYS_S_IWUSR);
+    ccsys_fd_t          fd;
 
-    flags.data = CCSYS_O_CREAT;
-    mode.data  = CCSYS_S_IRUSR | CCSYS_S_IWUSR;
     fd = ccsys_open(L, filename, flags, mode);
     ccsys_init_filedes_handler(L, filedes_H, fd);
     ccsys_init_remove_handler(L, filename_H, filename);
@@ -7503,7 +7509,7 @@ if (cce_location(L)) @{
 
   /* Create the parent directory. */
   @{
-    ccsys_open_mode_t mode  = @{ .data = CCSYS_S_IRWXU @};
+    ccsys_open_mode_t mode  = ccsys_new_open_mode(CCSYS_S_IRWXU);
     ccsys_mkdir(L, dirname, mode);
     ccsys_clean_handler_rmdir_init(L, dirname_H, dirname);
   @}
@@ -7534,9 +7540,8 @@ if (cce_location(L)) @{
   /* Inspect the file by pathname. */
   @{
     ccsys_stat_t              S;
-    ccsys_fstatat_flags_t     flags;
+    ccsys_fstatat_flags_t     flags = ccsys_new_fstatat_flags(0);
 
-    flags.data = 0;
     ccsys_fstatat(L, dirfd, filename, &S, flags);
 
 #if (1 == CCSYS_HAVE_STRUCT_STAT_ST_DEV)
@@ -7649,11 +7654,11 @@ if (cce_location(L)) @{
 
   /* Create the file. */
   @{
-    ccsys_open_flags_t        flags;
-    ccsys_open_mode_t         mode;
+    ccsys_open_flags_t  flags =
+      ccsys_new_open_flags(CCSYS_O_CREAT);
+    ccsys_open_mode_t   mode  =
+      ccsys_new_open_mode(CCSYS_S_IRUSR | CCSYS_S_IWUSR);
 
-    flags.data = CCSYS_O_CREAT;
-    mode.data  = CCSYS_S_IRUSR | CCSYS_S_IWUSR;
     ccsys_touch(L, filename, flags, mode);
   @}
 
@@ -7689,11 +7694,9 @@ if (cce_location(L)) @{
 
   /* Create the file. */
   @{
-    ccsys_open_flags_t        flags;
-    ccsys_open_mode_t         mode;
+    ccsys_open_flags_t  flags = ccsys_new_open_flags(CCSYS_O_CREAT);
+    ccsys_open_mode_t   mode  = ccsys_new_open_mode(CCSYS_S_IRUSR | CCSYS_S_IWUSR);
 
-    flags.data = CCSYS_O_CREAT;
-    mode.data  = CCSYS_S_IRUSR | CCSYS_S_IWUSR;
     fd = ccsys_open(L, filename, flags, mode);
     ccsys_init_filedes_handler(L, filedes_H, fd);
   @}
@@ -7730,11 +7733,11 @@ if (cce_location(L)) @{
 
   /* Create the file. */
   @{
-    ccsys_open_flags_t        flags;
-    ccsys_open_mode_t         mode;
+    ccsys_open_flags_t  flags =
+      ccsys_new_open_flags(CCSYS_O_CREAT);
+    ccsys_open_mode_t   mode  =
+      ccsys_new_open_mode(CCSYS_S_IRUSR | CCSYS_S_IWUSR);
 
-    flags.data = CCSYS_O_CREAT;
-    mode.data  = CCSYS_S_IRUSR | CCSYS_S_IWUSR;
     ccsys_touch(L, filename, flags, mode);
   @}
 
@@ -7773,21 +7776,20 @@ if (cce_location(L)) @{
 
   /* Create the file. */
   @{
-    ccsys_open_flags_t        flags;
-    ccsys_open_mode_t         mode;
+    ccsys_open_flags_t  flags =
+      ccsys_new_open_flags(CCSYS_O_CREAT);
+    ccsys_open_mode_t   mode  =
+      ccsys_new_open_mode(CCSYS_S_IRUSR | CCSYS_S_IWUSR);
 
-    flags.data = CCSYS_O_CREAT;
-    mode.data  = CCSYS_S_IRUSR | CCSYS_S_IWUSR;
     ccsys_touch(L, filename, flags, mode);
   @}
 
   /* Change ownership. */
   @{
-    ccsys_uid_t               uid = ccsys_getuid();
-    ccsys_gid_t               gid = ccsys_getgid();
-    ccsys_fchownat_flags_t    flags;
+    ccsys_uid_t             uid = ccsys_getuid();
+    ccsys_gid_t             gid = ccsys_getgid();
+    ccsys_fchownat_flags_t  flags = ccsys_new_fchownat_flags(0);
 
-    flags.data = 0;
     ccsys_fchownat(L, CCSYS_AT_FDCWD, filename, uid, gid, flags);
   @}
 
@@ -7830,7 +7832,7 @@ Wrapper for @cfunc{fchmodat}; @manpage{fchmodat, Change permissions of a file}.
 
 As usage example of @cfunc{ccsys_chmod} see the following code.
 
-@example
+@smallexample
 cce_location_t                  L[1];
 ccsys_pathname_clean_handler_t  filename_H[1];
 
@@ -7842,20 +7844,16 @@ if (cce_location(L)) @{
 
   /* Create the file. */
   @{
-    ccsys_open_mode_t         mode;
-    ccsys_open_flags_t        flags;
+    ccsys_open_flags_t  flags = ccsys_new_open_flags(CCSYS_O_CREAT);
+    ccsys_open_mode_t   mode  = ccsys_new_open_mode(0);
 
-    flags.data = CCSYS_O_CREAT;
-    mode.data  = 0;
     ccsys_touch(L, filename, flags, mode);
     ccsys_init_remove_handler(L, filename_H, filename);
   @}
 
   /* Change mode. */
   @{
-    ccsys_open_mode_t         mode;
-
-    mode.data  = CCSYS_S_IRWXU;
+    ccsys_open_mode_t  mode = ccsys_new_open_mode(CCSYS_S_IRWXU);
     ccsys_chmod(L, filename, mode);
   @}
 
@@ -7871,7 +7869,7 @@ if (cce_location(L)) @{
 
   cce_run_body_handlers(L);
 @}
-@end example
+@end smallexample
 
 @c page
 @node fs access perms two
@@ -7880,7 +7878,7 @@ if (cce_location(L)) @{
 
 As usage example of @cfunc{ccsys_fchmod} see the following code.
 
-@example
+@smallexample
 cce_location_t                  L[1];
 ccsys_pathname_clean_handler_t  filename_H[1];
 cce_clean_handler_t             filedes_H[1];
@@ -7894,11 +7892,9 @@ if (cce_location(L)) @{
 
   /* Create the file. */
   @{
-    ccsys_open_mode_t         mode;
-    ccsys_open_flags_t        flags;
+    ccsys_open_flags_t  flags = ccsys_new_open_flags(CCSYS_O_CREAT);
+    ccsys_open_mode_t   mode  = ccsys_new_open_mode(0);
 
-    flags.data = CCSYS_O_CREAT;
-    mode.data  = 0;
     fd = ccsys_open(L, filename, flags, mode);
     ccsys_init_filedes_handler(L, filedes_H, fd);
     ccsys_init_remove_handler(L, filename_H, filename);
@@ -7906,9 +7902,7 @@ if (cce_location(L)) @{
 
   /* Change mode. */
   @{
-    ccsys_open_mode_t         mode;
-
-    mode.data  = CCSYS_S_IRWXU;
+    ccsys_open_mode_t  mode = ccsys_new_open_mode(CCSYS_S_IRWXU);
     ccsys_fchmod(L, fd, mode);
   @}
 
@@ -7924,7 +7918,7 @@ if (cce_location(L)) @{
 
   cce_run_body_handlers(L);
 @}
-@end example
+@end smallexample
 
 @c page
 @node fs access perms three
@@ -7933,7 +7927,7 @@ if (cce_location(L)) @{
 
 As usage example of @cfunc{ccsys_fchmodat} see the following code.
 
-@example
+@smallexample
 cce_location_t                  L[1];
 ccsys_pathname_clean_handler_t  filename_H[1];
 
@@ -7945,22 +7939,18 @@ if (cce_location(L)) @{
 
   /* Create the file. */
   @{
-    ccsys_open_mode_t         mode;
-    ccsys_open_flags_t        flags;
+    ccsys_open_flags_t  flags = ccsys_new_open_flags(CCSYS_O_CREAT);
+    ccsys_open_mode_t   mode  = ccsys_new_open_mode(0);
 
-    flags.data = CCSYS_O_CREAT;
-    mode.data  = 0;
     ccsys_touch(L, filename, flags, mode);
     ccsys_init_remove_handler(L, filename_H, filename);
   @}
 
   /* Change mode. */
   @{
-    ccsys_open_mode_t         mode;
-    ccsys_fchmodat_flags_t    flags;
+    ccsys_open_mode_t       mode  = ccsys_new_open_mode(CCSYS_S_IRWXU);
+    ccsys_fchmodat_flags_t  flags = ccsys_new_fchmodat_flags(0);
 
-    mode.data  = CCSYS_S_IRWXU;
-    flags.data = 0;
     ccsys_fchmodat(L, CCSYS_AT_FDCWD, filename, mode, flags);
   @}
 
@@ -7976,7 +7966,7 @@ if (cce_location(L)) @{
 
   cce_run_body_handlers(L);
 @}
-@end example
+@end smallexample
 
 @c page
 @node fs access tests
@@ -8009,7 +7999,7 @@ is granted: return @true{}; otherwise return @false{}.
 
 As usage example of @cfunc{ccsys_access} see the following code.
 
-@example
+@smallexample
 cce_location_t                  L[1];
 ccsys_pathname_clean_handler_t  filename_H[1];
 
@@ -8021,50 +8011,43 @@ if (cce_location(L)) @{
 
   /* Create the file. */
   @{
-    ccsys_open_mode_t         mode;
-    ccsys_open_flags_t        flags;
+    ccsys_open_flags_t  flags = ccsys_new_open_flags(CCSYS_O_CREAT);
+    ccsys_open_mode_t   mode  = ccsys_new_open_mode(0);
 
-    flags.data = CCSYS_O_CREAT;
-    mode.data  = 0;
     ccsys_touch(L, filename, flags, mode);
     ccsys_init_remove_handler(L, filename_H, filename);
   @}
 
   /* Testing permissions. */
   @{
-    ccsys_access_mode_t       mode;
+    ccsys_access_mode_t  mode = ccsys_new_access_mode(CCSYS_R_OK);
 
-    mode.data = CCSYS_R_OK;
     assert(false == ccsys_access(L, filename, mode));
   @}
 
   /* Change mode. */
   @{
-    ccsys_open_mode_t         mode;
-
-    mode.data  = CCSYS_S_IRUSR | CCSYS_S_IWUSR;
+    ccsys_open_mode_t  mode =
+      ccsys_new_open_mode(CCSYS_S_IRUSR | CCSYS_S_IWUSR);
     ccsys_chmod(L, filename, mode);
   @}
 
   /* Testing read/write permissions. */
   @{
-    ccsys_access_mode_t       mode;
-
-    mode.data = CCSYS_R_OK & CCSYS_W_OK;
+    ccsys_access_mode_t  mode =
+      ccsys_new_access_mode(CCSYS_R_OK | CCSYS_W_OK);
     assert(true == ccsys_access(L, filename, mode));
   @}
 
   /* Testing execute permissions. */
   @{
-    ccsys_access_mode_t       mode;
-
-    mode.data = CCSYS_X_OK;
+    ccsys_access_mode_t  mode = ccsys_new_access_mode(CCSYS_X_OK);
     assert(false == ccsys_access(L, filename, mode));
   @}
 
   cce_run_body_handlers(L);
 @}
-@end example
+@end smallexample
 
 @c page
 @node fs access tests two
@@ -8073,7 +8056,7 @@ if (cce_location(L)) @{
 
 As usage example of @cfunc{ccsys_faccessat} see the following code.
 
-@example
+@smallexample
 cce_location_t                  L[1];
 ccsys_pathname_clean_handler_t  filename_H[1];
 
@@ -8085,19 +8068,17 @@ if (cce_location(L)) @{
 
   /* Create the file. */
   @{
-    ccsys_open_mode_t         mode;
-    ccsys_open_flags_t        flags;
+    ccsys_open_flags_t  flags = ccsys_new_open_flags(CCSYS_O_CREAT);
+    ccsys_open_mode_t   mode  = ccsys_new_open_mode(0);
 
-    flags.data = CCSYS_O_CREAT;
-    mode.data  = 0;
     ccsys_touch(L, filename, flags, mode);
     ccsys_init_remove_handler(L, filename_H, filename);
   @}
 
   /* Testing permissions. */
   @{
-    ccsys_access_mode_t       mode  = @{ .data = CCSYS_R_OK @};
-    ccsys_faccessat_flags_t   flags = @{ .data = 0 @};
+    ccsys_access_mode_t      mode  = ccsys_new_access_mode(CCSYS_R_OK);
+    ccsys_faccessat_flags_t  flags = ccsys_new_faccessat_flags(0);
 
     assert(false ==
       ccsys_faccessat(L, CCSYS_AT_FDCWD, filename, mode, flags));
@@ -8105,35 +8086,34 @@ if (cce_location(L)) @{
 
   /* Change mode. */
   @{
-    ccsys_open_mode_t         mode;
-
-    mode.data  = CCSYS_S_IRUSR | CCSYS_S_IWUSR;
+    ccsys_open_mode_t  mode =
+      ccsys_new_open_mode(CCSYS_S_IRUSR | CCSYS_S_IWUSR);
     ccsys_chmod(L, filename, mode);
   @}
 
   /* Testing read/write permissions. */
   @{
-    ccsys_access_mode_t       mode;
-    ccsys_faccessat_flags_t   flags = @{ .data = 0 @};
+    ccsys_access_mode_t      mode  =
+      ccsys_new_access_mode(CCSYS_R_OK | CCSYS_W_OK);
+    ccsys_faccessat_flags_t  flags =
+      ccsys_new_faccessat_flags(0);
 
-    mode.data = CCSYS_R_OK & CCSYS_W_OK;
     assert(true ==
       ccsys_faccessat(L, CCSYS_AT_FDCWD, filename, mode, flags));
   @}
 
   /* Testing execute permissions. */
   @{
-    ccsys_access_mode_t       mode;
-    ccsys_faccessat_flags_t   flags = @{ .data = 0 @};
+    ccsys_access_mode_t      mode  = ccsys_new_access_mode(CCSYS_X_OK);
+    ccsys_faccessat_flags_t  flags = ccsys_new_faccessat_flags(0);
 
-    mode.data = CCSYS_X_OK;
     assert(false ==
       ccsys_faccessat(L, CCSYS_AT_FDCWD, filename, mode, flags));
   @}
 
   cce_run_body_handlers(L);
 @}
-@end example
+@end smallexample
 
 @c page
 @node fs trunc
@@ -8165,7 +8145,7 @@ Wrapper for @cfunc{ftruncate}; @manpage{ftruncate, Truncate a file to a specifie
 
 As usage example of @cfunc{truncate} see the following code.
 
-@example
+@smallexample
 cce_location_t                  L[1];
 ccsys_pathname_clean_handler_t  filename_H[1];
 cce_clean_handler_t             filedes_H[1];
@@ -8179,11 +8159,11 @@ if (cce_location(L)) @{
 
   /* Create the file. */
   @{
-    ccsys_open_mode_t         mode;
-    ccsys_open_flags_t        flags;
+    ccsys_open_flags_t  flags =
+      ccsys_new_open_flags(CCSYS_O_CREAT | CCSYS_O_RDWR);
+    ccsys_open_mode_t   mode  =
+      ccsys_new_open_mode(CCSYS_S_IRUSR | CCSYS_S_IWUSR);
 
-    flags.data = CCSYS_O_CREAT | CCSYS_O_RDWR;
-    mode.data  = CCSYS_S_IRUSR | CCSYS_S_IWUSR;
     fd = ccsys_open(L, filename, flags, mode);
     ccsys_init_filedes_handler(L, filedes_H, fd);
     ccsys_init_remove_handler(L, filename_H, filename);
@@ -8208,7 +8188,7 @@ if (cce_location(L)) @{
 
   /* Truncate the file. */
   @{
-    ccsys_off_t       len = @{ .data = 100 @};
+    ccsys_off_t  len = ccsys_new_off(100);
 
     ccsys_truncate(L, filename, len);
   @}
@@ -8223,7 +8203,7 @@ if (cce_location(L)) @{
 
   cce_run_body_handlers(L);
 @}
-@end example
+@end smallexample
 
 @c page
 @node fs trunc two
@@ -8232,7 +8212,7 @@ if (cce_location(L)) @{
 
 As usage example of @cfunc{ftruncate} see the following code.
 
-@example
+@smallexample
 cce_location_t                  L[1];
 ccsys_pathname_clean_handler_t  filename_H[1];
 cce_clean_handler_t             filedes_H[1];
@@ -8246,11 +8226,11 @@ if (cce_location(L)) @{
 
   /* Create the file. */
   @{
-    ccsys_open_mode_t         mode;
-    ccsys_open_flags_t        flags;
+    ccsys_open_flags_t  flags =
+      ccsys_new_open_flags(CCSYS_O_CREAT | CCSYS_O_RDWR);
+    ccsys_open_mode_t   mode  =
+      ccsys_new_open_mode(CCSYS_S_IRUSR | CCSYS_S_IWUSR);
 
-    flags.data = CCSYS_O_CREAT | CCSYS_O_RDWR;
-    mode.data  = CCSYS_S_IRUSR | CCSYS_S_IWUSR;
     fd = ccsys_open(L, filename, flags, mode);
     ccsys_init_filedes_handler(L, filedes_H, fd);
     ccsys_init_remove_handler(L, filename_H, filename);
@@ -8275,7 +8255,7 @@ if (cce_location(L)) @{
 
   /* Truncate the file. */
   @{
-    ccsys_off_t       len = @{ .data = 101 @};
+    ccsys_off_t  len = ccsys_new_off(101);
 
     ccsys_ftruncate(L, fd, len);
   @}
@@ -8290,7 +8270,7 @@ if (cce_location(L)) @{
 
   cce_run_body_handlers(L);
 @}
-@end example
+@end smallexample
 
 @c page
 @node fs times
@@ -8364,7 +8344,7 @@ Wrapper for @cfunc{futimesat}; @manpage{futimesat, Change file timestamps}.
 
 As usage example of @cfunc{ccsys_utimensat} see the following code.
 
-@example
+@smallexample
 cce_location_t                  L[1];
 ccsys_pathname_clean_handler_t  filename_H[1];
 
@@ -8376,11 +8356,11 @@ if (cce_location(L)) @{
 
   /* Create the file. */
   @{
-    ccsys_open_mode_t         mode;
-    ccsys_open_flags_t        flags;
+    ccsys_open_flags_t  flags =
+      ccsys_new_open_flags(CCSYS_O_CREAT | CCSYS_O_RDWR);
+    ccsys_open_mode_t   mode  =
+      ccsys_new_open_mode(CCSYS_S_IRUSR | CCSYS_S_IWUSR);
 
-    flags.data = CCSYS_O_CREAT | CCSYS_O_RDWR;
-    mode.data  = CCSYS_S_IRUSR | CCSYS_S_IWUSR;
     ccsys_touch(L, filename, flags, mode);
     ccsys_init_remove_handler(L, filename_H, filename);
   @}
@@ -8388,14 +8368,13 @@ if (cce_location(L)) @{
   /* Set the times. */
   @{
     ccsys_timespec_t          T[2];
-    ccsys_utimensat_flags_t   flags;
+    ccsys_utimensat_flags_t   flags = ccsys_new_utimensat_flags(0);
 
     T[0].seconds.data         = 123;
     T[0].nanoseconds.data     = 0;
     T[1].seconds.data         = 456;
     T[1].nanoseconds.data     = 0;
 
-    flags.data = 0;
     ccsys_utimensat(L, CCSYS_AT_FDCWD, filename, T, flags);
   @}
 
@@ -8416,7 +8395,7 @@ if (cce_location(L)) @{
 
   cce_run_body_handlers(L);
 @}
-@end example
+@end smallexample
 
 @c page
 @node fs times two
@@ -8425,7 +8404,7 @@ if (cce_location(L)) @{
 
 As usage example of @cfunc{ccsys_futimens} see the following code.
 
-@example
+@smallexample
 cce_location_t                  L[1];
 ccsys_pathname_clean_handler_t  filename_H[1];
 cce_clean_handler_t             filedes_H[1];
@@ -8439,11 +8418,11 @@ if (cce_location(L)) @{
 
   /* Create the file. */
   @{
-    ccsys_open_mode_t         mode;
-    ccsys_open_flags_t        flags;
+    ccsys_open_flags_t  flags =
+      ccsys_new_open_flags(CCSYS_O_CREAT | CCSYS_O_RDWR);
+    ccsys_open_mode_t   mode  =
+      ccsys_new_open_mode(CCSYS_S_IRUSR | CCSYS_S_IWUSR);
 
-    flags.data = CCSYS_O_CREAT | CCSYS_O_RDWR;
-    mode.data  = CCSYS_S_IRUSR | CCSYS_S_IWUSR;
     fd = ccsys_open(L, filename, flags, mode);
     ccsys_init_filedes_handler(L, filedes_H, fd);
     ccsys_init_remove_handler(L, filename_H, filename);
@@ -8478,7 +8457,7 @@ if (cce_location(L)) @{
 
   cce_run_body_handlers(L);
 @}
-@end example
+@end smallexample
 
 @c page
 @node fs times three
@@ -8487,7 +8466,7 @@ if (cce_location(L)) @{
 
 As usage example of @cfunc{ccsys_utimes} see the following code.
 
-@example
+@smallexample
 cce_location_t                  L[1];
 ccsys_pathname_clean_handler_t  filename_H[1];
 
@@ -8499,11 +8478,11 @@ if (cce_location(L)) @{
 
   /* Create the file. */
   @{
-    ccsys_open_mode_t         mode;
-    ccsys_open_flags_t        flags;
+    ccsys_open_flags_t  flags =
+      ccsys_new_open_flags(CCSYS_O_CREAT | CCSYS_O_RDWR);
+    ccsys_open_mode_t   mode  =
+      ccsys_new_open_mode(CCSYS_S_IRUSR | CCSYS_S_IWUSR);
 
-    flags.data = CCSYS_O_CREAT | CCSYS_O_RDWR;
-    mode.data  = CCSYS_S_IRUSR | CCSYS_S_IWUSR;
     ccsys_touch(L, filename, flags, mode);
     ccsys_init_remove_handler(L, filename_H, filename);
   @}
@@ -8537,7 +8516,7 @@ if (cce_location(L)) @{
 
   cce_run_body_handlers(L);
 @}
-@end example
+@end smallexample
 
 @c page
 @node fs times four
@@ -8546,7 +8525,7 @@ if (cce_location(L)) @{
 
 As usage example of @cfunc{ccsys_lutimes} see the following code.
 
-@example
+@smallexample
 cce_location_t                  L[1];
 ccsys_pathname_clean_handler_t  filename_H[1];
 ccsys_pathname_clean_handler_t  linkname_H[1];
@@ -8561,11 +8540,11 @@ if (cce_location(L)) @{
 
   /* Create the file. */
   @{
-    ccsys_open_mode_t         mode;
-    ccsys_open_flags_t        flags;
+    ccsys_open_flags_t  flags =
+      ccsys_new_open_flags(CCSYS_O_CREAT | CCSYS_O_RDWR);
+    ccsys_open_mode_t   mode  =
+      ccsys_new_open_mode(CCSYS_S_IRUSR | CCSYS_S_IWUSR);
 
-    flags.data = CCSYS_O_CREAT | CCSYS_O_RDWR;
-    mode.data  = CCSYS_S_IRUSR | CCSYS_S_IWUSR;
     ccsys_touch(L, filename, flags, mode);
     ccsys_init_remove_handler(L, filename_H, filename);
   @}
@@ -8605,7 +8584,7 @@ if (cce_location(L)) @{
 
   cce_run_body_handlers(L);
 @}
-@end example
+@end smallexample
 
 @c page
 @node fs times five
@@ -8614,7 +8593,7 @@ if (cce_location(L)) @{
 
 As usage example of @cfunc{ccsys_futimes} see the following code.
 
-@example
+@smallexample
 cce_location_t                  L[1];
 ccsys_pathname_clean_handler_t  filename_H[1];
 cce_clean_handler_t             filedes_H[1];
@@ -8628,11 +8607,11 @@ if (cce_location(L)) @{
 
   /* Create the file. */
   @{
-    ccsys_open_mode_t         mode;
-    ccsys_open_flags_t        flags;
+    ccsys_open_flags_t  flags =
+      ccsys_new_open_flags(CCSYS_O_CREAT | CCSYS_O_RDWR);
+    ccsys_open_mode_t   mode  =
+      ccsys_new_open_mode(CCSYS_S_IRUSR | CCSYS_S_IWUSR);
 
-    flags.data = CCSYS_O_CREAT | CCSYS_O_RDWR;
-    mode.data  = CCSYS_S_IRUSR | CCSYS_S_IWUSR;
     fd = ccsys_open(L, filename, flags, mode);
     ccsys_init_filedes_handler(L, filedes_H, fd);
     ccsys_init_remove_handler(L, filename_H, filename);
@@ -8667,7 +8646,7 @@ if (cce_location(L)) @{
 
   cce_run_body_handlers(L);
 @}
-@end example
+@end smallexample
 
 @c page
 @node fs times six
@@ -8676,7 +8655,7 @@ if (cce_location(L)) @{
 
 As usage example of @cfunc{ccsys_futimesat} see the following code.
 
-@example
+@smallexample
 cce_location_t                  L[1];
 ccsys_pathname_clean_handler_t  filename_H[1];
 
@@ -8688,11 +8667,11 @@ if (cce_location(L)) @{
 
   /* Create the file. */
   @{
-    ccsys_open_mode_t         mode;
-    ccsys_open_flags_t        flags;
+    ccsys_open_flags_t  flags =
+      ccsys_new_open_flags(CCSYS_O_CREAT | CCSYS_O_RDWR);
+    ccsys_open_mode_t   mode  =
+      ccsys_new_open_mode(CCSYS_S_IRUSR | CCSYS_S_IWUSR);
 
-    flags.data = CCSYS_O_CREAT | CCSYS_O_RDWR;
-    mode.data  = CCSYS_S_IRUSR | CCSYS_S_IWUSR;
     ccsys_touch(L, filename, flags, mode);
     ccsys_init_remove_handler(L, filename_H, filename);
   @}
@@ -8726,7 +8705,7 @@ if (cce_location(L)) @{
 
   cce_run_body_handlers(L);
 @}
-@end example
+@end smallexample
 
 @c page
 @node fs temp
@@ -8845,10 +8824,10 @@ if (cce_location(L)) @{
 
   /* Create the file. */
   @{
-    ccsys_open_flags_t        flags;
-    ccsys_fd_t                fd;
+    ccsys_open_flags_t  flags =
+      ccsys_new_open_flags(CCSYS_O_CREAT | CCSYS_O_RDWR);
+    ccsys_fd_t          fd;
 
-    flags.data = CCSYS_O_CREAT | CCSYS_O_RDWR;
     fd = ccsys_mkostemp(L, template, flags);
     ccsys_init_filedes_handler(L, filedes_H, fd);
     ccsys_init_remove_handler(L, filename_H, filename);
@@ -8917,10 +8896,10 @@ if (cce_location(L)) @{
 
   /* Create the file. */
   @{
-    ccsys_open_flags_t        flags;
-    ccsys_fd_t                fd;
+    ccsys_open_flags_t  flags =
+      ccsys_new_open_flags(CCSYS_O_CREAT | CCSYS_O_RDWR);
+    ccsys_fd_t          fd;
 
-    flags.data = CCSYS_O_CREAT | CCSYS_O_RDWR;
     fd = ccsys_mkostemps(L, template, 4, flags);
     ccsys_init_filedes_handler(L, filedes_H, fd);
     ccsys_init_remove_handler(L, filename_H, filename);
@@ -9374,10 +9353,9 @@ ccsys_signal_bub_init();
 if (cce_location(L)) @{
   cce_run_catch_handlers_final(L);
 @} else @{
-  ccsys_signum_t      signum;
-  bool                flag;
+  ccsys_signum_t  signum = ccsys_new_signum(CCSYS_SIGUSR1);
+  bool            flag;
 
-  signum.data = CCSYS_SIGUSR1;
   ccsys_raise(L, signum);
   ccsys_signal_bub_acquire();
   flag = ccsys_signal_bub_delivered(signum);

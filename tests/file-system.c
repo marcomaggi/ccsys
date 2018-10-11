@@ -1926,7 +1926,7 @@ test_11_1 (cce_destination_t upper_L)
 
     /* Testing read/write permissions. */
     {
-      ccsys_access_mode_t	mode = ccsys_new_access_mode(CCSYS_R_OK & CCSYS_W_OK);
+      ccsys_access_mode_t	mode = ccsys_new_access_mode(CCSYS_R_OK | CCSYS_W_OK);
 
       cctests_assert(L, true == ccsys_access(L, filename, mode));
     }
@@ -1983,7 +1983,7 @@ test_11_2 (cce_destination_t upper_L)
 
     /* Testing read/write permissions. */
     {
-      ccsys_access_mode_t	mode  = ccsys_new_access_mode(CCSYS_R_OK & CCSYS_W_OK);
+      ccsys_access_mode_t	mode  = ccsys_new_access_mode(CCSYS_R_OK | CCSYS_W_OK);
       ccsys_faccessat_flags_t	flags = ccsys_new_faccessat_flags(0);
 
       cctests_assert(L, true == ccsys_faccessat(L, CCSYS_AT_FDCWD, filename, mode, flags));

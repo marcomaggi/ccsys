@@ -141,282 +141,6 @@ ccsys_decl int		ccsys_version_interface_age	(void)
 
 
 /** --------------------------------------------------------------------
- ** Semantic types: definitions.
- ** ----------------------------------------------------------------- */
-
-#define ccsys_dnew(D)		{ .data = (D) }
-#define ccsys_dref(D)		((int)		((D).data))
-#define ccsys_uref(D)		((unsigned int)	((D).data))
-#define ccsys_ldref(D)		((long)		((D).data))
-#define ccsys_luref(D)		((unsigned long)((D).data))
-
-/* ------------------------------------------------------------------ */
-
-typedef struct ccsys_access_mode_t		ccsys_access_mode_t;
-typedef struct ccsys_blkcnt_t			ccsys_blkcnt_t;
-typedef struct ccsys_blksize_t			ccsys_blksize_t;
-typedef struct ccsys_dev_t			ccsys_dev_t;
-typedef struct ccsys_dirfd_t			ccsys_dirfd_t;
-typedef struct ccsys_exit_status_t		ccsys_exit_status_t;
-typedef struct ccsys_faccessat_flags_t		ccsys_faccessat_flags_t;
-typedef struct ccsys_fchmodat_flags_t		ccsys_fchmodat_flags_t;
-typedef struct ccsys_fchownat_flags_t		ccsys_fchownat_flags_t;
-typedef struct ccsys_fd_flags_t			ccsys_fd_flags_t;
-typedef struct ccsys_fd_t			ccsys_fd_t;
-typedef struct ccsys_file_t			ccsys_file_t;
-typedef struct ccsys_fstatat_flags_t		ccsys_fstatat_flags_t;
-typedef struct ccsys_getauxval_type_t		ccsys_getauxval_type_t;
-typedef struct ccsys_gid_t			ccsys_gid_t;
-typedef struct ccsys_ino_t			ccsys_ino_t;
-typedef struct ccsys_linkat_flags_t		ccsys_linkat_flags_t;
-typedef struct ccsys_madvise_advice_t		ccsys_madvise_advice_t;
-typedef struct ccsys_mlockall_flags_t		ccsys_mlockall_flags_t;
-typedef struct ccsys_mmap_flags_t		ccsys_mmap_flags_t;
-typedef struct ccsys_mmap_prot_t		ccsys_mmap_prot_t;
-typedef struct ccsys_mremap_flags_t		ccsys_mremap_flags_t;
-typedef struct ccsys_msync_flags_t		ccsys_msync_flags_t;
-typedef struct ccsys_nlink_t			ccsys_nlink_t;
-typedef struct ccsys_off_t			ccsys_off_t;
-typedef struct ccsys_open_flags_t		ccsys_open_flags_t;
-typedef struct ccsys_open_mode_t		ccsys_open_mode_t;
-typedef struct ccsys_pid_t			ccsys_pid_t;
-typedef struct ccsys_renameat2_flags_t		ccsys_renameat2_flags_t;
-typedef struct ccsys_rlim_t			ccsys_rlim_t;
-typedef struct ccsys_scatter_gather_flags_t	ccsys_scatter_gather_flags_t;
-typedef struct ccsys_signum_t			ccsys_signum_t;
-typedef struct ccsys_socket_namespace_t		ccsys_socket_namespace_t;
-typedef struct ccsys_socket_protocol_t		ccsys_socket_protocol_t;
-typedef struct ccsys_socket_style_t		ccsys_socket_style_t;
-typedef struct ccsys_socklen_t			ccsys_socklen_t;
-typedef struct ccsys_stat_mode_t		ccsys_stat_mode_t;
-typedef struct ccsys_uid_t			ccsys_uid_t;
-typedef struct ccsys_unlinkat_flags_t		ccsys_unlinkat_flags_t;
-typedef struct ccsys_utimensat_flags_t		ccsys_utimensat_flags_t;
-typedef struct ccsys_waitpid_options_t		ccsys_waitpid_options_t;
-typedef struct ccsys_waitpid_status_t		ccsys_waitpid_status_t;
-typedef struct ccsys_whence_t			ccsys_whence_t;
-
-struct ccsys_access_mode_t		{ int				data; };
-struct ccsys_blkcnt_t			{ @CCSYS_TYPE_BLKCNT_T@		data; };
-struct ccsys_blksize_t			{ @CCSYS_TYPE_BLKSIZE_T@	data; };
-struct ccsys_dev_t			{ @CCSYS_TYPE_DEV_T@		data; };
-struct ccsys_dirfd_t			{ int				data; };
-struct ccsys_exit_status_t		{ int				data; };
-struct ccsys_faccessat_flags_t		{ int				data; };
-struct ccsys_fchmodat_flags_t		{ int				data; };
-struct ccsys_fchownat_flags_t		{ int				data; };
-struct ccsys_fd_flags_t			{ int				data; };
-struct ccsys_fd_t			{ int				data; };
-struct ccsys_file_t			{ void *			data; };
-struct ccsys_fstatat_flags_t		{ int				data; };
-struct ccsys_getauxval_type_t		{ int				data; };
-struct ccsys_gid_t			{ @CCSYS_TYPE_GID_T@		data; };
-struct ccsys_ino_t			{ @CCSYS_TYPE_INO_T@		data; };
-struct ccsys_linkat_flags_t		{ int				data; };
-struct ccsys_madvise_advice_t		{ int				data; };
-struct ccsys_mlockall_flags_t		{ int				data; };
-struct ccsys_mmap_flags_t		{ int				data; };
-struct ccsys_mmap_prot_t		{ int				data; };
-struct ccsys_mremap_flags_t		{ int				data; };
-struct ccsys_msync_flags_t		{ int				data; };
-struct ccsys_nlink_t			{ @CCSYS_TYPE_NLINK_T@		data; };
-struct ccsys_off_t			{ @CCSYS_TYPE_OFF_T@		data; };
-struct ccsys_open_flags_t		{ int				data; };
-struct ccsys_open_mode_t		{ @CCSYS_TYPE_MODE_T@		data; };
-struct ccsys_pid_t			{ @CCSYS_TYPE_PID_T@		data; };
-struct ccsys_renameat2_flags_t		{ int				data; };
-struct ccsys_rlim_t			{ @CCSYS_TYPE_RLIM_T@		data; };
-struct ccsys_scatter_gather_flags_t	{ @CCSYS_TYPE_PID_T@		data; };
-struct ccsys_signum_t			{ int				data; };
-struct ccsys_socket_namespace_t		{ int				data; };
-struct ccsys_socket_protocol_t		{ int				data; };
-struct ccsys_socket_style_t		{ int				data; };
-struct ccsys_socklen_t			{ @CCSYS_TYPE_SOCKLEN_T@	data; };
-struct ccsys_stat_mode_t		{ @CCSYS_TYPE_MODE_T@		data; };
-struct ccsys_uid_t			{ @CCSYS_TYPE_UID_T@		data; };
-struct ccsys_unlinkat_flags_t		{ int				data; };
-struct ccsys_utimensat_flags_t		{ int				data; };
-struct ccsys_waitpid_options_t		{ int				data; };
-struct ccsys_waitpid_status_t		{ int				data; };
-struct ccsys_whence_t			{ int				data; };
-
-/* ------------------------------------------------------------------ */
-/* The ones below are opaque types. */
-
-typedef struct ccsys_dir_t			ccsys_dir_t;
-
-
-/** --------------------------------------------------------------------
- ** Semantic types: constructors.
- ** ----------------------------------------------------------------- */
-
-#define CCSYS_SEMANTIC_TYPE_CTOR_INT(STEM)	\
-  __attribute__((__always_inline__))		\
-  static inline ccsys_ ## STEM ## _t		\
-  ccsys_new_ ## STEM (int flags)		\
-  {						\
-    ccsys_ ## STEM ## _t F = { .data = flags }; \
-    return F;					\
-  }
-
-CCSYS_SEMANTIC_TYPE_CTOR_INT(access_mode)
-CCSYS_SEMANTIC_TYPE_CTOR_INT(exit_status)
-CCSYS_SEMANTIC_TYPE_CTOR_INT(faccessat_flags)
-CCSYS_SEMANTIC_TYPE_CTOR_INT(fchmodat_flags)
-CCSYS_SEMANTIC_TYPE_CTOR_INT(fstatat_flags)
-CCSYS_SEMANTIC_TYPE_CTOR_INT(linkat_flags)
-CCSYS_SEMANTIC_TYPE_CTOR_INT(open_flags)
-CCSYS_SEMANTIC_TYPE_CTOR_INT(open_mode)
-CCSYS_SEMANTIC_TYPE_CTOR_INT(renameat2_flags)
-CCSYS_SEMANTIC_TYPE_CTOR_INT(unlinkat_flags)
-CCSYS_SEMANTIC_TYPE_CTOR_INT(utimensat_flags)
-CCSYS_SEMANTIC_TYPE_CTOR_INT(waitpid_options)
-
-
-/** --------------------------------------------------------------------
- ** System struct wrappers.
- ** ----------------------------------------------------------------- */
-
-typedef struct ccsys_dirent_t			ccsys_dirent_t;
-typedef struct ccsys_fd_set_t			ccsys_fd_set_t;
-typedef struct ccsys_fpos_t			ccsys_fpos_t;
-typedef struct ccsys_group_t			ccsys_group_t;
-typedef struct ccsys_hostent_t			ccsys_hostent_t;
-typedef struct ccsys_in_addr_t			ccsys_in_addr_t;
-typedef struct ccsys_iovec_t			ccsys_iovec_t;
-typedef struct ccsys_passwd_t			ccsys_passwd_t;
-typedef struct ccsys_rlimit_t			ccsys_rlimit_t;
-typedef struct ccsys_rusage_t			ccsys_rusage_t;
-typedef struct ccsys_sigset_t			ccsys_sigset_t;
-typedef struct ccsys_sockaddr_in6_t		ccsys_sockaddr_in6_t;
-typedef struct ccsys_sockaddr_in_t		ccsys_sockaddr_in_t;
-typedef struct ccsys_sockaddr_t			ccsys_sockaddr_t;
-typedef struct ccsys_sockaddr_un_t		ccsys_sockaddr_un_t;
-typedef struct ccsys_stat_t			ccsys_stat_t;
-
-struct ccsys_dirent_t		{ uint8_t data[@SIZEOF_STRUCT_DIRENT@]; };
-struct ccsys_fd_set_t		{ uint8_t data[@SIZEOF_STRUCT_FD_SET@]; };
-struct ccsys_fpos_t		{ uint8_t data[@SIZEOF_FPOS_T@]; };
-struct ccsys_group_t		{ uint8_t data[@SIZEOF_STRUCT_GROUP@]; };
-struct ccsys_hostent_t		{ uint8_t data[@SIZEOF_STRUCT_HOSTENT@]; };
-struct ccsys_in_addr_t		{ uint8_t data[@SIZEOF_STRUCT_IN_ADDR@]; };
-struct ccsys_iovec_t		{ uint8_t data[@SIZEOF_STRUCT_IOVEC@]; };
-struct ccsys_passwd_t		{ uint8_t data[@SIZEOF_STRUCT_PASSWD@]; };
-struct ccsys_rlimit_t		{ uint8_t data[@SIZEOF_STRUCT_RLIMIT@]; };
-struct ccsys_rusage_t		{ uint8_t data[@SIZEOF_STRUCT_RUSAGE@]; };
-struct ccsys_sigset_t		{ uint8_t data[@SIZEOF_SIGSET_T@]; };
-struct ccsys_sockaddr_in6_t	{ uint8_t data[@SIZEOF_STRUCT_SOCKADDR_IN6@]; };
-struct ccsys_sockaddr_in_t	{ uint8_t data[@SIZEOF_STRUCT_SOCKADDR_IN@]; };
-struct ccsys_sockaddr_t		{ uint8_t data[@SIZEOF_STRUCT_SOCKADDR@]; };
-struct ccsys_sockaddr_un_t	{ uint8_t data[@SIZEOF_STRUCT_SOCKADDR_UN@]; };
-struct ccsys_stat_t		{ uint8_t data[@SIZEOF_STRUCT_STAT@]; };
-
-
-/** --------------------------------------------------------------------
- ** Type definitions: time handling.
- ** ----------------------------------------------------------------- */
-
-typedef long int			ccsys_time_unit_t;
-typedef struct ccsys_seconds_t		ccsys_seconds_t;
-typedef struct ccsys_milliseconds_t	ccsys_milliseconds_t;
-typedef struct ccsys_microseconds_t	ccsys_microseconds_t;
-typedef struct ccsys_nanoseconds_t	ccsys_nanoseconds_t;
-typedef struct ccsys_timeval_t		ccsys_timeval_t;
-typedef struct ccsys_timespec_t		ccsys_timespec_t;
-
-struct ccsys_seconds_t		{ ccsys_time_unit_t data; };
-struct ccsys_milliseconds_t	{ ccsys_time_unit_t data; };
-struct ccsys_microseconds_t	{ ccsys_time_unit_t data; };
-struct ccsys_nanoseconds_t	{ ccsys_time_unit_t data; };
-
-struct ccsys_timeval_t {
-  ccsys_seconds_t	seconds;
-  ccsys_microseconds_t	microseconds;
-};
-
-struct ccsys_timespec_t {
-  ccsys_seconds_t	seconds;
-  ccsys_nanoseconds_t	nanoseconds;
-};
-
-/* ------------------------------------------------------------------ */
-
-static ccsys_nanoseconds_t const CCSYS_UTIME_NOW  = { .data = @VALUEOF_CCSYS_UTIME_NOW@  };
-static ccsys_nanoseconds_t const CCSYS_UTIME_OMIT = { .data = @VALUEOF_CCSYS_UTIME_OMIT@ };
-
-/* ------------------------------------------------------------------ */
-
-#define ccsys_set_seconds(S,N)		ccsys_p_set_seconds(&(S),(N))
-#define ccsys_set_milliseconds(S,N)	ccsys_p_set_milliseconds(&(S),(N))
-#define ccsys_set_microseconds(S,N)	ccsys_p_set_microseconds(&(S),(N))
-#define ccsys_set_nanoseconds(S,N)	ccsys_p_set_nanoseconds(&(S),(N))
-
-__attribute__((__always_inline__,__nonnull__(1)))
-static inline void
-ccsys_p_set_seconds (ccsys_seconds_t * S, ccsys_time_unit_t N)
-{
-  S->data = N;
-}
-
-__attribute__((__always_inline__,__nonnull__(1)))
-static inline void
-ccsys_p_set_milliseconds (ccsys_milliseconds_t * S, ccsys_time_unit_t N)
-{
-  S->data = N;
-}
-
-__attribute__((__always_inline__,__nonnull__(1)))
-static inline void
-ccsys_p_set_microseconds (ccsys_microseconds_t * S, ccsys_time_unit_t N)
-{
-  S->data = N;
-}
-
-__attribute__((__always_inline__,__nonnull__(1)))
-static inline void
-ccsys_p_set_nanoseconds (ccsys_nanoseconds_t * S, ccsys_time_unit_t N)
-{
-  S->data = N;
-}
-
-/* ------------------------------------------------------------------ */
-
-__attribute__((__always_inline__,__const__))
-static inline bool
-ccsys_timeval_is_zero (ccsys_timeval_t T)
-{
-  return ((0 == T.seconds.data) && (0 == T.microseconds.data))? true : false;
-}
-
-/* ------------------------------------------------------------------ */
-
-__attribute__((__always_inline__,__const__))
-static inline bool
-ccsys_timespec_is_zero (ccsys_timespec_t T)
-{
-  return ((0 == T.seconds.data) && (0 == T.nanoseconds.data))? true : false;
-}
-
-
-/** --------------------------------------------------------------------
- ** Type definitions: exception handlers.
- ** ----------------------------------------------------------------- */
-
-typedef struct ccsys_pathname_clean_handler_t	ccsys_pathname_clean_handler_t;
-typedef struct ccsys_pathname_error_handler_t	ccsys_pathname_error_handler_t;
-
-struct ccsys_pathname_clean_handler_t {
-  cce_clean_handler_t	handler;
-  ccstructs_pathname_I	pathname;
-};
-
-struct ccsys_pathname_error_handler_t {
-  cce_error_handler_t	handler;
-  ccstructs_pathname_I	pathname;
-};
-
-
-/** --------------------------------------------------------------------
  ** System constants.
  ** ----------------------------------------------------------------- */
 
@@ -882,6 +606,306 @@ typedef enum ccsys_stat_mode_enum_t		ccsys_stat_mode_enum_t;
 typedef enum ccsys_unlinkat_flags_enum_t	ccsys_unlinkat_flags_enum_t;
 typedef enum ccsys_waitpid_options_enum_t	ccsys_waitpid_options_enum_t;
 typedef enum ccsys_whence_enum_t		ccsys_whence_enum_t;
+
+
+/** --------------------------------------------------------------------
+ ** Semantic types: definitions.
+ ** ----------------------------------------------------------------- */
+
+#define ccsys_dnew(D)		{ .data = (D) }
+#define ccsys_dref(D)		((int)		((D).data))
+#define ccsys_uref(D)		((unsigned int)	((D).data))
+#define ccsys_ldref(D)		((long)		((D).data))
+#define ccsys_luref(D)		((unsigned long)((D).data))
+
+/* ------------------------------------------------------------------ */
+
+typedef struct ccsys_access_mode_t		ccsys_access_mode_t;
+typedef struct ccsys_blkcnt_t			ccsys_blkcnt_t;
+typedef struct ccsys_blksize_t			ccsys_blksize_t;
+typedef struct ccsys_dev_t			ccsys_dev_t;
+typedef struct ccsys_dirfd_t			ccsys_dirfd_t;
+typedef struct ccsys_exit_status_t		ccsys_exit_status_t;
+typedef struct ccsys_faccessat_flags_t		ccsys_faccessat_flags_t;
+typedef struct ccsys_fchmodat_flags_t		ccsys_fchmodat_flags_t;
+typedef struct ccsys_fchownat_flags_t		ccsys_fchownat_flags_t;
+typedef struct ccsys_fd_flags_t			ccsys_fd_flags_t;
+typedef struct ccsys_fd_t			ccsys_fd_t;
+typedef struct ccsys_file_t			ccsys_file_t;
+typedef struct ccsys_fstatat_flags_t		ccsys_fstatat_flags_t;
+typedef struct ccsys_getauxval_type_t		ccsys_getauxval_type_t;
+typedef struct ccsys_gid_t			ccsys_gid_t;
+typedef struct ccsys_ino_t			ccsys_ino_t;
+typedef struct ccsys_linkat_flags_t		ccsys_linkat_flags_t;
+typedef struct ccsys_madvise_advice_t		ccsys_madvise_advice_t;
+typedef struct ccsys_mlockall_flags_t		ccsys_mlockall_flags_t;
+typedef struct ccsys_mmap_flags_t		ccsys_mmap_flags_t;
+typedef struct ccsys_mmap_prot_t		ccsys_mmap_prot_t;
+typedef struct ccsys_mremap_flags_t		ccsys_mremap_flags_t;
+typedef struct ccsys_msync_flags_t		ccsys_msync_flags_t;
+typedef struct ccsys_nlink_t			ccsys_nlink_t;
+typedef struct ccsys_off_t			ccsys_off_t;
+typedef struct ccsys_open_flags_t		ccsys_open_flags_t;
+typedef struct ccsys_open_mode_t		ccsys_open_mode_t;
+typedef struct ccsys_pid_t			ccsys_pid_t;
+typedef struct ccsys_renameat2_flags_t		ccsys_renameat2_flags_t;
+typedef struct ccsys_rlim_t			ccsys_rlim_t;
+typedef struct ccsys_scatter_gather_flags_t	ccsys_scatter_gather_flags_t;
+typedef struct ccsys_signum_t			ccsys_signum_t;
+typedef struct ccsys_socket_namespace_t		ccsys_socket_namespace_t;
+typedef struct ccsys_socket_protocol_t		ccsys_socket_protocol_t;
+typedef struct ccsys_socket_style_t		ccsys_socket_style_t;
+typedef struct ccsys_socklen_t			ccsys_socklen_t;
+typedef struct ccsys_stat_mode_t		ccsys_stat_mode_t;
+typedef struct ccsys_uid_t			ccsys_uid_t;
+typedef struct ccsys_unlinkat_flags_t		ccsys_unlinkat_flags_t;
+typedef struct ccsys_utimensat_flags_t		ccsys_utimensat_flags_t;
+typedef struct ccsys_waitpid_options_t		ccsys_waitpid_options_t;
+typedef struct ccsys_waitpid_status_t		ccsys_waitpid_status_t;
+typedef struct ccsys_whence_t			ccsys_whence_t;
+
+struct ccsys_access_mode_t		{ int				data; };
+struct ccsys_blkcnt_t			{ @CCSYS_TYPE_BLKCNT_T@		data; };
+struct ccsys_blksize_t			{ @CCSYS_TYPE_BLKSIZE_T@	data; };
+struct ccsys_dev_t			{ @CCSYS_TYPE_DEV_T@		data; };
+struct ccsys_dirfd_t			{ int				data; };
+struct ccsys_exit_status_t		{ int				data; };
+struct ccsys_faccessat_flags_t		{ int				data; };
+struct ccsys_fchmodat_flags_t		{ int				data; };
+struct ccsys_fchownat_flags_t		{ int				data; };
+struct ccsys_fd_flags_t			{ int				data; };
+struct ccsys_fd_t			{ int				data; };
+struct ccsys_file_t			{ void *			data; };
+struct ccsys_fstatat_flags_t		{ int				data; };
+struct ccsys_getauxval_type_t		{ int				data; };
+struct ccsys_gid_t			{ @CCSYS_TYPE_GID_T@		data; };
+struct ccsys_ino_t			{ @CCSYS_TYPE_INO_T@		data; };
+struct ccsys_linkat_flags_t		{ int				data; };
+struct ccsys_madvise_advice_t		{ int				data; };
+struct ccsys_mlockall_flags_t		{ int				data; };
+struct ccsys_mmap_flags_t		{ int				data; };
+struct ccsys_mmap_prot_t		{ int				data; };
+struct ccsys_mremap_flags_t		{ int				data; };
+struct ccsys_msync_flags_t		{ int				data; };
+struct ccsys_nlink_t			{ @CCSYS_TYPE_NLINK_T@		data; };
+struct ccsys_off_t			{ @CCSYS_TYPE_OFF_T@		data; };
+struct ccsys_open_flags_t		{ int				data; };
+struct ccsys_open_mode_t		{ @CCSYS_TYPE_MODE_T@		data; };
+struct ccsys_pid_t			{ @CCSYS_TYPE_PID_T@		data; };
+struct ccsys_renameat2_flags_t		{ int				data; };
+struct ccsys_rlim_t			{ @CCSYS_TYPE_RLIM_T@		data; };
+struct ccsys_scatter_gather_flags_t	{ @CCSYS_TYPE_PID_T@		data; };
+struct ccsys_signum_t			{ int				data; };
+struct ccsys_socket_namespace_t		{ int				data; };
+struct ccsys_socket_protocol_t		{ int				data; };
+struct ccsys_socket_style_t		{ int				data; };
+struct ccsys_socklen_t			{ @CCSYS_TYPE_SOCKLEN_T@	data; };
+struct ccsys_stat_mode_t		{ @CCSYS_TYPE_MODE_T@		data; };
+struct ccsys_uid_t			{ @CCSYS_TYPE_UID_T@		data; };
+struct ccsys_unlinkat_flags_t		{ int				data; };
+struct ccsys_utimensat_flags_t		{ int				data; };
+struct ccsys_waitpid_options_t		{ int				data; };
+struct ccsys_waitpid_status_t		{ int				data; };
+struct ccsys_whence_t			{ int				data; };
+
+/* ------------------------------------------------------------------ */
+/* The ones below are opaque types. */
+
+typedef struct ccsys_dir_t			ccsys_dir_t;
+
+
+/** --------------------------------------------------------------------
+ ** Semantic types: constructors.
+ ** ----------------------------------------------------------------- */
+
+#define CCSYS_SEMANTIC_TYPE_CTOR_INT(STEM)	\
+  __attribute__((__always_inline__))		\
+  static inline ccsys_ ## STEM ## _t		\
+  ccsys_new_ ## STEM (int flags)		\
+  {						\
+    ccsys_ ## STEM ## _t F = { .data = flags }; \
+    return F;					\
+  }
+
+CCSYS_SEMANTIC_TYPE_CTOR_INT(access_mode)
+CCSYS_SEMANTIC_TYPE_CTOR_INT(exit_status)
+CCSYS_SEMANTIC_TYPE_CTOR_INT(faccessat_flags)
+CCSYS_SEMANTIC_TYPE_CTOR_INT(fchmodat_flags)
+CCSYS_SEMANTIC_TYPE_CTOR_INT(fchownat_flags)
+CCSYS_SEMANTIC_TYPE_CTOR_INT(fstatat_flags)
+CCSYS_SEMANTIC_TYPE_CTOR_INT(linkat_flags)
+CCSYS_SEMANTIC_TYPE_CTOR_INT(open_flags)
+CCSYS_SEMANTIC_TYPE_CTOR_INT(open_mode)
+CCSYS_SEMANTIC_TYPE_CTOR_INT(renameat2_flags)
+CCSYS_SEMANTIC_TYPE_CTOR_INT(unlinkat_flags)
+CCSYS_SEMANTIC_TYPE_CTOR_INT(utimensat_flags)
+CCSYS_SEMANTIC_TYPE_CTOR_INT(waitpid_options)
+
+/* ------------------------------------------------------------------ */
+
+CCSYS_SEMANTIC_TYPE_CTOR_INT(fd)
+CCSYS_SEMANTIC_TYPE_CTOR_INT(signum)
+
+/* ------------------------------------------------------------------ */
+
+__attribute__((__always_inline__))
+static inline ccsys_off_t
+ccsys_new_off (int64_t flags)
+{
+  ccsys_off_t F = { .data = (@CCSYS_TYPE_OFF_T@)flags };
+  return F;
+}
+
+__attribute__((__always_inline__))
+static inline ccsys_whence_t
+ccsys_new_whence (ccsys_whence_enum_t flags)
+{
+  ccsys_whence_t F = { .data = flags };
+  return F;
+}
+
+
+/** --------------------------------------------------------------------
+ ** System struct wrappers.
+ ** ----------------------------------------------------------------- */
+
+typedef struct ccsys_dirent_t			ccsys_dirent_t;
+typedef struct ccsys_fd_set_t			ccsys_fd_set_t;
+typedef struct ccsys_fpos_t			ccsys_fpos_t;
+typedef struct ccsys_group_t			ccsys_group_t;
+typedef struct ccsys_hostent_t			ccsys_hostent_t;
+typedef struct ccsys_in_addr_t			ccsys_in_addr_t;
+typedef struct ccsys_iovec_t			ccsys_iovec_t;
+typedef struct ccsys_passwd_t			ccsys_passwd_t;
+typedef struct ccsys_rlimit_t			ccsys_rlimit_t;
+typedef struct ccsys_rusage_t			ccsys_rusage_t;
+typedef struct ccsys_sigset_t			ccsys_sigset_t;
+typedef struct ccsys_sockaddr_in6_t		ccsys_sockaddr_in6_t;
+typedef struct ccsys_sockaddr_in_t		ccsys_sockaddr_in_t;
+typedef struct ccsys_sockaddr_t			ccsys_sockaddr_t;
+typedef struct ccsys_sockaddr_un_t		ccsys_sockaddr_un_t;
+typedef struct ccsys_stat_t			ccsys_stat_t;
+
+struct ccsys_dirent_t		{ uint8_t data[@SIZEOF_STRUCT_DIRENT@]; };
+struct ccsys_fd_set_t		{ uint8_t data[@SIZEOF_STRUCT_FD_SET@]; };
+struct ccsys_fpos_t		{ uint8_t data[@SIZEOF_FPOS_T@]; };
+struct ccsys_group_t		{ uint8_t data[@SIZEOF_STRUCT_GROUP@]; };
+struct ccsys_hostent_t		{ uint8_t data[@SIZEOF_STRUCT_HOSTENT@]; };
+struct ccsys_in_addr_t		{ uint8_t data[@SIZEOF_STRUCT_IN_ADDR@]; };
+struct ccsys_iovec_t		{ uint8_t data[@SIZEOF_STRUCT_IOVEC@]; };
+struct ccsys_passwd_t		{ uint8_t data[@SIZEOF_STRUCT_PASSWD@]; };
+struct ccsys_rlimit_t		{ uint8_t data[@SIZEOF_STRUCT_RLIMIT@]; };
+struct ccsys_rusage_t		{ uint8_t data[@SIZEOF_STRUCT_RUSAGE@]; };
+struct ccsys_sigset_t		{ uint8_t data[@SIZEOF_SIGSET_T@]; };
+struct ccsys_sockaddr_in6_t	{ uint8_t data[@SIZEOF_STRUCT_SOCKADDR_IN6@]; };
+struct ccsys_sockaddr_in_t	{ uint8_t data[@SIZEOF_STRUCT_SOCKADDR_IN@]; };
+struct ccsys_sockaddr_t		{ uint8_t data[@SIZEOF_STRUCT_SOCKADDR@]; };
+struct ccsys_sockaddr_un_t	{ uint8_t data[@SIZEOF_STRUCT_SOCKADDR_UN@]; };
+struct ccsys_stat_t		{ uint8_t data[@SIZEOF_STRUCT_STAT@]; };
+
+
+/** --------------------------------------------------------------------
+ ** Type definitions: time handling.
+ ** ----------------------------------------------------------------- */
+
+typedef long int			ccsys_time_unit_t;
+typedef struct ccsys_seconds_t		ccsys_seconds_t;
+typedef struct ccsys_milliseconds_t	ccsys_milliseconds_t;
+typedef struct ccsys_microseconds_t	ccsys_microseconds_t;
+typedef struct ccsys_nanoseconds_t	ccsys_nanoseconds_t;
+typedef struct ccsys_timeval_t		ccsys_timeval_t;
+typedef struct ccsys_timespec_t		ccsys_timespec_t;
+
+struct ccsys_seconds_t		{ ccsys_time_unit_t data; };
+struct ccsys_milliseconds_t	{ ccsys_time_unit_t data; };
+struct ccsys_microseconds_t	{ ccsys_time_unit_t data; };
+struct ccsys_nanoseconds_t	{ ccsys_time_unit_t data; };
+
+struct ccsys_timeval_t {
+  ccsys_seconds_t	seconds;
+  ccsys_microseconds_t	microseconds;
+};
+
+struct ccsys_timespec_t {
+  ccsys_seconds_t	seconds;
+  ccsys_nanoseconds_t	nanoseconds;
+};
+
+/* ------------------------------------------------------------------ */
+
+static ccsys_nanoseconds_t const CCSYS_UTIME_NOW  = { .data = @VALUEOF_CCSYS_UTIME_NOW@  };
+static ccsys_nanoseconds_t const CCSYS_UTIME_OMIT = { .data = @VALUEOF_CCSYS_UTIME_OMIT@ };
+
+/* ------------------------------------------------------------------ */
+
+#define ccsys_set_seconds(S,N)		ccsys_p_set_seconds(&(S),(N))
+#define ccsys_set_milliseconds(S,N)	ccsys_p_set_milliseconds(&(S),(N))
+#define ccsys_set_microseconds(S,N)	ccsys_p_set_microseconds(&(S),(N))
+#define ccsys_set_nanoseconds(S,N)	ccsys_p_set_nanoseconds(&(S),(N))
+
+__attribute__((__always_inline__,__nonnull__(1)))
+static inline void
+ccsys_p_set_seconds (ccsys_seconds_t * S, ccsys_time_unit_t N)
+{
+  S->data = N;
+}
+
+__attribute__((__always_inline__,__nonnull__(1)))
+static inline void
+ccsys_p_set_milliseconds (ccsys_milliseconds_t * S, ccsys_time_unit_t N)
+{
+  S->data = N;
+}
+
+__attribute__((__always_inline__,__nonnull__(1)))
+static inline void
+ccsys_p_set_microseconds (ccsys_microseconds_t * S, ccsys_time_unit_t N)
+{
+  S->data = N;
+}
+
+__attribute__((__always_inline__,__nonnull__(1)))
+static inline void
+ccsys_p_set_nanoseconds (ccsys_nanoseconds_t * S, ccsys_time_unit_t N)
+{
+  S->data = N;
+}
+
+/* ------------------------------------------------------------------ */
+
+__attribute__((__always_inline__,__const__))
+static inline bool
+ccsys_timeval_is_zero (ccsys_timeval_t T)
+{
+  return ((0 == T.seconds.data) && (0 == T.microseconds.data))? true : false;
+}
+
+/* ------------------------------------------------------------------ */
+
+__attribute__((__always_inline__,__const__))
+static inline bool
+ccsys_timespec_is_zero (ccsys_timespec_t T)
+{
+  return ((0 == T.seconds.data) && (0 == T.nanoseconds.data))? true : false;
+}
+
+
+/** --------------------------------------------------------------------
+ ** Type definitions: exception handlers.
+ ** ----------------------------------------------------------------- */
+
+typedef struct ccsys_pathname_clean_handler_t	ccsys_pathname_clean_handler_t;
+typedef struct ccsys_pathname_error_handler_t	ccsys_pathname_error_handler_t;
+
+struct ccsys_pathname_clean_handler_t {
+  cce_clean_handler_t	handler;
+  ccstructs_pathname_I	pathname;
+};
+
+struct ccsys_pathname_error_handler_t {
+  cce_error_handler_t	handler;
+  ccstructs_pathname_I	pathname;
+};
 
 
 /** --------------------------------------------------------------------

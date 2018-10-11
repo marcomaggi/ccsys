@@ -40,10 +40,9 @@ test_1_1 (cce_destination_t upper_L)
   if (cce_location(L)) {
     cce_run_catch_handlers_raise(L, upper_L);
   } else {
-    ccsys_signum_t	signum;
+    ccsys_signum_t	signum = ccsys_new_signum(CCSYS_SIGUSR1);
     bool		flag;
 
-    signum.data = CCSYS_SIGUSR1;
     ccsys_raise(L, signum);
     ccsys_signal_bub_acquire();
     flag = ccsys_signal_bub_delivered(signum);
@@ -66,10 +65,9 @@ test_1_2 (cce_destination_t upper_L)
   if (cce_location(L)) {
     cce_run_catch_handlers_raise(L, upper_L);
   } else {
-    ccsys_signum_t	signum;
+    ccsys_signum_t	signum = ccsys_new_signum(CCSYS_SIGUSR2);
     bool		flag;
 
-    signum.data = CCSYS_SIGUSR2;
     ccsys_raise(L, signum);
     ccsys_raise(L, signum);
     ccsys_raise(L, signum);
@@ -95,11 +93,9 @@ test_1_3 (cce_destination_t upper_L)
   if (cce_location(L)) {
     cce_run_catch_handlers_raise(L, upper_L);
   } else {
-    ccsys_signum_t	signum1, signum2;
+    ccsys_signum_t	signum1 = ccsys_new_signum(CCSYS_SIGUSR1);
+    ccsys_signum_t	signum2 = ccsys_new_signum(CCSYS_SIGUSR2);
     bool		flag1, flag2;
-
-    signum1.data = CCSYS_SIGUSR1;
-    signum2.data = CCSYS_SIGUSR2;
 
     ccsys_raise(L, signum1);
     ccsys_raise(L, signum2);
@@ -126,10 +122,9 @@ test_1_3 (cce_destination_t upper_L)
 static void
 test_2_1_parent (cce_destination_t L, int64_t child_pid)
 {
-  ccsys_pid_t		pid = { .data = child_pid };
-  ccsys_signum_t	signum;
+  ccsys_pid_t		pid    = ccsys_dnew(child_pid);
+  ccsys_signum_t	signum = ccsys_new_signum(CCSYS_SIGUSR1);
 
-  signum.data = CCSYS_SIGUSR1;
   ccsys_kill(L, pid, signum);
 }
 
@@ -137,14 +132,13 @@ static void
 test_2_1_child (cce_destination_t L)
 {
   {
-    ccsys_seconds_t	one = { .data = 1 };
+    ccsys_seconds_t	one = ccsys_dnew(1);
     ccsys_sleep(one);
   }
   {
-    ccsys_signum_t	signum;
+    ccsys_signum_t	signum = ccsys_new_signum(CCSYS_SIGUSR1);
     bool		flag;
 
-    signum.data = CCSYS_SIGUSR1;
     ccsys_signal_bub_acquire();
     flag = ccsys_signal_bub_delivered(signum);
     cctests_assert(L, true == flag);
