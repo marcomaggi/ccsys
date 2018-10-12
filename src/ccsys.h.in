@@ -740,6 +740,8 @@ CCSYS_SEMANTIC_TYPE_CTOR_INT(renameat2_flags)
 CCSYS_SEMANTIC_TYPE_CTOR_INT(unlinkat_flags)
 CCSYS_SEMANTIC_TYPE_CTOR_INT(utimensat_flags)
 CCSYS_SEMANTIC_TYPE_CTOR_INT(waitpid_options)
+CCSYS_SEMANTIC_TYPE_CTOR_INT(socket_style)
+CCSYS_SEMANTIC_TYPE_CTOR_INT(socket_protocol)
 
 /* ------------------------------------------------------------------ */
 

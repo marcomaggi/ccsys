@@ -863,6 +863,16 @@ Build and return a new instance.
 Build and return a new instance.
 @end deftypefun
 
+
+@deftypefun ccsys_socket_style_t ccsys_new_socket_style (int @var{style})
+Build and return a new instance.
+@end deftypefun
+
+
+@deftypefun ccsys_socket_protocol_t ccsys_new_socket_protocol (int @var{protocol})
+Build and return a new instance.
+@end deftypefun
+
 @c page
 @node handlers
 @chapter Exception handlers
