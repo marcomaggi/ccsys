@@ -179,7 +179,7 @@ upon the package CCTests, at least version @value{CCTESTS_VERSION}.
 
 @value{PACKAGE} installs a single header file @file{ccsys.h}.  All the function names in the @api{}
 are prefixed with @code{ccsys_}; all the preprocessor symbol names are prefixed with @code{CCSYS_};
-all the type names are prefixed with @code{ccsys_} and suffixed with @code{_t}.
+all the type names are prefixed with @code{ccsys_} and suffixed with @code{_t} or @code{_I}.
 
 @menu
 * overview linking::            Linking code with the library.
@@ -258,8 +258,10 @@ gcc -std=c11 -Wall \
 system calls.  Each wrapper accepts a pointer to @objtype{cce_location_t} as argument and, in case
 of error, it will perform a non--local exit by jumping to the selected location.
 
-Each wrapper function accepts the same arguments of the system call and returns the same return
-value of the system call (if it completes successfully).
+From a semantic point of view: mostly, each wrapper function accepts the same arguments of the
+system call and returns the same return value of the system call (if it completes successfully).
+The specific type of arguments and return values may be different from those of the underlying
+system call.
 
 All the wrappers reset @code{errno} to zero before performing the system call and reset it to zero
 before returning.  In case of error: the raised exceptional condition objects are of type
@@ -270,9 +272,6 @@ default.  The @gnu{} C Library and Linux calls are available only if the package
 with, respectively, @option{--enable-glibc} and @option{--enable-linux}.  If a system call is not
 available: the associated wrapper will raise an exception of type
 @objtype{cce_condition_unimplemented_t}.
-
-Pathname arguments are of type @objtype{ccstructs_pathname_I}, which is an interface defined by the
-library CCStructs, @ccstructsref{pathname, The @emph{pathname} interface}.
 
 @c page
 @node overview constants
@@ -336,8 +335,10 @@ int open(const char *pathname, int flags, mode_t mode);
 while the @value{PACKAGE} wrapper has the prototype:
 
 @example
-ccsys_fd_t ccsys_open (cce_location_t * L, ccstructs_pathname_I filename,
-   ccsys_open_flags_t flags, ccsys_open_mode_t mode);
+ccsys_fd_t ccsys_open (cce_location_t *      L,
+                       ccstructs_pathname_I  pathname,
+                       ccsys_open_flags_t    flags,
+                       ccsys_open_mode_t     mode);
 @end example
 
 @noindent
@@ -360,6 +361,9 @@ struct ccsys_open_mode_t        @{ int32_t data; @};
 @noindent
 when appropriate, the type of the field @samp{data} is determined at package configuration time.
 
+Pathname arguments are of type @objtype{ccstructs_pathname_I}, which is an interface defined by the
+library CCStructs, @ccstructsref{pathname, The @emph{pathname} interface}.
+
 @c page
 @node overview structures
 @section How system structures are handled
@@ -380,8 +384,8 @@ struct ccsys_stat_t @{ uint8_t data[144]; @};
 @end example
 
 @noindent
-for each public field in the structure, there may be a getter and a setter functions, for example
-for the @code{st_dev} field:
+for each public field in the structure, there may be a getter and a setter function, for example for
+the @code{st_dev} field:
 
 @example
 ccsys_dev_t ccsys_ref_stat_st_dev (ccsys_stat_t const * S)
