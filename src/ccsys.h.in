@@ -580,12 +580,64 @@ enum ccsys_signum_enum_t {
 @CCSYS_ENUM_DEF_CCSYS_NSIG@
 };
 
+enum ccsys_fcntl_commands_enum_t {
+@CCSYS_ENUM_DEF_CCSYS_F_DUPFD@
+@CCSYS_ENUM_DEF_CCSYS_F_DUPFD_CLOEXEC@
+@CCSYS_ENUM_DEF_CCSYS_F_GETFD@
+@CCSYS_ENUM_DEF_CCSYS_F_SETFD@
+@CCSYS_ENUM_DEF_CCSYS_F_GETFL@
+@CCSYS_ENUM_DEF_CCSYS_F_SETFL@
+@CCSYS_ENUM_DEF_CCSYS_F_SETLK@
+@CCSYS_ENUM_DEF_CCSYS_F_SETLKW@
+@CCSYS_ENUM_DEF_CCSYS_F_GETLK@
+@CCSYS_ENUM_DEF_CCSYS_F_OFD_SETLK@
+@CCSYS_ENUM_DEF_CCSYS_F_OFD_SETLKW@
+@CCSYS_ENUM_DEF_CCSYS_F_OFD_GETLK@
+@CCSYS_ENUM_DEF_CCSYS_F_GETOWN@
+@CCSYS_ENUM_DEF_CCSYS_F_SETOWN@
+@CCSYS_ENUM_DEF_CCSYS_F_GETOWN_EX@
+@CCSYS_ENUM_DEF_CCSYS_F_SETOWN_EX@
+@CCSYS_ENUM_DEF_CCSYS_F_GETSIG@
+@CCSYS_ENUM_DEF_CCSYS_F_SETSIG@
+@CCSYS_ENUM_DEF_CCSYS_F_SETLEASE@
+@CCSYS_ENUM_DEF_CCSYS_F_GETLEASE@
+@CCSYS_ENUM_DEF_CCSYS_F_NOTIFY@
+@CCSYS_ENUM_DEF_CCSYS_F_SETPIPE_SZ@
+@CCSYS_ENUM_DEF_CCSYS_F_GETPIPE_SZ@
+@CCSYS_ENUM_DEF_CCSYS_F_ADD_SEALS@
+@CCSYS_ENUM_DEF_CCSYS_F_GET_SEALS@
+@CCSYS_ENUM_DEF_CCSYS_F_SEAL_SEAL@
+@CCSYS_ENUM_DEF_CCSYS_F_SEAL_SHRINK@
+@CCSYS_ENUM_DEF_CCSYS_F_SEAL_GROW@
+@CCSYS_ENUM_DEF_CCSYS_F_SEAL_WRITE@
+};
+
+/* Other constants for "fcntl()", not to be used as commands. */
+enum ccsys_fcntl_flags_enum_t {
+@CCSYS_ENUM_DEF_CCSYS_F_RDLCK@
+@CCSYS_ENUM_DEF_CCSYS_F_WRLCK@
+@CCSYS_ENUM_DEF_CCSYS_F_UNLCK@
+
+@CCSYS_ENUM_DEF_CCSYS_DN_ACCESS@
+@CCSYS_ENUM_DEF_CCSYS_DN_MODIFY@
+@CCSYS_ENUM_DEF_CCSYS_DN_CREATE@
+@CCSYS_ENUM_DEF_CCSYS_DN_DELETE@
+@CCSYS_ENUM_DEF_CCSYS_DN_RENAME@
+@CCSYS_ENUM_DEF_CCSYS_DN_ATTRIB@
+};
+
+/* This is not an  enum because ISO C requires enums to  be in the "int"
+   range, while this constant is not (at least on GNU+Linux systems). */
+static long const CCSYS_DN_MULTISHOT = @VALUEOF_DN_MULTISHOT@;
+
 /* ------------------------------------------------------------------ */
 
 typedef enum ccsys_access_mode_enum_t		ccsys_access_mode_enum_t;
 typedef enum ccsys_at_flags_enum_t		ccsys_at_flags_enum_t;
 typedef enum ccsys_errno_enum_t			ccsys_errno_enum_t;
 typedef enum ccsys_exit_status_enum_t		ccsys_exit_status_enum_t;
+typedef enum ccsys_fcntl_commands_enum_t	ccsys_fcntl_commands_enum_t;
+typedef enum ccsys_fcntl_flags_enum_t		ccsys_fcntl_flags_enum_t;
 typedef enum ccsys_fd_flags_enum_t		ccsys_fd_flags_enum_t;
 typedef enum ccsys_limits_enum_t		ccsys_limits_enum_t;
 typedef enum ccsys_memory_advice_enum_t		ccsys_memory_advice_enum_t;
@@ -629,6 +681,7 @@ typedef struct ccsys_exit_status_t		ccsys_exit_status_t;
 typedef struct ccsys_faccessat_flags_t		ccsys_faccessat_flags_t;
 typedef struct ccsys_fchmodat_flags_t		ccsys_fchmodat_flags_t;
 typedef struct ccsys_fchownat_flags_t		ccsys_fchownat_flags_t;
+typedef struct ccsys_fcntl_command_t		ccsys_fcntl_command_t;
 typedef struct ccsys_fd_flags_t			ccsys_fd_flags_t;
 typedef struct ccsys_fd_t			ccsys_fd_t;
 typedef struct ccsys_file_t			ccsys_file_t;
@@ -636,6 +689,7 @@ typedef struct ccsys_fstatat_flags_t		ccsys_fstatat_flags_t;
 typedef struct ccsys_getauxval_type_t		ccsys_getauxval_type_t;
 typedef struct ccsys_gid_t			ccsys_gid_t;
 typedef struct ccsys_ino_t			ccsys_ino_t;
+typedef struct ccsys_ioctl_command_t		ccsys_ioctl_command_t;
 typedef struct ccsys_linkat_flags_t		ccsys_linkat_flags_t;
 typedef struct ccsys_madvise_advice_t		ccsys_madvise_advice_t;
 typedef struct ccsys_mlockall_flags_t		ccsys_mlockall_flags_t;
@@ -673,6 +727,7 @@ struct ccsys_exit_status_t		{ int				data; };
 struct ccsys_faccessat_flags_t		{ int				data; };
 struct ccsys_fchmodat_flags_t		{ int				data; };
 struct ccsys_fchownat_flags_t		{ int				data; };
+struct ccsys_fcntl_command_t		{ int				data; };
 struct ccsys_fd_flags_t			{ int				data; };
 struct ccsys_fd_t			{ int				data; };
 struct ccsys_file_t			{ void *			data; };
@@ -680,6 +735,7 @@ struct ccsys_fstatat_flags_t		{ int				data; };
 struct ccsys_getauxval_type_t		{ int				data; };
 struct ccsys_gid_t			{ @CCSYS_TYPE_GID_T@		data; };
 struct ccsys_ino_t			{ @CCSYS_TYPE_INO_T@		data; };
+struct ccsys_ioctl_command_t		{ int				data; };
 struct ccsys_linkat_flags_t		{ int				data; };
 struct ccsys_madvise_advice_t		{ int				data; };
 struct ccsys_mlockall_flags_t		{ int				data; };
@@ -742,6 +798,7 @@ CCSYS_SEMANTIC_TYPE_CTOR_INT(utimensat_flags)
 CCSYS_SEMANTIC_TYPE_CTOR_INT(waitpid_options)
 CCSYS_SEMANTIC_TYPE_CTOR_INT(socket_style)
 CCSYS_SEMANTIC_TYPE_CTOR_INT(socket_protocol)
+CCSYS_SEMANTIC_TYPE_CTOR_INT(fcntl_command)
 
 /* ------------------------------------------------------------------ */
 
@@ -1894,6 +1951,20 @@ ccsys_decl void ccsys_init_stream_error_handler (cce_destination_t L, cce_error_
   _Generic((H),								\
 	   cce_clean_handler_t	*: ccsys_init_stream_clean_handler,	\
 	   cce_error_handler_t	*: ccsys_init_stream_error_handler)(L,H,stream)
+
+
+/** --------------------------------------------------------------------
+ ** Input/output: streams.
+ ** ----------------------------------------------------------------- */
+
+ccsys_decl int ccsys_fcntl (cce_destination_t L, ccsys_fd_t fd, ccsys_fcntl_command_t command)
+  __attribute__((__nonnull__(1)));
+
+ccsys_decl int ccsys_fcntl_int (cce_destination_t L, ccsys_fd_t fd, ccsys_fcntl_command_t command, int arg)
+  __attribute__((__nonnull__(1)));
+
+ccsys_decl int ccsys_fcntl_ptr (cce_destination_t L, ccsys_fd_t fd, ccsys_fcntl_command_t command, void * arg)
+  __attribute__((__nonnull__(1)));
 
 
 /** --------------------------------------------------------------------

@@ -1562,6 +1562,54 @@ test_10_2 (cce_destination_t upper_L)
 }
 
 
+/** --------------------------------------------------------------------
+ ** Input/output: control operations.
+ ** ----------------------------------------------------------------- */
+
+void
+test_11_1 (cce_destination_t upper_L)
+/* Use fcntl. */
+{
+  cce_location_t			L[1];
+  cce_clean_handler_t			filedes_H[1];
+  ccsys_pathname_clean_handler_t	file_H[1];
+
+  if (cce_location(L)) {
+    cce_run_catch_handlers_raise(L, upper_L);
+  } else {
+    ccstructs_pathname_I	filename = ccstructs_new_pathname_from_static_string("input-output-name.ext");
+    ccsys_fd_t		fd;
+
+    /* Create and open the file. */
+    {
+      ccsys_open_flags_t	flags = ccsys_new_open_flags(CCSYS_O_CREAT | CCSYS_O_RDWR);
+      ccsys_open_mode_t		mode  = ccsys_new_open_mode(CCSYS_S_IRUSR | CCSYS_S_IWUSR);
+      fd = ccsys_open(L, filename, flags, mode);
+      ccsys_init_filedes_handler(L, filedes_H, fd);
+      ccsys_init_remove_handler(L, file_H, filename);
+    }
+
+    /* Call "fcntl()" to set a flag. */
+    {
+      ccsys_fcntl_command_t	cmd = ccsys_new_fcntl_command(CCSYS_F_SETFL);
+
+      ccsys_fcntl_int(L, fd, cmd, CCSYS_FD_CLOEXEC);
+    }
+
+    /* Call "fcntl()" to retrieve the flags. */
+    {
+      ccsys_fcntl_command_t	cmd = ccsys_new_fcntl_command(CCSYS_F_GETFL);
+      int			rv;
+
+      rv = ccsys_fcntl(L, fd, cmd);
+      cctests_assert_equal_int(L, CCSYS_FD_CLOEXEC, rv);
+    }
+
+    cce_run_body_handlers(L);
+  }
+}
+
+
 int
 main (void)
 {

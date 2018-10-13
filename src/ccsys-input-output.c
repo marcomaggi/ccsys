@@ -773,6 +773,53 @@ ccsys_fileno (ccsys_file_t stream)
 
 
 /** --------------------------------------------------------------------
+ ** Input/output: streams.
+ ** ----------------------------------------------------------------- */
+
+int
+ccsys_fcntl (cce_destination_t L, ccsys_fd_t fd, ccsys_fcntl_command_t command)
+{
+  int	rv;
+
+  errno = 0;
+  rv = fcntl(fd.data, command.data);
+  if (-1 != rv) {
+    return rv;
+  } else {
+    cce_raise(L, cce_condition_new_errno_clear());
+  }
+}
+
+int
+ccsys_fcntl_int (cce_destination_t L, ccsys_fd_t fd, ccsys_fcntl_command_t command, int arg)
+{
+  int	rv;
+
+  errno = 0;
+  rv = fcntl(fd.data, command.data, arg);
+  if (-1 != rv) {
+    return rv;
+  } else {
+    cce_raise(L, cce_condition_new_errno_clear());
+  }
+}
+
+int
+ccsys_fcntl_ptr (cce_destination_t L, ccsys_fd_t fd, ccsys_fcntl_command_t command, void * arg)
+{
+  int	rv;
+
+  errno = 0;
+  rv = fcntl(fd.data, command.data, arg);
+  if (-1 != rv) {
+    return rv;
+  } else {
+    cce_raise(L, cce_condition_new_errno_clear());
+  }
+}
+
+
+/** --------------------------------------------------------------------
  ** Input/output: file descriptor handler.
  ** ----------------------------------------------------------------- */
 

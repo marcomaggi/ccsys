@@ -723,6 +723,14 @@ Enumerated constants}.
 Type of exact integers representing the flags for @cfunc{ccsys_utimensat}.
 @end deftp
 
+
+@anchor{ccsys_fcntl_command_t}
+@deftp {Semantic Type} ccsys_fcntl_command_t
+Type of exact integers representing the command for @cfunc{ccsys_fcntl}.  It is meant to be one of
+the constants of type @objtype{ccsys_fcntl_commands_enum_t}; @ref{ccsys_fcntl_commands_enum_t,
+Enumerated constants}.
+@end deftp
+
 @c page
 @node semantic macros
 @section Semantic type macros
@@ -870,6 +878,11 @@ Build and return a new instance.
 
 
 @deftypefun ccsys_socket_protocol_t ccsys_new_socket_protocol (int @var{protocol})
+Build and return a new instance.
+@end deftypefun
+
+
+@deftypefun ccsys_fcntl_command_t ccsys_new_fcntl_command (int @var{command})
 Build and return a new instance.
 @end deftypefun
 
@@ -1698,6 +1711,86 @@ CCSYS_SIGXCPU           CCSYS_SIGXSFZ
 CCSYS_NSIG
 @end example
 @end deftp
+
+
+@EnumeratedConstant{CCSYS_F_DUPFD}
+@EnumeratedConstant{CCSYS_F_DUPFD_CLOEXEC}
+@EnumeratedConstant{CCSYS_F_GETFD}
+@EnumeratedConstant{CCSYS_F_SETFD}
+@EnumeratedConstant{CCSYS_F_GETFL}
+@EnumeratedConstant{CCSYS_F_SETFL}
+@EnumeratedConstant{CCSYS_F_SETLK}
+@EnumeratedConstant{CCSYS_F_SETLKW}
+@EnumeratedConstant{CCSYS_F_GETLK}
+@EnumeratedConstant{CCSYS_F_OFD_SETLK}
+@EnumeratedConstant{CCSYS_F_OFD_SETLKW}
+@EnumeratedConstant{CCSYS_F_OFD_GETLK}
+@EnumeratedConstant{CCSYS_F_GETOWN}
+@EnumeratedConstant{CCSYS_F_SETOWN}
+@EnumeratedConstant{CCSYS_F_GETOWN_EX}
+@EnumeratedConstant{CCSYS_F_SETOWN_EX}
+@EnumeratedConstant{CCSYS_F_GETSIG}
+@EnumeratedConstant{CCSYS_F_SETSIG}
+@EnumeratedConstant{CCSYS_F_SETLEASE}
+@EnumeratedConstant{CCSYS_F_GETLEASE}
+@EnumeratedConstant{CCSYS_F_NOTIFY}
+@EnumeratedConstant{CCSYS_F_SETPIPE_SZ}
+@EnumeratedConstant{CCSYS_F_GETPIPE_SZ}
+@EnumeratedConstant{CCSYS_F_ADD_SEALS}
+@EnumeratedConstant{CCSYS_F_GET_SEALS}
+@EnumeratedConstant{CCSYS_F_SEAL_SEAL}
+@EnumeratedConstant{CCSYS_F_SEAL_SHRINK}
+@EnumeratedConstant{CCSYS_F_SEAL_GROW}
+@EnumeratedConstant{CCSYS_F_SEAL_WRITE}
+@anchor{ccsys_fcntl_commands_enum_t}
+@deftp {Enum Typedef} ccsys_fcntl_commands_enum_t
+Constants for @cfunc{ccsys_fcntl} commands.  It defines the following constants:
+
+@example
+CCSYS_F_DUPFD           CCSYS_F_DUPFD_CLOEXEC   CCSYS_F_GETFD
+CCSYS_F_SETFD           CCSYS_F_GETFL           CCSYS_F_SETFL
+CCSYS_F_SETLK           CCSYS_F_SETLKW          CCSYS_F_GETLK
+CCSYS_F_OFD_SETLK       CCSYS_F_OFD_SETLKW      CCSYS_F_OFD_GETLK
+CCSYS_F_GETOWN          CCSYS_F_SETOWN          CCSYS_F_GETOWN_EX
+CCSYS_F_SETOWN_EX       CCSYS_F_GETSIG          CCSYS_F_SETSIG
+CCSYS_F_SETLEASE        CCSYS_F_GETLEASE        CCSYS_F_NOTIFY
+CCSYS_F_SETPIPE_SZ      CCSYS_F_GETPIPE_SZ      CCSYS_F_ADD_SEALS
+CCSYS_F_GET_SEALS       CCSYS_F_SEAL_SEAL       CCSYS_F_SEAL_SHRINK
+CCSYS_F_SEAL_GROW       CCSYS_F_SEAL_WRITE
+@end example
+@end deftp
+
+
+@EnumeratedConstant{CCSYS_F_RDLCK}
+@EnumeratedConstant{CCSYS_F_WRLCK}
+@EnumeratedConstant{CCSYS_F_UNLCK}
+@EnumeratedConstant{CCSYS_DN_ACCESS}
+@EnumeratedConstant{CCSYS_DN_MODIFY}
+@EnumeratedConstant{CCSYS_DN_CREATE}
+@EnumeratedConstant{CCSYS_DN_DELETE}
+@EnumeratedConstant{CCSYS_DN_RENAME}
+@EnumeratedConstant{CCSYS_DN_ATTRIB}
+@anchor{ccsys_fcntl_flags_enum_t}
+@deftp {Enum Typedef} ccsys_fcntl_flags_enum_t
+Other constants for @cfunc{ccsys_fcntl}.  It defines the following constants:
+
+@example
+CCSYS_F_RDLCK
+CCSYS_F_WRLCK
+CCSYS_F_UNLCK
+CCSYS_DN_ACCESS
+CCSYS_DN_MODIFY
+CCSYS_DN_CREATE
+CCSYS_DN_DELETE
+CCSYS_DN_RENAME
+CCSYS_DN_ATTRIB
+@end example
+@end deftp
+
+@deftypevr {Constant} long const CCSYS_DN_MULTISHOT
+Another constant for @cfunc{ccsys_fcntl}.  This is not an enum because ISO C requires enums to be in
+the @objtype{int} range, while this constant is not (at least on @gnu{}+Linux systems).
+@end deftypevr
 
 @c page
 @node prog
@@ -3762,6 +3855,7 @@ The macro expands into a call to @cfunc{ccsys_init_endgrent_error_handler}.
 * io select::                   Waiting for input/output.
 * io sync::                     Committing file system caches to disk.
 * io streams::                  Stream input/output.
+* io control::                  Control operations.
 @end menu
 
 @c page
@@ -5800,6 +5894,79 @@ Wrapper for @cfunc{ferror}; @manpage{ferror, Check and reset stream status}.
 @deftypefun ccsys_fd_t ccsys_fileno (ccsys_file_t @var{stream})
 Wrapper for @cfunc{fileno}; @manpage{fileno, Check and reset stream status}.
 @end deftypefun
+
+@c page
+@node io control
+@section Control operations
+
+
+The following symbols are defined in the header file @file{ccsys.h}.
+
+
+@deftypefun int ccsys_fcntl (cce_destination_t @var{L}, ccsys_fd_t @var{fd}, ccsys_fcntl_command_t @var{command})
+Wrapper for @cfunc{fcntl}; @manpage{fcntl, Manipulate file descriptor}.  To be used when no
+additional argument is required.
+@end deftypefun
+
+
+@deftypefun int ccsys_fcntl_int (cce_destination_t @var{L}, ccsys_fd_t @var{fd}, ccsys_fcntl_command_t @var{command}, int @var{arg})
+Wrapper for @cfunc{fcntl}; @manpage{fcntl, Manipulate file descriptor}.  To be used when an
+additional @objtype{int} argument is required.
+@end deftypefun
+
+
+@deftypefun int ccsys_fcntl_ptr (cce_destination_t @var{L}, ccsys_fd_t @var{fd}, ccsys_fcntl_command_t @var{command}, void * @var{arg})
+Wrapper for @cfunc{fcntl}; @manpage{fcntl, Manipulate file descriptor}.  To be used when an
+additional pointer argument is required.
+@end deftypefun
+
+
+Here is a usage example showing how to set and get a file descriptor flag:
+
+@example
+cce_location_t                  L[1];
+cce_clean_handler_t             filedes_H[1];
+ccsys_pathname_clean_handler_t  file_H[1];
+
+if (cce_location(L)) @{
+  cce_run_catch_handlers_raise(L, upper_L);
+@} else @{
+  ccstructs_pathname_I  filename =
+    ccstructs_new_pathname_from_static_string("name.ext");
+  ccsys_fd_t            fd;
+
+  /* Create and open the file. */
+  @{
+    ccsys_open_flags_t  flags =
+      ccsys_new_open_flags(CCSYS_O_CREAT | CCSYS_O_RDWR);
+    ccsys_open_mode_t   mode  =
+      ccsys_new_open_mode(CCSYS_S_IRUSR | CCSYS_S_IWUSR);
+
+    fd = ccsys_open(L, filename, flags, mode);
+    ccsys_init_filedes_handler(L, filedes_H, fd);
+    ccsys_init_remove_handler(L, file_H, filename);
+  @}
+
+  /* Call "fcntl()" to set a flag. */
+  @{
+    ccsys_fcntl_command_t  cmd =
+      ccsys_new_fcntl_command(CCSYS_F_SETFL);
+
+    ccsys_fcntl_int(L, fd, cmd, CCSYS_FD_CLOEXEC);
+  @}
+
+  /* Call "fcntl()" to retrieve the flags. */
+  @{
+    ccsys_fcntl_command_t  cmd =
+      ccsys_new_fcntl_command(CCSYS_F_GETFL);
+    int                    rv;
+
+    rv = ccsys_fcntl(L, fd, cmd);
+  @}
+
+  cce_run_body_handlers(L);
+@}
+@end example
 
 @c page
 @node fs
@@ -9503,4 +9670,3 @@ the package CCTests is available at:
 @bye
 
 @c end of file
-
