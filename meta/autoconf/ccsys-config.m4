@@ -93,6 +93,12 @@ AC_DEFUN([CCSYS_SIGNAL_HEADER],[
 #endif
 ])
 
+AC_DEFUN([CCSYS_SYS_IOCTL_HEADER],[
+#ifdef HAVE_SYS_IOCTL_H
+#  include <sys/ioctl.h>
+#endif
+])
+
 AC_DEFUN([CCSYS_SYS_SELECT_HEADER],[
 #ifdef HAVE_SYS_SELECT_H
 #  include <sys/select.h>

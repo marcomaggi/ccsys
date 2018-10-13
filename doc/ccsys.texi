@@ -5921,6 +5921,32 @@ additional pointer argument is required.
 @end deftypefun
 
 
+@deftypefun int ccsys_ioctl (cce_destination_t @var{L}, ccsys_fd_t @var{fd}, ccsys_ioctl_command_t @var{command})
+Wrapper for @cfunc{ioctl}; @manpage{ioctl, Manipulate file descriptor}.  To be used when no
+additional argument is required.
+@end deftypefun
+
+
+@deftypefun int ccsys_ioctl_int (cce_destination_t @var{L}, ccsys_fd_t @var{fd}, ccsys_ioctl_command_t @var{command}, int @var{arg})
+Wrapper for @cfunc{ioctl}; @manpage{ioctl, Manipulate file descriptor}.  To be used when an
+additional @objtype{int} argument is required.
+@end deftypefun
+
+
+@deftypefun int ccsys_ioctl_ptr (cce_destination_t @var{L}, ccsys_fd_t @var{fd}, ccsys_ioctl_command_t @var{command}, void * @var{arg})
+Wrapper for @cfunc{ioctl}; @manpage{ioctl, Manipulate file descriptor}.  To be used when an
+additional pointer argument is required.
+@end deftypefun
+
+@menu
+* io contro fcntl::             Usage example for @cfunc{ccsys_fcntl}.
+@end menu
+
+@c page
+@node io contro fcntl
+@subsection Usage example for @cfunc{ccsys_fcntl}
+
+
 Here is a usage example showing how to set and get a file descriptor flag:
 
 @example

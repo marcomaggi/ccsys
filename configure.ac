@@ -70,7 +70,7 @@ AM_PROG_CC_C_O
 AC_HEADER_STDC
 AC_CHECK_HEADERS([assert.h errno.h stdint.h stddef.h setjmp.h memory.h limits.h fcntl.h dirent.h time.h])
 AC_CHECK_HEADERS([grp.h])
-AC_CHECK_HEADERS([sys/syscall.h sys/select.h sys/stat.h sys/time.h sys/types.h sys/uio.h sys/mman.h sys/wait.h])
+AC_CHECK_HEADERS([sys/syscall.h sys/select.h sys/stat.h sys/time.h sys/types.h sys/uio.h sys/mman.h sys/wait.h sys/ioctl.h])
 AC_CHECK_HEADERS([netdb.h netinet/in.h arpa/inet.h sys/socket.h sys/un.h])
 AC_CHECK_HEADERS([signal.h pwd.h grp.h])
 AC_CHECK_HEADERS([sys/auxv.h sys/resource.h])

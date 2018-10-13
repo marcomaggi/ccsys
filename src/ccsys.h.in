@@ -1966,6 +1966,15 @@ ccsys_decl int ccsys_fcntl_int (cce_destination_t L, ccsys_fd_t fd, ccsys_fcntl_
 ccsys_decl int ccsys_fcntl_ptr (cce_destination_t L, ccsys_fd_t fd, ccsys_fcntl_command_t command, void * arg)
   __attribute__((__nonnull__(1)));
 
+ccsys_decl int ccsys_ioctl (cce_destination_t L, ccsys_fd_t fd, ccsys_ioctl_command_t command)
+  __attribute__((__nonnull__(1)));
+
+ccsys_decl int ccsys_ioctl_int (cce_destination_t L, ccsys_fd_t fd, ccsys_ioctl_command_t command, int arg)
+  __attribute__((__nonnull__(1)));
+
+ccsys_decl int ccsys_ioctl_ptr (cce_destination_t L, ccsys_fd_t fd, ccsys_ioctl_command_t command, void * arg)
+  __attribute__((__nonnull__(1)));
+
 
 /** --------------------------------------------------------------------
  ** File system: working directory.

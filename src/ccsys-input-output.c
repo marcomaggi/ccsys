@@ -37,6 +37,9 @@
 #ifdef HAVE_SYS_SELECT_H
 #  include <sys/select.h>
 #endif
+#ifdef HAVE_SYS_IOCTL_H
+#  include <sys/ioctl.h>
+#endif
 #ifdef HAVE_SYS_STAT_H
 #  include <sys/stat.h>
 #endif
@@ -816,6 +819,56 @@ ccsys_fcntl_ptr (cce_destination_t L, ccsys_fd_t fd, ccsys_fcntl_command_t comma
 
   errno = 0;
   rv = fcntl(fd.data, command.data, arg);
+  if (-1 != rv) {
+    return rv;
+  } else {
+    cce_raise(L, cce_condition_new_errno_clear());
+  }
+}
+#endif
+
+/* ------------------------------------------------------------------ */
+
+#ifdef HAVE_IOCTL
+int
+ccsys_ioctl (cce_destination_t L, ccsys_fd_t fd, ccsys_ioctl_command_t command)
+{
+  int	rv;
+
+  errno = 0;
+  rv = ioctl(fd.data, command.data);
+  if (-1 != rv) {
+    return rv;
+  } else {
+    cce_raise(L, cce_condition_new_errno_clear());
+  }
+}
+#endif
+
+#ifdef HAVE_IOCTL
+int
+ccsys_ioctl_int (cce_destination_t L, ccsys_fd_t fd, ccsys_ioctl_command_t command, int arg)
+{
+  int	rv;
+
+  errno = 0;
+  rv = ioctl(fd.data, command.data, arg);
+  if (-1 != rv) {
+    return rv;
+  } else {
+    cce_raise(L, cce_condition_new_errno_clear());
+  }
+}
+#endif
+
+#ifdef HAVE_IOCTL
+int
+ccsys_ioctl_ptr (cce_destination_t L, ccsys_fd_t fd, ccsys_ioctl_command_t command, void * arg)
+{
+  int	rv;
+
+  errno = 0;
+  rv = ioctl(fd.data, command.data, arg);
   if (-1 != rv) {
     return rv;
   } else {
