@@ -773,9 +773,10 @@ ccsys_fileno (ccsys_file_t stream)
 
 
 /** --------------------------------------------------------------------
- ** Input/output: streams.
+ ** Input/output: control.
  ** ----------------------------------------------------------------- */
 
+#ifdef HAVE_FCNTL
 int
 ccsys_fcntl (cce_destination_t L, ccsys_fd_t fd, ccsys_fcntl_command_t command)
 {
@@ -789,7 +790,9 @@ ccsys_fcntl (cce_destination_t L, ccsys_fd_t fd, ccsys_fcntl_command_t command)
     cce_raise(L, cce_condition_new_errno_clear());
   }
 }
+#endif
 
+#ifdef HAVE_FCNTL
 int
 ccsys_fcntl_int (cce_destination_t L, ccsys_fd_t fd, ccsys_fcntl_command_t command, int arg)
 {
@@ -803,7 +806,9 @@ ccsys_fcntl_int (cce_destination_t L, ccsys_fd_t fd, ccsys_fcntl_command_t comma
     cce_raise(L, cce_condition_new_errno_clear());
   }
 }
+#endif
 
+#ifdef HAVE_FCNTL
 int
 ccsys_fcntl_ptr (cce_destination_t L, ccsys_fd_t fd, ccsys_fcntl_command_t command, void * arg)
 {
@@ -817,6 +822,7 @@ ccsys_fcntl_ptr (cce_destination_t L, ccsys_fd_t fd, ccsys_fcntl_command_t comma
     cce_raise(L, cce_condition_new_errno_clear());
   }
 }
+#endif
 
 
 /** --------------------------------------------------------------------

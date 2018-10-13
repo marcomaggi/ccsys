@@ -135,6 +135,7 @@ AC_CHECK_FUNCS([raise kill])
 AC_CHECK_FUNCS([sleep nanosleep usleep])
 AC_CHECK_FUNCS([getrusage getrlimit setrlimit])
 AC_CHECK_FUNCS([sysconf pathconf fpathconf confstr])
+AC_CHECK_FUNCS([fcntl ioctl])
 
 dnl GNU C library stuff
 
