@@ -11,5 +11,9 @@
 * Networking
 ** testing for everything
 ** client and server demo programs
+* Daemonisation
+
+  Consider embedding the code of <https://chaoticlab.io/c/c++/unix/2018/10/01/daemonize.html>
+
 * end of file
 
