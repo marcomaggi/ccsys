@@ -46,30 +46,66 @@
 
 
 /** --------------------------------------------------------------------
- ** System call wrappers: sockets.
+ ** Networking: opening and closing sockets.
  ** ----------------------------------------------------------------- */
 
-#ifdef HAVE_BIND
-void
-ccsys_bind (cce_location_t * L, ccsys_fd_t socket, ccsys_sockaddr_t * addr, ccsys_socklen_t length)
+#ifdef HAVE_SOCKET
+int
+ccsys_socket (cce_location_t * L, ccsys_socket_namespace_t namespace,
+	      ccsys_socket_style_t style, ccsys_socket_protocol_t protocol)
 {
   int	rv;
   errno = 0;
-  rv = bind(socket.data, (struct sockaddr *)addr, length.data);
+  rv = socket(namespace.data, style.data, protocol.data);
+  if (-1 == rv) {
+    cce_raise(L, cce_condition_new_errno_clear());
+  } else {
+    return rv;
+  }
+}
+#endif
+
+#ifdef HAVE_SHUTDOWN
+void
+ccsys_shutdown (cce_location_t * L, ccsys_sockfd_t sock, int how)
+{
+  int	rv;
+  errno = 0;
+  rv = shutdown(sock.data, how);
   if (-1 == rv) {
     cce_raise(L, cce_condition_new_errno_clear());
   }
 }
 #endif
 
+#ifdef HAVE_SOCKETPAIR
+void
+ccsys_socketpair (cce_location_t * L, ccsys_socket_namespace_t namespace,
+		  ccsys_socket_style_t style, ccsys_socket_protocol_t protocol,
+		  ccsys_sockfd_t filedes[2])
+{
+  int	rv;
+  errno = 0;
+  rv = socketpair(namespace.data, style.data, protocol.data, (int *)filedes);
+  if (-1 == rv) {
+    cce_raise(L, cce_condition_new_errno_clear());
+  }
+}
+#endif
+
+
+/** --------------------------------------------------------------------
+ ** Networking: address handling.
+ ** ----------------------------------------------------------------- */
+
 #ifdef HAVE_GETSOCKNAME
 void
-ccsys_getsockname (cce_location_t * L, ccsys_fd_t socket, ccsys_sockaddr_t * addr, ccsys_socklen_t * length_ptr)
+ccsys_getsockname (cce_location_t * L, ccsys_sockfd_t sock, ccsys_sockaddr_t * addr, ccsys_socklen_t * length_ptr)
 {
   socklen_t	len;
   int		rv;
   errno = 0;
-  rv = getsockname(socket.data, (struct sockaddr *)addr, &len);
+  rv = getsockname(sock.data, (struct sockaddr *)addr, &len);
   if (0 == rv) {
     length_ptr->data = len;
   } else {
@@ -111,61 +147,31 @@ ccsys_inet_network (cce_location_t * L, const char * name)
 }
 #endif
 
-/* ------------------------------------------------------------------ */
+
+/** --------------------------------------------------------------------
+ ** Networking: connecting.
+ ** ----------------------------------------------------------------- */
 
-#ifdef HAVE_SOCKET
-int
-ccsys_socket (cce_location_t * L, ccsys_socket_namespace_t namespace,
-	      ccsys_socket_style_t style, ccsys_socket_protocol_t protocol)
-{
-  int	rv;
-  errno = 0;
-  rv = socket(namespace.data, style.data, protocol.data);
-  if (-1 == rv) {
-    cce_raise(L, cce_condition_new_errno_clear());
-  } else {
-    return rv;
-  }
-}
-#endif
-
-#ifdef HAVE_SHUTDOWN
+#ifdef HAVE_BIND
 void
-ccsys_shutdown (cce_location_t * L, ccsys_fd_t socket, int how)
+ccsys_bind (cce_location_t * L, ccsys_sockfd_t sock, ccsys_sockaddr_t * addr, ccsys_socklen_t length)
 {
   int	rv;
   errno = 0;
-  rv = shutdown(socket.data, how);
+  rv = bind(sock.data, (struct sockaddr *)addr, length.data);
   if (-1 == rv) {
     cce_raise(L, cce_condition_new_errno_clear());
   }
 }
 #endif
-
-#ifdef HAVE_SOCKETPAIR
-void
-ccsys_socketpair (cce_location_t * L, ccsys_socket_namespace_t namespace,
-		  ccsys_socket_style_t style, ccsys_socket_protocol_t protocol,
-		  ccsys_fd_t filedes[2])
-{
-  int	rv;
-  errno = 0;
-  rv = socketpair(namespace.data, style.data, protocol.data, (int *)filedes);
-  if (-1 == rv) {
-    cce_raise(L, cce_condition_new_errno_clear());
-  }
-}
-#endif
-
-/* ------------------------------------------------------------------ */
 
 #ifdef HAVE_CONNECT
 void
-ccsys_connect (cce_location_t * L, ccsys_fd_t socket, ccsys_sockaddr_t * addr, ccsys_socklen_t length)
+ccsys_connect (cce_location_t * L, ccsys_sockfd_t sock, ccsys_sockaddr_t * addr, ccsys_socklen_t length)
 {
   int	rv;
   errno = 0;
-  rv = connect(socket.data, (struct sockaddr *)addr, length.data);
+  rv = connect(sock.data, (struct sockaddr *)addr, length.data);
   if (-1 == rv) {
     cce_raise(L, cce_condition_new_errno_clear());
   }
@@ -174,11 +180,11 @@ ccsys_connect (cce_location_t * L, ccsys_fd_t socket, ccsys_sockaddr_t * addr, c
 
 #ifdef HAVE_LISTEN
 void
-ccsys_listen (cce_location_t * L, ccsys_fd_t socket, int N)
+ccsys_listen (cce_location_t * L, ccsys_sockfd_t sock, int N)
 {
   int	rv;
   errno = 0;
-  rv = listen(socket.data, N);
+  rv = listen(sock.data, N);
   if (-1 == rv) {
     cce_raise(L, cce_condition_new_errno_clear());
   }
@@ -187,11 +193,11 @@ ccsys_listen (cce_location_t * L, ccsys_fd_t socket, int N)
 
 #ifdef HAVE_ACCEPT
 int
-ccsys_accept (cce_location_t * L, ccsys_fd_t socket, ccsys_sockaddr_t * addr, ccsys_socklen_t * length_ptr)
+ccsys_accept (cce_location_t * L, ccsys_sockfd_t sock, ccsys_sockaddr_t * addr, ccsys_socklen_t * length_ptr)
 {
   int	rv;
   errno = 0;
-  rv = accept(socket.data, (struct sockaddr *)addr, (socklen_t *)&(length_ptr->data));
+  rv = accept(sock.data, (struct sockaddr *)addr, (socklen_t *)&(length_ptr->data));
   if (-1 == rv) {
     cce_raise(L, cce_condition_new_errno_clear());
   } else {
@@ -202,24 +208,29 @@ ccsys_accept (cce_location_t * L, ccsys_fd_t socket, ccsys_sockaddr_t * addr, cc
 
 #ifdef HAVE_GETPEERNAME
 void
-ccsys_getpeername (cce_location_t * L, ccsys_fd_t socket, ccsys_sockaddr_t * addr, ccsys_socklen_t * length_ptr)
+ccsys_getpeername (cce_location_t * L, ccsys_sockfd_t sock, ccsys_sockaddr_t * addr, ccsys_socklen_t * length_ptr)
 {
   int	rv;
   errno = 0;
-  rv = getpeername(socket.data, (struct sockaddr *)addr, (socklen_t *)&(length_ptr->data));
+  rv = getpeername(sock.data, (struct sockaddr *)addr, (socklen_t *)&(length_ptr->data));
   if (-1 == rv) {
     cce_raise(L, cce_condition_new_errno_clear());
   }
 }
 #endif
 
+
+/** --------------------------------------------------------------------
+ ** Networking: sending and receiving data.
+ ** ----------------------------------------------------------------- */
+
 #ifdef HAVE_SEND
 size_t
-ccsys_send (cce_location_t * L, ccsys_fd_t socket, const void * buffer, size_t size, int flags)
+ccsys_send (cce_location_t * L, ccsys_sockfd_t sock, const void * buffer, size_t size, int flags)
 {
   ssize_t	rv;
   errno = 0;
-  rv = send(socket.data, buffer, size, flags);
+  rv = send(sock.data, buffer, size, flags);
   if (-1 == rv) {
     cce_raise(L, cce_condition_new_errno_clear());
   } else {
@@ -230,11 +241,11 @@ ccsys_send (cce_location_t * L, ccsys_fd_t socket, const void * buffer, size_t s
 
 #ifdef HAVE_RECV
 size_t
-ccsys_recv (cce_location_t * L, ccsys_fd_t socket, void * buffer, size_t size, int flags)
+ccsys_recv (cce_location_t * L, ccsys_sockfd_t sock, void * buffer, size_t size, int flags)
 {
   ssize_t	rv;
   errno = 0;
-  rv = recv(socket.data, buffer, size, flags);
+  rv = recv(sock.data, buffer, size, flags);
   if (-1 == rv) {
     cce_raise(L, cce_condition_new_errno_clear());
   } else {
@@ -247,12 +258,12 @@ ccsys_recv (cce_location_t * L, ccsys_fd_t socket, void * buffer, size_t size, i
 
 #ifdef HAVE_SENDTO
 size_t
-ccsys_sendto (cce_location_t * L, ccsys_fd_t socket, const void * buffer, size_t size, int flags,
+ccsys_sendto (cce_location_t * L, ccsys_sockfd_t sock, const void * buffer, size_t size, int flags,
 	      ccsys_sockaddr_t * addr, ccsys_socklen_t length)
 {
   ssize_t	rv;
   errno = 0;
-  rv = sendto(socket.data, buffer, size, flags, (struct sockaddr *)addr, length.data);
+  rv = sendto(sock.data, buffer, size, flags, (struct sockaddr *)addr, length.data);
   if (-1 == rv) {
     cce_raise(L, cce_condition_new_errno_clear());
   } else {
@@ -263,11 +274,11 @@ ccsys_sendto (cce_location_t * L, ccsys_fd_t socket, const void * buffer, size_t
 
 #ifdef HAVE_RECVFROM
 size_t
-ccsys_recvfrom (cce_location_t * L, ccsys_fd_t socket, void * buffer, size_t size, int flags, ccsys_sockaddr_t * addr, ccsys_socklen_t * length_ptr)
+ccsys_recvfrom (cce_location_t * L, ccsys_sockfd_t sock, void * buffer, size_t size, int flags, ccsys_sockaddr_t * addr, ccsys_socklen_t * length_ptr)
 {
   ssize_t	rv;
   errno = 0;
-  rv = recvfrom(socket.data, buffer, size, flags, (struct sockaddr *)addr, (socklen_t *)&(length_ptr->data));
+  rv = recvfrom(sock.data, buffer, size, flags, (struct sockaddr *)addr, (socklen_t *)&(length_ptr->data));
   if (-1 == rv) {
     cce_raise(L, cce_condition_new_errno_clear());
   } else {
@@ -276,15 +287,18 @@ ccsys_recvfrom (cce_location_t * L, ccsys_fd_t socket, void * buffer, size_t siz
 }
 #endif
 
-/* ------------------------------------------------------------------ */
+
+/** --------------------------------------------------------------------
+ ** Networking: socket options.
+ ** ----------------------------------------------------------------- */
 
 #ifdef HAVE_GETSOCKOPT
 void
-ccsys_getsockopt (cce_location_t * L, ccsys_fd_t socket, int level, int optname, void * optval, ccsys_socklen_t * optlen_ptr)
+ccsys_getsockopt (cce_location_t * L, ccsys_sockfd_t sock, int level, int optname, void * optval, ccsys_socklen_t * optlen_ptr)
 {
   int	rv;
   errno = 0;
-  rv = getsockopt(socket.data, level, optname, optval, (socklen_t *)&(optlen_ptr->data));
+  rv = getsockopt(sock.data, level, optname, optval, (socklen_t *)&(optlen_ptr->data));
   if (-1 == rv) {
     cce_raise(L, cce_condition_new_errno_clear());
   }
@@ -293,11 +307,11 @@ ccsys_getsockopt (cce_location_t * L, ccsys_fd_t socket, int level, int optname,
 
 #ifdef HAVE_SETSOCKOPT
 void
-ccsys_setsockopt (cce_location_t * L, ccsys_fd_t socket, int level, int optname, const void * optval, ccsys_socklen_t optlen)
+ccsys_setsockopt (cce_location_t * L, ccsys_sockfd_t sock, int level, int optname, const void * optval, ccsys_socklen_t optlen)
 {
   int	rv;
   errno = 0;
-  rv = setsockopt(socket.data, level, optname, optval, optlen.data);
+  rv = setsockopt(sock.data, level, optname, optval, optlen.data);
   if (-1 == rv) {
     cce_raise(L, cce_condition_new_errno_clear());
   }

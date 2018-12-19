@@ -705,6 +705,7 @@ typedef struct ccsys_pid_t			ccsys_pid_t;
 typedef struct ccsys_renameat2_flags_t		ccsys_renameat2_flags_t;
 typedef struct ccsys_rlim_t			ccsys_rlim_t;
 typedef struct ccsys_scatter_gather_flags_t	ccsys_scatter_gather_flags_t;
+typedef struct ccsys_sockfd_t			ccsys_sockfd_t;
 typedef struct ccsys_signum_t			ccsys_signum_t;
 typedef struct ccsys_socket_namespace_t		ccsys_socket_namespace_t;
 typedef struct ccsys_socket_protocol_t		ccsys_socket_protocol_t;
@@ -755,6 +756,7 @@ struct ccsys_signum_t			{ int				data; };
 struct ccsys_socket_namespace_t		{ int				data; };
 struct ccsys_socket_protocol_t		{ int				data; };
 struct ccsys_socket_style_t		{ int				data; };
+struct ccsys_sockfd_t			{ int				data; };
 struct ccsys_socklen_t			{ @CCSYS_TYPE_SOCKLEN_T@	data; };
 struct ccsys_stat_mode_t		{ @CCSYS_TYPE_MODE_T@		data; };
 struct ccsys_uid_t			{ @CCSYS_TYPE_UID_T@		data; };
@@ -803,6 +805,8 @@ CCSYS_SEMANTIC_TYPE_CTOR_INT(fcntl_command)
 /* ------------------------------------------------------------------ */
 
 CCSYS_SEMANTIC_TYPE_CTOR_INT(fd)
+CCSYS_SEMANTIC_TYPE_CTOR_INT(dirfd)
+CCSYS_SEMANTIC_TYPE_CTOR_INT(sockfd)
 CCSYS_SEMANTIC_TYPE_CTOR_INT(signum)
 
 /* ------------------------------------------------------------------ */
@@ -1631,9 +1635,45 @@ ccsys_dirfd_from_fd (ccsys_fd_t fd)
 
 __attribute__((__always_inline__,__const__))
 static inline ccsys_fd_t
-ccsys_dirfd_to_dirfd (ccsys_dirfd_t dirfd)
+ccsys_dirfd_to_fd (ccsys_dirfd_t dirfd)
 {
   ccsys_fd_t	fd = { .data = dirfd.data };
+  return fd;
+}
+
+/* ------------------------------------------------------------------ */
+
+__attribute__((__always_inline__,__const__))
+static inline ccsys_sockfd_t
+ccsys_fd_to_sockfd (ccsys_fd_t fd)
+{
+  ccsys_sockfd_t	sockfd = { .data = fd.data };
+  return sockfd;
+}
+
+__attribute__((__always_inline__,__const__))
+static inline ccsys_fd_t
+ccsys_fd_from_sockfd (ccsys_sockfd_t sockfd)
+{
+  ccsys_fd_t	fd = { .data = sockfd.data };
+  return fd;
+}
+
+/* ------------------------------------------------------------------ */
+
+__attribute__((__always_inline__,__const__))
+static inline ccsys_sockfd_t
+ccsys_sockfd_from_fd (ccsys_fd_t fd)
+{
+  ccsys_sockfd_t	sockfd = { .data = fd.data };
+  return sockfd;
+}
+
+__attribute__((__always_inline__,__const__))
+static inline ccsys_fd_t
+ccsys_sockfd_to_fd (ccsys_sockfd_t sockfd)
+{
+  ccsys_fd_t	fd = { .data = sockfd.data };
   return fd;
 }
 
@@ -1773,7 +1813,7 @@ ccsys_decl void ccsys_init_filedes_error_handler (cce_destination_t L, cce_error
 
 
 /** --------------------------------------------------------------------
- ** Input/output system: reading and writing files.
+ ** Input/output: reading and writing files.
  ** ----------------------------------------------------------------- */
 
 ccsys_decl size_t ccsys_read (cce_destination_t L, ccsys_fd_t filedes, void * buffer, size_t size)
@@ -2469,13 +2509,27 @@ ccsys_decl ccsys_signum_t  ccsys_wstopsig	(ccsys_waitpid_status_t  wstatus);
 
 
 /** --------------------------------------------------------------------
- ** Networking.
+ ** Networking: opening and closing sockets.
  ** ----------------------------------------------------------------- */
 
-ccsys_decl void ccsys_bind (cce_destination_t L, ccsys_fd_t socket, ccsys_sockaddr_t * addr, ccsys_socklen_t length)
-  __attribute__((__nonnull__(1,3)));
+ccsys_decl int ccsys_socket (cce_destination_t L, ccsys_socket_namespace_t namespace,
+			     ccsys_socket_style_t style, ccsys_socket_protocol_t protocol)
+  __attribute__((__nonnull__(1)));
 
-ccsys_decl void ccsys_getsockname (cce_destination_t L, ccsys_fd_t socket, ccsys_sockaddr_t * addr, ccsys_socklen_t * length_ptr)
+ccsys_decl void ccsys_socketpair (cce_destination_t L, ccsys_socket_namespace_t namespace,
+				  ccsys_socket_style_t style, ccsys_socket_protocol_t protocol,
+				  ccsys_sockfd_t filedes[2])
+  __attribute__((__nonnull__(1,5)));
+
+ccsys_decl void ccsys_shutdown (cce_destination_t L, ccsys_sockfd_t socket, int how)
+  __attribute__((__nonnull__(1)));
+
+
+/** --------------------------------------------------------------------
+ ** Networking: address handling.
+ ** ----------------------------------------------------------------- */
+
+ccsys_decl void ccsys_getsockname (cce_destination_t L, ccsys_sockfd_t socket, ccsys_sockaddr_t * addr, ccsys_socklen_t * length_ptr)
   __attribute__((__nonnull__(1,3,4)));
 
 ccsys_decl void ccsys_inet_aton (cce_destination_t L, char const * name, ccsys_in_addr_t * addr)
@@ -2484,59 +2538,54 @@ ccsys_decl void ccsys_inet_aton (cce_destination_t L, char const * name, ccsys_i
 ccsys_decl ccsys_in_addr_t ccsys_inet_network (cce_destination_t L, char const * name)
   __attribute__((__nonnull__(1,2)));
 
-ccsys_decl ccsys_hostent_t * ccsys_gethostbyname (cce_destination_t L, char const * name)
-  __attribute__((__nonnull__(1,2),__returns_nonnull__));
+
+/** --------------------------------------------------------------------
+ ** Networking: connecting.
+ ** ----------------------------------------------------------------- */
 
-ccsys_decl ccsys_hostent_t * ccsys_gethostbyname2 (cce_destination_t L, char const * name, int af)
-  __attribute__((__nonnull__(1,2),__returns_nonnull__));
-
-ccsys_decl ccsys_hostent_t * ccsys_gethostbyaddr (cce_destination_t L, void const * addr, ccsys_socklen_t length, int format)
-  __attribute__((__nonnull__(1,2),__returns_nonnull__));
-
-ccsys_decl int ccsys_socket (cce_destination_t L, ccsys_socket_namespace_t namespace,
-			     ccsys_socket_style_t style, ccsys_socket_protocol_t protocol)
-  __attribute__((__nonnull__(1)));
-
-ccsys_decl void ccsys_shutdown (cce_destination_t L, ccsys_fd_t socket, int how)
-  __attribute__((__nonnull__(1)));
-
-ccsys_decl void ccsys_socketpair (cce_destination_t L, ccsys_socket_namespace_t namespace,
-				  ccsys_socket_style_t style, ccsys_socket_protocol_t protocol,
-				  ccsys_fd_t filedes[2])
-  __attribute__((__nonnull__(1,5)));
-
-/* ------------------------------------------------------------------ */
-
-ccsys_decl void ccsys_connect (cce_destination_t L, ccsys_fd_t socket, ccsys_sockaddr_t * addr, ccsys_socklen_t length)
-  __attribute__((__nonnull__(1)));
-
-ccsys_decl void ccsys_listen (cce_destination_t L, ccsys_fd_t socket, int N)
-  __attribute__((__nonnull__(1)));
-
-ccsys_decl int ccsys_accept (cce_destination_t L, ccsys_fd_t socket, ccsys_sockaddr_t * addr, ccsys_socklen_t * length_ptr)
-  __attribute__((__nonnull__(1,3,4)));
-
-ccsys_decl void ccsys_getpeername (cce_destination_t L, ccsys_fd_t socket, ccsys_sockaddr_t * addr, ccsys_socklen_t * length_ptr)
-  __attribute__((__nonnull__(1,3,4)));
-
-ccsys_decl size_t ccsys_send (cce_destination_t L, ccsys_fd_t socket, void const * buffer, size_t size, int flags)
+ccsys_decl void ccsys_bind (cce_destination_t L, ccsys_sockfd_t socket, ccsys_sockaddr_t * addr, ccsys_socklen_t length)
   __attribute__((__nonnull__(1,3)));
 
-ccsys_decl size_t ccsys_recv (cce_destination_t L, ccsys_fd_t socket, void * buffer, size_t size, int flags)
+ccsys_decl void ccsys_connect (cce_destination_t L, ccsys_sockfd_t socket, ccsys_sockaddr_t * addr, ccsys_socklen_t length)
+  __attribute__((__nonnull__(1)));
+
+ccsys_decl void ccsys_listen (cce_destination_t L, ccsys_sockfd_t socket, int N)
+  __attribute__((__nonnull__(1)));
+
+ccsys_decl int ccsys_accept (cce_destination_t L, ccsys_sockfd_t socket, ccsys_sockaddr_t * addr, ccsys_socklen_t * length_ptr)
+  __attribute__((__nonnull__(1,3,4)));
+
+ccsys_decl void ccsys_getpeername (cce_destination_t L, ccsys_sockfd_t socket, ccsys_sockaddr_t * addr, ccsys_socklen_t * length_ptr)
+  __attribute__((__nonnull__(1,3,4)));
+
+
+/** --------------------------------------------------------------------
+ ** Networking: sending and receiving data.
+ ** ----------------------------------------------------------------- */
+
+ccsys_decl size_t ccsys_send (cce_destination_t L, ccsys_sockfd_t socket, void const * buffer, size_t size, int flags)
   __attribute__((__nonnull__(1,3)));
 
-ccsys_decl size_t ccsys_sendto (cce_destination_t L, ccsys_fd_t socket, void const * buffer, size_t size, int flags,
+ccsys_decl size_t ccsys_recv (cce_destination_t L, ccsys_sockfd_t socket, void * buffer, size_t size, int flags)
+  __attribute__((__nonnull__(1,3)));
+
+ccsys_decl size_t ccsys_sendto (cce_destination_t L, ccsys_sockfd_t socket, void const * buffer, size_t size, int flags,
 				ccsys_sockaddr_t * addr, ccsys_socklen_t length)
   __attribute__((__nonnull__(1,3,6)));
 
-ccsys_decl size_t ccsys_recvfrom (cce_destination_t L, ccsys_fd_t socket, void * buffer, size_t size, int flags,
+ccsys_decl size_t ccsys_recvfrom (cce_destination_t L, ccsys_sockfd_t socket, void * buffer, size_t size, int flags,
 				  ccsys_sockaddr_t * addr, ccsys_socklen_t * length_ptr)
   __attribute__((__nonnull__(1,3,6,7)));
 
-ccsys_decl void ccsys_getsockopt (cce_destination_t L, ccsys_fd_t socket, int level, int optname, void * optval, ccsys_socklen_t * optlen_ptr)
+
+/** --------------------------------------------------------------------
+ ** Networking: socket options.
+ ** ----------------------------------------------------------------- */
+
+ccsys_decl void ccsys_getsockopt (cce_destination_t L, ccsys_sockfd_t socket, int level, int optname, void * optval, ccsys_socklen_t * optlen_ptr)
   __attribute__((__nonnull__(1,5,6)));
 
-ccsys_decl void ccsys_setsockopt (cce_destination_t L, ccsys_fd_t socket, int level, int optname, void const * optval, ccsys_socklen_t optlen)
+ccsys_decl void ccsys_setsockopt (cce_destination_t L, ccsys_sockfd_t socket, int level, int optname, void const * optval, ccsys_socklen_t optlen)
   __attribute__((__nonnull__(1,5)));
 
 

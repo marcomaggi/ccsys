@@ -62,6 +62,7 @@ check_PROGRAMS	= \
 	tests/users-groups			\
 	tests/input-output			\
 	tests/file-system			\
+	tests/networking			\
 	tests/processes				\
 	tests/signals				\
 	tests/sleeping				\
@@ -93,6 +94,9 @@ tests_input_output_LDADD	= $(ccsys_tests_ldadd)
 
 tests_file_system_CPPFLAGS	= $(ccsys_tests_cppflags)
 tests_file_system_LDADD		= $(ccsys_tests_ldadd)
+
+tests_networking_CPPFLAGS	= $(ccsys_tests_cppflags)
+tests_networking_LDADD		= $(ccsys_tests_ldadd)
 
 tests_processes_CPPFLAGS	= $(ccsys_tests_cppflags)
 tests_processes_LDADD		= $(ccsys_tests_ldadd)

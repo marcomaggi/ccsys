@@ -141,7 +141,7 @@ included in the section entitled ``@gnu{} Free Documentation License''.
 * users::                       Users and groups system calls.
 * io::                          Input/output system calls.
 * fs::                          File system system calls.
-* sockets::                     Socket system calls.
+* networking::                  Networking system calls.
 * process::                     Process system calls.
 * time::                        Time handling.
 * signals::                     Interprocess signals.
@@ -475,13 +475,19 @@ return values.
 
 @anchor{ccsys_fd_t}
 @deftp {Semantic Type} ccsys_fd_t
-Type of file descriptors.  It is a singed integer.
+Type of file descriptors.  It is a signed integer.
 @end deftp
 
 
 @anchor{ccsys_dirfd_t}
 @deftp {Semantic Type} ccsys_dirfd_t
-Type of file descriptors for directories.  It is a singed integer.
+Type of file descriptors for directories.  It is a signed integer.
+@end deftp
+
+
+@anchor{ccsys_sockfd_t}
+@deftp {Semantic Type} ccsys_sockfd_t
+Type of file descriptors for networking sockets.  It is a signed integer.
 @end deftp
 
 
@@ -863,6 +869,16 @@ Build and return a new instance.
 
 
 @deftypefun ccsys_fd_t ccsys_new_fd (int @var{fd})
+Build and return a new instance.
+@end deftypefun
+
+
+@deftypefun ccsys_dirfd_t ccsys_new_dirfd (int @var{fd})
+Build and return a new instance.
+@end deftypefun
+
+
+@deftypefun ccsys_sockfd_t ccsys_new_sockfd (int @var{fd})
 Build and return a new instance.
 @end deftypefun
 
@@ -9151,19 +9167,27 @@ if (cce_location(L)) @{
 @end example
 
 @c page
-@node sockets
+@node networking
 @chapter Socket system calls
 
 
 The following symbols are defined in the header file @file{ccsys.h}.
 
 
-@deftypefun void ccsys_bind (cce_destination_t @var{L}, int @var{socket}, struct sockaddr * @var{addr}, socklen_t @var{length})
+@deftypefun ccsys_sockfd_t ccsys_fd_to_sockfd (ccsys_fd_t @var{fd})
+@deftypefunx ccsys_fd_t ccsys_fd_drom_sockfd (ccsys_sockfd_t @var{sockfd})
+@deftypefunx ccsys_sockfd_t ccsys_sockfd_from_fd (ccsys_fd_t @var{fd})
+@deftypefunx ccsys_fd_t ccsys_sockfd_to_fd (ccsys_sockfd_t @var{sockfd})
+Convert between file descriptor semantic types.
+@end deftypefun
+
+
+@deftypefun void ccsys_bind (cce_destination_t @var{L}, ccsys_sockfd_t @var{sock}, struct sockaddr * @var{addr}, socklen_t @var{length})
 Wrapper for @cfunc{bind}.
 @end deftypefun
 
 
-@deftypefun void ccsys_getsockname (cce_destination_t @var{L}, int @var{socket}, struct sockaddr * @var{addr}, socklen_t * @var{length_ptr})
+@deftypefun void ccsys_getsockname (cce_destination_t @var{L}, ccsys_sockfd_t @var{sock}, struct sockaddr * @var{addr}, socklen_t * @var{length_ptr})
 Wrapper for @cfunc{getsockname}.
 @end deftypefun
 
@@ -9183,7 +9207,7 @@ Wrapper for @cfunc{socket}.
 @end deftypefun
 
 
-@deftypefun void ccsys_shutdown (cce_destination_t @var{L}, int @var{socket}, int @var{how})
+@deftypefun void ccsys_shutdown (cce_destination_t @var{L}, ccsys_sockfd_t @var{sock}, int @var{how})
 Wrapper for @cfunc{shutdown}.
 @end deftypefun
 
@@ -9193,52 +9217,52 @@ Wrapper for @cfunc{socketpair}.
 @end deftypefun
 
 
-@deftypefun void ccsys_connect (cce_destination_t @var{L}, int @var{socket}, struct sockaddr * @var{addr}, socklen_t @var{length})
+@deftypefun void ccsys_connect (cce_destination_t @var{L}, ccsys_sockfd_t @var{sock}, struct sockaddr * @var{addr}, socklen_t @var{length})
 Wrapper for @cfunc{connect}.
 @end deftypefun
 
 
-@deftypefun void ccsys_listen (cce_destination_t @var{L}, int @var{socket}, int @var{N})
+@deftypefun void ccsys_listen (cce_destination_t @var{L}, ccsys_sockfd_t @var{sock}, int @var{N})
 Wrapper for @cfunc{listen}.
 @end deftypefun
 
 
-@deftypefun int ccsys_accept (cce_destination_t @var{L}, int @var{socket}, struct sockaddr * @var{addr}, socklen_t * @var{length_ptr})
+@deftypefun int ccsys_accept (cce_destination_t @var{L}, ccsys_sockfd_t @var{sock}, struct sockaddr * @var{addr}, socklen_t * @var{length_ptr})
 Wrapper for @cfunc{accept}.
 @end deftypefun
 
 
-@deftypefun void ccsys_getpeername (cce_destination_t @var{L}, int @var{socket}, struct sockaddr * @var{addr}, socklen_t * @var{length}_ptr)
+@deftypefun void ccsys_getpeername (cce_destination_t @var{L}, ccsys_sockfd_t @var{sock}, struct sockaddr * @var{addr}, socklen_t * @var{length}_ptr)
 Wrapper for @cfunc{getpeername}.
 @end deftypefun
 
 
-@deftypefun size_t ccsys_send (cce_destination_t @var{L}, int @var{socket}, void const * @var{buffer}, size_t @var{size}, int @var{flags})
+@deftypefun size_t ccsys_send (cce_destination_t @var{L}, ccsys_sockfd_t @var{sock}, void const * @var{buffer}, size_t @var{size}, int @var{flags})
 Wrapper for @cfunc{send}.
 @end deftypefun
 
 
-@deftypefun size_t ccsys_recv (cce_destination_t @var{L}, int @var{socket}, void * @var{buffer}, size_t @var{size}, int @var{flags})
+@deftypefun size_t ccsys_recv (cce_destination_t @var{L}, ccsys_sockfd_t @var{sock}, void * @var{buffer}, size_t @var{size}, int @var{flags})
 Wrapper for @cfunc{recv}.
 @end deftypefun
 
 
-@deftypefun size_t ccsys_sendto (cce_destination_t @var{L}, int @var{socket}, void const * @var{buffer}, size_t @var{size}, int @var{flags}, struct sockaddr * @var{addr}, socklen_t @var{length})
+@deftypefun size_t ccsys_sendto (cce_destination_t @var{L}, ccsys_sockfd_t @var{sock}, void const * @var{buffer}, size_t @var{size}, int @var{flags}, struct sockaddr * @var{addr}, socklen_t @var{length})
 Wrapper for @cfunc{sendto}.
 @end deftypefun
 
 
-@deftypefun size_t ccsys_recvfrom (cce_destination_t @var{L}, int @var{socket}, void * @var{buffer}, size_t @var{size}, int @var{flags}, struct sockaddr * @var{addr}, socklen_t * @var{length_ptr})
+@deftypefun size_t ccsys_recvfrom (cce_destination_t @var{L}, ccsys_sockfd_t @var{sock}, void * @var{buffer}, size_t @var{size}, int @var{flags}, struct sockaddr * @var{addr}, socklen_t * @var{length_ptr})
 Wrapper for @cfunc{recvfrom}.
 @end deftypefun
 
 
-@deftypefun void ccsys_getsockopt (cce_destination_t @var{L}, int @var{socket}, int @var{level}, int @var{optname}, void * @var{optval}, socklen_t * @var{optlen_ptr})
+@deftypefun void ccsys_getsockopt (cce_destination_t @var{L}, ccsys_sockfd_t @var{sock}, int @var{level}, int @var{optname}, void * @var{optval}, socklen_t * @var{optlen_ptr})
 Wrapper for @cfunc{getsockopt}.
 @end deftypefun
 
 
-@deftypefun void ccsys_setsockopt (cce_destination_t @var{L}, int @var{socket}, int @var{level}, int @var{optname}, void const * @var{optval}, socklen_t @var{optlen})
+@deftypefun void ccsys_setsockopt (cce_destination_t @var{L}, ccsys_sockfd_t @var{sock}, int @var{level}, int @var{optname}, void const * @var{optval}, socklen_t @var{optlen})
 Wrapper for @cfunc{setsockopt}.
 @end deftypefun
 
