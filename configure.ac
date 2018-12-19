@@ -1,11 +1,13 @@
-dnl @configure_input@
-dnl
+# @configure_input@
+#
 
 AC_PREREQ([2.69])
-AC_INIT([CCSys],[0.1.0-devel.0],
+MMUX_PKG_VERSIONS([0],[1],[0],[devel.0])
+AC_INIT([CCSys],[MMUX_PACKAGE_VERSION],
   [marco.maggi-ipsu@poste.it],
   [ccsys],[http://github.com/marcomaggi/ccsys/])
-dnl This is the revision number of this configure.ac
+MMUX_INIT
+MMUX_LIBTOOL_LIBRARY_VERSIONS([ccsys],1,0,0)
 AC_REVISION([0.1])
 AC_COPYRIGHT([Copyright (c) 2017, 2018 Marco Maggi <marco.maggi-ipsu@poste.it>
 
@@ -33,7 +35,7 @@ AC_USE_SYSTEM_EXTENSIONS
 AC_CANONICAL_BUILD
 AC_CANONICAL_HOST
 AC_CANONICAL_TARGET
-AM_INIT_AUTOMAKE([foreign dist-xz no-dist-gzip subdir-objects])
+AM_INIT_AUTOMAKE([foreign subdir-objects])
 AM_MAINTAINER_MODE
 
 AM_PROG_AR
@@ -45,29 +47,18 @@ AC_PROG_MKDIR_P
 LT_PREREQ([2.4])
 LT_INIT
 
-dnl page
-#### libraries interface version
-
-MMUX_LIBTOOL_LIBRARY_VERSIONS([ccsys],1,0,0)
-
-dnl This is the version stored in the pkg-config data file.
-AC_SUBST([CCSYS_PKG_CONFIG_VERSION],[0.1.0])
-
-AS_VAR_SET([SLACKSTUFF_PACKAGE_VERSION],[0.1d0.0])
-AC_SUBST([SLACKSTUFF_PACKAGE_VERSION])
-
-dnl page
+
 #### basic system inspection
 
 MMUX_CHECK_TARGET_OS
 
 AC_LANG([C])
 MMUX_LANG_C11
-AC_SUBST(AX_CFLAGS)
 
 AM_PROG_AS
 AM_PROG_CC_C_O
 AC_HEADER_STDC
+AC_HEADER_STDBOOL
 AC_CHECK_HEADERS([assert.h errno.h stdint.h stddef.h setjmp.h memory.h limits.h fcntl.h dirent.h time.h])
 AC_CHECK_HEADERS([grp.h])
 AC_CHECK_HEADERS([sys/syscall.h sys/select.h sys/stat.h sys/time.h sys/types.h sys/uio.h sys/mman.h sys/wait.h sys/ioctl.h])
@@ -75,8 +66,6 @@ AC_CHECK_HEADERS([netdb.h netinet/in.h arpa/inet.h sys/socket.h sys/un.h])
 AC_CHECK_HEADERS([signal.h pwd.h grp.h])
 AC_CHECK_HEADERS([sys/auxv.h sys/resource.h])
 AC_CHECK_HEADERS([linux/fs.h])
-AC_HEADER_STDBOOL
-dnl AC_CHECK_HEADERS([search.h])
 
 dnl The  documentation of GNU  Autoconf states that AC_PROG_CC  sets the
 dnl variable "GCC" to "yes" if the selected compiler is GCC.
@@ -84,7 +73,7 @@ AM_CONDITIONAL([WANT_GCC],[test "x$GCC" = xyes])
 
 AC_CACHE_SAVE
 
-dnl page
+
 #### external libraries
 
 MMUX_CHECK_PKG_CONFIG_MACROS
@@ -97,7 +86,7 @@ AM_CONDITIONAL([MMUX_TESTING_ENABLED],[test -n "$CCTESTS_LIBS"])
 
 AC_CACHE_SAVE
 
-dnl page
+
 #### checks for library functions
 
 AC_FUNC_MALLOC
@@ -149,7 +138,7 @@ AC_CHECK_FUNCS([lutimes futimes futimesat])
 
 AC_CACHE_SAVE
 
-dnl page
+
 #### inspection of data types_t
 
 CCSYS_UINT_TYPE_ALIAS([SIZE_T],[size_t],[CCSYS_STDDEF_HEADER])
@@ -174,7 +163,7 @@ CCSYS_INT_TYPE_ALIAS([SOCKLEN_T],[socklen_t],[CCSYS_UNISTD_HEADER])
 
 AC_CACHE_SAVE
 
-dnl page
+
 #### inspection of data structures
 
 CCSYS_SIZEOF([STRUCT_DIRENT],[struct dirent],[CCSYS_DIRENT_HEADER])
@@ -270,7 +259,7 @@ CCSYS_SIZEOF([STRUCT_FD_SET],[fd_set],[CCSYS_SYS_TYPES_HEADER])
 
 AC_CACHE_SAVE
 
-dnl page
+
 #### system constants: errno values
 
 # Errno values.
@@ -423,7 +412,7 @@ CCSYS_MAYBE_ENUM_DEF([CCSYS_EXFULL],[EXFULL],[CCSYS_ERRNO_HEADER])
 
 AC_CACHE_SAVE
 
-dnl page
+
 #### system constants: interprocess signal numbers
 
 CCSYS_MAYBE_ENUM_DEF([CCSYS_NSIG],[NSIG],[CCSYS_SIGNAL_HEADER])
@@ -479,7 +468,7 @@ CCSYS_MAYBE_ENUM_DEF([CCSYS_SIGINFO],[SIGINFO],[CCSYS_SIGNAL_HEADER])
 
 AC_CACHE_SAVE
 
-dnl page
+
 #### system constants
 
 CCSYS_VALUEOF([CCSYS_L_CUSERID],[L_cuserid],[
@@ -870,7 +859,7 @@ CCSYS_FCNTL_CONST([DN_ATTRIB])
 
 CCSYS_VALUEOF([DN_MULTISHOT],[DN_MULTISHOT],[CCSYS_FCNTL_HEADER])
 
-dnl page
+
 #### sysconf constants
 
 dnl $1 - the name of the constant
@@ -1082,19 +1071,15 @@ CCSYS_SYSCONF_CONST([_SC_LEVEL4_CACHE_LINESIZE])
 CCSYS_SYSCONF_CONST([_SC_IPV6])
 CCSYS_SYSCONF_CONST([_SC_RAW_SOCKETS])
 
-dnl page
+
 #### finish
 
 AC_CONFIG_HEADERS([config.h])
 AC_CONFIG_FILES([Makefile]
    [src/ccsys.h]
    [meta/scripts/ccsys.pc]
-   [meta/slackstuff/config]
    [meta/slackware/slack-desc])
+MMUX_OUTPUT
 AC_OUTPUT
 
 ### end of file
-# Local Variables:
-# mode: autoconf
-# page-delimiter: "^dnl page"
-# End:

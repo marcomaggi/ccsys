@@ -9,6 +9,7 @@
 ** pathconf
 ** umask
 * Networking
+** update to the struct type representation
 ** testing for everything
 ** client and server demo programs
 * Daemonisation
