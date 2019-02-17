@@ -6,6 +6,7 @@ m4_include(meta/autoconf/mmux-check-pkg-config-macros.m4)
 m4_include(meta/autoconf/mmux-check-target-os.m4)
 m4_include(meta/autoconf/mmux-libtool-library-versions.m4)
 
+m4_include(meta/autoconf/ax-is-release.m4)
 m4_include(meta/autoconf/ax-require-defined.m4)
 m4_include(meta/autoconf/ax-check-compile-flag.m4)
 m4_include(meta/autoconf/ax-check-link-flag.m4)

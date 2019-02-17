@@ -9,7 +9,7 @@ AC_INIT([CCSys],[MMUX_PACKAGE_VERSION],
 MMUX_INIT
 MMUX_LIBTOOL_LIBRARY_VERSIONS([ccsys],1,0,0)
 AC_REVISION([0.1])
-AC_COPYRIGHT([Copyright (c) 2017, 2018, 2019 Marco Maggi <marco.maggi-ipsu@poste.it>
+AC_COPYRIGHT([Copyright (c) 2017-2019 Marco Maggi <marco.maggi-ipsu@poste.it>
 
 This program is free software: you  can redistribute it and/or modify it
 under the terms of the GNU Lesser General Public License as published by
@@ -18,7 +18,7 @@ your option) any later version.
 
 This program  is distributed  in the  hope that it  will be  useful, but
 WITHOUT   ANY   WARRANTY;  without   even   the   implied  warranty   of
-MERCHANTABILITY  or  FITNESS FOR  A  PARTICULAR  PURPOSE.  See  the  GNU
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser
 General Public License for more details.
 
 You should have received a copy of the GNU Lesser General Public License
@@ -51,6 +51,7 @@ LT_INIT
 #### basic system inspection
 
 MMUX_CHECK_TARGET_OS
+AX_IS_RELEASE([git-directory])
 
 AC_LANG([C])
 MMUX_LANG_C11
@@ -77,6 +78,7 @@ AC_CACHE_SAVE
 #### external libraries
 
 MMUX_CHECK_PKG_CONFIG_MACROS
+PKG_INSTALLDIR
 PKG_CHECK_MODULES([CCEXCEPTIONS],[ccexceptions >= 0.8.0])
 PKG_CHECK_MODULES([CCMEMORY],[ccmemory >= 0.2.1])
 PKG_CHECK_MODULES([CCSTRUCTS],[ccstructs >= 0.1.0])
