@@ -7,7 +7,7 @@
 
 
 
-  Copyright (C) 2017, 2018 Marco Maggi <marco.maggi-ipsu@poste.it>
+  Copyright (C) 2017, 2018, 2019 Marco Maggi <marco.maggi-ipsu@poste.it>
 
   The author  hereby grant permission to use,  copy, modify, distribute,
   and  license this  software  and its  documentation  for any  purpose,
@@ -41,7 +41,7 @@ static int list_dirs (const char * pathname);
 static const char *	progname = "listdir";
 
 int
-main (int argc, const char *const argv[])
+main (int argc, char const *const argv[])
 {
   const char *	pathname = (2 == argc)? argv[1] : "./";
   int		rv;
@@ -51,10 +51,11 @@ main (int argc, const char *const argv[])
 }
 
 int
-list_dirs (const char * pathname)
+list_dirs (char const * pathname)
 {
-  cce_location_t	L[1];
-  cce_clean_handler_t	dirstream_H[1];
+  cce_location_t		L[1];
+  cce_clean_handler_t		dirstream_H[1];
+  ccstructs_clean_handler_t	ptn_H[1];
 
   if (cce_location(L)) {
     fprintf(stderr, "%s: error: %s\n", progname,
@@ -62,10 +63,16 @@ list_dirs (const char * pathname)
     cce_run_catch_handlers_final(L);
     return EXIT_FAILURE;
   } else {
-    ccsys_dir_t *	dirstream;
-    ccsys_dirent_t *	direntry;
+    ccsys_dir_t			*dirstream;
+    ccsys_dirent_t		*direntry;
+    ccstructs_pathname_t const	*ptn;
+    ccstructs_pathname_I	IPTN;
 
-    dirstream = ccsys_opendir(L, ccstructs_new_pathname_from_dynamic_string(pathname));
+    ptn  = ccname_new(ccstructs_pathname_t, from_chars)(L, pathname);
+    IPTN = ccname_iface_new(ccstructs_pathname_I, ccstructs_pathname_t)(ptn);
+    ccstructs_clean_handler_init(L, ptn_H, ccname_iface_new(ccstructs_dtor_I, ccstructs_pathname_I)(IPTN));
+
+    dirstream = ccsys_opendir(L, IPTN);
     ccsys_init_dirstream_clean_handler(L, dirstream_H, dirstream);
     while ((direntry = ccsys_readdir(L, dirstream))) {
       printf("%s\n", ccsys_ref_dirent_d_name(direntry));

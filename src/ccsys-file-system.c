@@ -7,7 +7,7 @@
 
 	POSIX system calls wrappers, file system functions.
 
-  Copyright (C) 2017, 2018 Marco Maggi <marco.maggi-ipsu@poste.it>
+  Copyright (C) 2017, 2018, 2019 Marco Maggi <marco.maggi-ipsu@poste.it>
 
   This is free software; you  can redistribute it and/or modify it under
   the terms of the GNU Lesser General Public License as published by the
@@ -89,7 +89,7 @@ ccsys_opendir (cce_location_t * L, ccstructs_pathname_I pathname)
 {
   DIR *	rv;
   errno = 0;
-  rv = opendir(ccstructs_pathname_pointer(L, pathname));
+  rv = opendir(ccstructs_pathname_asciiz(L, pathname).ptr);
   if (NULL != rv) {
     return (ccsys_dir_t *)rv;
   } else {
@@ -215,7 +215,7 @@ ccsys_stat (cce_location_t * L, ccstructs_pathname_I pathname, ccsys_stat_t * _b
   struct stat *	buf = (struct stat *)_buf;
   int		rv;
   errno = 0;
-  rv = stat(ccstructs_pathname_pointer(L, pathname), buf);
+  rv = stat(ccstructs_pathname_asciiz(L, pathname).ptr, buf);
   if (0 == rv) {
     return true;
   } else {
@@ -265,7 +265,7 @@ ccsys_fstatat (cce_destination_t L, ccsys_dirfd_t dirfd, ccstructs_pathname_I pa
   CCSYS_PC(struct stat, buf, _buf);
   int		rv;
   errno = 0;
-  rv = fstatat(dirfd.data, ccstructs_pathname_pointer(L, pathname), buf, flags.data);
+  rv = fstatat(dirfd.data, ccstructs_pathname_asciiz(L, pathname).ptr, buf, flags.data);
   if (0 == rv) {
     return true;
   } else {
@@ -290,7 +290,7 @@ ccsys_lstat (cce_location_t * L, ccstructs_pathname_I pathname, ccsys_stat_t * _
   struct stat *	buf = (struct stat *)_buf;
   int		rv;
   errno = 0;
-  rv = lstat(ccstructs_pathname_pointer(L, pathname), buf);
+  rv = lstat(ccstructs_pathname_asciiz(L, pathname).ptr, buf);
   if (0 == rv) {
     return true;
   } else {
@@ -811,7 +811,7 @@ ccsys_chdir (cce_location_t * L, ccstructs_pathname_I pathname)
 {
   int	rv;
   errno = 0;
-  rv = chdir(ccstructs_pathname_pointer(L, pathname));
+  rv = chdir(ccstructs_pathname_asciiz(L, pathname).ptr);
   if (-1 == rv) {
     cce_raise(L, cce_condition_new_errno_clear());
   }
@@ -842,7 +842,7 @@ ccsys_mkdir (cce_location_t * L, ccstructs_pathname_I pathname, ccsys_open_mode_
 {
   int	rv;
   errno = 0;
-  rv = mkdir(ccstructs_pathname_pointer(L, pathname), mode.data);
+  rv = mkdir(ccstructs_pathname_asciiz(L, pathname).ptr, mode.data);
   if (-1 == rv) {
     cce_raise(L, cce_condition_new_errno_clear());
   }
@@ -855,7 +855,7 @@ ccsys_mkdirat (cce_location_t * L, ccsys_dirfd_t fd, ccstructs_pathname_I pathna
 {
   int	rv;
   errno = 0;
-  rv = mkdirat(fd.data, ccstructs_pathname_pointer(L, pathname), mode.data);
+  rv = mkdirat(fd.data, ccstructs_pathname_asciiz(L, pathname).ptr, mode.data);
   if (-1 == rv) {
     cce_raise(L, cce_condition_new_errno_clear());
   }
@@ -868,7 +868,7 @@ ccsys_rmdir (cce_location_t * L, ccstructs_pathname_I pathname)
 {
   int	rv;
   errno = 0;
-  rv = rmdir(ccstructs_pathname_pointer(L, pathname));
+  rv = rmdir(ccstructs_pathname_asciiz(L, pathname).ptr);
   if (-1 == rv) {
     cce_raise(L, cce_condition_new_errno_clear());
   }
@@ -889,8 +889,8 @@ cce_rmdir_handler_function (const cce_condition_t * C CCE_UNUSED, cce_handler_t 
   } else {
     CCSYS_PC(ccsys_pathname_clean_handler_t, H, _H);
 
-    if (0) { fprintf(stderr, "%s: removing '%s'\n", __func__, ccstructs_pathname_pointer(L, H->pathname)); }
-    rmdir(ccstructs_pathname_pointer(L, H->pathname));
+    if (0) { fprintf(stderr, "%s: removing '%s'\n", __func__, ccstructs_pathname_asciiz(L, H->pathname).ptr); }
+    rmdir(ccstructs_pathname_asciiz(L, H->pathname).ptr);
     if (0) { fprintf(stderr, "%s: done\n", __func__); }
     cce_run_body_handlers(L);
   }
@@ -1015,7 +1015,7 @@ ccsys_link (cce_location_t * L, ccstructs_pathname_I oldname, ccstructs_pathname
 {
   int	rv;
   errno = 0;
-  rv = link(ccstructs_pathname_pointer(L, oldname), ccstructs_pathname_pointer(L, newname));
+  rv = link(ccstructs_pathname_asciiz(L, oldname).ptr, ccstructs_pathname_asciiz(L, newname).ptr);
   if (-1 == rv) {
     cce_raise(L, cce_condition_new_errno_clear());
   }
@@ -1031,8 +1031,8 @@ ccsys_linkat (cce_location_t * L,
 {
   int	rv;
   errno = 0;
-  rv = linkat(oldfd.data, ccstructs_pathname_pointer(L, oldname),
-	      newfd.data, ccstructs_pathname_pointer(L, newname),
+  rv = linkat(oldfd.data, ccstructs_pathname_asciiz(L, oldname).ptr,
+	      newfd.data, ccstructs_pathname_asciiz(L, newname).ptr,
 	      flags.data);
   if (-1 == rv) {
     cce_raise(L, cce_condition_new_errno_clear());
@@ -1048,7 +1048,7 @@ ccsys_symlink (cce_location_t * L, ccstructs_pathname_I oldname, ccstructs_pathn
 {
   int	rv;
   errno = 0;
-  rv = symlink(ccstructs_pathname_pointer(L, oldname), ccstructs_pathname_pointer(L, newname));
+  rv = symlink(ccstructs_pathname_asciiz(L, oldname).ptr, ccstructs_pathname_asciiz(L, newname).ptr);
   if (-1 == rv) {
     cce_raise(L, cce_condition_new_errno_clear());
   }
@@ -1061,7 +1061,7 @@ ccsys_symlinkat (cce_location_t * L, ccstructs_pathname_I oldname, ccsys_dirfd_t
 {
   int	rv;
   errno = 0;
-  rv = symlinkat(ccstructs_pathname_pointer(L, oldname), newdirfd.data, ccstructs_pathname_pointer(L, newname));
+  rv = symlinkat(ccstructs_pathname_asciiz(L, oldname).ptr, newdirfd.data, ccstructs_pathname_asciiz(L, newname).ptr);
   if (-1 == rv) {
     cce_raise(L, cce_condition_new_errno_clear());
   }
@@ -1074,7 +1074,7 @@ ccsys_readlink (cce_location_t * L, ccstructs_pathname_I pathname, char * buffer
 {
   ssize_t	rv;
   errno = 0;
-  rv = readlink(ccstructs_pathname_pointer(L, pathname), buffer, size);
+  rv = readlink(ccstructs_pathname_asciiz(L, pathname).ptr, buffer, size);
   if (-1 == rv) {
     cce_raise(L, cce_condition_new_errno_clear());
   } else {
@@ -1089,7 +1089,7 @@ ccsys_readlinkat (cce_location_t * L, ccsys_dirfd_t dirfd, ccstructs_pathname_I 
 {
   ssize_t	rv;
   errno = 0;
-  rv = readlinkat(dirfd.data, ccstructs_pathname_pointer(L, pathname), buffer, size);
+  rv = readlinkat(dirfd.data, ccstructs_pathname_asciiz(L, pathname).ptr, buffer, size);
   if (-1 == rv) {
     cce_raise(L, cce_condition_new_errno_clear());
   } else {
@@ -1104,7 +1104,7 @@ ccsys_realpath (cce_location_t * L, ccstructs_pathname_I pathname, char * resolv
 {
   char *	rv;
   errno = 0;
-  rv = realpath(ccstructs_pathname_pointer(L, pathname), resolved_path);
+  rv = realpath(ccstructs_pathname_asciiz(L, pathname).ptr, resolved_path);
   if (rv) {
     return rv;
   } else {
@@ -1121,7 +1121,7 @@ ccsys_unlink (cce_location_t * L, ccstructs_pathname_I pathname)
 {
   int	rv;
   errno = 0;
-  rv = unlink(ccstructs_pathname_pointer(L, pathname));
+  rv = unlink(ccstructs_pathname_asciiz(L, pathname).ptr);
   if (-1 == rv) {
     cce_raise(L, cce_condition_new_errno_clear());
   }
@@ -1134,7 +1134,7 @@ ccsys_unlinkat (cce_location_t * L, ccsys_dirfd_t dirfd, ccstructs_pathname_I pa
 {
   int	rv;
   errno = 0;
-  rv = unlinkat(dirfd.data, ccstructs_pathname_pointer(L, pathname), flags.data);
+  rv = unlinkat(dirfd.data, ccstructs_pathname_asciiz(L, pathname).ptr, flags.data);
   if (-1 == rv) {
     cce_raise(L, cce_condition_new_errno_clear());
   }
@@ -1154,8 +1154,8 @@ cce_unlinkat_handler_function (const cce_condition_t * C CCE_UNUSED, cce_handler
     cce_run_catch_handlers_final(L);
   } else {
     ccsys_at_link_t *	lnk	= H->pointer;
-    unlinkat(lnk->dirfd.data, ccstructs_pathname_pointer(L, lnk->pathname), lnk->flags.data);
-    if (0) { fprintf(stderr, "%s: done unlinking '%s'\n", __func__, ccstructs_pathname_pointer(L, lnk->pathname)); }
+    unlinkat(lnk->dirfd.data, ccstructs_pathname_asciiz(L, lnk->pathname).ptr, lnk->flags.data);
+    if (0) { fprintf(stderr, "%s: done unlinking '%s'\n", __func__, ccstructs_pathname_asciiz(L, lnk->pathname).ptr); }
     cce_run_body_handlers(L);
   }
 }
@@ -1188,7 +1188,7 @@ ccsys_remove (cce_location_t * L, ccstructs_pathname_I pathname)
 {
   int	rv;
   errno = 0;
-  rv = remove(ccstructs_pathname_pointer(L, pathname));
+  rv = remove(ccstructs_pathname_asciiz(L, pathname).ptr);
   if (-1 == rv) {
     cce_raise(L, cce_condition_new_errno_clear());
   }
@@ -1208,8 +1208,8 @@ cce_remove_handler_function (const cce_condition_t * C CCE_UNUSED, cce_handler_t
     cce_run_catch_handlers_final(L);
   } else {
     CCSYS_PC(ccsys_pathname_clean_handler_t, H, _H);
-    remove(ccstructs_pathname_pointer(L, H->pathname));
-    if (0) { fprintf(stderr, "%s: done removing '%s'\n", __func__, ccstructs_pathname_pointer(L, H->pathname)); }
+    remove(ccstructs_pathname_asciiz(L, H->pathname).ptr);
+    if (0) { fprintf(stderr, "%s: done removing '%s'\n", __func__, ccstructs_pathname_asciiz(L, H->pathname).ptr); }
     cce_run_body_handlers(L);
   }
 }
@@ -1242,8 +1242,8 @@ ccsys_rename (cce_location_t * L, ccstructs_pathname_I oldname, ccstructs_pathna
 {
   int	rv;
   errno = 0;
-  rv = rename(ccstructs_pathname_pointer(L, oldname),
-	      ccstructs_pathname_pointer(L, newname));
+  rv = rename(ccstructs_pathname_asciiz(L, oldname).ptr,
+	      ccstructs_pathname_asciiz(L, newname).ptr);
   if (-1 == rv) {
     cce_raise(L, cce_condition_new_errno_clear());
   }
@@ -1258,8 +1258,8 @@ ccsys_renameat (cce_destination_t L,
 {
   int	rv;
   errno = 0;
-  rv = renameat(old_dirfd.data, ccstructs_pathname_pointer(L, oldname),
-		new_dirfd.data, ccstructs_pathname_pointer(L, newname));
+  rv = renameat(old_dirfd.data, ccstructs_pathname_asciiz(L, oldname).ptr,
+		new_dirfd.data, ccstructs_pathname_asciiz(L, newname).ptr);
   if (-1 == rv) {
     cce_raise(L, cce_condition_new_errno_clear());
   }
@@ -1276,8 +1276,8 @@ ccsys_renameat2 (cce_destination_t L,
   int	rv;
   errno = 0;
   rv = syscall(SYS_renameat2,
-	       old_dirfd.data, ccstructs_pathname_pointer(L, oldname),
-	       new_dirfd.data, ccstructs_pathname_pointer(L, newname),
+	       old_dirfd.data, ccstructs_pathname_asciiz(L, oldname).ptr,
+	       new_dirfd.data, ccstructs_pathname_asciiz(L, newname).ptr,
 	       flags.data);
   if (-1 == rv) {
     cce_raise(L, cce_condition_new_errno_clear());
@@ -1296,7 +1296,7 @@ ccsys_chown (cce_location_t * L, ccstructs_pathname_I pathname, ccsys_uid_t owne
 {
   int	rv;
   errno = 0;
-  rv = chown(ccstructs_pathname_pointer(L, pathname), owner.data, group.data);
+  rv = chown(ccstructs_pathname_asciiz(L, pathname).ptr, owner.data, group.data);
   if (-1 == rv) {
     cce_raise(L, cce_condition_new_errno_clear());
   }
@@ -1322,7 +1322,7 @@ ccsys_lchown (cce_location_t * L, ccstructs_pathname_I pathname, ccsys_uid_t own
 {
   int	rv;
   errno = 0;
-  rv = lchown(ccstructs_pathname_pointer(L, pathname), owner.data, group.data);
+  rv = lchown(ccstructs_pathname_asciiz(L, pathname).ptr, owner.data, group.data);
   if (-1 == rv) {
     cce_raise(L, cce_condition_new_errno_clear());
   }
@@ -1336,7 +1336,7 @@ ccsys_fchownat (cce_location_t * L, ccsys_dirfd_t dirfd, ccstructs_pathname_I pa
 {
   int	rv;
   errno = 0;
-  rv = fchownat(dirfd.data, ccstructs_pathname_pointer(L, pathname), owner.data, group.data, flags.data);
+  rv = fchownat(dirfd.data, ccstructs_pathname_asciiz(L, pathname).ptr, owner.data, group.data, flags.data);
   if (-1 == rv) {
     cce_raise(L, cce_condition_new_errno_clear());
   }
@@ -1354,7 +1354,7 @@ ccsys_chmod (cce_location_t * L, ccstructs_pathname_I pathname, ccsys_open_mode_
 {
   int	rv;
   errno = 0;
-  rv = chmod(ccstructs_pathname_pointer(L, pathname), mode.data);
+  rv = chmod(ccstructs_pathname_asciiz(L, pathname).ptr, mode.data);
   if (-1 == rv) {
     cce_raise(L, cce_condition_new_errno_clear());
   }
@@ -1380,7 +1380,7 @@ ccsys_fchmodat (cce_location_t * L, ccsys_dirfd_t dirfd, ccstructs_pathname_I pa
 {
   int	rv;
   errno = 0;
-  rv = fchmodat(dirfd.data, ccstructs_pathname_pointer(L, pathname), mode.data, flags.data);
+  rv = fchmodat(dirfd.data, ccstructs_pathname_asciiz(L, pathname).ptr, mode.data, flags.data);
   if (-1 == rv) {
     cce_raise(L, cce_condition_new_errno_clear());
   }
@@ -1398,7 +1398,7 @@ ccsys_access (cce_location_t * L, ccstructs_pathname_I pathname, ccsys_access_mo
 {
   int	rv;
   errno = 0;
-  rv = access(ccstructs_pathname_pointer(L, pathname), how.data);
+  rv = access(ccstructs_pathname_asciiz(L, pathname).ptr, how.data);
   if (0 == rv) {
     return true;
   } else if (CCSYS_EACCES == errno) {
@@ -1416,7 +1416,7 @@ ccsys_faccessat (cce_location_t * L, ccsys_dirfd_t dirfd, ccstructs_pathname_I p
 {
   int	rv;
   errno = 0;
-  rv = faccessat(dirfd.data, ccstructs_pathname_pointer(L, pathname), how.data, flags.data);
+  rv = faccessat(dirfd.data, ccstructs_pathname_asciiz(L, pathname).ptr, how.data, flags.data);
   if (0 == rv) {
     return true;
   } else if (CCSYS_EACCES == errno) {
@@ -1438,7 +1438,7 @@ ccsys_truncate (cce_location_t * L, ccstructs_pathname_I pathname, ccsys_off_t l
 {
   int	rv;
   errno = 0;
-  rv = truncate(ccstructs_pathname_pointer(L, pathname), (off_t)(length.data));
+  rv = truncate(ccstructs_pathname_asciiz(L, pathname).ptr, (off_t)(length.data));
   if (-1 == rv) {
     cce_raise(L, cce_condition_new_errno_clear());
   }
@@ -1469,7 +1469,7 @@ ccsys_utimes (cce_location_t * L, ccstructs_pathname_I pathname, ccsys_timeval_t
 {
   int	rv;
   errno = 0;
-  rv = utimes(ccstructs_pathname_pointer(L, pathname), (struct timeval const *)T);
+  rv = utimes(ccstructs_pathname_asciiz(L, pathname).ptr, (struct timeval const *)T);
   if (-1 == rv) {
     cce_raise(L, cce_condition_new_errno_clear());
   }
@@ -1483,7 +1483,7 @@ ccsys_utimensat (cce_destination_t L, ccsys_dirfd_t dirfd, ccstructs_pathname_I 
 {
   int	rv;
   errno = 0;
-  rv = utimensat(dirfd.data, ccstructs_pathname_pointer(L, pathname), (struct timespec const *)T, flags.data);
+  rv = utimensat(dirfd.data, ccstructs_pathname_asciiz(L, pathname).ptr, (struct timespec const *)T, flags.data);
   if (-1 == rv) {
     cce_raise(L, cce_condition_new_errno_clear());
   }
@@ -1511,7 +1511,7 @@ ccsys_lutimes (cce_location_t * L, ccstructs_pathname_I pathname,  ccsys_timeval
 {
   int	rv;
   errno = 0;
-  rv = lutimes(ccstructs_pathname_pointer(L, pathname), (const struct timeval *)T);
+  rv = lutimes(ccstructs_pathname_asciiz(L, pathname).ptr, (const struct timeval *)T);
   if (-1 == rv) {
     cce_raise(L, cce_condition_new_errno_clear());
   }
@@ -1537,7 +1537,7 @@ ccsys_futimesat (cce_destination_t L, ccsys_dirfd_t dirfd, ccstructs_pathname_I 
 {
   int	rv;
   errno = 0;
-  rv = futimesat(dirfd.data, ccstructs_pathname_pointer(L, pathname), (struct timeval const *)T);
+  rv = futimesat(dirfd.data, ccstructs_pathname_asciiz(L, pathname).ptr, (struct timeval const *)T);
   if (-1 == rv) {
     cce_raise(L, cce_condition_new_errno_clear());
   }

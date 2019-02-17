@@ -7,7 +7,7 @@
 
 	POSIX system calls wrappers, input/output functions.
 
-  Copyright (C) 2017, 2018 Marco Maggi <marco.maggi-ipsu@poste.it>
+  Copyright (C) 2017, 2018, 2019 Marco Maggi <marco.maggi-ipsu@poste.it>
 
   This is free software; you  can redistribute it and/or modify it under
   the terms of the GNU Lesser General Public License as published by the
@@ -67,7 +67,7 @@ ccsys_open (cce_location_t * L, ccstructs_pathname_I filename, ccsys_open_flags_
 {
   int	rv;
   errno = 0;
-  rv = open(ccstructs_pathname_pointer(L, filename), flags.data, mode.data);
+  rv = open(ccstructs_pathname_asciiz(L, filename).ptr, flags.data, mode.data);
   if (-1 == rv) {
     cce_raise(L, cce_condition_new_errno_clear());
   } else {
@@ -83,7 +83,7 @@ ccsys_openat (cce_location_t * L, ccsys_dirfd_t dirfd, ccstructs_pathname_I file
 {
   int	rv;
   errno = 0;
-  rv = openat(dirfd.data, ccstructs_pathname_pointer(L, filename), flags.data, mode.data);
+  rv = openat(dirfd.data, ccstructs_pathname_asciiz(L, filename).ptr, flags.data, mode.data);
   if (-1 == rv) {
     cce_raise(L, cce_condition_new_errno_clear());
   } else {
@@ -161,7 +161,7 @@ ccsys_mkfifo (cce_location_t * L, ccstructs_pathname_I pathname, ccsys_open_mode
 {
   int	rv;
   errno = 0;
-  rv = mkfifo(ccstructs_pathname_pointer(L, pathname), mode.data);
+  rv = mkfifo(ccstructs_pathname_asciiz(L, pathname).ptr, mode.data);
   if (-1 == rv) {
     cce_raise(L, cce_condition_new_errno_clear());
   }
@@ -174,7 +174,7 @@ ccsys_mkfifoat (cce_location_t * L, ccsys_dirfd_t dirfd, ccstructs_pathname_I pa
 {
   int	rv;
   errno = 0;
-  rv = mkfifoat(dirfd.data, ccstructs_pathname_pointer(L, pathname), mode.data);
+  rv = mkfifoat(dirfd.data, ccstructs_pathname_asciiz(L, pathname).ptr, mode.data);
   if (-1 == rv) {
     cce_raise(L, cce_condition_new_errno_clear());
   }
@@ -606,7 +606,7 @@ ccsys_fopen (cce_destination_t L, ccstructs_pathname_I pathname, char const * mo
   FILE *	rv;
 
   errno = 0;
-  rv = fopen(ccstructs_pathname_pointer(L, pathname), mode);
+  rv = fopen(ccstructs_pathname_asciiz(L, pathname).ptr, mode);
   if (NULL != rv) {
     ccsys_file_t	stream = { .data = rv };
     return stream;
@@ -636,7 +636,7 @@ ccsys_freopen (cce_destination_t L, ccstructs_pathname_I pathname, char const * 
   FILE *	rv;
 
   errno = 0;
-  rv = freopen(ccstructs_pathname_pointer(L, pathname), mode, (FILE *)in_stream.data);
+  rv = freopen(ccstructs_pathname_asciiz(L, pathname).ptr, mode, (FILE *)in_stream.data);
   if (NULL != rv) {
     ccsys_file_t	ou_stream = { .data = rv };
     return ou_stream;

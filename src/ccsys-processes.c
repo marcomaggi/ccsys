@@ -7,7 +7,7 @@
 
 
 
-  Copyright (C) 2017, 2018 Marco Maggi <marco.maggi-ipsu@poste.it>
+  Copyright (C) 2017, 2018, 2019 Marco Maggi <marco.maggi-ipsu@poste.it>
 
   This is free software; you  can redistribute it and/or modify it under
   the terms of the GNU Lesser General Public License as published by the
@@ -90,7 +90,7 @@ ccsys_execv (cce_location_t * L, ccstructs_pathname_I filename, char * const arg
 {
   int	rv;
   errno = 0;
-  rv = execv(ccstructs_pathname_pointer(L, filename), argv);
+  rv = execv(ccstructs_pathname_asciiz(L, filename).ptr, argv);
   if (-1 == rv) {
     cce_raise(L, cce_condition_new_errno_clear());
   }
@@ -103,7 +103,7 @@ ccsys_execve (cce_location_t * L, ccstructs_pathname_I filename, char * const ar
 {
   int	rv;
   errno = 0;
-  rv = execve(ccstructs_pathname_pointer(L, filename), argv, env);
+  rv = execve(ccstructs_pathname_asciiz(L, filename).ptr, argv, env);
   if (-1 == rv) {
     cce_raise(L, cce_condition_new_errno_clear());
   }
@@ -116,7 +116,7 @@ ccsys_execvp (cce_location_t * L, ccstructs_pathname_I filename, char * const ar
 {
   int	rv;
   errno = 0;
-  rv = execvp(ccstructs_pathname_pointer(L, filename), argv);
+  rv = execvp(ccstructs_pathname_asciiz(L, filename).ptr, argv);
   if (-1 == rv) {
     cce_raise(L, cce_condition_new_errno_clear());
   }

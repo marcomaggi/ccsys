@@ -7,7 +7,7 @@
 
 	Tests for POSIX system functions, file system.
 
-  Copyright (C) 2018 Marco Maggi <marco.maggi-ipsu@poste.it>
+  Copyright (C) 2018, 2019 Marco Maggi <marco.maggi-ipsu@poste.it>
 
   See the COPYING file.
 */
@@ -1358,8 +1358,8 @@ test_6_3_2 (cce_destination_t upper_L)
       ccstructs_pathname_I	realname;
 
       realname = ccstructs_new_pathname_from_dynamic_string(ccsys_realpath(L, filename, NULL));
-      cce_init_handler_malloc(L, realname_H, (char *)ccstructs_pathname_pointer(L, realname));
-      if (1) { fprintf(stderr, "%s: %s\n", __func__, ccstructs_pathname_pointer(L, realname)); }
+      cce_init_handler_malloc(L, realname_H, (char *)ccstructs_pathname_asciiz(L, realname).ptr);
+      if (1) { fprintf(stderr, "%s: %s\n", __func__, ccstructs_pathname_asciiz(L, realname).ptr); }
     }
 
     cce_run_body_handlers(L);
@@ -2554,7 +2554,7 @@ test_14_1 (cce_destination_t upper_L)
     /* Validate file existence. */
     {
       cctests_assert(L, true == ccsys_pathname_isreg(L, filename));
-      if (1) { fprintf(stderr, "%s: tempname=%s\n", __func__, ccstructs_pathname_pointer(L, filename)); }
+      if (1) { fprintf(stderr, "%s: tempname=%s\n", __func__, ccstructs_pathname_asciiz(L, filename).ptr); }
     }
 
     cce_run_body_handlers(L);
@@ -2591,7 +2591,7 @@ test_14_2 (cce_destination_t upper_L)
     /* Validate file existence. */
     {
       cctests_assert(L, true == ccsys_pathname_isreg(L, filename));
-      if (1) { fprintf(stderr, "%s: tempname=%s\n", __func__, ccstructs_pathname_pointer(L, filename)); }
+      if (1) { fprintf(stderr, "%s: tempname=%s\n", __func__, ccstructs_pathname_asciiz(L, filename).ptr); }
     }
 
     cce_run_body_handlers(L);
@@ -2627,7 +2627,7 @@ test_14_3 (cce_destination_t upper_L)
     /* Validate file existence. */
     {
       cctests_assert(L, true == ccsys_pathname_isreg(L, filename));
-      if (1) { fprintf(stderr, "%s: tempname=%s\n", __func__, ccstructs_pathname_pointer(L, filename)); }
+      if (1) { fprintf(stderr, "%s: tempname=%s\n", __func__, ccstructs_pathname_asciiz(L, filename).ptr); }
     }
 
     cce_run_body_handlers(L);
@@ -2664,7 +2664,7 @@ test_14_4 (cce_destination_t upper_L)
     /* Validate file existence. */
     {
       cctests_assert(L, true == ccsys_pathname_isreg(L, filename));
-      if (1) { fprintf(stderr, "%s: tempname=%s\n", __func__, ccstructs_pathname_pointer(L, filename)); }
+      if (1) { fprintf(stderr, "%s: tempname=%s\n", __func__, ccstructs_pathname_asciiz(L, filename).ptr); }
     }
 
     cce_run_body_handlers(L);
@@ -2701,7 +2701,7 @@ test_15_1 (cce_destination_t upper_L)
     /* Validate file existence. */
     {
       cctests_assert(L, true == ccsys_pathname_isdir(L, dirname));
-      if (1) { fprintf(stderr, "%s: tempname=%s\n", __func__, ccstructs_pathname_pointer(L, dirname)); }
+      if (1) { fprintf(stderr, "%s: tempname=%s\n", __func__, ccstructs_pathname_asciiz(L, dirname).ptr); }
     }
 
     cce_run_body_handlers(L);

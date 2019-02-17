@@ -7,7 +7,7 @@
 
 	Tests for POSIX system functions, input/output.
 
-  Copyright (C) 2018 Marco Maggi <marco.maggi-ipsu@poste.it>
+  Copyright (C) 2018, 2019 Marco Maggi <marco.maggi-ipsu@poste.it>
 
   See the COPYING file.
 */
@@ -275,7 +275,7 @@ test_4_1_parent (cce_destination_t upper_L, ccstructs_pathname_I fifoname)
       size_t	len = 11;
       char *	oubuf = "0123456789";
       char	inbuf[len];
-      if (0) { fprintf(stderr, "%s: reading from %s\n", __func__, ccstructs_pathname_pointer(L, fifoname)); }
+      if (0) { fprintf(stderr, "%s: reading from %s\n", __func__, ccstructs_pathname_asciiz(L, fifoname).ptr); }
       ccsys_read (L, infd, inbuf, len);
       cctests_assert(L, 0 == strncmp(inbuf, oubuf, len));
       if (0) { fprintf(stderr, "%s: read input='%s' \n", __func__, inbuf); }
@@ -309,7 +309,7 @@ test_4_1_child  (ccstructs_pathname_I fifoname)
     {
       size_t	len = 11;
       char *	oubuf = "0123456789";
-      if (0) { fprintf(stderr, "%s: writing to %s\n", __func__, ccstructs_pathname_pointer(L, fifoname)); }
+      if (0) { fprintf(stderr, "%s: writing to %s\n", __func__, ccstructs_pathname_asciiz(L, fifoname).ptr); }
       ccsys_write(L, oufd, oubuf, len);
     }
     cce_run_body_handlers(L);
@@ -424,7 +424,7 @@ test_4_2_parent (cce_destination_t upper_L, ccsys_dirfd_t dirfd, ccstructs_pathn
       size_t	len = 11;
       char *	oubuf = "0123456789";
       char		inbuf[len];
-      if (0) { fprintf(stderr, "%s: reading from %s\n", __func__, ccstructs_pathname_pointer(L, fifoname)); }
+      if (0) { fprintf(stderr, "%s: reading from %s\n", __func__, ccstructs_pathname_asciiz(L, fifoname).ptr); }
       ccsys_read (L, infd, inbuf, len);
       cctests_assert(L, 0 == strncmp(inbuf, oubuf, len));
       if (0) { fprintf(stderr, "%s: read input='%s' \n", __func__, inbuf); }
@@ -458,7 +458,7 @@ test_4_2_child (ccsys_dirfd_t dirfd, ccstructs_pathname_I fifoname)
     {
       size_t	len = 11;
       char *	oubuf = "0123456789";
-      if (0) { fprintf(stderr, "%s: writing to %s\n", __func__, ccstructs_pathname_pointer(L, fifoname)); }
+      if (0) { fprintf(stderr, "%s: writing to %s\n", __func__, ccstructs_pathname_asciiz(L, fifoname).ptr); }
       ccsys_write(L, oufd, oubuf, len);
     }
     cce_run_body_handlers(L);

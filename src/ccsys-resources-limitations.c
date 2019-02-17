@@ -7,7 +7,7 @@
 
 
 
-  Copyright (C) 2018 Marco Maggi <marco.maggi-ipsu@poste.it>
+  Copyright (C) 2018, 2019 Marco Maggi <marco.maggi-ipsu@poste.it>
 
   This is free software; you can  redistribute it and/or modify it under
   the terms of the GNU Lesser General Public License as published by the
@@ -92,7 +92,7 @@ ccsys_pathconf (cce_destination_t L, ccstructs_pathname_I ptn, ccsys_pathconf_fl
 {
   long	rv;
   errno = 0;
-  rv = pathconf(ccstructs_pathname_pointer(L, ptn), name);
+  rv = pathconf(ccstructs_pathname_asciiz(L, ptn).ptr, name);
   if (-1 == rv) {
     cce_raise(L, cce_condition_new_errno_clear());
   } else {
