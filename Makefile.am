@@ -5,8 +5,8 @@ AUTOMAKE_OPTIONS	= foreign
 EXTRA_DIST		= INSTALL			\
 			  meta/slackware/slack-desc.in
 dist_doc_DATA		= README COPYING
-AM_CFLAGS		= $(MMUX_CFLAGS)
 AM_CPPFLAGS		= -I$(srcdir)/src -I$(builddir)/src
+AM_CFLAGS		= $(MMUX_CFLAGS)
 
 ## --------------------------------------------------------------------
 
@@ -36,9 +36,9 @@ include_HEADERS		= src/ccsys.h
 
 lib_LTLIBRARIES		= libccsys.la
 libccsys_la_CPPFLAGS	= $(AM_CPPFLAGS)
-libccsys_la_CFLAGS	= $(CCEXCEPTIONS_CFLAGS) $(CCMEMORY_CFLAGS) $(CCSTRUCTS_CFLAGS)
+libccsys_la_CFLAGS	= $(AM_CFLAGS) $(CCEXCEPTIONS_CFLAGS) $(CCMEMORY_CFLAGS) $(CCSTRUCTS_CFLAGS)
 libccsys_la_LDFLAGS	= -version-info $(ccsys_CURRENT):$(ccsys_REVISION):$(ccsys_AGE) \
-			  $(CCEXCEPTIONS_LIBS) $(CCMEMORY_LIBS) $(CCSTRUCTS_LIBS)
+			  $(AM_LDFLAGS) $(CCEXCEPTIONS_LIBS) $(CCMEMORY_LIBS) $(CCSTRUCTS_LIBS)
 libccsys_la_SOURCES	= \
 	src/ccsys-internals.h			\
 	src/ccsys-system-program.c		\
@@ -76,7 +76,7 @@ endif
 
 ccsys_tests_cppflags		= $(AM_CPPFLAGS)
 ccsys_tests_cflags		= $(AM_CFLAGS) $(CCEXCEPTIONS_CFLAGS) $(CCMEMORY_CFLAGS) $(CCSTRUCTS_CFLAGS) $(CCTESTS_CFLAGS)
-ccsys_tests_ldadd		= libccsys.la $(CCTESTS_LIBS)
+ccsys_tests_ldadd		= $(AM_LDFLAGS) libccsys.la $(CCTESTS_LIBS)
 
 ## --------------------------------------------------------------------
 
@@ -141,9 +141,8 @@ noinst_PROGRAMS	= \
 MMUX_TESTS_CFLAGS		=
 
 ccsys_demos_cppflags		= $(AM_CPPFLAGS)
-ccsys_demos_cflags		= $(CCSYS_FLAGS) $(AM_CFLAGS) \
-	$(CCEXCEPTIONS_CFLAGS) $(CCMEMORY_CFLAGS) $(CCSTRUCTS_CFLAGS) $(CCTESTS_CFLAGS)
-ccsys_demos_ldadd		= libccsys.la $(CCTESTS_LIBS)
+ccsys_demos_cflags		= $(AM_CFLAGS) $(CCEXCEPTIONS_CFLAGS) $(CCMEMORY_CFLAGS) $(CCSTRUCTS_CFLAGS) $(CCTESTS_CFLAGS)
+ccsys_demos_ldadd		= $(AM_LDFLAGS) libccsys.la $(CCTESTS_LIBS)
 
 ## --------------------------------------------------------------------
 
