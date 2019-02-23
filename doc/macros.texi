@@ -316,13 +316,33 @@
 @acronym{RE2}
 @end macro
 
+@c ------------------------------------------------------------------------
+
+@ifhtml
 @macro uid{}
 @acronym{uid}
 @end macro
+@end ifhtml
 
+@ifnothtml
+@macro uid{}
+@acronym{UID}
+@end macro
+@end ifnothtml
+
+@c ------------------------------------------------------------------------
+
+@ifhtml
 @macro gid{}
 @acronym{gid}
 @end macro
+@end ifhtml
+
+@ifnothtml
+@macro gid{}
+@acronym{GID}
+@end macro
+@end ifnothtml
 
 @c page
 @c ------------------------------------------------------------
