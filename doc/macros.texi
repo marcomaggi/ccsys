@@ -135,10 +135,6 @@
 
 @c ------------------------------------------------------------
 
-@macro gid{}
-@acronym{GID}
-@end macro
-
 @macro git{}
 @acronym{GIT}
 @end macro
@@ -253,10 +249,6 @@
 @acronym{UDP}
 @end macro
 
-@macro uid{}
-@acronym{UID}
-@end macro
-
 @macro utf{}
 @acronym{UTF}
 @end macro
@@ -296,6 +288,10 @@
 @command{bash}
 @end macro
 
+@macro bub{}
+@acronym{bub}
+@end macro
+
 @macro ffmpeg{}
 @acronym{FFMPEG}
 @end macro
@@ -320,6 +316,120 @@
 @acronym{RE2}
 @end macro
 
+@macro uid{}
+@acronym{uid}
+@end macro
+
+@macro gid{}
+@acronym{gid}
+@end macro
+
+@c page
+@c ------------------------------------------------------------
+@c Scheme language macros.
+@c ------------------------------------------------------------
+
+@c *** KEEP ALPHABETIC ORDER ***
+
+@macro aclass{NAME}
+<\NAME\>
+@end macro
+
+@c Separating the @srfi{} macro from the number with a '--' rather than
+@c a '-'  makes the expansion look  ugly in menu entries  under the Info
+@c reader.  IMHO  this should not happen,  but it does; so  we live with
+@c this, because the main purpose of this document is to provide an Info
+@c version.
+@macro ansrfi{NUM}
+@srfi{}-\NUM\
+@end macro
+
+@c ------------------------------------------------------------
+
+@macro cclass{NAME}
+<\NAME\>
+@end macro
+
+@macro class{NAME}
+@code{<\NAME\>}
+@end macro
+
+@macro clos{}
+@acronym{CLOS}
+@end macro
+
+@macro condition{NAME}
+@code{&\NAME\}
+@end macro
+
+@c ------------------------------------------------------------
+
+@macro false{}
+@code{#f}
+@end macro
+
+@macro func{NAME}
+@code{\NAME\}
+@end macro
+
+@c ------------------------------------------------------------
+
+@macro keyword{NAME}
+@code{#:\NAME\}
+@end macro
+
+@c ------------------------------------------------------------
+
+@macro library{SPEC}
+@code{(\SPEC\)}
+@end macro
+
+@c ------------------------------------------------------------
+
+@macro nil{}
+@acronym{NIL}
+@end macro
+
+@c ------------------------------------------------------------
+
+@macro objtype{NAME}
+@code{\NAME\}
+@end macro
+
+@c ------------------------------------------------------------
+
+@macro repl{}
+@acronym{REPL}
+@end macro
+
+@macro rnrs{VERSION}
+@acronym{R\VERSION\RS}
+@end macro
+
+@macro rtd{}
+@acronym{RTD}
+@end macro
+
+@macro rsix{}
+Revised^6 Report on the algorithmic language Scheme
+@end macro
+
+@c ------------------------------------------------------------
+
+@macro true{}
+@code{#t}
+@end macro
+
+@c ------------------------------------------------------------
+
+@macro snull{}
+@code{()}
+@end macro
+
+@macro srfi{}
+@acronym{SRFI}
+@end macro
+
 @c page
 @c ------------------------------------------------------------
 @c C language macros.
@@ -333,27 +443,36 @@
 @code{NULL}
 @end macro
 
-@macro true{}
+@macro ctrue{}
 @code{true}
 @end macro
 
-@macro false{}
+@macro cfalse{}
 @code{false}
 @end macro
 
-@macro objtype{NAME}
+@macro struct{}
+@code{struct}
+@end macro
+
+@macro method{NAME}
+@cfunc{\NAME\}
+@end macro
+
+@macro iface{NAME}
 @code{\NAME\}
 @end macro
 
-@macro EnumeratedConstant{NAME}
-@cindex @code{\NAME\}, enumerated constant
-@cindex Enumerated constant @code{\NAME\}
-@cindex Constant @code{\NAME\}
-@cindex Symbol @code{\NAME\}
+@macro stdin{}
+@code{stdin}
 @end macro
 
-@macro bub{}
-@acronym{BUB}
+@macro stdout{}
+@code{stdout}
+@end macro
+
+@macro stderr{}
+@code{stderr}
 @end macro
 
 @c page
@@ -365,6 +484,10 @@
 @ref{\NODE\,\TITLE\,\TITLE\,libc}
 @end macro
 
+@c @macro rsixref{NODE, TITLE}
+@c @ref{\NODE\,\TITLE\,\TITLE\,r6rs}
+@c @end macro
+
 @macro bibref{TAG}
 @code{[\TAG\]}
 @end macro
@@ -373,13 +496,24 @@
 @ref{\NODE\,\TITLE\,\TITLE\,autoconf}
 @end macro
 
-@macro manpage{NODE, TITLE}
-@xref{\NODE\,\TITLE\,\TITLE\,*manpages*}
+@macro ccexceptionsref{NODE, TITLE}
+@ref{\NODE\,\TITLE\,\TITLE\,ccexceptions}
 @end macro
-@c @ref{\NODE\,\TITLE\,\TITLE\,*manpages*}
+
+@macro ccmemoryref{NODE, TITLE}
+@ref{\NODE\,\TITLE\,\TITLE\,ccmemory}
+@end macro
 
 @macro ccstructsref{NODE, TITLE}
 @ref{\NODE\,\TITLE\,\TITLE\,ccstructs}
+@end macro
+
+@macro ccstringsref{NODE, TITLE}
+@ref{\NODE\,\TITLE\,\TITLE\,ccstrings}
+@end macro
+
+@macro manpage{NODE, TITLE}
+@ref{\NODE\,\TITLE\,\TITLE\,*manpages*}
 @end macro
 
 @c page
